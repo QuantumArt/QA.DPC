@@ -3,6 +3,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System;
+using System.Linq;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
@@ -74,7 +75,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 
 		public Article[] GetSimpleProductsByIds(int[] ids, bool isLive = false)
 		{
-			throw new NotImplementedException();
+			return ids.Select(n => new Article() {Id = n}).ToArray();
 		}
 	}
 }

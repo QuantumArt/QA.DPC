@@ -14,8 +14,8 @@ namespace QA.Core.ProductCatalog.Actions.Container
 		protected override void Initialize()
 		{
             Container.RegisterInstance<ILogger>(new NLogLogger("NLogClient.config"));			
-			Container.RegisterType<Func<string, IAction>>(new InjectionFactory(c => new Func<string, IAction>(name => c.Resolve<IAction>(name))));
-			Container.RegisterType<Func<string, ITask>>(new InjectionFactory(c => new Func<string, ITask>(name => c.Resolve<ITask>(name))));
+			Container.RegisterFactory<Func<string, IAction>>(c => new Func<string, IAction>(name => c.Resolve<IAction>(name)));
+			Container.RegisterFactory<Func<string, ITask>>(c => new Func<string, ITask>(name => c.Resolve<ITask>(name)));
 
 			var a = typeof(ActionContainerConfiguration).Assembly;
 			foreach (var t in a.GetExportedTypes())

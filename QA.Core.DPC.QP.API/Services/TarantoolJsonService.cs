@@ -6,6 +6,9 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using Microsoft.Extensions.Options;
+using QA.Core.Cache;
+using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.QP.API.Services
@@ -16,14 +19,17 @@ namespace QA.Core.DPC.QP.API.Services
         private readonly Uri _baseUri;
 
         private readonly ISettingsService _settingsService;
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
+        private readonly IHttpClientFactory _factory;
 
-        public TarantoolJsonService(ISettingsService settingsService, IVersionedCacheProvider cacheProvider)
+        public TarantoolJsonService(ISettingsService settingsService, VersionedCacheProviderBase cacheProvider, 
+            IHttpClientFactory factory, IOptions<IntegrationProperties> intProps)
         {
-            var tntUrl = ConfigurationManager.AppSettings["DPC.Tarantool.Api"];
+            var tntUrl = intProps.Value.TarantoolApiUrl;
             _baseUri = !String.IsNullOrEmpty(tntUrl) ? new Uri(tntUrl) : null;
             _settingsService = settingsService;
             _cacheProvider = cacheProvider;
+            _factory = factory;
             _expiration = TimeSpan.FromHours(1);
     }
 
@@ -103,7 +109,7 @@ namespace QA.Core.DPC.QP.API.Services
 
         private T Get<T>(Uri uri)
         {
-            using (var client = new HttpClient())
+            var client = _factory.CreateClient();
             using (var response = client.GetAsync(uri).Result)
             {
                 if (!response.IsSuccessStatusCode) throw new Exception($"unsuccess request: {uri}");

@@ -4,15 +4,16 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-	public class ArchiveAction : ArchiveActionBase
+	public class ArchiveAction : ArchiveProductActionBase
 	{
-		public ArchiveAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
-			: base(articleService, fieldService, productservice, logger, createTransaction, notificationService)
+		public ArchiveAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
+			: base(articleService, fieldService, productservice, createTransaction, notificationService)
 		{
 		}
 
@@ -22,7 +23,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		}
 
 
-		protected override Article[] PrepareNotification(int productId)
+		protected override Article[] GetNotificationProducts(int productId)
 		{
 			try
 			{
@@ -30,7 +31,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "не удалось подготовить уведомление об архивации", ex);
+				throw new ProductException(productId, "Product notification preparing failed", ex);
 			}
 		}
 
@@ -38,11 +39,14 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		{
 			try
 			{
-				NotificationService.DeleteProducts(products, UserName, UserId, false, channels);
+				DoWithLogging(
+					() => NotificationService.DeleteProducts(products, UserName, UserId, false, channels),
+					"Sending delete notifications for product {id}", productId
+				);
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "не удалось отправить уведомление об архивации", ex);
+				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex);
 			}
 		}
 

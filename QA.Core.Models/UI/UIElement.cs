@@ -1,5 +1,9 @@
 ﻿using System;
+#if NETSTANDARD
+using Portable.Xaml.Markup;
+#else
 using System.Windows.Markup;
+#endif
 using QA.Configuration;
 
 namespace QA.Core.Models.UI
@@ -40,7 +44,7 @@ namespace QA.Core.Models.UI
             set { SetValue(ClassNameProperty, value); }
         }
 
-        public bool Hidden
+        public bool? Hidden
         {
             get { return (bool)GetValue(HiddenProperty); }
             set { SetValue(HiddenProperty, value); }

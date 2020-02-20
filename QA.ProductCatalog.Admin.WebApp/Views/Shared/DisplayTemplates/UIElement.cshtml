@@ -1,0 +1,39 @@
+@using QA.Core.DPC.UI
+@using QA.Core.DPC.UI.Controls
+@model QA.Core.Models.UI.UIElement
+
+@{
+  if (Model is ActionLink actionLink)
+  {
+    @Html.DisplayFor(x => actionLink)
+  }
+  else if (Model is GroupGridView ggv)
+  {
+    @Html.DisplayFor(x => ggv)                 
+  }
+  else if (Model is TabStrip tabStrip)
+  {
+    @Html.DisplayFor(x => tabStrip)                 
+  }
+  else if (Model is StackPanel stackPanel)
+  {
+    @Html.DisplayFor(x => stackPanel)                 
+  }
+  else if (Model is Group g)
+  {
+    @Html.DisplayFor(x => g)                 
+  }
+  else if (Model is PropertyDisplay pd )
+  {
+    @Html.DisplayFor(x => pd)                 
+  }
+  else if (Model is EntityEditor ee)
+  {
+    @Html.DisplayFor(x => ee)                 
+  }
+  else if (Model is EntityCollection ec)
+  {
+    @Html.DisplayFor(x => ec)                 
+  }       
+
+}

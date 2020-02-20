@@ -1,4 +1,5 @@
-﻿@model NotesProcessor
+﻿@using QA.Core.DPC.UI.Controls
+@model NotesProcessor
 @if (Model == null) { return; }
 
 <div class="@Model.GetType()">
@@ -7,7 +8,7 @@
         @foreach (var note in Model.Notes)
         {
             <li id="@("Note" + note.Id)">
-                @Html.Partial("DisplayTemplates/ActionLink", new ActionLink { Title = note.Id.ToString(), EntityId = note.Id, ParentEntityId = Model.NotesContentId })
+                @await Html.PartialAsync("DisplayTemplates/ActionLink", new ActionLink { Title = note.Id.ToString(), EntityId = note.Id, ParentEntityId = Model.NotesContentId })
                 @note.Text
             </li>
         }

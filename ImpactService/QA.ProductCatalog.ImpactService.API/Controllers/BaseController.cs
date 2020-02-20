@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using NLog;
+using NLog.Fluent;
 using QA.ProductCatalog.ImpactService.API.Helpers;
 using QA.ProductCatalog.ImpactService.API.Services;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
 {
@@ -22,7 +22,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected readonly IMemoryCache Cache;
 
-        protected ILogger Logger { get; }
+        protected abstract Logger Logger { get; }
 
         protected JObject Product;
 
@@ -34,11 +34,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected IEnumerable<JToken> ServicesOnProduct;
 
-        protected BaseController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache)
+        protected BaseController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, IMemoryCache cache)
         {
             SearchRepo = searchRepo;
             ConfigurationOptions = elasticIndexOptionsAccessor.Value;
-            Logger = loggerFactory.CreateLogger(GetType());
             Cache = cache;
         }
 
@@ -85,14 +84,13 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             ActionResult result = null;
             try
             {
-                var services = string.Join(", ", serviceIds);
-                var message = "Start loading product {id} with services {services}";
-                Log(LogLevel.Trace, message, searchOptions, id, services);
+                var message = "Start loading product {id} with services {serviceIds}";
+                Log(LogLevel.Trace, message, searchOptions, id, serviceIds);
 
                 var allProductIds = new[] { id }.Union(serviceIds).ToArray();
                 var results = await SearchRepo.GetProducts(allProductIds, searchOptions);
-                message = "End loading product {id} with services {services}";
-                Log(LogLevel.Trace, message, searchOptions, id, services);
+                message = "End loading product {id} with services {serviceIds}";
+                Log(LogLevel.Trace, message, searchOptions, id, serviceIds);
 
                 Product = results.FirstOrDefault(n => (int) n["Id"] == id);
                 if (Product == null)
@@ -121,7 +119,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                     }
                     Services = servicesList.ToArray();
                 }
-
             }
 
             catch (Exception ex)
@@ -215,8 +212,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             Cache.Set(cacheKey, newCacheEntry, memoryCacheEntryOptions);
         }
 
-        protected async Task<ActionResult> GetCachedResult(string cacheKey, SearchOptions searchOptions)
+        protected async Task<ActionResult> GetCachedResult(string cacheKey, SearchOptions searchOptions, bool html)
         {
+            if (IsCacheDisabled(html)) return null;
+            
             Log(LogLevel.Trace, "Cache key: {key}", searchOptions, cacheKey);
 
             CacheEntry cacheEntry;
@@ -241,14 +240,12 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected void LogEndImpact(string code, int id, int[] serviceIds)
         {
-            var services = string.Join(", ", serviceIds);
-            Log(LogLevel.Trace, "End calculating {code} impact for product {id} and services {services}", null, code, id, services);
+            Log(LogLevel.Trace, "End calculating {code} impact for product {id} and services {serviceIds}", null, code, id, serviceIds);
         }
  
         protected void LogStartImpact(string code, int id, int[] serviceIds)
         {
-            var services = string.Join(", ", serviceIds);
-            Log(LogLevel.Trace, "Start calculating {code} impact for product {id} and services {services}", null, code, id, services);
+            Log(LogLevel.Trace, "Start calculating {code} impact for product {id} and services {serviceIds}", null, code, id, serviceIds);
         }
 
         protected ActionResult FilterServicesOnProduct(bool saveInProduct = false, IEnumerable<int> excludeIds = null, JObject homeRegionData = null)
@@ -341,42 +338,43 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             });
         }
 
-        protected void Log(LogLevel level, string message, SearchOptions searchOptions, params object[] args)
-        {
-            LogExtra(level, message, searchOptions, null, null, args);
-        }
 
-        private void LogExtra(LogLevel level, string message, SearchOptions searchOptions, Dictionary<string, object> extra, Exception ex, params object[] args)
+        private LogBuilder GetLogBuilder(LogLevel level, string message, SearchOptions searchOptions, object[] args)
         {
-            
-            var evt = new CustomLogEvent(message, args);
-            if (extra != null)
-            {
-                foreach (var item in extra)
-                {
-                    evt.AddProp(item.Key, item.Value);
-                }
-            }
-
+            var builder = Logger.Log(level).Message(message, args);
             if (searchOptions != null)
             {
-                evt.AddProp("address", searchOptions.BaseUrls);
-                evt.AddProp("index", searchOptions.IndexName);
+                builder.Property("searchOptions", searchOptions);
             }
-            
-            Logger.Log(level, default(EventId), evt, ex, CustomLogEvent.Formatter);
+            return builder;
         }
-
+        
+        protected void Log(LogLevel level, string message, SearchOptions searchOptions, params object[] args)
+        {
+            if (Logger.IsEnabled(level))
+            {
+                var builder = GetLogBuilder(level, message, searchOptions, args);
+                builder.Write();            
+            }
+        }
+        
         protected void LogException(Exception ex, string message, SearchOptions searchOptions, params object[] args)
         {
-            var extra = new Dictionary<string, object>();
-            
-            if (ex is ElasticClientException elex)
-            {
-                extra.Add("extra", elex.Request);
-            }
+            var builder = GetLogBuilder(LogLevel.Error, message, searchOptions, args).Exception(ex);
+            builder.Write();
+        }
 
-            LogExtra(LogLevel.Error, message, searchOptions, extra, ex, args);
+        protected bool IsCacheDisabled(bool html = false)
+        {
+            var result = html || ConfigurationOptions.CachingInterval <= 0;
+            if (result && Logger.IsTraceEnabled)
+            {
+                Logger.Log(LogLevel.Trace,
+                    html
+                        ? "Cache is disabled because of html mode"
+                        : "Cache is disabled because of CachingInterval configuration option");
+            }
+            return result;
         }
     }
 }

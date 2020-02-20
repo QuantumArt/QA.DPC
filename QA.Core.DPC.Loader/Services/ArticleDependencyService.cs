@@ -10,26 +10,28 @@ using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QP8.Constants;
 using Quantumart.QP8.Utils;
 using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader.Services
 {
 	public class ArticleDependencyService : IArticleDependencyService
 	{
 		private readonly IContentDefinitionService _contentDefinitionService;
-		private readonly string _connectionString;
-		private readonly IVersionedCacheProvider _cacheProvider;
+		private readonly Customer _customer;
+		private readonly VersionedCacheProviderBase _cacheProvider;
 		private readonly int _prodDefContentId;
 		private readonly ArticleService _articleService;
 		private readonly FieldService _fieldService;
 
-		public ArticleDependencyService(IContentDefinitionService contentDefinitionService, IServiceFactory serviceFactory, IVersionedCacheProvider cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
+		public ArticleDependencyService(IContentDefinitionService contentDefinitionService, IServiceFactory serviceFactory, VersionedCacheProviderBase cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
 		{
 			_contentDefinitionService = contentDefinitionService;
 
-			_connectionString = connectionProvider.GetConnection();
+			_customer = connectionProvider.GetCustomer();
 
 			_cacheProvider = cacheProvider;
 
@@ -135,7 +137,7 @@ namespace QA.Core.DPC.Loader.Services
 
 			var affectedProductIdsByContentId = new Dictionary<int, List<int>>();
 
-			using (new QPConnectionScope(_connectionString))
+			using (new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
 			{
 				int contentId = _articleService.Read(articleId).ContentId;
 

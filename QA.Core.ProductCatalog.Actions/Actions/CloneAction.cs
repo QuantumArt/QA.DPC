@@ -5,23 +5,25 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	public class CloneAction : ActionBase
+	public class CloneAction : ProductActionBase
 	{
 		private const string DoNotCloneArchiceKey = "DoNotCloneArchice";
 
 		private readonly ICacheItemWatcher _cacheItemWatcher;
         protected int[] ClearFieldIds { get; private set; }
 
-        public CloneAction(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, ICacheItemWatcher cacheItemWatcher)
-			: base(articleService, fieldService, productService, logger, createTransaction)
+        public CloneAction(IArticleService articleService, IFieldService fieldService, IProductService productService, Func<ITransaction> createTransaction, ICacheItemWatcher cacheItemWatcher)
+			: base(articleService, fieldService, productService, createTransaction)
 		{
 			_cacheItemWatcher = cacheItemWatcher;
 		}
@@ -41,7 +43,7 @@ namespace QA.Core.ProductCatalog.Actions
 			var article = ArticleService.Read(productId);
 
 			if (!ArticleService.CheckRelationSecurity(article.ContentId, new int[] { productId }, false)[productId])
-				throw new ProductException(productId, "Операция недопустима из-за недостаточных прав доступа по связям");
+				throw new ProductException(productId, nameof(TaskStrings.NoRelationAccess));
 
 			var definition = Productservice.GetProductDefinition(0, article.ContentId);
 			var dictionary = GetProductsToBeProcessed(article, definition, ef => ef.CloningMode, CloningMode.Copy, filter, true);

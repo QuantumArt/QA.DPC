@@ -16,5 +16,10 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 	    {
 	        return "Fake user from UserProviderFake";
 	    }
+
+	    public int GetLanguageId()
+	    {
+		    return 1;
+	    }
 	}
 }

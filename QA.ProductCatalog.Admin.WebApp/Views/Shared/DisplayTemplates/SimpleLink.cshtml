@@ -1,8 +1,7 @@
-﻿@using QA.Core.Web
-@model SimpleLink
+﻿@model QA.Core.DPC.UI.Controls.SimpleLink
 
 @{
-    if (Model == null || Model.Hidden) { return; }
+    if (Model == null || (Model.Hidden ?? false)) { return; }
 
     var title = Model.Title;
     var href = Model.Href;

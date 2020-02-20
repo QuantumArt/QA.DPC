@@ -3,7 +3,7 @@ using Quantumart.QP8.BLL.Services.DTO;
 using System;
 using System.Collections.Generic;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
 using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
@@ -12,8 +12,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 	{
 		private readonly IArticleService _articleService;
 
-		public ArticleServiceProfiler(IArticleService articleService, ILogger logger)
-			: base(logger)
+		public ArticleServiceProfiler(IArticleService articleService)
 		{
 			if (articleService == null)
 				throw new ArgumentNullException("articleService");

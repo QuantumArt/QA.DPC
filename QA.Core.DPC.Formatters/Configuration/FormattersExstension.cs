@@ -27,17 +27,21 @@ namespace QA.Core.DPC.Formatters.Configuration
 			formatters.Add(formatter);
 			return formatter;
 		}
-
+		
+		
+#if !NETSTANDARD
 		public static void AddRouteMapping(this MediaTypeFormatter formatter, string parameterName, string parameterValue, string mediaType)
 		{
 			formatter.MediaTypeMappings.Add(new RouteDataMapping(parameterName, parameterValue, mediaType));
 		}
+#endif
 
 		public static void RegisterModelMediaTypeFormatter<TFormatter, TModel>(this IUnityContainer container, string name, string mediaType)
 			where TModel : class
 			where TFormatter : IFormatter<TModel>
 		{
-			container.RegisterType<MediaTypeFormatter>(name, new InjectionFactory(c => new ModelMediaTypeFormatter<TModel>(c.GetFactory<TFormatter, TModel>(), mediaType)));
+			container.RegisterFactory<MediaTypeFormatter>(name,
+				c => new ModelMediaTypeFormatter<TModel>(c.GetFactory<TFormatter, TModel>(), mediaType));
 		}
 
 		public static void RegisterModelMediaTypeFormatter<TFormatter, TModel>(this IUnityContainer container, string mediaType)

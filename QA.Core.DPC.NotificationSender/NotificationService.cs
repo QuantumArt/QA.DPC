@@ -1,16 +1,18 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using QA.Core.Service.Interaction;
 using QA.ProductCatalog.ContentProviders;
 using System.Xml.XPath;
 using System.IO;
 using System.Collections.Generic;
-using QA.Core.DPC.QP.Models;
+ using Microsoft.Extensions.Options;
+ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
+ using NLog;
+ using NLog.Fluent;
 
-namespace QA.Core.DPC
+ namespace QA.Core.DPC
 {
 	public class NotificationService : QAServiceBase, INotificationService
 	{
@@ -18,10 +20,18 @@ namespace QA.Core.DPC
 
         private readonly IIdentityProvider _identityProvider;
 
-        public NotificationService()
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
+        private readonly IConnectionProvider _connectionProvider;
+
+        public NotificationService(INotificationProvider provider, 
+	        IIdentityProvider identityProvider,
+	        INotificationChannelService channelService, 
+	        IConnectionProvider connectionProvider)
 		{
-            _identityProvider = ObjectFactoryBase.Resolve<IIdentityProvider>();
-        }
+            _identityProvider = identityProvider;
+            _connectionProvider = connectionProvider;
+		}
 		
 		public void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode)
 		{
@@ -30,14 +40,9 @@ namespace QA.Core.DPC
             RunAction(new UserContext(), null, () =>
 			{
 				Throws.IfArgumentNull(notifications, _ => notifications);
-                var logger = ObjectFactoryBase.Resolve<ILogger>();
-                var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
 
-                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-				{
-					bool needSubmit = false;
 					List<NotificationChannel> channels = null;
-
+					var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
 					if (notifications.Any(n => n.Channels == null))
 					{
 						channels = provider.GetConfiguration().Channels;
@@ -45,8 +50,11 @@ namespace QA.Core.DPC
 						if (channels == null)
 						{
 							var productIds = notifications.Where(n => n.Channels == null).Select(n => n.ProductId);
-							logger.Error("Продукты {0} не поставлены в очередь т.к. остутствуют каналы для публикации" , string.Join(", ", string.Join(", ", productIds)));
-							throw new Exception("Не найдено каналов для публикации");
+							_logger.Error(
+								"Products {0} have not been enqueued because there are no channels for publishing" , 
+								string.Join(", ", string.Join(", ", productIds))
+							);
+							throw new Exception("No channels for publishing");
 						}
 					}
 
@@ -92,18 +100,20 @@ namespace QA.Core.DPC
 					}
 				
 					if (messages.Any())
-					{                     
-						ctx.Messages.InsertAllOnSubmit(messages);
-
-						needSubmit = true;
+					{
+						var ctx = NotificationsModelDataContext.Get(_connectionProvider);
+						ctx.Messages.AddRange(messages);
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
-						logger.Info("Постановка сообщения {0} для продуктов {1} в очередь, isStage={2}", method, string.Join(", ", productIds), isStage);
-					}
+						_logger.Info()
+							.Message("Message {message} for products {productIds} is enqueueing",
+								method, string.Join(", ", productIds)
+							)
+							.Property("isStage", isStage)
+							.Write();
 
-					if (needSubmit)
-						ctx.SubmitChanges();
-				}
+						ctx.SaveChanges();
+					}
 			});
 		}
 
@@ -115,21 +125,7 @@ namespace QA.Core.DPC
         public ConfigurationInfo GetConfigurationInfo(string customerCode)
         {
             _identityProvider.Identity = new Identity(customerCode);
-            INotificationProvider provider;
-
-            try
-            {
-                provider = ObjectFactoryBase.Resolve<INotificationProvider>();
-            }
-            catch
-            {
-                return new ConfigurationInfo
-                {
-                    ActualSettings = null,
-                    CurrentSettings = null
-                };
-            }
-
+            var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
             var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
             var currentConfiguration = GetCurrentConfiguration(customerCode);
             var actualConfiguration = provider.GetConfiguration();
@@ -138,17 +134,13 @@ namespace QA.Core.DPC
                 .Union(currentConfiguration == null ? new string[0] : currentConfiguration.Channels.Select(c => c.Name))
                 .Distinct();
 
-            Dictionary<string, int> countMap;
+            var ctx = NotificationsModelDataContext.Get(_connectionProvider);
+	        var countMap = ctx.Messages
+		        .GroupBy(m => m.Channel)
+		        .Select(g => new {g.Key, Count = g.Count()})
+		        .ToDictionary(g => g.Key, g => g.Count);
 
-            using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-            {
-                countMap = ctx.Messages
-                    .GroupBy(m => m.Channel)
-                    .Select(g => new { g.Key, Count = g.Count() })
-                    .ToDictionary(g => g.Key, g => g.Count);
-            }         
-
-            var chennelsStatistic = channelService.GetNotificationChannels();
+            var channelsStatistic = channelService.GetNotificationChannels(customerCode);
 
             return new ConfigurationInfo
             {
@@ -176,7 +168,7 @@ namespace QA.Core.DPC
                     WaitIntervalAfterErrors = currentConfiguration.WaitIntervalAfterErrors
                 },
                 Channels = (from channel in channels
-                           join s in chennelsStatistic on channel equals s.Name into d
+                           join s in channelsStatistic on channel equals s.Name into d
                            from s in d.DefaultIfEmpty()
                            select new ChannelInfo
                            {
@@ -201,7 +193,7 @@ namespace QA.Core.DPC
             {
                 return config;
             }
-            else if (NotificationSender.ConfigDictionary.TryGetValue(SingleCustomerProvider.Key, out config))
+            else if (NotificationSender.ConfigDictionary.TryGetValue(SingleCustomerCoreProvider.Key, out config))
             {
                 return config;
             }
@@ -245,7 +237,7 @@ namespace QA.Core.DPC
 			var rootProductNavigator = xpathDoc.CreateNavigator().SelectSingleNode(ProductXPathExpression);
 
 			if (rootProductNavigator == null)
-				throw new Exception(string.Format("В xml не найден корневой объект по адресу {0}", ProductXPathExpression.Expression));
+				throw new Exception("No root object found in xml by address: " + ProductXPathExpression.Expression);
 
 			var filterResult = rootProductNavigator.Evaluate(xPathFilter);
 

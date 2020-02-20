@@ -39,41 +39,42 @@ namespace QA.Core.DPC.API.Search
 				{
 					throw new Exception("field " + fieldName + " does not match definition");
 				}
-				else
+
+				Field field = definition.Fields.FirstOrDefault(f => string.Equals(f.FieldName, fieldName, StringComparison.CurrentCultureIgnoreCase));
+				if (field != null)
 				{
-					Field field = definition.Fields.FirstOrDefault(f => string.Equals(f.FieldName, fieldName, StringComparison.CurrentCultureIgnoreCase));
+					fieldId = field.FieldId;
+				}
 
-					if (field is EntityField)
-					{
-						queryField = new QueryField { Name = fieldName };
-						definition = ((EntityField)field).Content;
-					}
-					else if (field is ExtensionField)
-					{
-						var extensionField = (ExtensionField)field;
+				if (field is EntityField)
+				{
+					queryField = new QueryField { Name = fieldName };
+					definition = ((EntityField)field).Content;
+				}
+				else if (field is ExtensionField)
+				{
+					var extensionField = (ExtensionField)field;
 
-						var mapping = extensionField.ContentMapping
-							.Where(m => exstensionIds.Contains(m.Key))
-							.Select(m => new { ContentId = m.Key, Content = m.Value })
-							.FirstOrDefault();
+					var mapping = extensionField.ContentMapping
+						.Where(m => exstensionIds.Contains(m.Key))
+						.Select(m => new { ContentId = m.Key, Content = m.Value })
+						.FirstOrDefault();
 					
 
-						if (mapping == null)
-						{
-							throw new Exception("Field " + extensionField.FieldId + ", " + extensionField.FieldName + "does not registered");
-						}
-						else
-						{
-							queryField = new QueryField { Name = fieldName, ContentId = mapping.ContentId };
-							definition = mapping.Content;
-						}
+					if (mapping == null)
+					{
+						throw new Exception("Field " + extensionField.FieldId + ", " + extensionField.FieldName + "does not registered");
 					}
 					else
 					{
-						fieldId = field.FieldId;
-						queryField = new QueryField { Name = fieldName };
-						definition = null;
+						queryField = new QueryField { Name = fieldName, ContentId = mapping.ContentId };
+						definition = mapping.Content;
 					}
+				}
+				else
+				{
+					queryField = new QueryField { Name = fieldName };
+					definition = null;
 				}
 
 				queryFields.Add(queryField);

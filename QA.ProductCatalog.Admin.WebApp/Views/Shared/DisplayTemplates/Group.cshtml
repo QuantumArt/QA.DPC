@@ -1,7 +1,11 @@
 ﻿@using QA.Core.Models.UI
+@using QA.ProductCatalog.Admin.WebApp.Core
+@using QA.Core.DPC.UI;
+@using QA.Core.DPC.UI.Controls;
+
 @model Group
 @{
-	if (Model == null || Model.Hidden || Model.Title == null)
+	if (Model == null || (Model.Hidden ?? false) || Model.Title == null)
 	{
 		return;
 	}
@@ -28,9 +32,10 @@
 
             @for (int i = 0; i < Model.Items.Count; i++)
             {
-                <div class="group-panel-item">
-                    @Html.DisplayFor(x => Model.Items[i])
-                </div>
+              var item = Model.Items[i];
+              <div class="group-panel-item">
+                @Html.DisplayForUIElement(item)
+              </div>  
             }
         </div>
     </fieldset>

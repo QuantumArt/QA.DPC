@@ -5,10 +5,11 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NLog;
+using NLog.Fluent;
 using Polly.Extensions.Http;
 using Polly.Registry;
 using QA.ProductCatalog.ImpactService.API.Helpers;
@@ -30,13 +31,12 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         }
 
         public ElasticSearchRepository(
-            ILoggerFactory factory, 
             IHttpClientFactory clientFactory, 
             PolicyRegistry policyRegistry, 
             IOptions<ConfigurationOptions> elasticIndexOptionsAccessor
          )
         {
-            _logger = factory.CreateLogger(GetType());
+            _logger = LogManager.GetCurrentClassLogger();
             _clientFactory = clientFactory;
             _policyRegistry = policyRegistry;
             _options = elasticIndexOptionsAccessor.Value;
@@ -44,7 +44,8 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options, DateTimeOffset defaultValue)
         {
-            var result = await GetContent(GetJsonQuery(productIds, options.QueryType, true), options);
+            var query = GetJsonQuery(productIds, options.QueryType, true);
+            var result = await GetContent(query, options,"Receiving product last updated date");
             var dates = JObject.Parse(result).SelectTokens($"{_sourceQuery}.UpdateDate").Select(n => (DateTimeOffset)n).ToArray();
             return dates.Any() ? dates.Max() : defaultValue;
         }
@@ -169,7 +170,8 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         public async Task<JObject[]> GetProducts(int[] productIds, SearchOptions options)
         {
-            var result = await GetContent(GetJsonQuery(productIds, options.QueryType), options);
+            var query = GetJsonQuery(productIds, options.QueryType);
+            var result = await GetContent(query,  options, "Receiving products");
 
             result = await ProcessRegionTags(productIds, result, options);
 
@@ -182,7 +184,8 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var newOptions = options.Clone();
             newOptions.TypeName = "RoamingRegion";
-            var regionResult = await GetContent(GetMrQuery(regions, options.QueryType), newOptions);
+            var query = GetMrQuery(regions, options.QueryType);
+            var regionResult = await GetContent(query, newOptions, "Check for one macroregion");
             var aliases = JObject.Parse(regionResult)
                 .SelectTokens($"{_sourceQuery}.Region.Parent.Alias").Select(n => n.ToString()).ToArray();
             return aliases.Length > 1 && aliases.Distinct().Count() == 1;
@@ -191,7 +194,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         public async Task<int[]> GetRoamingScaleForCountry(string code, bool isB2C, SearchOptions options)
         {
             var query = GetRoamingScaleQuery(code, isB2C, options.QueryType);
-            var country = await GetContent(query, options);
+            var country = await GetContent(query, options, "Receiving roaming scale for country");
             var countryObj = JObject.Parse(country).SelectToken(_sourceQuery);
             if (countryObj == null)
                 throw new Exception($"Roaming scale for country with code '{code}' not found");
@@ -212,7 +215,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         public async Task<JObject> GetRoamingCountry(string code, SearchOptions options)
         {
             var query = GetRoamingCountryQuery(code.ToLowerInvariant(), options.QueryType);
-            var regionResult = await GetContent(query, options);
+            var regionResult = await GetContent(query, options, "Receiving roaming country");
             var obj = JObject.Parse(regionResult);
             var result = (JObject)obj.SelectToken(_sourceQuery);
             if (result == null)
@@ -237,7 +240,8 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         private async Task<Dictionary<string, string>> GetTagsToProcess(int[] productIds, SearchOptions options)
         {
             var regionTagIds = productIds.Select(n => 0 - n).ToArray();
-            var tagResult = await GetContent(GetJsonQuery(regionTagIds, options.QueryType), options);
+            var query = GetJsonQuery(regionTagIds, options.QueryType);
+            var tagResult = await GetContent(query, options, "Receiving regional tags to process");
             var documents = JObject.Parse(tagResult).SelectTokens(_sourceQuery).ToArray();
             var tags = documents
                     .SelectMany(n => (JArray)n.SelectToken("RegionTags"))
@@ -273,7 +277,9 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
             var newOptions = options.Clone();
             newOptions.TypeName = "Region";
-            var regionResult = await GetContent(GetRegionQuery(newOptions.HomeRegion, options.QueryType), newOptions);
+
+            var query = GetRegionQuery(newOptions.HomeRegion, options.QueryType);
+            var regionResult = await GetContent(query, newOptions, "Receiving home region");
             var homeRegionIdToken = JObject.Parse(regionResult)
                 .SelectTokens(_sourceQuery)?.FirstOrDefault();
             return (JObject)homeRegionIdToken;
@@ -283,7 +289,8 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var newOptions = options.Clone();
             newOptions.TypeName = "Region";
-            var regionResult = await GetContent(GetDefaultRegionForMnrQuery(options.QueryType), newOptions);
+            var query = GetDefaultRegionForMnrQuery(options.QueryType);
+            var regionResult = await GetContent(query, newOptions, "Receiving default region alias");
             return JObject.Parse(regionResult)
                 .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Alias")?.ToString();
         }
@@ -304,17 +311,30 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         private ElasticClient GetElasticClient(SearchOptions options)
         {
-            return new ElasticClient(_clientFactory, _policyRegistry, options.IndexName, options.BaseUrls, _logger, _options);
+            return new ElasticClient(_clientFactory, _policyRegistry, options.IndexName, options.BaseUrls, _options);
         }
 
 
-        public async Task<string> GetContent(string json, SearchOptions options)
+        public async Task<string> GetContent(string json, SearchOptions options, string message = null)
         {
+            if (_logger.IsTraceEnabled)
+            {
+                _logger.Trace().Message(message ?? "Query to Elastic search")
+                    .Property("json", json)
+                    .Property("searchOptions", options)
+                    .Write();
+            }
+            
             return await GetElasticClient(options).SearchAsync(options.UrlType, json);
         }
 
         public async Task<bool> GetIndexIsTyped(SearchOptions options)
         {
+            if (_logger.IsTraceEnabled)
+            {
+                _logger.Trace("Check for typed index");
+            }
+
             var client = GetElasticClient(options);
             var info = await client.SearchAsync(null, null);
             var version = JObject.Parse(info).SelectToken("version.number").Value<string>();

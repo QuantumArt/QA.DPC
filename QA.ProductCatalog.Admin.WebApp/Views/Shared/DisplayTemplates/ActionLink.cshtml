@@ -1,21 +1,28 @@
-﻿@using QA.Core.Web
-@model ActionLink
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@using QA.Core.Models.Entities
+@using System.Net
+@model QA.Core.DPC.UI.Controls.ActionLink
 
 @{
-    if (Model == null || Model.Hidden) { return; }
-    var article = Model.CurrentItem as Article;
-    if (article == null && Model.CurrentItem is SingleArticleField)
-    {
-        article = ((SingleArticleField)Model.CurrentItem).Item;
-    }
-    var title = Model.Title;
-    if (title == null)
-    {
-        return;
-    }
-    var entityId = article != null ? article.Id : ((Model.EntityId is string && ((string)Model.EntityId) == "") ? 0 : Model.EntityId);
-
-    var id = Html.GetUniqueId(string.Format("{0}-{1}-{2}", Model.ActionName, Model.Title, entityId));
+  if (Model == null || (Model.Hidden ?? false))
+  {
+    return;
+  }
+    
+  var article = Model.CurrentItem as Article;
+  if (article == null && Model.CurrentItem is SingleArticleField)
+  {
+    article = ((SingleArticleField)Model.CurrentItem).Item;
+  }
+  
+  var title = Model.Title;
+  if (title == null)
+  {
+    return;
+  }
+  
+  var entityId = article != null ? article.Id : ((Model.EntityId is string && ((string)Model.EntityId) == "") ? 0 : Model.EntityId);
+  var id = Html.GetUniqueId(string.Format("{0}-{1}-{2}", Model.ActionName, Model.Title, entityId));
 }
 <span id="@id" title="@(title)" class="idLink actionlink active  @Model.TextOverflow"
       style="@(Model.MaxWidth != null ? "max-width: " + Model.MaxWidth : "")"
@@ -23,13 +30,13 @@
       data-parentid="@(article != null ? article.ContentId : Model.ParentEntityId)"
       data-action-name="@(Model.ActionName == "edit_article" && article != null && article.Archived ? "view_archive_article": Model.ActionName)"
       data-action-window="@(Model.ShowInTab.ToString().ToLower())"
-      data-fields-to-init="@HttpUtility.UrlEncode(Html.GetJson(Model.GetInitFieldValues(), false))"
-      data-fields-to-block="@HttpUtility.UrlEncode(Html.GetJson(Model.GetFieldsToBlock(), false))"
-      data-fields-to-hide="@HttpUtility.UrlEncode(Html.GetJson(Model.GetFieldsToHide(), false))"
+      data-fields-to-init="@WebUtility.UrlEncode(Html.GetJson(Model.GetInitFieldValues(), false))"
+      data-fields-to-block="@WebUtility.UrlEncode(Html.GetJson(Model.GetFieldsToBlock(), false))"
+      data-fields-to-hide="@WebUtility.UrlEncode(Html.GetJson(Model.GetFieldsToHide(), false))"
       data-refresh="@(Model.ResolveActionCode)">
     @if (Model.ShowIcon)
     {
-        <span class="icon @Model.IconClass"><img src="@Url.Content("~/content/img/icons/0.gif")"></span>
+        <span class="icon @Model.IconClass"><img src="@Url.Content("~/images/icons/0.gif")"></span>
     }	
 	<a class="js" href="javascript:void(0)">@Model.ReplaceNotesIfNeeded(Model.Title)</a>
 </span>

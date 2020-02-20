@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
@@ -13,12 +15,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 {
 	public abstract class ActionAdapterBase : IAction
 	{
-		#region Constants
-		protected const string TaskMessage = "Действие поставлено в очередь.";
-		private const string ActionErrorMessage = "Can't run task";
-		private const string ProductErrorMessage = "ошибка при постановке действия в очередь";
-		#endregion
-
 		#region Fields and properties
 		private readonly Func<string, ITask> _getTask;
 		private readonly ITaskService _taskService;
@@ -38,7 +34,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 		#endregion
 
 		#region IAction implementation
-		public virtual string Process(ActionContext context)
+		public virtual ActionTaskResult Process(ActionContext context)
 		{
 			if (ProcessInstantly(context))
 			{
@@ -47,21 +43,25 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 			else
 			{
 				RegisterTask(context);
-				return TaskMessage;
+                return ActionTaskResult.Success(new ActionTaskResultMessage()
+                {
+                    ResourceClass = nameof(TaskStrings),
+                    ResourceName = nameof(TaskStrings.ActionEnqueued),
+                });
 			}
 		}
 
 		#endregion
 
 		#region Protected methods
-		protected string ProcessTask(ActionContext context)
+		protected ActionTaskResult ProcessTask(ActionContext context)
 		{
 			var task = _getTask(TaskKey);
 			var taskContext = new EmptyTaskExecutionContext();
 			var actionData = new ActionData { ActionContext = context	};
 			
             task.Run(ActionData.Serialize(actionData), null, null, taskContext);
-			return taskContext.Message;
+			return taskContext.Result;
         }
 
 		protected void RegisterTask(ActionContext context)
@@ -81,7 +81,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 			}
 			catch (Exception ex)
 			{
-				throw new ActionException(ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, ProductErrorMessage, ex)), context);
+				throw new ActionException(TaskStrings.ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, TaskStrings.ErrorActionEnqueue, ex)), context);
 			}
 		}
 

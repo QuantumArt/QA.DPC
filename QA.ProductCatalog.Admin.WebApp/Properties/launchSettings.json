@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "QA.ProductCatalog.Admin.WebApp": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      },
+      "applicationUrl": "http://localhost:5250/AppInfo"
+    }
+  }
+}

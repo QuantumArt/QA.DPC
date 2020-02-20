@@ -1,18 +1,24 @@
-﻿using QA.Core.ProductCatalog.ActionsRunnerModel;
+﻿using QA.Core.ProductCatalog.ActionsRunner;
+using QA.Core.ProductCatalog.ActionsRunnerModel;
 using Quartz;
+using Task = System.Threading.Tasks.Task;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
-    class TaskJob : IJob
-	{
+    public class TaskJob : IJob
+    {
+	    private ITaskService _service;
+		public TaskJob(ITaskService service)
+		{
+			_service = service;
+		}
+		
 		public int SourceTaskId { private get; set; }
 
-		public void Execute(IJobExecutionContext context)
+		public Task Execute(IJobExecutionContext context)
 		{
-			using (var taskService = ObjectFactoryBase.Resolve<ITaskService>())
-			{
-				taskService.SpawnTask(SourceTaskId);
-			}
+			_service.SpawnTask(SourceTaskId);
+			return Task.CompletedTask;
 		}
 	}
 

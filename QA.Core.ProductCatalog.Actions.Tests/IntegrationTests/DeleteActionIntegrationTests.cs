@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {
-    [Ignore]
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class DeleteActionIntegrationTests : IntegrationTestsBase
     {
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_Delete_Product1()
         {
             var action = ActionFactory("DeleteAction");

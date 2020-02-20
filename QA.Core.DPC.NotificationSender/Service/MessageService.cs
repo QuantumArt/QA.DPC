@@ -4,17 +4,20 @@ using System.Linq;
 using System.Transactions;
 using QA.Core.Service.Interaction;
 using QA.Core.DPC.DAL;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 
 namespace QA.Core.DPC.Service
 {
 	public class MessageService : QAServiceBase, IMessageService
     {
-        ILogger _logger;
+        private ILogger _logger;
+        private readonly IConnectionProvider _provider;
 
-        public MessageService(ILogger logger)
+        public MessageService(ILogger logger, IConnectionProvider provider)
         {
             _logger = logger;
+            _provider = provider;
         }
 
         public ServiceResult<List<Message>> GetMessagesToSend(string channel, int maxCount)
@@ -24,26 +27,20 @@ namespace QA.Core.DPC.Service
                 Throws.IfArgumentNull(channel, _ => channel);
                 Throws.IfArgumentNull(maxCount, _ => maxCount);
 
-                List<Message> res;
-
-                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-                {
-                    using (var t = new TransactionScope(TransactionScopeOption.Required,
-                            new TransactionOptions
-                            {
-                                IsolationLevel = IsolationLevel.ReadUncommitted
-                            }))
-                    {						
-                        res = ctx.Messages
-                            .Where(x => x.Channel == channel && x.Created <= DateTime.Now.AddSeconds(-10)) //чтобы не читать данные которые сейчас пишут
-                            .OrderBy(x => x.Created)
-                            .Take(maxCount)
-                            .ToList()
-                            .Select(x => new Message { Channel = x.Channel, Created = x.Created, Id = x.Id, Method = x.Method, Xml = x.Data,UserId = x.UserId, UserName = x.UserName, Key = x.DataKey}).ToList();
-
-                    }
-                }
-                return res;
+                var ctx = NotificationsModelDataContext.Get(_provider);
+                
+                return ctx.Messages
+                    .Where(x => x.Channel == channel &&
+                                x.Created <=
+                                DateTime.Now.AddSeconds(-10)) //чтобы не читать данные которые сейчас пишут
+                    .OrderBy(x => x.Created)
+                    .Take(maxCount)
+                    .ToList()
+                    .Select(x => new Message
+                    {
+                        Channel = x.Channel, Created = x.Created, Id = x.Id, Method = x.Method,
+                        Xml = x.Data, UserId = x.UserId, UserName = x.UserName, Key = x.DataKey
+                    }).ToList();
             });
         }
 
@@ -52,16 +49,13 @@ namespace QA.Core.DPC.Service
             return RunAction(new UserContext(), null, () =>
             {
                 Throws.IfArgumentNull(id, _ => id);
-
-                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-                {
-                    var m = ctx.Messages.FirstOrDefault(x => x.Id == id);
+                var ctx = NotificationsModelDataContext.Get(_provider);
+                var m = ctx.Messages.FirstOrDefault(x => x.Id == id);
                     
-					if (m != null)
-                    {
-                        ctx.Messages.DeleteOnSubmit(m);
-                        ctx.SubmitChanges();
-                    }
+				if (m != null)
+                {
+                    ctx.Messages.Remove(m);
+                    ctx.SaveChanges();
                 }
             });
         }

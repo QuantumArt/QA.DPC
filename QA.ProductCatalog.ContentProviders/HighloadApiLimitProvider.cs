@@ -1,20 +1,23 @@
 ﻿using QA.Core.DPC.QP.Services;
+using QP.ConfigurationService.Models;
+using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.ContentProviders
 {
 	public class HighloadApiLimitProvider : ContentProviderBase<HighloadApiLimit>
 	{
+		private DatabaseType _dbType;
 		#region Constants
 		private const string QueryTemplate = @"
 			SELECT
-				u.Name as [User],
+				u.Name as {3},
                 m.Title as Method,
                 c.Seconds,
                 c.Limit
 			FROM
 				CONTENT_{0}_UNITED c
-				join CONTENT_{1}_UNITED m ON c.[ApiMethod] = m.CONTENT_ITEM_ID
-				join CONTENT_{2}_UNITED u ON c.[User] = u.CONTENT_ITEM_ID
+				join CONTENT_{1}_UNITED m ON c.ApiMethod = m.CONTENT_ITEM_ID
+				join CONTENT_{2}_UNITED u ON c.{3} = u.CONTENT_ITEM_ID
 
 			WHERE
 				c.ARCHIVE = 0 AND c.VISIBLE = 1 AND m.ARCHIVE = 0 AND m.VISIBLE = 1 AND u.ARCHIVE = 0 AND u.VISIBLE = 1";
@@ -23,8 +26,9 @@ namespace QA.ProductCatalog.ContentProviders
 
         public HighloadApiLimitProvider(ISettingsService settingsService, IConnectionProvider connectionProvider)
 			: base(settingsService, connectionProvider)
-		{
-		}
+        {
+	        _dbType = connectionProvider.GetCustomer().DatabaseType;
+        }
 
 		#region Overrides
 		protected override string GetQuery()
@@ -39,7 +43,9 @@ namespace QA.ProductCatalog.ContentProviders
 				return null;
 			}
 
-            return string.Format(QueryTemplate, limitsContentId, methodsContentId, usersContentId);
+            var user = SqlQuerySyntaxHelper.EscapeEntityName(_dbType, "User");
+
+            return string.Format(QueryTemplate, limitsContentId, methodsContentId, usersContentId, user);
 		}
 
 	    public override string[] GetTags()

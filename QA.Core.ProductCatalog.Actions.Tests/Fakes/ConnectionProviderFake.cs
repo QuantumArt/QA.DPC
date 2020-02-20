@@ -14,8 +14,11 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         }
 
         public bool QPMode => throw new NotImplementedException();
+        public bool UsePostgres { get; }
 
         public bool UseQPMonitoring => throw new NotImplementedException();
+        
+        public TimeSpan TransactionTimeout => throw new NotImplementedException();
 
         public string GetConnection()
         {
@@ -33,6 +36,16 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         }
 
         public string GetEFConnection(DPC.QP.Models.Service service)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Customer GetCustomer()
+        {
+            return new Customer() { CustomerCode = "test", ConnectionString = _connection};
+        }
+
+        public Customer GetCustomer(DPC.QP.Models.Service service)
         {
             throw new NotImplementedException();
         }

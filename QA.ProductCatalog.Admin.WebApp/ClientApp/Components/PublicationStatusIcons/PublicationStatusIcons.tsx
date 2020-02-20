@@ -3,7 +3,7 @@ import cn from "classnames";
 import { observer } from "mobx-react";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { PublicationContext } from "Services/PublicationContext";
-import { EntityObject } from "ClientApp/Models/EditorDataModels";
+import { EntityObject } from "Models/EditorDataModels";
 import "./PublicationStatusIcons.scss";
 
 interface PublicationStatusIconsProps {

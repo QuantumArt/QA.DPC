@@ -1,4 +1,5 @@
-﻿@model QA.ProductCatalog.Admin.WebApp.Models.ProductEditorSchemaModel
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.ProductCatalog.Admin.WebApp.Models.ProductEditorSchemaModel
 @{ Layout = null; }
 <!DOCTYPE html>
 <html>
@@ -14,6 +15,6 @@
       window.editorSchema = @Html.Raw(Model.EditorSchema);
       window.mergedSchema = @Html.Raw(Model.MergedSchema);
   </script>
-  <script src="@Url.VersionedContent("~/Scripts/Bundles/ProductEditor/TypeScriptSchema.js")"></script>
+  <script src="@Url.VersionedContent("~/js/bundles/ProductEditor/TypeScriptSchema.js")"></script>
 </body>
 </html>

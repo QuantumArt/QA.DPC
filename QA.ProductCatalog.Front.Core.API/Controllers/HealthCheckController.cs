@@ -1,55 +1,95 @@
 using System;
+using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using Npgsql;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
+using NLog;
+using NLog.Fluent;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
-    [Route("api/{customerCode}/HealthCheck")]
+    [Route("api")]
     public class HealthCheckController : Controller
     {
         private DataOptions _options;
-        public HealthCheckController(IOptions<DataOptions> options)
+        private IntegrationProperties _intOptions;
+        private static ILogger _logger = LogManager.GetCurrentClassLogger(); 
+        public HealthCheckController(DataOptions options, IOptions<IntegrationProperties> integrationProps)
         {
-            _options = options.Value;
+            _options = options;
+            _intOptions = integrationProps.Value;
         }
 
-        [HttpGet]
-        public ActionResult Index(string customerCode)
+        [HttpGet("healthcheck", Name="HealthCheck")]
+        [HttpGet("{customerCode}/healthcheck", Name="HealthCheck-Consolidate")]
+        public ActionResult Index()
         {
 
             var sb = new StringBuilder();
             sb.AppendLine("Application: OK");
-            var dboKStr = IsDbConnected(customerCode) ? "OK" : "Error";
+            var dboKStr = IsDbConnected() ? "OK" : "Error";
             sb.AppendLine("Database: " + dboKStr);
             return Content(sb.ToString(), "text/plain");
         }
 
-        private bool IsDbConnected(string customerCode)
+        private DbConnection GetDbConnection(CustomerConfiguration cc)
         {
+            if (cc.DbType == DatabaseType.Postgres)
+                return new NpgsqlConnection(cc.ConnectionString);
+            return new SqlConnection(cc.ConnectionString);
+        }
+
+        private bool IsDbConnected()
+        {
+            DBConnector.ConfigServiceUrl = _intOptions.ConfigurationServiceUrl;
+            DBConnector.ConfigServiceToken = _intOptions.ConfigurationServiceToken;
+            var customerCode = ControllerContext.RouteData.Values["customerCode"];
             string connectionString = _options.FixedConnectionString;
-            if (string.IsNullOrEmpty(connectionString))
+            var cc = new CustomerConfiguration()
+            {
+                ConnectionString = connectionString,
+                DbType = (_options.UsePostgres) ? DatabaseType.Postgres : DatabaseType.SqlServer
+            };           
+            if (string.IsNullOrEmpty(connectionString) && customerCode != null)
             {
                 try
                 {
-                    connectionString = DBConnector.GetConnectionString(customerCode);
+                    cc = DBConnector.GetCustomerConfiguration(customerCode.ToString()).Result;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _logger.Error().Exception(ex).Message("Cannot receive configuration")
+                        .Property("customerCode", customerCode)
+                        .Write();
+                    
                     return false;
-                }
+                }    
             }
-            using (var connection = new SqlConnection(connectionString))
+
+            if (string.IsNullOrEmpty(cc.ConnectionString))
+            {
+                return false;
+            }
+            
+            using (var connection = GetDbConnection(cc))
             {
                 try
                 {
                     connection.Open();
                     return true;
                 }
-                catch (SqlException)
+                catch (DbException dbex)
                 {
+                    _logger.Error().Exception(dbex).Message("Cannot connect to database")
+                        .Property("customerCode", customerCode)
+                        .Write();
+                    
                     return false;
                 }
             }

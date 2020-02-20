@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Container;
 using System;
@@ -12,7 +12,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 		protected IUnityContainer Container { get; private set; }
 		protected Func<string, IAction> ActionFactory { get; private set; }
 
-		[TestInitialize]
+		[SetUp]
 		public void Initialize()
 		{
 			Container = new UnityContainer();

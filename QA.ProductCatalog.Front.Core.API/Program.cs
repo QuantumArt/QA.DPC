@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore;
+﻿using System.IO;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using NLog.Web;
@@ -10,11 +12,12 @@ namespace QA.ProductCatalog.Front.Core.API
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
-        }
-
-        public static IWebHost BuildWebHost(string[] args) =>
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
+                .Build();
             WebHost.CreateDefaultBuilder(args)
+                .UseConfiguration(config)
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.ClearProviders();
@@ -26,9 +29,10 @@ namespace QA.ProductCatalog.Front.Core.API
                         logging.AddDebug();
                     }
                 })
-
                 .UseStartup<Startup>()
                 .UseNLog()
-                .Build();
+                .Build()
+                .Run();
+        }
     }
 }

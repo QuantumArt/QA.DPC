@@ -5,45 +5,39 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using QA.Core.DPC.Resources;
+using NLog;
+using NLog.Fluent;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-    public class MarketingPublishAction : IAction
+    public class MarketingPublishAction : ActionTaskBase
 	{
 		#region Constants
 		private const string PublishActionKey = "PublishAction";
 		private const string IgnoredStatusKey = "IgnoredStatus";
 		private const string AdapterKey = "Adapter";
-		private const string ActionErrorMessage = "Can't process action";
-		private const string ProductErrorMessage = "ошибка сервера";
-		private const string NoProductsToPublishStatusMessage = "Нет доступных продуктов для публикации.";
-		private const string IgnoredStatusMessage = "Продукты [{0}] имеют статус {1}, который не подлежит публикации, либо находятся в архиве, либо невидимы";
-		private const string LoggerErrorMessage = "Can't publish marketing products";
+		private const string LoggerErrorMessage = "Can't publish marketing products: ";
 		#endregion
 
 		#region Private properties
-		private readonly Func<string, string, IAction> _getPublishService;
 		private readonly  IArticleService _articleService;
 		private readonly  IFieldService _fieldService;
-		private readonly ILogger _logger;
 		private readonly ISettingsService _settingsService;
 		#endregion
 
 		#region Constructor
-		public MarketingPublishAction(Func<string, string, IAction> getPublishService, IArticleService articleService, IFieldService fieldService, ILogger logger, ISettingsService settingsService)
+		public MarketingPublishAction(IArticleService articleService, IFieldService fieldService, ISettingsService settingsService)
 		{
-			_getPublishService = getPublishService;
 			_articleService = articleService;
 			_fieldService = fieldService;
-			_logger = logger;
 			_settingsService = settingsService;
 		}
 		#endregion
 
 		#region IAction implementation
-		public string Process(ActionContext context)
+		public override ActionTaskResult Process(ActionContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
@@ -54,7 +48,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			try
 			{
 				string adapter = GetAdapter(context);
-				IAction publishService = _getPublishService(PublishActionKey, adapter);
 				var marketingProducts = _articleService.List(context.ContentId, context.ContentItemIds).ToArray();
 				string ignoredStatus = GetIgnoredStatus(context);
 				string[] ignoredStatuses = (ignoredStatus == null) ? Enumerable.Empty<string>().ToArray() : ignoredStatus.Split(new[] { ',' });
@@ -65,17 +58,22 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				var backRelationField = _fieldService.Read(backRelationFieldId);
 				int productContentId = backRelationField.ContentId;
 
-			    int[] productIds = Helpers.GetProductIdsFromMarketingProducts(context.ContentItemIds, _articleService, _settingsService);
+			    int[] productIds = DoWithLogging(
+				    () => Helpers.GetProductIdsFromMarketingProducts(context.ContentItemIds, _articleService, _settingsService),
+				    "Receiving regional products from marketing product ids {ids} ", context.ContentItemIds
+				);
 
 				var filteredProductIds = _articleService.List(productContentId, productIds)
 										.Where(a => !ignoredStatuses.Contains(a.Status.Name) && !a.Archived && a.Visible)
 										.Select(a => a.Id)
 										.ToArray();
 
-				string message;
+				ActionTaskResult result;
 
 				if (filteredProductIds.Any())
 				{
+					
+					var publishAction = ObjectFactoryBase.Resolve<PublishAction>();
 
 					var productContext = new ActionContext
 					{
@@ -88,32 +86,50 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         UserId = context.UserId,
                         UserName = context.UserName
 					};
-
-					message = publishService.Process(productContext);
+					
+					
+					result = DoWithLogging(
+						() => publishAction.Process(productContext),
+						"Calling Publish Action for products {ids}",
+						filteredProductIds
+					);
 				}
 				else
 				{
-					message = NoProductsToPublishStatusMessage;
+					result = ActionTaskResult.Error(new ActionTaskResultMessage()
+					{
+						ResourceClass = nameof(TaskStrings),
+						ResourceName = nameof(TaskStrings.NoProductsToPublish)
+					}, context.ContentItemIds);      
 				}
 
 				var excludedProductIds = productIds.Except(filteredProductIds).ToArray();
 
 				if (excludedProductIds.Any())
 				{
-					message = message == null ? "" : message + " ";
-					message += string.Format(IgnoredStatusMessage, string.Join(", ", excludedProductIds), ignoredStatus);
+					result.Messages.Add(new ActionTaskResultMessage()
+					{
+						ResourceClass = nameof(TaskStrings),
+						ResourceName = nameof(TaskStrings.FilteredProducts),
+						Parameters = new [] {string.Join(", ", excludedProductIds), ignoredStatus}
+					});
 				}
 
-				return message;
+				return result;
 			}
 			catch (ActionException)
 			{
 				throw;
 			}
-			catch (Exception ex)
-			{
-				_logger.ErrorException(LoggerErrorMessage, ex);
-				throw new ActionException(ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, ProductErrorMessage, ex)), context);
+			catch (Exception ex) {
+				Logger.Error().Message(LoggerErrorMessage).Exception(ex).Write();
+				throw new ActionException(
+					TaskStrings.ActionErrorMessage, 
+					context.ContentItemIds.Select(
+						id => new ProductException(id, nameof(TaskStrings.ServerError), ex)
+					),
+					context
+				);
 			}			
 		}
 

@@ -67,7 +67,7 @@ namespace QA.Core.DPC.Loader
 
 		public Article[] GetSimpleProductsByIds(int[] ids, bool isLive = false)
 		{
-			throw new NotImplementedException();
+			return ids.Select(n => new Article() {Id = n}).ToArray();
 		}
 	}
 }

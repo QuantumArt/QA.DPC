@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "QA.Core.ProductCatalog.ActionsService": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "commandLineArgs": "--console",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      }
+    }
+  }
+}

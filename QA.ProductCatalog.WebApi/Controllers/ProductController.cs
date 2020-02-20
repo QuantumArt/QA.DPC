@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Autopublish.Models;
 using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.Logger;
@@ -6,162 +7,205 @@ using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.WebApi.Filters;
-using QA.ProductCatalog.WebApi.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Web;
-using System.Web.Http;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using QA.ProductCatalog.WebApi.Filters;
+using QA.ProductCatalog.WebApi.Models;
+
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
     /// <summary>
-    /// Product maniputation. Methods support differrent output formats: json, xml, xaml, pdf, binary
+    /// Product manipulation. Methods support different output formats: json, xml, xaml, pdf, binary
     /// Supply format via 'format' path segment
     /// </summary>
-    [DynamicRoutePrefix]
-    public class ProductController : ApiController
+    [IdentityResolver]
+    [Route("api")]
+    [FormatFilter]
+    public class ProductController : Controller
 	{
-		private readonly IProductAPIService _databaseProductService;
+		private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IProductSimpleAPIService _tarantoolProductService;
         private readonly IAutopublishProcessor _autopublishProcessor;
         private readonly ILogger _logger;
+        private readonly IHttpContextAccessor _accessor;
 
-		public ProductController(IProductAPIService databaseProductService, IProductSimpleAPIService tarantoolProductService, IAutopublishProcessor autopublishProcessor, ILogger logger)
+		public ProductController(
+			Func<IProductAPIService> databaseProductServiceFactory, 
+			IProductSimpleAPIService tarantoolProductService, 
+			IAutopublishProcessor autopublishProcessor, 
+			ILogger logger,
+			IHttpContextAccessor accessor
+			)
 		{
-			_databaseProductService = databaseProductService;
+			_databaseProductServiceFactory = databaseProductServiceFactory;
             _tarantoolProductService = tarantoolProductService;
             _autopublishProcessor = autopublishProcessor;
             _logger = logger;
+            _accessor = accessor;
+
 		}
 
         /// <summary>
         /// Get list of products
         /// </summary>
-        /// <param name="slug"></param>
-        /// <param name="version">Version of the definition</param>
-        /// <param name="isLive"></param>
-        /// <param name="startRow"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{version}/{slug}/{format:media_type_mapping=json}")]
-        public Dictionary<string, object>[] List(string slug, string version, bool isLive = false, long startRow = 0, long pageSize = int.MaxValue)
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="format">json, xml or binary</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <param name="startRow">Start from product with number</param>
+        /// <param name="pageSize">Page size</param>
+        /// <returns>Product list (untyped)</returns>
+        /// <response code="406">Unsupported format</response>
+        [HttpGet("{version}/{slug}/{format:regex(^json|xml|binary$)}", Name = "List")]
+        [HttpGet("{customerCode}/{version}/{slug}/{format:regex(^json|xml|binary$)}", Name = "List-Consolidate")]
+        public ActionResult<Dictionary<string, object>[]> List(string version, string slug, string format, 
+	        bool isLive = false, long startRow = 0, long pageSize = 10)
 		{
-			_logger.LogDebug(() => new { slug, version, isLive, startRow, pageSize }.ToString());
-			return _databaseProductService.GetProductsList(slug, version, isLive, startRow, pageSize);
+			_logger.LogDebug(() => new { version, slug, format, isLive, startRow, pageSize }.ToString());
+			var result = _databaseProductServiceFactory().GetProductsList(slug, version, isLive, startRow, pageSize);
+			return result;
 		}
 
         /// <summary>
         /// Get list of products by query.
         /// </summary>
-        /// <param name="slug">Product type as configured in services content</param>
-        /// <param name="version">Version of the definition</param>
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="format">json, xml, or binary</param> 
         /// <param name="query">A part of SQL query (where clause)</param>
-        /// <param name="isLive"></param>
-        /// <returns></returns>
-		[HttpGet]
-        [Route("{version}/{slug}/search/{format:media_type_mapping}/{query}")]
-        public int[] Search(string slug, string version, string query, bool isLive = false)
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <returns>Product ids</returns>
+        /// <response code="406">Unsupported format</response>
+        [HttpGet("{version}/{slug}/search/{format:regex(^json|xml|binary$)}/{query}", Name = "Search")]
+        [HttpGet("{customerCode}/{version}/{slug}/search/{format:regex(^json|xml|binary$)}/{query}", Name = "Search-Consolidate")]
+        public ActionResult<int[]> Search(string slug, string version, string format, string query, bool isLive = false)
 		{
-			_logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
-			return _databaseProductService.SearchProducts(slug, version, query, isLive);
+			_logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
+			return _databaseProductServiceFactory().SearchProducts(slug, version, query, isLive);
 		}
 
         /// <summary>
         /// Get detailed list of products by query
         /// </summary>
-        /// <param name="slug"></param>
-        /// <param name="version"></param>
-        /// <param name="query"></param>
-        /// <param name="isLive"></param>
-        /// <param name="includeRegionTags"></param>
-        /// <param name="includeRelevanceInfo"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{version}/{slug}/search/detail/{format:media_type_mapping}/{query}")]
-        public IEnumerable<Article> SearchDetailed(string slug, string version, string query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="format">json or binary</param>   
+        /// <param name="query">A part of SQL query (where clause). Supports only text fields (like Alias).
+        /// Use '_' as hierarchy delimiter</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <param name="includeRegionTags">Include or not region tags in the result</param>
+        /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
+        /// <returns>Product list</returns>
+        /// <response code="406">Unsupported format</response>
+
+        [HttpGet("{version}/{slug}/search/detail/{format:regex(^json|binary$)}/{query}", Name="SearchDetailed")]
+        [HttpGet("{customerCode}/{version}/{slug}/search/detail/{format:regex(^json|binary$)}/{query}", Name="SearchDetailed-Consolidate")]
+        
+        public ActionResult<IEnumerable<Article>> SearchDetailed(string slug, string version, string format, 
+	        string query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
-            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
-            var ids = _databaseProductService.SearchProducts(slug, version, query, isLive);
+	        var service = _databaseProductServiceFactory();
+            _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
+            var ids = service.SearchProducts(slug, version, query, isLive);
 
-            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+            _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
+			var result = new List<Article>();				
             foreach (var id in ids)
             {
-                yield return _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
+	            result.Add(service.GetProduct(slug, version, id, isLive, includeRelevanceInfo));
             }
+
+            return result;
         }
 
         /// <summary>
         /// Get list of products by extended query.
         /// </summary>
-        /// <param name="slug">Product type as configured in services content</param>
-        /// <param name="version">Version of the definition</param>
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="format">json, xml or binary</param>   
         /// <param name="query">A part of SQL query (where clause)</param>
-        /// <param name="isLive"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("{version}/{slug}/search/{format:media_type_mapping}")]
-        public int[] ExtendedSearch(string slug, string version,[FromBody] JToken query, bool isLive = false)
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <returns>Product ids</returns>
+        /// <response code="406">Unsupported format</response>
+
+        [HttpPost("{version}/{slug}/search/{format:regex(^json|xml|binary$)}", Name="ExtendedSearch")]
+        [HttpPost("{customerCode}/{version}/{slug}/search/{format:regex(^json|xml|binary$)}", Name="ExtendedSearch-Consolidate")]
+        public ActionResult<int[]> ExtendedSearch(string slug, string version, string format, [FromBody] JToken query, bool isLive = false)
         {
-            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
-            return _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
+            _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
+            return _databaseProductServiceFactory().ExtendedSearchProducts(slug, version, query, isLive);
         }
 
         /// <summary>
         /// Get detailed list of products by extended query.
         /// </summary>
-        /// <param name="slug">Product type as configured in services content</param>
-        /// <param name="version">Version of the definition</param>
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="format">json or binary</param> 
         /// <param name="query">A part of SQL query (where clause)</param>
-        /// <param name="isLive"></param>
-        /// <param name="includeRegionTags"></param>
-        /// <param name="includeRelevanceInfo"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("{version}/{slug}/search/detail/{format:media_type_mapping}")]
-        public IEnumerable<Article> ExtendedSearchDetailed(string slug, string version, [FromBody] JToken query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <param name="includeRegionTags">Include or not region tags in the result</param>
+        /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
+        /// <returns>Product list</returns>
+        /// <response code="406">Unsupported format</response>
+
+        [HttpPost("{version}/{slug}/search/detail/{format:regex(^json|binary$)}", Name="ExtendedSearchDetailed")]
+        [HttpPost("{customerCode}/{version}/{slug}/search/detail/{format:regex(^json|binary$)}", Name="ExtendedSearchDetailed-Consolidate")]
+        public ActionResult<IEnumerable<Article>> ExtendedSearchDetailed(string slug, string version, string format, 
+	        [FromBody] JToken query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
-            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
-            var ids = _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
+	        var service = _databaseProductServiceFactory();
+            _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
+            var ids = service.ExtendedSearchProducts(slug, version, query, isLive);
 
-            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+            _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
+            var result = new List<Article>();	
             foreach (var id in ids)
             {
-                yield return _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
+	            result.Add(service.GetProduct(slug, version, id, isLive, includeRelevanceInfo));
             }
+
+            return result;
         }
 
         /// <summary>
-        /// Get product by id. Supports differrent formats (json, xml, xaml, binary)
+        /// Get product by id. Supports different formats (json, xml, xaml, binary)
         /// </summary>
-        /// <param name="slug">Product type as configured in services content</param>
-        /// <param name="version">Version of the definition</param>
-        /// <param name="id">Indentifier of the product</param>
-        /// <param name="isLive"></param>
-        /// <param name="includeRegionTags"></param>
-        /// <param name="includeRelevanceInfo"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{version}/{slug}/{format:media_type_mapping}/{id:int}")]
-        public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRegionTags=false, bool includeRelevanceInfo = false)
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="format">json, xml, binary or xaml</param>
+        /// <param name="id">Identifier of the product</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <param name="includeRegionTags">Include or not region tags in the result</param>
+        /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
+        /// <returns>Product</returns>
+        /// <response code="406">Unsupported format</response>
+
+
+        [HttpGet("{version}/{slug}/{format:regex(^json|xml|xaml|binary$)}/{id:int}", Name="GetProduct")]
+        [HttpGet("{customerCode}/{version}/{slug}/{format:regex(^json|xml|xaml|binary$)}/{id:int}", Name="GetProduct-Consolidate")]
+        public ActionResult<Article> GetProduct(string slug, string version, string format, int id, 
+	        bool isLive = false, bool includeRegionTags=false, bool includeRelevanceInfo = false)
 		{
-			_logger.LogDebug(() => new { slug, version, id, isLive }.ToString());
+			_logger.LogDebug(() => new { slug, version, format, id, isLive }.ToString());
 
-			HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+			_accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+		    _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
-		    HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
-
-            var product = _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
+            var product = _databaseProductServiceFactory().GetProduct(slug, version, id, isLive, includeRelevanceInfo);
 
             if (product == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+	            return NotFound();
             }
 
             return product;
@@ -170,49 +214,60 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <summary>
         /// Get product by list of ids.
         /// </summary>
-        /// <param name="slug">Product type as configured in services content</param>
-        /// <param name="version">Version of the definition</param>
-        /// <param name="ids">Indentifiers of the product separated with ","</param>
-        /// <param name="isLive"></param>
-        /// <param name="includeRegionTags"></param>
-        /// <param name="includeRelevanceInfo"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("{version}/{slug}/list/{format:media_type_mapping}/{ids}")]
-        [ArrayParameter("ids")]
-        public IEnumerable<Article> GetProductList(string slug, string version, int[] ids, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="format">json or binary</param>
+        /// <param name="ids">Identifiers of the product separated with ","</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <param name="includeRegionTags">Include or not region tags in the result</param>
+        /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
+        /// <returns>Product list</returns>
+        /// <response code="406">Unsupported format</response>
+
+        [HttpGet("{version}/{slug}/list/{format:regex(^json|binary$)}/{ids}", Name="GetProductList")]
+        [HttpGet("{customerCode}/{version}/{slug}/list/{format:regex(^json|binary$)}/{ids}", Name="GetProductList-Consolidate")]
+        public ActionResult<IEnumerable<Article>> GetProductList(string slug, string version, string format, int[] ids, 
+	        bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
-            _logger.LogDebug(() => new { slug, version, ids, isLive }.ToString());
+            _logger.LogDebug(() => new { slug, version, format, ids, isLive }.ToString());
 
-            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+            _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
+			var result = new List<Article>();
+			var service = _databaseProductServiceFactory();
             foreach (var id in ids.Distinct())
             {
-                var product = _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
+                var product = service.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
 
                 if (product != null)
                 {
-                    yield return product;
+	                result.Add(product);
                 }
             }
+
+            return result;
         }
 
         /// <summary>
         /// Get product relevance for product
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="isLive"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("relevance/{format:media_type_mapping}/{id:int}")]
-        public Product GetProductRelevance(int id, bool isLive = false)
+        /// <param name="id">Product ID</param>
+        /// <param name="format">json, xml or binary</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <returns>Product info</returns>
+        /// <response code="406">Unsupported format</response>
+
+        [HttpGet("relevance/{format:regex(^json|xml|binary$)}/{id:int}", Name="GetProductRelevance")]
+        [HttpGet("{customerCode}/relevance/{format:regex(^json|xml|binary$)}/{id:int}", Name="GetProductRelevance-Consolidate")]
+        public ActionResult<Product> GetProductRelevance(int id, string format, bool isLive = false)
         {
-            var relevance = _databaseProductService.GetRelevance(id, isLive);
+	        _logger.LogDebug(() => new { format, id, isLive }.ToString());
+            var relevance = _databaseProductServiceFactory().GetRelevance(id, isLive);
 
             if (relevance == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+	            return NotFound();
             }
 
             return new Product(relevance);
@@ -221,16 +276,20 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <summary>
         /// Get product relevance for products
         /// </summary>
-        /// <param name="ids"></param>
-        /// <param name="isLive"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("relevance/{format:media_type_mapping}/{ids}")]
-        [ArrayParameter("ids")]
-        public Product[] GetProductRelevanceList(int[] ids, bool isLive = false)
+        /// <param name="ids">ProductIds (comma-separated)</param>
+        /// <param name="format">json, xml or binary</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <returns>Product info array</returns>
+        /// <response code="406">Unsupported format</response>
+ 
+        [HttpGet("relevance/{format:regex(^json|xml|binary$)}/{ids}", Name="GetProductRelevanceList")]
+        [HttpGet("{customerCode}/relevance/{format:regex(^json|xml|binary$)}/{ids}", Name="GetProductRelevanceList-Consolidate")]
+        public ActionResult<Product[]> GetProductRelevanceList(int[] ids, string format, bool isLive = false)
         {
+	        _logger.LogDebug(() => new { format, ids, isLive }.ToString());
+	        var service = _databaseProductServiceFactory();
             return ids.Distinct()
-                .Select(id => _databaseProductService.GetRelevance(id, isLive))
+                .Select(id => service.GetRelevance(id, isLive))
                 .Where(r => r != null)
                 .Select(r => new Product(r))
                 .ToArray();
@@ -240,109 +299,131 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <summary>
         /// Get product built on raw data using tarantool cache
         /// </summary>
-        /// <param name="productId">ID of the priduct</param>
-        /// <param name="definitionId">Producat definition id</param>
-        /// <param name="isLive"></param>
-        /// <param name="includeRegionTags"></param>
+        /// <param name="format">json, xml, binary or xaml</param>
+        /// <param name="productId">ID of the product</param>
+        /// <param name="definitionId">Product definition id</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <param name="includeRegionTags">Include or not region tags in the result</param>
         /// <param name="absent"></param>
         /// <param name="type"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("tarantool/{format:media_type_mapping}/{productId:int}")]        
-        public Article TarantoolGet(int productId, int definitionId, bool isLive = false, bool includeRegionTags = false, bool absent = false, string type = null)
+        /// <returns>Product</returns>
+        /// <response code="406">Unsupported format</response>
+        
+        [HttpGet("tarantool/{format:regex(^json|xml|xaml|binary$)}/{productId:int}", Name="TarantoolGet")]        
+        [HttpGet("{customerCode}/tarantool/{format:regex(^json|xml|xaml|binary$)}/{productId:int}", Name="TarantoolGet-Consolidate")]        
+        public ActionResult<Article> TarantoolGet(string format, int productId, int definitionId, 
+	        bool isLive = false, bool includeRegionTags = false, bool absent = false, string type = null)
         {
-            _logger.LogDebug(() => new { productId, definitionId, isLive }.ToString());
+            _logger.LogDebug(() => new { format, productId, definitionId, isLive, includeRegionTags, absent, type}.ToString());
 
-            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+            _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
-            Article product;
-
-            if (absent)
-            {
-                product = _tarantoolProductService.GetAbsentProduct(productId, definitionId, isLive, type);
-            }
-            else
-            {
-                product = _tarantoolProductService.GetProduct(productId, definitionId, isLive);
-            }            
+            var product = absent ? 
+	            _tarantoolProductService.GetAbsentProduct(productId, definitionId, isLive, type) : 
+	            _tarantoolProductService.GetProduct(productId, definitionId, isLive);            
 
             return product;
         }
 
         /// <summary>
-        /// 
+        /// Product publishing using Tarantool 
         /// </summary>
-        /// <param name="productId"></param>
-        /// <param name="item"></param>
-        /// <param name="localize"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("tarantool/publish/{format:media_type_mapping}/{productId:int}")]
-        public void TarantoolPublish(int productId, ProductItem item, bool localize = true)
+        /// <param name="format">json, xml or binary</param>
+        /// <param name="productId">Product Id</param>
+        /// <param name="item">Product info</param>
+        /// <param name="localize">Localize or not?</param>
+        /// <response code="204">Published</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]       
+        [HttpPost("tarantool/publish/{format:regex(^json|xml|binary$)}/{productId:int}", Name="TarantoolPublish")]
+        [HttpPost("{customerCode}/tarantool/publish/{format:regex(^json|xml|binary$)}/{productId:int}", Name="TarantoolPublish-Consolidate")]
+        public ActionResult TarantoolPublish(string format, int productId, [FromBody] ProductItem item, bool localize = true)
         {
+	        _logger.LogDebug(() => new { format, productId, item, localize}.ToString());
             _autopublishProcessor.Publish(item, localize);
+            return NoContent();
         }
 
         /// <summary>
         /// Create or update product
         /// </summary>
-        /// <param name="slug">Product type as configured in services content</param>
-        /// <param name="version">Version of the definition</param>
-        /// <param name="product"></param>
-        /// <param name="isLive"></param>
-        /// <param name="createVersions"></param>
-        [HttpPost]
-        [Route("{version}/{slug}/{format:media_type_mapping}/{id:int}")]
-        public void Post(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="version">Definition version (e.g. V1)</param>
+        /// <param name="format">json, xml or xaml</param>
+        /// <param name="product">Product in json, xml or xaml format</param>
+        /// <param name="isLive">Should we read live or stage data?</param>
+        /// <param name="createVersions">Should we create article versions while updating?</param>
+        /// <response code="204">Created or updated</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]        
+        [HttpPost("{version}/{slug}/{format:regex(^json|xml|xaml$)}/{id:int}", Name="Post")]
+        [HttpPost("{customerCode}/{version}/{slug}/{format:regex(^json|xml|xaml$)}/{id:int}", Name="Post-Consolidate")]
+        public ActionResult Post(string slug, string version, string format, [FromBody] Article product, bool isLive = false, bool createVersions = false)
 		{
-			_logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId, isLive, createVersions }.ToString());
-			_databaseProductService.UpdateProduct(slug, version, product, isLive, createVersions);
+			_logger.LogDebug(() => new { slug, version, format, productId = product.Id, productContentId = product.ContentId, isLive, createVersions }.ToString());
+			_databaseProductServiceFactory().UpdateProduct(slug, version, product, isLive, createVersions);
+			return NoContent();
 		}
 
         /// <summary>
         /// Remove product
         /// </summary>
         /// <param name="id"></param>
-        [HttpDelete]
-        [Route("{format:media_type_mapping}/{id:int}")]
-        public void Delete(int id)
+        /// <param name="format">json or xml</param>
+        /// <response code="204">Deleted</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]
+        [HttpDelete("{format:regex(^json|xml$)}/{id:int}", Name="Delete")]
+        [HttpDelete("{customerCode}/{format:regex(^json|xml$)}/{id:int}", Name="Delete-Consolidate")]
+        public ActionResult Delete(int id, string format)
 		{
-			_logger.LogDebug(() => new { id }.ToString());
-			_databaseProductService.CustomAction("DeleteAction", id);
+			_logger.LogDebug(() => new { id, format }.ToString());
+			_databaseProductServiceFactory().CustomAction("DeleteAction", id);
+			return NoContent();			
 		}
 
         /// <summary>
         /// Invoke QP custom action
         /// </summary>
+        /// <param name="format">json or xml</param>
         /// <param name="name">The name of custom action</param>
         /// <param name="id"></param>
         /// <param name="parameters"></param>
-		[HttpPost]
-        [Route("custom/{format:media_type_mapping}/{name}/{id:int}")]
-        public void CustomAction(string name, int id, Dictionary<string, string> parameters)
+        /// <response code="204">Invoked</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]
+        [HttpPost("custom/{format:regex(^json|xml|binary$)}/{name}/{id:int}", Name="CustomAction")]
+        [HttpPost("{customerCode}/custom/{format:regex(^json|xml|binary$)}/{name}/{id:int}", Name="CustomAction-Consolidate")]
+        public ActionResult CustomAction(string name, int id, string format, [FromBody] Dictionary<string, string> parameters)
 		{
-			_logger.LogDebug(() => new { name, id }.ToString());
-			_databaseProductService.CustomAction(name, id, parameters);
+			_logger.LogDebug(() => new { name, id, format, parameters }.ToString());
+			_databaseProductServiceFactory().CustomAction(name, id, parameters);
+			return NoContent();				
 		}
 
         /// <summary>
-        /// Get schema of the product type. Supports differrent formats: json, xml, xaml, jsonDefinition, jsonDefinition2 (extensions represented as backward relations).
+        /// Get schema of the product type. Supports different formats: json, xml, xaml, jsonDefinition, jsonDefinition2 (extensions represented as backward relations).
         /// </summary>
-        /// <param name="slug">Product type as configured in services content</param>
-        /// <param name="version">Version of the definition</param>
+        /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
+        /// <param name="format">json, xml or xaml</param> ///
+        /// <param name="version">Definition version (e.g. V1)</param>
         /// <param name="forList"></param>
-        /// <param name="includeRegionTags"></param>
-        /// <returns></returns>
-		[HttpGet]
-        [Route("{version}/{slug}/schema/{format:media_type_mapping}")]
-        public Content Schema(string slug, string version, bool forList = false, bool includeRegionTags = false)
+        /// <param name="includeRegionTags">Include or not region tags in the result</param>
+        /// <returns>Schema</returns>
+        [HttpGet("{version}/{slug}/schema/{format:regex(^json|xml|xaml|jsonDefinition|jsonDefinition2$)}", Name="Schema")]
+        [HttpGet("{customerCode}/{version}/{slug}/schema/{format:regex(^json|xml|xaml|jsonDefinition|jsonDefinition2$)}", Name="Schema-Consolidate")]
+        public ActionResult<Content> Schema(string slug, string version, string format, bool forList = false, bool includeRegionTags = false)
 		{
-			_logger.LogDebug(() => new { slug, version, forList }.ToString());
+			_logger.LogDebug(() => new { slug, version, format, forList, includeRegionTags }.ToString());
 
-			var definition = _databaseProductService.GetProductDefinition(slug, version, forList);
+			var definition = _databaseProductServiceFactory().GetProductDefinition(slug, version, forList);
 
-            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+            _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
             return definition.Content;
 		}	

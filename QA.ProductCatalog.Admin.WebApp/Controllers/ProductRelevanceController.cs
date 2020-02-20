@@ -1,8 +1,9 @@
-﻿using System.Web.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
-using QA.Core.Web;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -19,7 +20,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _userProvider = userProvider;
         }
 
-        public ViewResult Index()
+        public ActionResult Index()
         {
             return View();
         }

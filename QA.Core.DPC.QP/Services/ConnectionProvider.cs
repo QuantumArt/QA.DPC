@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -13,20 +14,24 @@ namespace QA.Core.DPC.QP.Services
 
         private readonly ICustomerProvider _customerProvider;
         private readonly IIdentityProvider _identityProvider;        
-        private Dictionary<Service, string> _defaultConnections;
+        private Dictionary<Service, Customer> _defaultConnections;
         private readonly Service _defaultService;
         public bool QPMode { get; private set; }
+        public bool UsePostgres { get; }
         public bool UseQPMonitoring { get; private set; }
+        
+        public TimeSpan TransactionTimeout { get; private set; }
 
         public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
         {
-            _defaultConnections = new Dictionary<Service, string>();
+            _defaultConnections = new Dictionary<Service, Customer>();
             _customerProvider = customerProvider;
             _identityProvider = identityProvider;
             _defaultService = defaultService;
 
             QPMode = GetQPMode() || defaultService == Service.HighloadAPI;
             UseQPMonitoring = GetUseQPMonitoring();
+            TransactionTimeout = GetTransactionTimeout();
 
             if (!QPMode)
             {
@@ -36,16 +41,29 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public static bool GetQPMode()
+        public bool GetQPMode()
         {
             var qpMode = ConfigurationManager.AppSettings["QPMode"];
             return !string.IsNullOrEmpty(qpMode) && qpMode.ToLower() == "true";
         }
 
-        public static bool GetUseQPMonitoring()
+        public bool GetUseQPMonitoring()
         {
             var useQpMonitoring = ConfigurationManager.AppSettings["UseQPMonitoring"];
             return !string.IsNullOrEmpty(useQpMonitoring) && useQpMonitoring.ToLower() == "true";
+        }
+
+        public TimeSpan GetTransactionTimeout()
+        {
+            TimeSpan timeout;
+            string configTimeout = ConfigurationManager.AppSettings["ProductCatalog.Actions.TransactionTimeout"];
+
+            if (!TimeSpan.TryParse(configTimeout, out timeout))
+            {
+                timeout = TimeSpan.FromMinutes(3);
+            }
+
+            return timeout;
         }
 
         private void AddConnection(Service service, string key)
@@ -54,8 +72,17 @@ namespace QA.Core.DPC.QP.Services
 
             if (connection != null)
             {
-                _defaultConnections[service] = connection.ConnectionString;
+                _defaultConnections[service] = new Customer
+                {
+                    ConnectionString = connection.ConnectionString,
+                    DatabaseType = UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
+                };
             }
+        }
+
+        public Customer GetCustomer(Service service)
+        {
+            return QPMode ? _customerProvider.GetCustomer(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
         }
 
         public bool HasConnection(Service service)
@@ -69,7 +96,7 @@ namespace QA.Core.DPC.QP.Services
         }
         public string GetConnection(Service service)
         {
-            return QPMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
+            return QPMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service].ConnectionString;
         }
 
         public string GetEFConnection()
@@ -87,6 +114,11 @@ namespace QA.Core.DPC.QP.Services
             }
 
             return connection;
+        }
+
+        public Customer GetCustomer()
+        {
+            return GetCustomer(_defaultService);
         }
 
         private string ConvertToEFConnection(string connectionString)

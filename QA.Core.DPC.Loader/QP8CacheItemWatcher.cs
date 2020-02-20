@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using Npgsql;
 using QA.Core.Logger;
 using QA.Core.Cache;
 using QA.Core.Data;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.Constants;
+using Quantumart.QP8.DAL;
 
 namespace QA.Core.DPC.Loader
 {
     public class QP8CacheItemWatcher : QPCacheItemWatcher
     {
-        private readonly string _cmdText = @"SELECT [CONTENT_ID], [LIVE_MODIFIED], [STAGE_MODIFIED] FROM [CONTENT_MODIFICATION] WITH (NOLOCK)";
+        private readonly string _cmdText = @"SELECT CONTENT_ID, LIVE_MODIFIED, STAGE_MODIFIED FROM CONTENT_MODIFICATION {0}";
 
         public QP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, ILogger logger, string connectionName = "qp_database")
             : base(mode, invalidator, logger, connectionName)
@@ -21,11 +25,17 @@ namespace QA.Core.DPC.Loader
 
         protected override void GetData(Dictionary<int, ContentModification> newValues)
         {
-            using (var cs = new QPConnectionScope(ConnectionString))
+            Enum.TryParse<DatabaseType>(DbType, out var dbType);
+
+            using (var cs = new QPConnectionScope(ConnectionString, dbType))
             {
                 var con = cs.DbConnection;
-
-                using (SqlCommand cmd = new SqlCommand(_cmdText, con))
+                string query = string.Format(_cmdText, SqlQuerySyntaxHelper.WithNoLock(dbType));
+                DbCommand cmd = dbType == DatabaseType.SqlServer 
+                    ? (DbCommand)new SqlCommand(query)
+                    : new NpgsqlCommand(query);
+                    
+                using (cmd)
                 {
                     cmd.CommandType = CommandType.Text;
                     if (con.State != ConnectionState.Open)

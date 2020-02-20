@@ -1,18 +1,23 @@
 ﻿using System;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.Validation
 {
     [Serializable]
     public class ValidationException : Exception
     {
-        public ValidationException (string message)
-            : base(message)
+        public ActionTaskResultMessage ResultMessage { get; }
+        
+        public ValidationException (ActionTaskResultMessage message)
+            : base(message.ResourceName)
         {
+            ResultMessage = message;
         }
 
-		public ValidationException(string message, Exception innerException)
-            : base(message, innerException)
+		public ValidationException(ActionTaskResultMessage message, Exception innerException)
+            : base(message.ResourceName, innerException)
         {
+            ResultMessage = message;
         }
     }
 }

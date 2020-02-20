@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using QA.Core.DocumentGenerator;
@@ -48,5 +49,11 @@ namespace QA.Core.DPC.Formatters.Services
 				
 			}
 		}
+
+		public string Serialize(Article product)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
+#endif

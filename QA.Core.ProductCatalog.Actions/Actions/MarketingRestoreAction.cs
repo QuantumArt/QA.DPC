@@ -6,7 +6,7 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-    public class MarketingRestoreAction : MarketingProductAction
+    public class MarketingRestoreAction : MarketingProductActionBase
     {
         public MarketingRestoreAction(Func<string, IAction> getService, IArticleService articleService, ISettingsService settingsService) : base(getService, articleService, settingsService)
         {

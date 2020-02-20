@@ -5,28 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
+using Npgsql;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
-
+using Quantumart.QP8.Constants;
+using ConfigurationService = QP.ConfigurationService;
 namespace QA.Core.DPC.Loader
 {
     public class RegionService : IRegionService
     {
         #region Глобальные переменные
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly ISettingsService _settingsService;
         private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         #endregion
 
         #region Конструкторы
-        public RegionService(IVersionedCacheProvider cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
+        public RegionService(VersionedCacheProviderBase cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
             _settingsService = settingsService;
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
         #endregion
 
@@ -45,17 +49,18 @@ namespace QA.Core.DPC.Loader
             var regions = new List<Region>();
             
             var sql = $@"select content_item_id, parent, Title from content_{regContentId}_united where ARCHIVE = 0";
-
-            using (var cs = new QPConnectionScope(_connectionString))
+            using (var cs = new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 var con = cs.DbConnection;
 
                 if (con.State != ConnectionState.Open)
                     con.Open();
-                
-                using (var cmd = new SqlCommand(sql, con))
+                DbCommand cmd = _customer.DatabaseType == ConfigurationService.Models.DatabaseType.SqlServer 
+                    ? (DbCommand)new SqlCommand(sql)
+                    : new NpgsqlCommand(sql);
+                using (cmd)
                 {
-
+                    cmd.Connection = con;
                     using (var rd = cmd.ExecuteReader())
                     {
                         while (rd.Read())

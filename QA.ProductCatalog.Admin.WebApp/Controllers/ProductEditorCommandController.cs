@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using Quantumart.QP8.BLL.Services.API.Models;
 using QA.Core.DPC.API.Update;
@@ -20,7 +20,6 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [RoutePrefix("ProductEditorCommand")]
     public class ProductEditorCommandController : ProductEditorController
     {
         private readonly IFieldService _fieldService;
@@ -59,17 +58,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _publishAction = publishAction;
         }
 
-        /// <summary>
-        /// Сохранить часть продукта начиная с корневого контента,
-        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>.
-        /// </summary>
         [HttpPost]
         public ActionResult SavePartialProduct(
-            [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request, bool isLive = false)
+            [FromBody] SavePartialProductRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return new BadRequestResult();
             }
 
             Content rootContent = _contentDefinitionService
@@ -118,10 +113,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
                 string productJson = JsonConvert.SerializeObject(articleObject);
 
-                Response.ContentType = "application/json";
-                Response.Write(productJson);
-
-                return new HttpStatusCodeResult(HttpStatusCode.Conflict);
+                return new ContentResult
+                {
+                    Content = productJson, 
+                    StatusCode = (int)HttpStatusCode.Conflict,
+                    ContentType = "application/json"
+                };
             }
         }
 
@@ -140,22 +137,24 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     exception.Message,
                 });
 
-                Response.ContentType = "application/json";
-                Response.Write(errorJson);
-
-                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+                return new ContentResult
+                {
+                    Content = errorJson, 
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    ContentType = "application/json"
+                };
             }
 
-            return new HttpStatusCodeResult(HttpStatusCode.NoContent);
+            return NoContent();
         }
 
         [HttpPost]
         public ActionResult ClonePartialProduct(
-            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductRequest request, bool isLive = false)
+            [FromBody] ClonePartialProductRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             Content rootContent = _contentDefinitionService
@@ -180,11 +179,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         [HttpPost]
         public ActionResult ClonePartialProductPrototype(
-            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductPrototypeRequest request, bool isLive = false)
+            [FromBody] ClonePartialProductPrototypeRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             Content rootContent = _contentDefinitionService
@@ -214,7 +213,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             if (clonePrototypeId == 0)
             {
                 throw new InvalidOperationException(
-                    $"Невозможно определить прототип для создания продукта contentId={relationField.Content.ContentId}");
+                    $"Unable to receive prototype for product creating: contentId={relationField.Content.ContentId}");
             }
 
             int clonedProdictId = _cloneBatchAction
@@ -234,11 +233,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         [HttpPost]
         public ActionResult RemovePartialProduct(
-            [ModelBinder(typeof(JsonModelBinder))] RemovePartialProductRequest request, bool isLive = false)
+            [FromBody] RemovePartialProductRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             Content rootContent = _contentDefinitionService
@@ -256,16 +255,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 _deleteAction.DeleteProduct(qpArticle, productDefinition);
             }
 
-            return new HttpStatusCodeResult(HttpStatusCode.NoContent);
+            return NoContent();
         }
 
         #region Requests
         
         public class SavePartialProductRequest : PartialProductRequest
         {
-            /// <summary>
-            /// JSON части продукта, начиная с корневого контента, описанного путём <see cref="ContentPath"/>
-            /// </summary>
             [Required]
             public JObject PartialProduct { get; set; }
         }

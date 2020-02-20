@@ -1,4 +1,10 @@
 ﻿@using QA.Core.Models.UI
-@model TabStripItem
-@if (Model == null || Model.Hidden) { return; }
-@Html.DisplayFor(x => Model.Content)
+@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.TabStripItem
+@if (Model == null || (Model.Hidden ?? false)) { return; }
+@{
+  if (Model.Content is UIElement item)
+  {
+    @Html.DisplayForUIElement(item)
+  }
+}

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net471</TargetFrameworks>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -15,27 +15,43 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <DefineConstants>NETSTANDARD</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
-    <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
+    <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Xaml\content_287.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\content_288.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\content_666.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_17432.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_2360.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_2572.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_3136.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_685329.xaml" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.10" />
-    <PackageReference Include="NLog" Version="4.5.11" />
-    <PackageReference Include="QA.Core" Version="3.5.0" />
-    <PackageReference Include="QA.Core.Data" Version="3.5.0" />
-    <PackageReference Include="QA.Core.Web" Version="3.5.0" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="2.9.3" />
+    <PackageReference Include="NLog" Version="4.6.8" />
+    <PackageReference Include="QA.Core" Version="3.5.2-beta6" />
+    <PackageReference Include="QA.Core.Data" Version="3.5.2-beta6" />
+    <PackageReference Include="QP.ConfigurationService.Client" Version="0.2.0" />
+    <PackageReference Include="Quantumart.AspNetCore" Version="4.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="2.2.0" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.0-rc16" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
+    <PackageReference Include="Unity.Abstractions" Version="4.0.3" />
   </ItemGroup>
 </Project>

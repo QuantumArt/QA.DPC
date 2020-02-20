@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
@@ -14,7 +13,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected IEnumerable<JToken> Parameters;
 
-        protected BaseCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
+        protected BaseCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, cache)
         {
         }
 

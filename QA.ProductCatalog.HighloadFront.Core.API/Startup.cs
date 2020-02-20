@@ -11,6 +11,8 @@ using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using Polly.Registry;
+using QA.Core.DPC.QP.Models;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.DI;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
@@ -44,7 +46,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             Configuration.Bind("Data", opts3);
             services.AddSingleton(opts3);
             
+            var opts4 = new TaskRunnerDelays();
+            Configuration.Bind("ReindexDelays", opts4);
+            services.AddSingleton(opts4);
+            
             services.AddSingleton(new PolicyRegistry());
+            
+            services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             
             // Add framework services.
             services.AddMvc(options =>
@@ -79,6 +87,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             }
 
             app.UseMvc();
+            
+            LogStart(app, loggerFactory);
+        }
+        
+        private void LogStart(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+            var syncName = config["Data:SyncName"];
+            var searchName = config["Data:SearchName"];
+            var canUpdate = bool.TryParse(config["Data:CanUpdate"], out var parsed) && parsed;
+            var logger = loggerFactory.CreateLogger(GetType());
+            logger.LogInformation("{appName} started", canUpdate ? syncName : searchName);         
         }
     }
 }

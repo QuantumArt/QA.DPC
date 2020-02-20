@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using QA.Core.Cache;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QPublishing.Database;
+using QA.Core.Cache;
 
 namespace QA.ProductCatalog.ContentProviders
 {
 	public class SettingsFromQpCoreService : SettingsServiceBase
 	{
-		private readonly IVersionedCacheProvider2 _cacheProvider;
+		private readonly VersionedCacheProviderBase _cacheProvider;
 
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
-		public SettingsFromQpCoreService(IVersionedCacheProvider2 cacheProvider, IConnectionProvider connectionProvider)
+		public SettingsFromQpCoreService(VersionedCacheProviderBase cacheProvider, IConnectionProvider connectionProvider)
             : base(connectionProvider, cacheProvider)
 		{
 
@@ -34,7 +34,7 @@ namespace QA.ProductCatalog.ContentProviders
 
 		private Dictionary<string, string> GetAppSettings()
 		{
-			var cnn = new DBConnector(_connectionString);
+			var cnn = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 			var query = "select * from app_settings";
 			return cnn.GetRealData(query).AsEnumerable()
 				.ToDictionary(n => n["key"].ToString(), m => m["value"].ToString()

@@ -7,8 +7,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
     public class ExecutionContext : ITaskExecutionContext
     {
         private readonly ITasksRunner _tasksRunner;
-        private readonly int _taskId;
-        
+
         public ExecutionContext(ITasksRunner tasksRunner, int taskId)
         {
             if (tasksRunner == null)
@@ -16,7 +15,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
             _tasksRunner = tasksRunner;
 
-            _taskId = taskId;
+            TaskId = taskId;
         }
 
 	    private byte _currentProgress = 0;
@@ -37,7 +36,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 	        {
 		        if (progress != _currentProgress)
 		        {
-					_tasksRunner.SetTaskProgress(_taskId, progress);
+					_tasksRunner.SetTaskProgress(TaskId, progress);
 
 			        _currentProgress = progress;
 		        }
@@ -48,12 +47,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 	        }
         }
 
-        /// <summary>
-        /// сообщение при успешном завершении
-        /// не обязательно
-        /// при ошибке в бд пойдет текст из эксепшена, это поле не пойдет
-        /// </summary>
-        public string Message { get; set; }
+        public ActionTaskResult Result { get; set; }
 
 	    private bool _cancellationAlreadyRequested;
         public bool IsCancellationRequested
@@ -63,12 +57,13 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 		        if (_cancellationAlreadyRequested)
 			        return true;
 
-		        _cancellationAlreadyRequested = _tasksRunner.GetIsCancellationRequested(_taskId);
+		        _cancellationAlreadyRequested = _tasksRunner.GetIsCancellationRequested(TaskId);
 
 		        return _cancellationAlreadyRequested;
 	        }
         }
 
         public bool IsCancelled { get; set; }
+        public int TaskId { get; }
     }
 }

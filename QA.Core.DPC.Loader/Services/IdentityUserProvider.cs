@@ -21,5 +21,10 @@ namespace QA.Core.ProductCatalog.Actions.Services
         {
             return _identityProvider.Identity?.Name ?? "admin";
         }
+
+        public int GetLanguageId()
+        {
+            return 1;
+        }
     }
 }

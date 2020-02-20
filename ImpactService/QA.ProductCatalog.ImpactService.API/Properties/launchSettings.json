@@ -5,7 +5,7 @@
       "launchBrowser": true,
       "launchUrl": "api/mnr/country/AU",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Prod"
+        "ASPNETCORE_ENVIRONMENT": "Dev"
       },
       "applicationUrl": "http://localhost:7805"      
     }

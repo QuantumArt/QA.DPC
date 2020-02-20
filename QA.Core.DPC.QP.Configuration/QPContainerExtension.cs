@@ -13,7 +13,7 @@ namespace QA.Core.DPC.QP.Configuration
     {
         public static string GetCustomerCode(this IUnityContainer container)
         {
-            return container.Resolve<IIdentityProvider>().Identity.CustomerCode ?? SingleCustomerProvider.Key;
+            return container.Resolve<IIdentityProvider>().Identity.CustomerCode ?? SingleCustomerCoreProvider.Key;
         }
     
         public static FactoryBuilder RegisterFactory<T>(this IUnityContainer container, bool autoRegister)
@@ -30,7 +30,7 @@ namespace QA.Core.DPC.QP.Configuration
             };
         }
         
-        public static FactoryBuilder RegisterCustomFactory(this IUnityContainer container, bool autoRegister, Action<IRegistrationContext, string, string> registration)
+        public static FactoryBuilder RegisterCustomFactory(this IUnityContainer container, bool autoRegister, Action<IRegistrationContext, Customer> registration)
         {
             var factoryName = $"{nameof(CustomFactory)}_{Guid.NewGuid()}";
             container.RegisterType<IFactory, CustomFactory>(factoryName, new ContainerControlledLifetimeManager(), new InjectionConstructor(registration, typeof(ICustomerProvider), typeof(ILogger), autoRegister));
@@ -44,13 +44,13 @@ namespace QA.Core.DPC.QP.Configuration
 
         public static FactoryBuilder RegisterNullFactory(this IUnityContainer container)
         {
-            return container.RegisterCustomFactory(false, (context, code, connectionString) => { });
+            return container.RegisterCustomFactory(false, (context, customer) => { });
         }
 
         public static FactoryBuilder For<T>(this FactoryBuilder builder, string code = null)
             where T : class
         {
-            builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(code ?? c.GetCustomerCode())));
+            builder.Container.RegisterFactory<T>(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(code ?? c.GetCustomerCode()));
             return builder;
         }     
 
@@ -58,11 +58,11 @@ namespace QA.Core.DPC.QP.Configuration
         {
             if (name == null)
             {
-                builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<T>(builder.FactoryName)));
+                builder.Container.RegisterFactory<T>(c => c.Resolve<T>(builder.FactoryName));
             }
             else
             {
-                builder.Container.RegisterType<T>(name, new InjectionFactory(c => c.Resolve<T>(builder.FactoryName)));
+                builder.Container.RegisterFactory(typeof(T), name, c => c.Resolve<T>(builder.FactoryName));
             }
 
             return builder;
@@ -88,6 +88,14 @@ namespace QA.Core.DPC.QP.Configuration
             var watcher = builder.Container.Resolve<IFactoryWatcher>(builder.FactoryName);
             watcher.Start();
 
+            return builder;
+        }
+
+
+        public static FactoryBuilder WithCallback(this FactoryBuilder builder, EventHandler<FactoryWatcherEventArgs> eventHandler)
+        {
+            var watcher = builder.Container.Resolve<IFactoryWatcher>(builder.FactoryName);
+            watcher.OnConfigurationModify += eventHandler; 
             return builder;
         }
     }

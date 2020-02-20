@@ -1,25 +1,21 @@
-﻿@model QA.ProductCatalog.Admin.WebApp.Models.TaskScheduleModel
+﻿@using QA.Core.DPC.Resources
+@model QA.ProductCatalog.Admin.WebApp.Models.TaskScheduleModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
+<script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
+<script src="~/js/bundles/schedule.min.js"></script>
 
-@Scripts.Render("~/bundles/jqueryunobtrusive")
-
-@Scripts.Render("~/bundles/Schedule")
-
-@Styles.Render("~/content/jqcron.css")
-
+<link href="~/css/jqCron.css" rel="stylesheet">
 <style>
 	.editor-label {
 		width: 100px;
 	}
 </style>
 
-@using (Ajax.BeginForm("SaveShedule", "Task",
-	new AjaxOptions
-	{
-		OnSuccess = ViewBag.OnSuccess,
-		OnFailure = "OnSheduleSaveError"
-	}))
-{
+<form asp-controller="Task" asp-action="SaveSchedule" data-ajax="true" data-ajax-method="POST"
+      data-ajax-success=@ViewBag.OnSuccess
+      data-ajax-failure="Task.OnSheduleSaveError">
+
 	@Html.HiddenFor(x => x.TaskId)
 	<div class="editor-label">
 		@Html.LabelFor(x => x.TaskId)
@@ -53,7 +49,7 @@
 		$("#" + (isOneTime ? "NonRepeatInput" : "RepeatInput"))[0].checked = true;
 
 		function OnSheduleSaveError(xhr, status, error) {
-			alert('Ошибка' + error);
+			alert('Error: ' + error);
 		}
 
 		function SetSheduleEditingMode(isOneTime) {
@@ -115,6 +111,6 @@
 	</script>
 
 	<p>
-		<input id="save" type="submit" value="Сохранить" />
+		<input id="save" type="submit" value="@ControlStrings.Save" />
 	</p>
-}
+</form>

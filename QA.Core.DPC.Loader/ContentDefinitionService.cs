@@ -11,10 +11,11 @@ using System.Collections.Generic;
 using Quantumart.QPublishing.Info;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Content = QA.Core.Models.Configuration.Content;
+using QA.Core.DPC.QP.Models;
+using NLog;
 
 namespace QA.Core.DPC.Loader
 {
@@ -32,23 +33,21 @@ namespace QA.Core.DPC.Loader
 		private const string FIELD_NAME_FILTER = "Filter";
 
 		private readonly ISettingsService _settingsService;
-		private readonly IVersionedCacheProvider _cacheProvider;
+		private readonly VersionedCacheProviderBase _cacheProvider;
 		private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
-		private readonly ILogger _logger;
+		private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 		private readonly IArticleService _articleService;
-		private readonly string _connectionString;
+		private readonly Customer _customer;
 
 		public ContentDefinitionService(ISettingsService settingsService,
-			IVersionedCacheProvider cacheProvider,
+			VersionedCacheProviderBase cacheProvider,
 			IArticleService articleService,
-			ILogger logger,
             IConnectionProvider connectionProvider)
 		{
-			_logger = logger;
 			_settingsService = settingsService;
 			_cacheProvider = cacheProvider;
 			_articleService = articleService;
-			_connectionString = connectionProvider.GetConnection(); 
+			_customer = connectionProvider.GetCustomer(); 
 		}
 
         #region IContentDefinitionService
@@ -115,14 +114,11 @@ namespace QA.Core.DPC.Loader
 			{
 				using (_articleService.CreateQpConnectionScope())
 				{
-					var dbConnector = new DBConnector(_connectionString);
+					var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 
-					string wherePart = string.Format(
-                        "([{0}]='{1}' AND [{2}]='{3}')",
-                        FIELD_NAME_SLUG,
-                        slug.Replace("'", ""),
-                        FIELD_NAME_VERSION,
-                        version.Replace("'", ""));
+					string wherePart =
+						$@"({FIELD_NAME_SLUG}='{slug.Replace("'", "")}'
+						AND {FIELD_NAME_VERSION}='{version.Replace("'", "")}')";
 
 					var dtdefinitionArticles = dbConnector.GetContentData(new ContentDataQueryObject(
                         dbConnector,
@@ -132,7 +128,7 @@ namespace QA.Core.DPC.Loader
 
 					if (dtdefinitionArticles.Rows.Count == 0)
                     {
-                        throw new Exception(string.Format("Slug '{0}' с версией '{1}' не найден", slug, version));
+                        throw new Exception($"Slug '{slug}' with version '{version}' not found");
                     }
 
 					int definitionArticleId = (int)(decimal)dtdefinitionArticles.Rows[0][FIELD_NAME_DEFINITION];
@@ -236,7 +232,10 @@ namespace QA.Core.DPC.Loader
 
         public string GetControlDefinition(int contentId, int productTypeId)
 		{
-			_logger.Debug("Запрошен контрол для contentId: {0},  productTypeId: {1}", contentId, productTypeId);
+			_logger.Debug(
+				"Control requested for content {contentId}, productType {productTypeId}", 
+				contentId, productTypeId
+			);
 
 			// return ResourceHelper.GetXaml<Content>(string.Format("QA.Core.DPC.Loader.Xaml.content_{0}.xaml", contentId));
 			int xamlContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_CONTROL_CONTENT_ID));

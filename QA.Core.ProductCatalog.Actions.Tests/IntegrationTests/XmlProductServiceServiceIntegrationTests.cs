@@ -2,45 +2,46 @@
 using System.Threading.Tasks;
 using System.Transactions;
 using Unity;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Models;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {
-    [Ignore]
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class XmlProductServiceIntegrationTests : IntegrationTestsBase
     {
         private const int ProductId = 2405;
         private const int MarketingProductId = 2403;
 
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_XmlProductService_GetXmlForProduct()
         {
             CastomAction_XmlProductService_GetXmlForProducts(ProductId);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_XmlProductService_GetXmlForProduct_serializable()
         {
             CastomAction_XmlProductService_GetXmlForProducts_transaction(695074, IsolationLevel.Serializable);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_XmlProductService_GetXmlForProduct_ReadUncommitted()
         {
             CastomAction_XmlProductService_GetXmlForProducts_transaction(695074, IsolationLevel.ReadUncommitted);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_XmlProductService_GetXmlForMarketingProduct()
         {
             CastomAction_XmlProductService_GetXmlForProducts(MarketingProductId);
@@ -66,8 +67,8 @@ namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
         {
             var productService = Container.Resolve<IProductService>();
             var xmlProductService = Container.Resolve<IXmlProductService>();
-
-            using (new QPConnectionScope(Container.GetConnectionString()))
+            var customer = Container.GetCustomer();
+            using (new QPConnectionScope(customer.ConnectionString, (DatabaseType)customer.DatabaseType))
             {
                 using (var ts = new TransactionScope(TransactionScopeOption.Required,
                     new TransactionOptions { Timeout = TimeSpan.FromMinutes(2), IsolationLevel = il }))

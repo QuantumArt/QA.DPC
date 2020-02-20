@@ -3,16 +3,17 @@ using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml.ListTypes;
 using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Repository.ArticleMatching;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Mappers;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
 using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Validation.Resources;
+using Quantumart.QP8.Constants;
 
 namespace QA.ProductCatalog.Validation.Validators
 {
@@ -35,9 +36,9 @@ namespace QA.ProductCatalog.Validation.Validators
 
 
 
-			using (new QPConnectionScope(helper.ConnectionString))
+			using (new QPConnectionScope(helper.Customer.ConnectionString, (DatabaseType)helper.Customer.DatabaseType ))
 			{
-				var articleSerivce = new ArticleService(helper.ConnectionString, 1);
+				var articleSerivce = new ArticleService(helper.Customer.ConnectionString, 1);
 			    var emptyArticle = articleSerivce.New(model.ContentId);
 
 			    var productsName = helper.GetRelatedFieldName(emptyArticle, helper.GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID));
@@ -45,8 +46,13 @@ namespace QA.ProductCatalog.Validation.Validators
 			    var productIds = helper.GetValue<ListOfInt>(productsName);
 
                 if (productIds != null && AreTypesIncompatible(helper, articleSerivce, marketingProductTypeId, productIds, productTypeName))
-				{
-					result.AddModelError(helper.GetPropertyName(productsName), RemoteValidationMessages.SameTypeMarketingProductProducts);
+                {
+	                var message = new ActionTaskResultMessage()
+	                {
+		                ResourceClass = ValidationHelper.ResourceClass,
+		                ResourceName = nameof(RemoteValidationMessages.SameTypeMarketingProductProducts),
+	                };
+					result.AddModelError(helper.GetPropertyName(productsName), JsonConvert.SerializeObject(message));
 					return result;
 				}
 
@@ -55,9 +61,15 @@ namespace QA.ProductCatalog.Validation.Validators
 					var ids = CheckAliasUniqueness(helper, marketingProductTypeId, articleSerivce, productTypeName);
 					if (!String.IsNullOrEmpty(ids))
 					{
+						var message = new ActionTaskResultMessage()
+						{
+							ResourceClass = ValidationHelper.ResourceClass,
+							ResourceName = nameof(RemoteValidationMessages.MarketingProduct_Duplicate_Alias),
+							Parameters = new object[] {ids}
+						};
+						
 						result.AddModelError(
-							helper.GetPropertyName(Constants.FieldAlias),
-							string.Format(RemoteValidationMessages.MarketingProduct_Duplicate_Alias, ids)
+								helper.GetPropertyName(Constants.FieldAlias), JsonConvert.SerializeObject(message)
 						);
 					}
 				}
@@ -73,18 +85,13 @@ namespace QA.ProductCatalog.Validation.Validators
 			int marketingProductContentId = helper.GetSettingValue(SettingsTitles.MARKETING_PRODUCT_CONTENT_ID);
 			helper.CheckSiteId(marketingProductContentId);
 
-			var matchService = new ArticleMatchService<Expression<Predicate<IArticle>>>(helper.ConnectionString, new ExpressionConditionMapper());
+			var matchService = new ArticleMatchService<Expression<Predicate<IArticle>>>(
+				helper.Customer.ConnectionString, helper.Customer.QpDatabaseType, new ExpressionConditionMapper()
+			);
 			object aliasValue = alias;
-			var matchItems = matchService.MatchArticles(marketingProductContentId, article => article[Constants.FieldAlias].Value == aliasValue, MatchMode.Strict);
-			var matchIds = matchItems.Where(itm => itm.Id != id).Select(itm => itm.Id).ToArray();
-
-		    var ids = "";
-		    var matches = articleSerivce.List(marketingProductContentId, matchIds, true).ToArray();
-		    if (matches.Any())
-		    {
-		        var fieldValues = matches.Select(n => n.FieldValues.Single(m => m.Field.Name == productTypeName)).ToArray();
-		        ids = String.Join(", ", fieldValues.Where(n => int.Parse(n.Value) == marketingProductTypeId).Select(n => n.Article.Id));
-		    }
+			var filter = $"c.{Constants.FieldAlias} = '{aliasValue}' and c.{productTypeName} = {marketingProductTypeId}";
+			var matches = articleSerivce.List(marketingProductContentId, null, true, filter).Where(itm => itm.Id != id);
+		    var ids = string.Join(", ", matches.Select( n => n.Id));
 			return ids;
 		}
 

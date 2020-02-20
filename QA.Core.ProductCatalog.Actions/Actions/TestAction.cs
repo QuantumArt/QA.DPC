@@ -4,15 +4,16 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.DTO;
 using System;
+using System.Data;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-	public class TestAction : ActionBase
+	public class TestAction : ProductActionBase
 	{
-		public TestAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction)
-			: base(articleService, fieldService, productservice, logger, createTransaction)
+		public TestAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, Func<ITransaction> createTransaction)
+			: base(articleService, fieldService, productservice, createTransaction)
 		{
 		}
 

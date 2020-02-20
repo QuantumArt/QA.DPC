@@ -9,54 +9,34 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Internal;
+using Npgsql;
 using QA.Core.Linq;
 using QA.ProductCatalog.ContentProviders;
+using QA.Core.DPC.QP.Models;
+using DatabaseType = QP.ConfigurationService.Models.DatabaseType;
 
 namespace QA.Core.DPC.Loader.Services
 {
     public class ValidationService : IValidationService
     {
         #region Queries
-        private const string ProductQuery =
-        @"
-        declare @query nvarchar(max) = ''
-
-        select
-	        @query = @query +
-	        '
-	        select
-		        ' + cast(a.CONTENT_ID as nvarchar(100)) + ' ContentId,
-		        a.CONTENT_ITEM_ID Id,
-		        a.[' + @validationFailedField + '] PublicationFailed,
-		        CONVERT(BIT, (CASE WHEN a.[' + @validationMessageField + '] IS NULL THEN 1 ELSE 0 END)) ValidationMessageIsEmpty
-	        from
-		        content_' + cast(a.CONTENT_ID as nvarchar(100)) +'_united a
-		        join @ids ids on a.CONTENT_ITEM_ID = ids.ID
-            where
-	            a.ARCHIVE = 0 and
-	            a.VISIBLE = 1
-	        union all'
-        from content_item a
-	        join @ids ids on a.CONTENT_ITEM_ID = ids.ID
-	        join CONTENT_ATTRIBUTE publicationFailed on a.CONTENT_ID = publicationFailed.CONTENT_ID
-	        join CONTENT_ATTRIBUTE validationMessage on a.CONTENT_ID = validationMessage.CONTENT_ID
-        where
-	        publicationFailed.ATTRIBUTE_NAME = @validationFailedField and
-	        validationMessage.ATTRIBUTE_NAME = @validationMessageField and
-	        a.ARCHIVE = 0 and
-	        a.VISIBLE = 1
-        group by
-	        a.CONTENT_ID
-   
-        if @query<> ''
-        begin
-            set @query = left(@query, len(@query) - len('union all'))
-            exec sp_executesql @query, N'@ids Ids readonly', @ids
-        end";
+        private string GetProductQuery(string idList) =>
+        $@"SELECT DISTINCT a.CONTENT_ID
+        FROM content_item a
+	        JOIN {idList} ON a.CONTENT_ITEM_ID = ids.ID
+	        JOIN CONTENT_ATTRIBUTE publicationFailed ON a.CONTENT_ID = publicationFailed.CONTENT_ID
+	        JOIN CONTENT_ATTRIBUTE validationMessage ON a.CONTENT_ID = validationMessage.CONTENT_ID
+        WHERE
+	        publicationFailed.ATTRIBUTE_NAME = @validationFailedField AND
+	        validationMessage.ATTRIBUTE_NAME = @validationMessageField AND
+	        a.ARCHIVE = 0 AND
+	        a.VISIBLE = 1";
 
         private const string AllProductsQuery = @"
         select
@@ -92,7 +72,7 @@ namespace QA.Core.DPC.Loader.Services
         private readonly IUserProvider _userProvider;
         private readonly IArticleService _articleService;
         private readonly ILogger _logger;
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         public string PublicationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_PUBLICATION_FAILED_FIELD_NAME);
         public string ValidationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_VALIDATION_FAILED_FIELD_NAME);
@@ -105,7 +85,7 @@ namespace QA.Core.DPC.Loader.Services
             _userProvider = userProvider;
             _articleService = articleService;
             _logger = logger;
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
         #region IValidationService implementation
@@ -154,11 +134,11 @@ namespace QA.Core.DPC.Loader.Services
                         try
                         {                            
                             var validation = _articleService.XamlValidationById(productId, true);
+                            var validationResult = ActionTaskResult.FromRulesException(validation, productId);
 
-                            if (!validation.IsEmpty)
+                            if (!validationResult.IsSuccess)
                             {
-                                var value = string.Join(Environment.NewLine, validation.Errors.Select(s => s.Message));
-                                errors.TryAdd(productId, value);
+                                errors.TryAdd(productId, validationResult.ToString());
                                 report.InvalidProductsCount++;
                             }
                         }
@@ -186,23 +166,23 @@ namespace QA.Core.DPC.Loader.Services
         {
             if (!string.IsNullOrEmpty(ValidationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
             {
-                SqlCommand sqlCommand;
-
+                DbCommand dbCommand;
                 if (string.IsNullOrEmpty(ValidationConditionField))
                 {
-                    sqlCommand = new SqlCommand(AllProductsQuery);
-                    sqlCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
-                    sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
+                    dbCommand = _customer.DatabaseType == DatabaseType.Postgres
+                        ? (DbCommand)new NpgsqlCommand(AllProductsQuery)
+                        : new SqlCommand(AllProductsQuery);
                 }
                 else
                 {
-                    sqlCommand = new SqlCommand(AllProductsConditionQuery);
-                    sqlCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
-                    sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
-                    sqlCommand.Parameters.AddWithValue("@validationConditionField", ValidationConditionField);
+                    dbCommand = _customer.DatabaseType == DatabaseType.Postgres
+                        ? (DbCommand)new NpgsqlCommand(AllProductsConditionQuery)
+                        : new SqlCommand(AllProductsConditionQuery);
+                    dbCommand.Parameters.AddWithValue("@validationConditionField", ValidationConditionField);
                 }
-
-                var dt = GetConnector().GetRealData(sqlCommand);
+                dbCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
+                dbCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
+                var dt = GetConnector().GetRealData(dbCommand);
 
                 var products = dt.AsEnumerable()
                     .Select(r => (int)(decimal)r["Id"])
@@ -221,16 +201,33 @@ namespace QA.Core.DPC.Loader.Services
         #region Private methods
         private ProductDescriptor[] GetProducts(DBConnector dbConnector, int[] productIds, string validationFailedField, string validationMessageField)
         {            
-            var sqlCommand = new SqlCommand(ProductQuery);
+            var idList = SqlQuerySyntaxHelper.IdList(dbConnector.DatabaseType, "@ids", "ids");
+            var productQueryCommand = dbConnector.CreateDbCommand(GetProductQuery(idList));
 
-            sqlCommand.Parameters.AddWithValue("@validationFailedField", validationFailedField);
-            sqlCommand.Parameters.AddWithValue("@validationMessageField", validationMessageField);
-            sqlCommand.Parameters.Add(Common.GetIdsTvp(productIds, "@Ids"));
+            productQueryCommand.Parameters.AddWithValue("@validationFailedField", validationFailedField);
+            productQueryCommand.Parameters.AddWithValue("@validationMessageField", validationMessageField);
+            productQueryCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, dbConnector.DatabaseType));
 
-            var dt = dbConnector.GetRealData(sqlCommand);
-
+            var contentIdsData = dbConnector.GetRealData(productQueryCommand);
+            if (!contentIdsData.Rows.Any()) return new ProductDescriptor[0];
+            List<string> queries = new List<string>(contentIdsData.Rows.Count);
+            foreach (DataRow row in contentIdsData.Rows)
+            {
+                string contentId = row["CONTENT_ID"].ToString();
+                queries.Add($@"SELECT {contentId} AS ContentId, 
+                    a.CONTENT_ITEM_ID AS Id,
+                    a.{validationFailedField} AS PublicationFailed, 
+                    CONVERT(BIT, (CASE WHEN a.{validationMessageField} IS NULL THEN 1 ELSE 0 END)) AS ValidationMessageIsEmpty
+                FROM content_{contentId}_united AS a
+                    JOIN {idList} ON a.CONTENT_ITEM_ID = ids.ID
+                WHERE a.ARCHIVE = 0 AND a.VISIBLE = 1");
+            }
+            
+            var productCommand = dbConnector.CreateDbCommand(string.Join("\nUNION ALL\n", queries));
+            productCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, dbConnector.DatabaseType));            
+            var dt = dbConnector.GetRealData(productCommand);
             var products = dt.AsEnumerable()
-                .Select(r => Converter.ToModelFromDataRow<ProductDescriptor>(r))
+                .Select(Converter.ToModelFromDataRow<ProductDescriptor>)
                 .ToArray();
 
             return products;
@@ -288,7 +285,7 @@ namespace QA.Core.DPC.Loader.Services
             }
             else
             {
-                return new DBConnector(_connectionString);
+                return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
             }
         }
         #endregion

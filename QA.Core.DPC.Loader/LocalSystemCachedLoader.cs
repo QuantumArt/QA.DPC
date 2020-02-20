@@ -7,7 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
+#if !NETSTANDARD
 using System.Xaml;
+#else
+using Portable.Xaml;
+#endif
+
 using System.IO;
 using System.IO.Compression;
 using QA.Core.DPC.QP.Services;
@@ -25,15 +30,14 @@ namespace QA.Core.DPC.Loader
         public bool ArchiveFiles { get; set; }
 
         public LocalSystemCachedLoader(IContentDefinitionService definitionService,
-            ILogger logger,
-            IVersionedCacheProvider cacheProvider,
+            VersionedCacheProviderBase cacheProvider,
             ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService,
             IFieldService fieldService,
             ISettingsService settingsService,
             IList<IConsumerMonitoringService> consumerMonitoringServices,
             IArticleFormatter formatter, IConnectionProvider connectionProvider) : base(definitionService,
-                logger, cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringServices, formatter, connectionProvider)
+                cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringServices, formatter, connectionProvider)
         {
             DataDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
             if (DataDirectory == null)

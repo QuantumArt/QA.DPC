@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
@@ -13,7 +15,7 @@ using Quantumart.QP8.BLL;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	public class CloneBatchAction : ActionBase
+	public class CloneBatchAction : ProductActionBase
 	{
 		private const string FieldIdParameterKey = "FieldId";
 		private const string ArticleIdParameterKey = "ArticleId";
@@ -27,11 +29,10 @@ namespace QA.Core.ProductCatalog.Actions
             IArticleService articleService,
             IFieldService fieldService,
             IProductService productService,
-            ILogger logger,
             Func<ITransaction> createTransaction,
             IContentDefinitionService definitionService,
             ICacheItemWatcher cacheItemWatcher)
-			: base(articleService, fieldService, productService, logger, createTransaction)
+			: base(articleService, fieldService, productService, createTransaction)
 		{
             _definitionService = definitionService;
             _cacheItemWatcher = cacheItemWatcher;
@@ -71,19 +72,30 @@ namespace QA.Core.ProductCatalog.Actions
         {
             _cacheItemWatcher.TrackChanges();
 
-            ArticleService.LoadStructureCache();
+            DoWithLogging(
+				() => ArticleService.LoadStructureCache(),
+ 	            "Loading structure cache"
+            );
 
-            var article = ArticleService.Read(productId);
+
+            var article = DoWithLogging(
+	            () => ArticleService.Read(productId),
+	            "Reading root article for product {id}", productId
+            );
 
             if (!Filter(article))
             {
                 return null;
             }
 
-            if (!ArticleService.CheckRelationSecurity(article.ContentId, new[] { productId }, false)[productId])
+            var checkResult = DoWithLogging(
+	            () => ArticleService.CheckRelationSecurity(article.ContentId, new[] {productId}, false),
+	            "Checking relation security for product {id}", productId
+            );
+
+            if (!checkResult[productId])
             {
-                throw new ProductException(productId,
-                    "Операция недопустима из-за недостаточных прав доступа по связям");
+	            throw new ProductException(productId, nameof(TaskStrings.NoRelationAccess));
             }
 
             if (contentDefinition == null)
@@ -98,9 +110,12 @@ namespace QA.Core.ProductCatalog.Actions
             var productDefinition = new ProductDefinition { StorageSchema = contentDefinition };
 
             UpdateDefinition(article, productDefinition, actionParameters);
-
-            var productsById = GetProductsToBeProcessed(
-                article, productDefinition, ef => ef.CloningMode, CloningMode.Copy, Filter, excludeArchive: true);
+            
+            var productsById = DoWithLogging(
+	            () => GetProductsToBeProcessed(
+		            article, productDefinition, ef => ef.CloningMode, CloningMode.Copy, Filter, true),
+	            "Receving articles to be cloned for product {id}", productId
+            );
 
             var clearFieldIds = actionParameters.GetClearFieldIds();
 
@@ -108,7 +123,11 @@ namespace QA.Core.ProductCatalog.Actions
 
             MapProducts(productsById[productId], productsById);
 
-            return SaveProducts(productId, productsById, missedAggArticles);
+            var result = DoWithLogging(
+	            () => SaveProducts(productId, productsById, missedAggArticles),
+	            "Cloning {count} articles for product {id}", productsById.Count, productId
+            );
+            return result;
         }
         
 		private static bool Filter(Article article)

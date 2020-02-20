@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using QA.Core.Logger;
+using NLog;
 
 namespace QA.Core.Models.UI
 {
@@ -8,10 +8,11 @@ namespace QA.Core.Models.UI
     {
         static readonly Dictionary<Type, Dictionary<string, DependencyProperty>> _registredProperties = new Dictionary<Type, Dictionary<string, DependencyProperty>>();
         static readonly List<DependencyProperty> _properties = new List<DependencyProperty>();
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         static DependencyProperty() { }
 
-        internal static readonly object UnsetValue = new object();
+        public static object UnsetValue = new object();
 
         #region Fields
 
@@ -96,11 +97,9 @@ namespace QA.Core.Models.UI
         private static DependencyProperty RegisterCommon(string propertyName, Type propertyType, Type ownerType, bool inherit, bool log, bool attached)
         {
             var property = new CustomDependencyProperty();
-            ILogger logger = null;
             if (log)
             {
-                logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.Debug(string.Format("register dp {0} - {2}.{1}", propertyName, propertyType, ownerType));
+                _logger.Debug($"register dp {propertyName} - {ownerType}.{propertyType}");
             }
 
             property._name = propertyName;

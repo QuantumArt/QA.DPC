@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "QA.ProductCatalog.WebApi": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      },
+      "applicationUrl": "http://localhost:5350/swagger"
+    }
+  }
+}

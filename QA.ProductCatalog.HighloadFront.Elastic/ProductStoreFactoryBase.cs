@@ -11,10 +11,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private Func<string, IProductStore> _versionFactory;
         private ElasticConfiguration _configuration;
-        private IVersionedCacheProvider2 _cacheProvider;
+        private VersionedCacheProviderBase _cacheProvider;
         private TimeSpan _expiration;
 
-        public ProductStoreFactoryBase(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, IVersionedCacheProvider2 cacheProvider, DataOptions options)
+        public ProductStoreFactoryBase(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, VersionedCacheProviderBase cacheProvider, DataOptions options)
         {
             _versionFactory = versionFactory;
             _configuration = configuration;

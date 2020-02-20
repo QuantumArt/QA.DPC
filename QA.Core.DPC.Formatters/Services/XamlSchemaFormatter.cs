@@ -1,6 +1,10 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+#if !NETSTANDARD
 using System.Xaml;
+#else
+using Portable.Xaml;
+#endif
 using QA.Core.Models.Configuration;
 using QA.ProductCatalog.Infrastructure;
 
@@ -18,6 +22,16 @@ namespace QA.Core.DPC.Formatters.Services
 		{
 			return Task.Run(() => XamlServices.Save(stream, product));
 		}
+
+		public string Serialize(Content product)
+		{
+			using (var stream = new MemoryStream())
+			{
+				XamlServices.Save(stream, product);
+				return new StreamReader(stream).ReadToEnd();
+			}
+		}
+
 		#endregion
 	}
 }

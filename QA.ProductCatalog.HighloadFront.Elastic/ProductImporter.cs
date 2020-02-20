@@ -17,12 +17,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ProductImporter
     {
+        private readonly IHttpClientFactory _factory;        
         private readonly ILogger _logger;
 
         private readonly ElasticConfiguration _configuration;
 
         private readonly ProductManager _manager;
-        private HttpClient _client;
 
         private readonly HarvesterOptions _options;
         private readonly DataOptions _dataOptions;
@@ -45,8 +45,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _options = options;
             _dataOptions = dataOptions;
             _customerCode = customerCode;
-            _client = httpClientFactory.CreateClient();
-            _client.DefaultRequestHeaders.Accept.Clear();            
+            _factory = httpClientFactory;
         }
 
         public bool ValidateInstance(string language, string state)
@@ -101,7 +100,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 {
                     string message = $"An error occurs while receiving products for chunk {index}";
                     _logger.LogError(ex, message);
-                    executionContext.Message = message;
+                    executionContext.Result = ActionTaskResult.Error(message);
                     throw;
                 }
                 _logger.LogInformation($"Products from chunk {index} received. Starting bulk import...");
@@ -116,8 +115,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 else
                 {
                     string message = $"Cannot proceed bulk import for chunk {index}: {result}";
-                    _logger.LogInformation(message);
-                    executionContext.Message = message;
+                    _logger.LogError(message);
+                    executionContext.Result = ActionTaskResult.Error(message);
                     throw result.GetException();
                 }
 
@@ -126,28 +125,30 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 executionContext.SetProgress((byte)progress);
             }
 
-            executionContext.Message = "Import completed";
+            executionContext.Result = ActionTaskResult.Success("Import completed");
         }
 
-        public async Task<Tuple<string, DateTime>> GetContent(string url)
+        private async Task<Tuple<string, DateTime>> GetContent(string url)
         {
             url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
-            _logger.LogDebug($"Requesting URL: {url}");
-            var response = await _client.GetAsync(url);
+            _logger.LogDebug($"Requesting URL: {url}", url);
+            var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Accept.Clear();            
+            var response = await client.GetAsync(url);
             var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
             var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
             _logger.LogDebug($"Received {response.StatusCode} for URL: {url}");
             return new Tuple<string, DateTime>(result, modified);
         }
 
-        public async Task<int[]> GetIds(string reindexUrl)
+        private async Task<int[]> GetIds(string reindexUrl)
         {
             var result = await GetContent(reindexUrl);
             var arr = JsonConvert.DeserializeObject(result.Item1) as JArray;
             return arr?.Select(n => (int) n).ToArray();
         }
 
-        public async Task<ProductPostProcessorData> GetProductById(string reindexUrl, int id)
+        private async Task<ProductPostProcessorData> GetProductById(string reindexUrl, int id)
         {
             var relUri = $"{reindexUrl}/{id}";
             var result = await GetContent(relUri);

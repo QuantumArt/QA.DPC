@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using Microsoft.AspNetCore.Http;
+using Moq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
@@ -27,18 +29,23 @@ namespace QA.Core.DPC.Loader.Tests
 
         public static UnityContainer RegisterTypes(UnityContainer container)
         {
+            container.AddExtension(new Diagnostic());
             // логируем в консоль
             container.RegisterInstance<ILogger>(new TextWriterLogger(Console.Out));
+            
+            var mock = new Mock<IHttpContextAccessor>();
+            container.RegisterInstance(mock.Object);
             container.AddNewExtension<LoaderConfigurationExtension>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
+
 
             // устанавливаем фальшивый сервис для загрузки модели
             container.RegisterType<IProductService, ProductLoader>().RegisterType<IXmlProductService, XmlProductService>();
             container.RegisterType<IQPNotificationService, QPNotificationService>();
             container.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IVersionedCacheProvider, VersionedCacheProviderBase>(new ContainerControlledLifetimeManager());
+            container.RegisterType<VersionedCacheProviderBase>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
-            container.RegisterType<ISettingsService, SettingsFromContentService>();
+            container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
             container.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
             container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>(), container.Resolve<ILogger>()));
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
@@ -50,7 +57,7 @@ namespace QA.Core.DPC.Loader.Tests
                 new InjectionConstructor(
                     typeof(IContentDefinitionService),
                     typeof(IServiceFactory),
-                    typeof(IVersionedCacheProvider),
+                    typeof(VersionedCacheProviderBase),
                     typeof(ISettingsService),
                     typeof(IConnectionProvider)
                     ));

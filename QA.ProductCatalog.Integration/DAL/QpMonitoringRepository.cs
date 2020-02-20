@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using QA.Core;
 using QA.Core.DPC.Formatters.Services;
+using QA.Core.DPC.Front;
+using QA.Core.DPC.Front.DAL;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
-using Quantumart.QP8.DAL;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
+using Quantumart.QPublishing.Database;
+using ProductInfo = QA.ProductCatalog.Infrastructure.ProductInfo;
 
 namespace QA.ProductCatalog.Integration.DAL
 {
@@ -19,14 +27,14 @@ namespace QA.ProductCatalog.Integration.DAL
 
         public QpMonitoringRepository(IConnectionProvider connectionProvider, IArticleFormatter formatter, bool state, string language)
         {
-            _connectionString = connectionProvider.GetConnection();
+	        _customer = connectionProvider.GetCustomer();
             _state = state;
             _language = String.IsNullOrEmpty(language) ? "invariant" : language;
             _isJson = formatter is JsonProductFormatter;
         }
 
 
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         private readonly bool _state;
 
@@ -34,85 +42,71 @@ namespace QA.ProductCatalog.Integration.DAL
 
         private readonly bool _isJson;
 
-        private string GetSqlQuery()
+        private DpcModelDataContext GetNpgSqlDpcModelDataContext(string connectionString)
         {
-            return @" 
-            SELECT DpcId as Id, ProductType, Alias, Updated, Hash, MarketingProductId, Title, UserUpdated, UserUpdatedId 
-            FROM [dbo].[Products] p INNER JOIN @ids ids ON ids.Id = p.DpcId 
-            WHERE p.IsLive = @isLive AND p.Language = @language 
-            AND p.Format = @format AND p.Version = 1 and p.Slug is null";
+	        var builder = new DbContextOptionsBuilder<NpgSqlDpcModelDataContext>();
+	        builder.UseNpgsql(connectionString);
+	        return new NpgSqlDpcModelDataContext(builder.Options);
         }
 
+        private DpcModelDataContext GetSqlServerDpcModelDataContext(string connectionString)
+        {
+	        var builder = new DbContextOptionsBuilder<SqlServerDpcModelDataContext>();
+	        builder.UseSqlServer(connectionString);
+	        return new SqlServerDpcModelDataContext(builder.Options);
+        }
+        
         public ProductInfo[] GetByIds(int[] productIDs)
         {
             Throws.IfArrayArgumentNullOrEmpty(productIDs, _ => productIDs);
 
-			using (SqlConnection connection = new SqlConnection(_connectionString))
+            using(DpcModelDataContext context = _customer.DatabaseType == DatabaseType.Postgres
+	            ? GetNpgSqlDpcModelDataContext(_customer.ConnectionString)
+	            : GetSqlServerDpcModelDataContext(_customer.ConnectionString))
             {
-	            using (SqlCommand cmd = new SqlCommand(GetSqlQuery(), connection))
+	            var products = context.GetProducts(new ProductLocator
 	            {
-	                var p = new SqlParameter("@ids", SqlDbType.Structured)
-	                {
-	                    TypeName = "Ids",
-	                    Value = Common.IdsToDataTable(productIDs)
-	                };
+		            Language = _language,
+		            IsLive = _state,
+		            Version = 1,
+		            QueryFormat = _isJson ? "json" : "xml"
+	            }).Where(p =>
+					productIDs.Contains(p.DpcId)
+	            ).ToArray();
 
-                    cmd.Parameters.Add(p);
-                    cmd.Parameters.AddWithValue("@isLive", _state ? 1 : 0);
-	                cmd.Parameters.AddWithValue("@language", _language);
-	                cmd.Parameters.AddWithValue("@format", _isJson ? "json" : "xml");
-
-                    connection.Open();
-                    var list = new List<ProductInfo>();
-                    try
+	            var list = new List<ProductInfo>();
+                // производим запрос - без этого не будет работать dependency
+                foreach (var product in products)
+                {
+                    var item = new ProductInfo
                     {
-                        // производим запрос - без этого не будет работать dependency
-                        using (var reader = cmd.ExecuteReader())
-                        {
-                            while (reader.Read())
-                            {
-                                var item = new ProductInfo
-                                {
-                                    Id = Convert.ToInt32(reader["Id"]),
-                                    Updated = Convert.ToDateTime(reader["Updated"]),
-                                    Alias = Convert.ToString(reader["Alias"]),
-                                    Hash = Convert.ToString(reader["Hash"]),
-                                    Title = Convert.ToString(reader["Title"]),
-									LastPublishedUserId = reader["UserUpdatedId"] == DBNull.Value ? null : (int?)reader["UserUpdatedId"],
-									LastPublishedUserName = reader["UserUpdated"].ToString()
-                                };
+                        Id = product.DpcId,
+                        Updated = product.Updated,
+                        Alias = product.Alias,
+                        Hash = product.Hash,
+                        Title = product.Title,
+						LastPublishedUserId = product.UserUpdatedId,
+						LastPublishedUserName = product.UserUpdated
+                    };
 
-                                list.Add(item);
-                            }
-                        }
-
-                        return list.ToArray();
-                    }
-                    finally
-                    {
-                        connection.Close();
-                    }
+                    list.Add(item);
                 }
-            }
+
+                return list.ToArray();
+	        }
         }
 
 	    public string GetProductXml(int id)
 	    {
-		    using (var connection = new SqlConnection(_connectionString))
+		    using(DpcModelDataContext context = _customer.DatabaseType == DatabaseType.Postgres
+			    ? GetNpgSqlDpcModelDataContext(_customer.ConnectionString)
+			    : GetSqlServerDpcModelDataContext(_customer.ConnectionString))
 		    {
-			    using (SqlCommand cmd = new SqlCommand(
-                    "SELECT Data FROM Products p WHERE p.DpcId = @id AND p.IsLive = @isLive AND p.Language = @language " +
-			        "AND p.Format = @format AND p.Version = 1 and p.Slug is null", connection))
-			    {
-				    cmd.Parameters.AddWithValue("@id", id);
-			        cmd.Parameters.AddWithValue("@isLive", _state ? 1 : 0);
-			        cmd.Parameters.AddWithValue("@language", _language);
-			        cmd.Parameters.AddWithValue("@format", _isJson ? "json" : "xml");
-
-                    connection.Open();
-
-				    return (string) cmd.ExecuteScalar();
-			    }
+			    var product = context.Products.FirstOrDefault(p => p.DpcId == id && p.IsLive == _state
+			                                              && p.Language == _language &&
+			                                              p.Format == (_isJson ? "json" : "xml")
+			                                              && p.Version == 1 && string.IsNullOrEmpty(p.Slug));
+			    return product?.Data;
 		    }
 	    }
 

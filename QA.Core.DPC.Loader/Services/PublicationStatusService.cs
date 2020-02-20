@@ -2,8 +2,13 @@
 using QA.Core.DPC.QP.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Npgsql;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
+using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -20,24 +25,27 @@ namespace QA.Core.DPC.Loader.Services
 
     public class PublicationStatusService
     {
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         public PublicationStatusService(IConnectionProvider connectionProvider)
         {
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
         public async Task<DateTime?> GetMaxPublicationTime()
         {
-            using (var connection = new SqlConnection(_connectionString))
+            DbConnection connection = _customer.DatabaseType == DatabaseType.Postgres
+                ? (DbConnection)new NpgsqlConnection(_customer.ConnectionString)
+                : new SqlConnection(_customer.ConnectionString); 
+            using (connection)
             {
                 await connection.OpenAsync();
 
                 DateTime? timestamp = await connection.QuerySingleAsync<DateTime?>($@"
-                    SELECT TOP (1)
+                    SELECT {SqlQuerySyntaxHelper.Top(_customer.DatabaseType, "1")}
                         Updated
-                    FROM dbo.Products
-                    ORDER BY Updated DESC");
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.Products
+                    ORDER BY Updated DESC {SqlQuerySyntaxHelper.Limit(_customer.DatabaseType, "1")}");
 
                 return timestamp;
             }
@@ -45,7 +53,10 @@ namespace QA.Core.DPC.Loader.Services
 
         public async Task<IEnumerable<ProductTimestamp>> GetProductTimestamps(int[] productIds)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            DbConnection connection = _customer.DatabaseType == DatabaseType.Postgres
+                ? (DbConnection)new NpgsqlConnection(_customer.ConnectionString)
+                : new SqlConnection(_customer.ConnectionString); 
+            using (connection)
             {
                 await connection.OpenAsync();
 
@@ -54,7 +65,7 @@ namespace QA.Core.DPC.Loader.Services
                         DpcId AS {nameof(ProductTimestamp.ProductId)},
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
                         Updated AS {nameof(ProductTimestamp.Updated)}
-                    FROM dbo.Products
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.Products
                     WHERE DpcId IN @{nameof(productIds)}",
                     new { productIds });
 
@@ -64,7 +75,10 @@ namespace QA.Core.DPC.Loader.Services
 
         public async Task<IEnumerable<ProductTimestamp>> GetProductTimestamps(DateTime updatedSince)
         {
-            using (var connection = new SqlConnection(_connectionString))
+            DbConnection connection = _customer.DatabaseType == DatabaseType.Postgres
+                ? (DbConnection)new NpgsqlConnection(_customer.ConnectionString)
+                : new SqlConnection(_customer.ConnectionString); 
+            using (connection)
             {
                 await connection.OpenAsync();
 
@@ -73,7 +87,7 @@ namespace QA.Core.DPC.Loader.Services
                         DpcId AS {nameof(ProductTimestamp.ProductId)},
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
                         Updated AS {nameof(ProductTimestamp.Updated)}
-                    FROM dbo.Products
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.Products
                     WHERE Updated > @{nameof(updatedSince)}",
                     new { updatedSince });
 

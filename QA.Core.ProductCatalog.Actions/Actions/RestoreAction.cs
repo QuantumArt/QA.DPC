@@ -3,14 +3,14 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-	public class RestoreAction : ArchiveActionBase
+	public class RestoreAction : ArchiveProductActionBase
 	{
-		public RestoreAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
-			: base(articleService, fieldService, productservice, logger, createTransaction, notificationService)
+		public RestoreAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
+			: base(articleService, fieldService, productservice, createTransaction, notificationService)
 		{
 		}
 

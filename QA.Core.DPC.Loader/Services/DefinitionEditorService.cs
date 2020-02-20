@@ -223,7 +223,7 @@ namespace QA.Core.DPC.Loader.Services
 			object result = GetObjectFromDef(rootContent, out notFoundInDef, entityIds);
 
 			if (notFoundInDef)
-				throw new Exception("Не найден элемент по пути " + path);
+				throw new Exception("Element not found by path: " + path);
 
 			return result;
 		}

@@ -19,80 +19,20 @@
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.6.0" />
     <PackageReference Include="CommonServiceLocator" Version="2.0.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
-    <PackageReference Include="NLog" Version="4.5.11" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NLog" Version="4.6.8" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-    <PackageReference Include="Unity" Version="5.8.13" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
-    <PackageReference Include="Z.EntityFramework.Classic.Community" Version="7.0.34" />
+    <PackageReference Include="Unity" Version="5.9.4" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.7.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.2.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.2.4" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.2.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="Model.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Model.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Model.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Model.edmx</DependentUpon>
-    </Compile>
-    <Compile Update="Schedule.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Task.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
-    <Compile Update="TaskState.cs">
-      <DependentUpon>Model.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Model.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>Model.Designer.cs</LastGenOutput>
-    </None>
-    <None Update="Model.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Model.edmx</DependentUpon>
-      <LastGenOutput>Model.Context.cs</LastGenOutput>
-    </None>
-    <None Update="Model.edmx.diagram">
-      <DependentUpon>Model.edmx</DependentUpon>
-    </None>
-    <None Update="Model.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>Model.edmx</DependentUpon>
-      <LastGenOutput>Model.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <ItemGroup>
-      <EmbeddedResource Include="Model.csdl">
-          <LogicalName>Model.csdl</LogicalName>
-      </EmbeddedResource>
-      <EmbeddedResource Include="Model.ssdl">
-          
-          <LogicalName>Model.ssdl</LogicalName>         
-      </EmbeddedResource>
-      <EmbeddedResource Include="Model.msl">
-          <LogicalName>Model.msl</LogicalName>
-      </EmbeddedResource>
-  </ItemGroup>
-    <PropertyGroup>
-        <PreBuildEvent>dotnet "$(MSBuildProjectDirectory)/utils/QA.Core.SplitEdmx.dll" "$(MSBuildProjectDirectory)/Model.edmx"</PreBuildEvent>
-    </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="utils" />
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
   </ItemGroup>
 </Project>

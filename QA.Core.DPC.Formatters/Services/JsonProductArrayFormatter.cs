@@ -50,5 +50,31 @@ namespace QA.Core.DPC.Formatters.Services
                 writer.Flush();
             }
         }
+
+        public string Serialize(IEnumerable<Article> products)
+        {
+            using (var sw = new StringWriter())
+            using (var writer = new JsonTextWriter(sw))
+            {                
+                writer.WriteStartArray();
+
+                foreach(var product in products)
+                {
+                    var data = _formatter.Serialize(product);
+                    using (var sr = new StringReader(data))
+                    using (var reader = new JsonTextReader(sr))
+                    {
+                        writer.WriteToken(reader);
+                        writer.Flush();                    
+                    }
+                }
+                                
+                writer.WriteEndArray();
+                writer.Flush();
+                
+                return sw.ToString();
+            }
+
+        }
     }
 }

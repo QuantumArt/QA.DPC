@@ -24,11 +24,11 @@ namespace QA.ProductCatalog.Infrastructure
         /// Получение базовой информании о продуктах
         /// </summary>
         /// <param name="ids">Идентификаторы продуктов</param>
-        /// <param name="isLive"></param>
+        /// <param name="isLive">Should we read live or stage data?</param>
         /// <returns></returns>
         Article[] GetSimpleProductsByIds(int[] ids, bool isLive = false);
 
-        /// <summary>
+        /// <summar
         /// Получение структуры данных на основе XML с мапингом данных из БД 
         /// </summary>
         /// <param name="productTypeId">Идентификатор типа продукта</param>

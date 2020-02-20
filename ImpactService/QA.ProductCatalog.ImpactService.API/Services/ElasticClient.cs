@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using NLog;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Extensions.Http;
@@ -28,14 +28,13 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         private readonly PolicyRegistry _registry;
         private readonly List<Exception> _exceptions;
         
-        public ElasticClient(IHttpClientFactory factory, PolicyRegistry registry, string indexName, string[] uris,
-            ILogger logger, ConfigurationOptions options)
+        public ElasticClient(IHttpClientFactory factory, PolicyRegistry registry, string indexName, string[] uris, ConfigurationOptions options)
         {
             _factory = factory;
             _registry = registry;
             _indexName = indexName;
             _uris = uris;
-            _logger = logger;
+            _logger = LogManager.GetCurrentClassLogger();
             _timeout = TimeSpan.FromSeconds(options.HttpTimeout);
             _faluiresAccepted = options.FailuresBeforeCircuitBreaking;
             _circuitBreakingInterval = TimeSpan.FromSeconds(options.CircuitBreakingInterval);
@@ -79,7 +78,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var message = $"HTTP Error. Code: {code}. Response: {result}";
             _exceptions.Add(new HttpRequestException(message));
-            _logger.LogInformation(message);
+            _logger.Info(message);
         }
    
         private async Task<HttpResponseMessage> GetHttpResponse(string baseUri, string type, string json)
@@ -102,12 +101,22 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogInformation(ex, $"Elastic connection error for {indexUri}");
+                _logger.Info(ex, "Elastic connection error for {indexUri}", indexUri);
                 _exceptions.Add(ex);
             }
             catch (BrokenCircuitException ex)
             {
-                _logger.LogInformation(ex, $"Circuit broken for {indexUri}");
+                _logger.Info(ex, "Circuit broken for {indexUri}", indexUri);
+                _exceptions.Add(ex);
+            }
+            catch (OperationCanceledException ex)
+            {
+                _logger.Info(ex, "Elastic connection timeout for {indexUri}", indexUri);
+                _exceptions.Add(ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex, "Unexpected exception for {indexUri}", indexUri);
                 _exceptions.Add(ex);
             }
 

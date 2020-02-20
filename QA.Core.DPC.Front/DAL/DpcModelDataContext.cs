@@ -1,14 +1,50 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace QA.Core.DPC.Front.DAL
 {
-    public partial class DpcModelDataContext
+    
+    public class DpcModelDataContext : DbContext
     {
+        public DpcModelDataContext()
+        {
+        }
+
+        public DpcModelDataContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductRegion> ProductRegions { get; set; }
+        public DbSet<ProductVersion> ProductVersions { get; set; }
+        
+        public DbSet<ProductRegionVersion> ProductRegionVersions { get; set; } 
+
+        public DbSet<RegionUpdate> RegionUpdates { get; set; }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            
+            modelBuilder.Entity<ProductRegion>(entity =>
+            {
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductRegions)
+                    .HasForeignKey(d => d.ProductId);
+            });
+            
+            modelBuilder.Entity<ProductRegionVersion>(entity =>
+            {
+                entity.HasOne(d => d.ProductVersion)
+                    .WithMany(p => p.ProductRegionVersions)
+                    .HasForeignKey(d => d.ProductVersionId);
+            });
+        }
+        
         public Product GetProduct(ProductLocator locator, int id)
         {
-            return GetProducts(locator).FirstOrDefault(m => id == m.DpcId);
-            
+            return GetProducts(locator).Include(m => m.ProductRegions).FirstOrDefault(m => id == m.DpcId);
         }
 
         public ProductVersion GetProductVersion(ProductLocator locator, int id, DateTime date)
@@ -31,42 +67,31 @@ namespace QA.Core.DPC.Front.DAL
 
         public IQueryable<ProductVersion> GetProductVersions(ProductLocator locator, DateTime date)
         {
-            if (string.IsNullOrEmpty(locator.Slug))
-            {
-                return ProductVersions.Where(m =>
-                    m.IsLive == locator.IsLive &&
-                    m.Language == locator.Language &&
-                    m.Format == locator.Format &&
-                    m.Version == locator.Version &&
-                    m.Slug.Equals(null) &&
-                    m.Modification <= date);
-            }
-            return ProductVersions.Where(m =>
+            var productVersions = ProductVersions.Where(m =>
                 m.IsLive == locator.IsLive &&
                 m.Language == locator.Language &&
                 m.Format == locator.Format &&
                 m.Version == locator.Version &&
-                m.Slug == locator.Slug &&
-                m.Modification <= date);
+                m.Modification <= date
+            );
+            
+            return (string.IsNullOrEmpty(locator.Slug))
+                ? productVersions.Where(m => String.IsNullOrEmpty(m.Slug))
+                : productVersions.Where(m => m.Slug == locator.Slug);
         }
 
         public IQueryable<Product> GetProducts(ProductLocator locator)
         {
-            if (string.IsNullOrEmpty(locator.Slug))
-            {
-                return Products.Where(m =>
-                    m.IsLive == locator.IsLive &&
-                    m.Language == locator.Language &&
-                    m.Format == locator.Format &&
-                    m.Version == locator.Version &&
-                    m.Slug.Equals(null));
-            }
-            return Products.Where(m =>
+            var products = Products.Where(m =>
                 m.IsLive == locator.IsLive &&
                 m.Language == locator.Language &&
                 m.Format == locator.Format &&
-                m.Version == locator.Version &&
-                m.Slug == locator.Slug);
+                m.Version == locator.Version
+            );
+
+            return (string.IsNullOrEmpty(locator.Slug))
+                ? products.Where(m => String.IsNullOrEmpty(m.Slug))
+                : products.Where(m => m.Slug == locator.Slug);
         }
 
         public void FillProduct(ProductLocator locator, Product product)

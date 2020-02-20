@@ -4,10 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
+using NLog;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
 {
@@ -17,9 +16,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         private readonly TariffOptionCalculator _calc;
 
+        protected override Logger Logger { get; } = LogManager.GetCurrentClassLogger();
         protected override BaseImpactCalculator Calculator => _calc;
 
-        public TariffOptionController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
+        public TariffOptionController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, cache)
         {
             _calc = new TariffOptionCalculator();
         }
@@ -38,8 +38,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             ConfigureOptions(searchOptions);
 
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, homeRegion, homeRegion, state, language);
-            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
-            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = await GetCachedResult(cacheKey, searchOptions, html);
             if (result != null) return result;
 
             result = await FillHomeRegion(searchOptions);
@@ -61,7 +60,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = result ?? (html ? TestLayout(Product, serviceIds, state, language, homeRegion) : Content(Product.ToString()));
 
-            if (!disableCache)
+            if (!IsCacheDisabled(html))
             {
                 SetCachedResult(id, serviceIds, result, cacheKey);
             }

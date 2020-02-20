@@ -9,12 +9,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             return FreezeState.Unfrosen;
         }
 
-        public int[] GetFrosenProductIds(int[] productIds)
+        public int[] GetFrozenProductIds(int[] productIds)
         {
             return new int[0];
         }
 
-        public int[] GetUnfrosenProductIds()
+        public int[] GetUnfrozenProductIds()
         {
             return new int[0];
         }

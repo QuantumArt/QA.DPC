@@ -1,4 +1,8 @@
-﻿using System.Xaml;
+﻿#if NETSTANDARD
+using Portable.Xaml;
+#else
+using System.Xaml;
+#endif
 using QA.Core.Models.Configuration;
 
 namespace QA.Core.Models.Tools

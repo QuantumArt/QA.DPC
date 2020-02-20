@@ -1,31 +1,19 @@
-﻿@using QA.ProductCatalog.Admin.WebApp.Models
-
+﻿@using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Admin.WebApp.Models
 @model DefinitionElement
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    string actionName;
-
-    if (Model is DefinitionFieldInfo)
-    {
-        actionName = ((DefinitionFieldInfo)Model).Field.GetType().Name;
-    }
-    else
-    {
-        actionName = "Content";
-    }
-
-    actionName = "Save" + actionName;
+    var actionName = "Save" + (Model is DefinitionFieldInfo ? "Field" : "Content");
 }
 
-@using (Ajax.BeginForm(actionName, new AjaxOptions
-{
-    OnSuccess = "DefinitionEditor.UpdateFormAfterSave",
-    OnFailure = "DefinitionEditor.OnTreeNodeSaveError",
-    OnBegin = "DefinitionEditor.onTreeNodeSaveBegin",
-    OnComplete = "DefinitionEditor.onTreeNodeSaveComplete"
-}))
-{
-    if (Model is DefinitionFieldInfo || (!Model.InDefinition && !(Model is DefinitionContentInfo && ((DefinitionContentInfo)Model).IsFromDictionaries)))
+<form asp-controller="DefinitionEditor" asp-action="@actionName" data-ajax="true" data-ajax-method="POST"
+      data-ajax-success="DefinitionEditor.UpdateFormAfterSave"
+      data-ajax-failure="DefinitionEditor.OnTreeNodeSaveError"
+      data-ajax-begin="DefinitionEditor.onTreeNodeSaveBegin"
+      data-ajax-complete="DefinitionEditor.onTreeNodeSaveComplete">
+
+    @if (Model is DefinitionFieldInfo || (!Model.InDefinition && !(Model is DefinitionContentInfo && ((DefinitionContentInfo)Model).IsFromDictionaries)))
     {
         <div class="editor-label">
             @Html.LabelFor(x => x.InDefinition, new { @for = "inDefinitionCheckbox" })
@@ -47,11 +35,13 @@
     @Html.HiddenFor(x => Model.Path)
 
     @Html.HiddenFor(x => Model.Xml)
+    
 
     <p style="clear: both">
-        <input id="save" type="submit" value="Применить" />
+        <input id="save" type="submit" value="@ControlStrings.Apply" />
     </p>
-}
+
+</form>
 
 <script>
     DefinitionEditor.ShowOrHideFieldProps();

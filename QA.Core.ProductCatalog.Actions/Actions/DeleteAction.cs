@@ -5,21 +5,23 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using System.Transactions;
-using QA.Core.Logger;
+using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	public class DeleteAction : ActionBase
+	public class DeleteAction : ProductActionBase
 	{
 		private const string DoNotSendNotificationsKey = "DoNotSendNotifications";
 		protected IQPNotificationService NotificationService { get; private set; }
 
-		public DeleteAction(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
-			: base(articleService, fieldService, productService, logger, createTransaction)
+		public DeleteAction(IArticleService articleService, IFieldService fieldService, IProductService productService, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
+			: base(articleService, fieldService, productService, createTransaction)
 		{
 			NotificationService = notificationService;
 		}
@@ -28,7 +30,11 @@ namespace QA.Core.ProductCatalog.Actions
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
 		{
             string[] channels = actionParameters.GetChannels();
-            var product = ArticleService.Read(productId);
+            var product = ArticleService.Read(productId, false);
+            
+            if (product == null)
+	            throw new ProductException(productId, nameof(TaskStrings.ProductsNotFound));
+            
             var definition = Productservice.GetProductDefinition(0, product.ContentId);
 			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
 
@@ -52,7 +58,10 @@ namespace QA.Core.ProductCatalog.Actions
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
             {
-                dictionary = GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, false);
+	            dictionary = DoWithLogging(
+		            () => GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, false),
+		            "Receiving articles to be deleted for product {id}", product.Id
+	            );
                 products = doNotSendNotifications ? null : Productservice.GetSimpleProductsByIds(new[] { product.Id });
             }
 
@@ -69,27 +78,40 @@ namespace QA.Core.ProductCatalog.Actions
 		private void DeleteProducts(Dictionary<int, Product<DeletingMode>> dictionary, int productId, bool checkRootArticlePermissions)
 		{
 			var articleIds = dictionary.Values.Where(a => a.Article.Id != productId).Select(p => p.Article.Id).ToArray();
+			DoWithLogging(
+				() => DeleteRootArticle(productId, checkRootArticlePermissions),
+				"Deleting root article for product {id}", productId
+			);
 
-		    if (checkRootArticlePermissions)
-		    {
-                var result = ArticleService.Delete(productId);
-                ValidateMessageResult(productId, result);
-            }
-            else
-                ArticleService.SimpleDelete(new [] { productId } );
-
-            ArticleService.SimpleDelete(articleIds);
+		    DoWithLogging(
+			    () => ArticleService.SimpleDelete(articleIds),
+			    "Deleting articles {ids} for product {id}", articleIds, productId
+		    );
+		}
+		
+		private void DeleteRootArticle(int productId, bool checkRootArticlePermissions)
+		{
+			if (checkRootArticlePermissions)
+			{
+				var result = ArticleService.Delete(productId);
+				ValidateMessageResult(productId, result);
+			}
+			else
+				ArticleService.SimpleDelete(new[] {productId});
 		}
 
 		private void SendNotification(Models.Entities.Article[] products, int productId, string[] channels)
 		{
 			try
 			{
-				NotificationService.DeleteProducts(products, UserName, UserId, false, channels);
+				DoWithLogging(
+					() => NotificationService.DeleteProducts(products, UserName, UserId, false, channels),
+					"Sending delete notifications for product {id}", productId
+				);
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "не удалось отправить уведомление об удалении", ex);
+				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex);
 			}
 		}
 		#endregion

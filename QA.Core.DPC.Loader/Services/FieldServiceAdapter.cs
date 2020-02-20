@@ -4,6 +4,8 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Concurrent;
 using QA.Core.DPC.QP.Services;
+using Quantumart.QP8.Constants;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {
@@ -11,7 +13,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 	{
 		private readonly FieldService _fieldService;
 		private readonly ConcurrentDictionary<int, Field> _fieldMap;
-		private readonly string _qpConnString;
+		private readonly Customer _customer;
 
 		public FieldServiceAdapter(FieldService fieldService, IConnectionProvider connectionProvider)
 		{
@@ -21,7 +23,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 			_fieldService = fieldService;
 			_fieldMap = new ConcurrentDictionary<int, Field>();
 
-			_qpConnString = connectionProvider.GetConnection();
+			_customer = connectionProvider.GetCustomer();
 		}
 
 		#region IFieldService implementation
@@ -42,7 +44,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 
 		public QPConnectionScope CreateQpConnectionScope()
 		{
-			return new QPConnectionScope(_qpConnString);
+			return new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType);
 		}
 
 		#endregion

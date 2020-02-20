@@ -3,7 +3,6 @@ using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.Models.Filters;
@@ -28,8 +27,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using NLog;
+using NLog.Fluent;
+using QA.Core.DPC.QP.Models;
 using Content = QA.Core.Models.Configuration.Content;
 using Qp8Bll = Quantumart.QP8.BLL;
+using ConfigurationService = QP.ConfigurationService;
 
 namespace QA.Core.DPC.Loader
 {
@@ -43,10 +46,10 @@ namespace QA.Core.DPC.Loader
         private int _hits;
         private int _misses;
 
-        private readonly string _connectionString;
+        private readonly Customer _customer;
         private readonly IContentDefinitionService _definitionService;
-        private readonly ILogger _logger;
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IFieldService _fieldService;
         private readonly ISettingsService _settingsService;
@@ -56,13 +59,12 @@ namespace QA.Core.DPC.Loader
         private IReadOnlyArticleService ArticleService { get; }
 
         #region Конструкторы
-        public ProductLoader(IContentDefinitionService definitionService, ILogger logger,
-            IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher,
+        public ProductLoader(IContentDefinitionService definitionService,
+            VersionedCacheProviderBase cacheProvider, ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService, IFieldService fieldService, ISettingsService settingsService,
             IList<IConsumerMonitoringService> consumerMonitoringServices, IArticleFormatter formatter, IConnectionProvider connectionProvider)
         {
             _definitionService = definitionService;
-            _logger = logger;
             _cacheProvider = cacheProvider;
             _cacheItemWatcher = cacheItemWatcher;
             ArticleService = articleService;
@@ -71,7 +73,7 @@ namespace QA.Core.DPC.Loader
             _consumerMonitoringServices = consumerMonitoringServices;
             _formatter = formatter;
 
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
         #endregion
 
@@ -79,18 +81,18 @@ namespace QA.Core.DPC.Loader
 
         public virtual Dictionary<string, object>[] GetProductsList(ServiceDefinition definition, long startRow, long pageSize, bool isLive)
         {
-            var fields = _fieldService.List(definition.Content.ContentId).ToArray();
-
-            var fieldNames = definition.Content.Fields
-                .Where(x => x is PlainField field && field.ShowInList)
-                .Select(x => fields.Single(y => y.Id == x.FieldId).Name)
-                .ToList();
-
-            fieldNames.Add("CONTENT_ITEM_ID");
-
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
-                var dbConnector = new DBConnector(_connectionString);
+                var fields = _fieldService.List(definition.Content.ContentId).ToArray();
+
+                var fieldNames = definition.Content.Fields
+                    .Where(x => x is PlainField field && field.ShowInList)
+                    .Select(x => fields.Single(y => y.Id == x.FieldId).Name)
+                    .ToList();
+
+                fieldNames.Add("CONTENT_ITEM_ID");
+
+                var dbConnector = new DBConnector(_customer.ConnectionString, (ConfigurationService.Models.DatabaseType)_customer.DatabaseType);
 
                 var dtdefinitionArticles =
                     dbConnector.GetContentData(
@@ -119,7 +121,7 @@ namespace QA.Core.DPC.Loader
         /// </summary>
         public virtual Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 ArticleService.IsLive = isLive;
 
@@ -131,7 +133,10 @@ namespace QA.Core.DPC.Loader
                 ArticleService.LoadStructureCache();
 
                 timer.Stop();
-                _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
+                _logger.Trace()
+                    .Message("LoadStructureCache for products {ids} took {elapsed} ms", 
+                        articleIds, timer.Elapsed.Milliseconds)
+                    .Write();
                 
                 var articlesById = new Dictionary<int, Article>();
                 var missedArticleIds = new List<int>();
@@ -161,8 +166,10 @@ namespace QA.Core.DPC.Loader
                     var loadedArticles = InitDictionaries(productDefinition, isLive, GetDictionaryCounter());
 
                     timer.Stop();
-                    _logger.Info(
-                        $"InitDictionaries called with hits {_hits} misses {_misses}, took {timer.Elapsed.TotalSeconds} secs");
+                    _logger.Info()
+                        .Message("InitDictionaries for products {ids} called with hits {hits} and misses {misses} took {elapsed} ms",
+                            articleIds, _hits, _misses, timer.Elapsed.Milliseconds)
+                        .Write();
 
                     timer.Restart();
 
@@ -171,15 +178,24 @@ namespace QA.Core.DPC.Loader
                         .ToArray();
 
                     timer.Stop();
-                    _logger.Debug("Root articles loading took {0} secs", timer.Elapsed.TotalSeconds);
+                    _logger.Info()
+                        .Message("Root articles {ids} loading took {elapsed} ms",
+                            missedArticleIds,  timer.Elapsed.Milliseconds)
+                        .Write();
 
                     _hits = _misses = 0;
                     var counter = GetArticleCounter(content.ContentId);
-
+                    timer.Restart();
+                    
                     Article[] articles = GetArticlesForQpArticles(qpArticles, productDefinition.StorageSchema, loadedArticles, isLive, counter);
 
                     counter.LogCounter();
-                    _logger.Info($"GetArticlesForQpArticles called with hits {_hits} misses {_misses}");
+                    timer.Stop();
+                    
+                    _logger.Info()
+                        .Message("GetArticlesForQpArticles for articles {ids} called with hits {hits} and misses {misses} took {elapsed} ms",
+                            missedArticleIds, _hits, _misses, timer.Elapsed.Milliseconds)
+                        .Write();
 
                     timer.Restart();
 
@@ -196,7 +212,12 @@ namespace QA.Core.DPC.Loader
                     }
 
                     timer.Stop();
-                    _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
+                    
+                    _logger.Info()
+                        .Message("Virtual fields generating for products {ids} took {elapsed} ms",
+                            missedArticleIds, timer.Elapsed.Milliseconds)
+                        .Write();
+
                 }
 
                 return articleIds.Select(id => articlesById[id]).ToArray();
@@ -208,7 +229,7 @@ namespace QA.Core.DPC.Loader
         /// </summary>
         public virtual Article GetProductById(int id, bool isLive = false, ProductDefinition productDefinition = null)
         {
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 ArticleService.IsLive = isLive;
 
@@ -221,7 +242,10 @@ namespace QA.Core.DPC.Loader
                 ArticleService.LoadStructureCache();
                 
                 timer.Stop();
-                _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
+                _logger.Trace()
+                    .Message("LoadStructureCache for product {id} took {elapsed} ms", 
+                        id, timer.Elapsed.Milliseconds)
+                    .Write();
 
                 Article article = null;
 
@@ -245,10 +269,12 @@ namespace QA.Core.DPC.Loader
                         return null;
 
                     timer.Stop();
-                    _logger.Debug("Root article loading took {0} secs", timer.Elapsed.TotalSeconds);
+                    _logger.Info()
+                        .Message("Root article {id} loading took {elapsed} ms",
+                            id,  timer.Elapsed.Milliseconds)
+                        .Write();
 
-                    timer.Reset();
-                    timer.Start();
+                    timer.Restart();
 
                     if (productDefinition == null)
                     {
@@ -258,27 +284,34 @@ namespace QA.Core.DPC.Loader
                     }
 
                     timer.Stop();
-                    _logger.Debug("Product definition loading took {0} secs", timer.Elapsed.TotalSeconds);
+                    _logger.Info()
+                        .Message("Product {id} definition loading took {elapsed} ms",
+                            id,  timer.Elapsed.Milliseconds)
+                        .Write();
 
-                    timer.Reset();
-                    timer.Start();
+                    timer.Restart();
 
                     article = GetProduct(qpArticle, productDefinition, isLive, counter);
                     counter.LogCounter();
 
                     timer.Stop();
-                    _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
+                    _logger.Info()
+                        .Message("Product {id} loading took {elapsed} ms",
+                            id,  timer.Elapsed.Milliseconds)
+                        .Write();
                 }
 
                 if (article.HasVirtualFields)
                 {
-                    timer.Reset();
-                    timer.Start();
+                    timer.Restart();
 
                     article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
 
                     timer.Stop();
-                    _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
+                    _logger.Info()
+                        .Message("Virtual fields generating for product {id} took {elapsed} ms",
+                            id,  timer.Elapsed.Milliseconds)
+                        .Write();
                 }
 
                 return article;
@@ -287,13 +320,18 @@ namespace QA.Core.DPC.Loader
         
         public virtual Article[] GetProductsByIds(int[] ids, bool isLive = false)
         {
-            var dbConnector = new DBConnector(_connectionString);
+            var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+            var idList = SqlQuerySyntaxHelper.IdList(_customer.DatabaseType, "@ids", "ids");
 
-            var sqlCommand = new SqlCommand(@"SELECT CONTENT_ID, CONTENT_ITEM_ID FROM CONTENT_ITEM WITH(NOLOCK) WHERE CONTENT_ITEM_ID IN (SELECT ID FROM @Ids)");
+            var dbCommand = dbConnector.CreateDbCommand(
+                $@"SELECT CONTENT_ID, CONTENT_ITEM_ID 
+                    FROM CONTENT_ITEM {SqlQuerySyntaxHelper.WithNoLock(_customer.DatabaseType)} 
+                    WHERE CONTENT_ITEM_ID IN (SELECT ID FROM {idList})");
 
-            sqlCommand.Parameters.Add(Common.GetIdsTvp(ids, "@Ids"));
-
-            var dt = dbConnector.GetRealData(sqlCommand);
+            dbCommand.CommandType = CommandType.Text;
+            dbCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", ids, _customer.DatabaseType));
+            
+            var dt = dbConnector.GetRealData(dbCommand);
 
             return dt
                 .AsEnumerable()
@@ -305,7 +343,7 @@ namespace QA.Core.DPC.Loader
         public virtual Article[] GetProductsByIds(int contentId, int[] ids, bool isLive = false)
         {
             var res = new List<Article>();
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 ArticleService.IsLive = isLive;
                 _cacheItemWatcher.TrackChanges();
@@ -332,7 +370,7 @@ namespace QA.Core.DPC.Loader
                     // по идее словари надо предзагружать и следить за их изменением
                     if (productDefinition == null)
                         throw new Exception(
-                            $"Для данныхй статей {string.Join(", ", ids)} не определено описание продукта");
+                            $"Product definitions not found for articles: {string.Join(", ", ids)} ");
 
                     var loadedArticles = InitDictionaries(productDefinition, isLive, GetDictionaryCounter());
 
@@ -487,7 +525,7 @@ namespace QA.Core.DPC.Loader
 
             if (res.StorageSchema == null)
                 throw new Exception(
-                    $"Не найден definition productTypeId={productTypeId} contentId={contentId} isLive={isLive}");
+                    $"Definition not found: productTypeId={productTypeId}, contentId={contentId}, isLive={isLive}");
 
             return res;
         }
@@ -496,40 +534,46 @@ namespace QA.Core.DPC.Loader
         #region Закрытые методы
 
         #region Queries
-        private const string GetProductTypesQuery = @"SELECT
-	ids.Id [ProductId],
-	c.CONTENT_ID [ContentId],
-	c.NET_CONTENT_NAME [ContentName],
-	c.CONTENT_NAME [ContentDisplayName],
-	itm.VISIBLE Visible,
-	itm.ARCHIVE Archive,
-	cl.ATTRIBUTE_NAME ExtensionAttributeName,
-	ec.CONTENT_ID [ExtensionContentId],
-	ec.NET_CONTENT_NAME [ExtensionName],
-	ec.CONTENT_NAME [ExtensionDisplayName],
-	ta.ATTRIBUTE_NAME [TypeAttributeName],
-	tv.[DATA] [TypeAttributeValue]
-FROM
-	@ids ids
-	LEFT JOIN CONTENT_ITEM itm ON ids.Id = itm.CONTENT_ITEM_ID
-	LEFT JOIN Content c ON itm.CONTENT_ID = c.CONTENT_ID
-	LEFT JOIN (select content_id, attribute_id, attribute_name from CONTENT_ATTRIBUTE where is_classifier = 1) cl on c.CONTENT_ID = cl.CONTENT_ID
-	LEFT JOIN CONTENT_DATA cd on cd.CONTENT_ITEM_ID = itm.CONTENT_ITEM_ID and cd.ATTRIBUTE_ID = cl.ATTRIBUTE_ID
-	LEFT JOIN content ec on cd.DATA = ec.CONTENT_ID
-	LEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.[ATTRIBUTE_NAME] = @typeField
-	LEFT JOIN CONTENT_DATA tv ON ta.[ATTRIBUTE_ID] = tv.[ATTRIBUTE_ID] AND itm.[CONTENT_ITEM_ID] = tv.CONTENT_ITEM_ID";
+
+        private string GetProductTypesQuery(string idsExpression)
+        { 
+                return $@"SELECT
+            ids.Id AS ProductId,
+                c.CONTENT_ID AS ContentId,
+                c.NET_CONTENT_NAME AS ContentName,
+                c.CONTENT_NAME AS ContentDisplayName,
+                itm.VISIBLE AS Visible,
+                itm.ARCHIVE AS Archive,
+                cl.ATTRIBUTE_NAME AS ExtensionAttributeName,
+                ec.CONTENT_ID AS ExtensionContentId,
+                ec.NET_CONTENT_NAME AS ExtensionName,
+                ec.CONTENT_NAME AS ExtensionDisplayName,
+                ta.ATTRIBUTE_NAME AS TypeAttributeName,
+                tv.DATA AS TypeAttributeValue
+            FROM {idsExpression}
+            LEFT JOIN CONTENT_ITEM itm ON ids.Id = itm.CONTENT_ITEM_ID
+            LEFT JOIN Content c ON itm.CONTENT_ID = c.CONTENT_ID
+            LEFT JOIN(select content_id, attribute_id, attribute_name from
+            CONTENT_ATTRIBUTE where is_classifier = {SqlQuerySyntaxHelper.ToBoolSql(_customer.DatabaseType, true)}) cl on c.CONTENT_ID = cl.CONTENT_ID
+            LEFT JOIN CONTENT_DATA cd on cd.CONTENT_ITEM_ID = itm.CONTENT_ITEM_ID and cd.ATTRIBUTE_ID = cl.ATTRIBUTE_ID
+            LEFT JOIN content ec on cd.DATA = CAST(ec.CONTENT_ID as varchar)
+            LEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.ATTRIBUTE_NAME = @typeField
+            LEFT JOIN CONTENT_DATA
+                tv ON ta.ATTRIBUTE_ID = tv.ATTRIBUTE_ID AND itm.CONTENT_ITEM_ID = tv.CONTENT_ITEM_ID";
+        }
 
         public ProductInfo[] GetProductsInfo(int[] productIds)
         {
             var typeField = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
 
-            using (var cs = new Qp8Bll.QPConnectionScope(_connectionString))
+            using (var cs = new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 var cnn = new DBConnector(cs.DbConnection);
-                using (var cmd = new SqlCommand(GetProductTypesQuery))
+                var idList = SqlQuerySyntaxHelper.IdList(_customer.DatabaseType, "@ids", "ids");
+                using (var cmd = cnn.CreateDbCommand(GetProductTypesQuery(idList)))
                 {
                     cmd.CommandType = CommandType.Text;
-                    cmd.Parameters.Add(new SqlParameter("@ids", SqlDbType.Structured) { TypeName = "Ids", Value = Quantumart.QP8.DAL.Common.IdsToDataTable(productIds) });
+                    cmd.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, _customer.DatabaseType));
                     cmd.Parameters.AddWithValue("@typeField", typeField);
                     var data = cnn.GetRealData(cmd);
                     return data.AsEnumerable().Select(Converter.ToModelFromDataRow<ProductInfo>).ToArray();
@@ -569,14 +613,21 @@ FROM
 
             stopWatch.Stop();
 
-            _logger.Info(
-                $"InitDictionaries called with hits {_hits} misses {_misses}, took {stopWatch.Elapsed.TotalSeconds} secs");
+            _logger.Info()
+                .Message("InitDictionaries called with hits {hits} and misses {misses} took {elapsed} ms",
+                    _hits, _misses, stopWatch.Elapsed.Milliseconds)
+                .Write();
 
             _hits = _misses = 0;
+            stopWatch.Restart();
 
             var article = GetArticlesForQpArticles(new []{qpArticle}, productDefinition.StorageSchema, loadedArticles, isLive, counter).FirstOrDefault();
 
-            _logger.Info($"GetArticle called with hits {_hits} misses {_misses}");
+            stopWatch.Stop();
+            _logger.Info()
+                .Message("GetArticle called with hits {hits} and misses {misses} took {elapsed} ms",
+                    _hits, _misses, stopWatch.Elapsed.Milliseconds)          
+                .Write();
 
             return article;
         }
@@ -652,7 +703,7 @@ FROM
             }
             else
             {
-                throw new Exception($"Виртуальное поле типа {virtualField.GetType()} не поддерживается");
+                throw new Exception($"Virtual field type {virtualField.GetType()} is not supported");
             }
 
             return field;
@@ -668,7 +719,7 @@ FROM
 
             if (articlesWithParents.Any(x => !(x.ModelObject is Article)))
             {
-                throw new Exception("VirtualMultiEntityField требует что бы в Path был фильтр по Article");
+                throw new Exception("VirtualMultiEntityField requires article filter in Path");
             }
 
             foreach (var articleWithParent in articlesWithParents)
@@ -965,7 +1016,7 @@ FROM
                 result.AddRange(ProcessExtensionField(fieldId, articles, localCache, isLive, counter, fieldDef));
             }
             else
-                throw new Exception($"Поле типа {fieldDef.GetType()} не поддерживается");
+                throw new Exception($"Field type {fieldDef.GetType()} is not supported");
 
             AppendCommonProperties(result, fieldValue, fieldDef, fieldName);
 
@@ -1356,6 +1407,15 @@ FROM
                             contentDic[dicKey] = article;
                         }
                     }
+                    
+                    _logger.Info()
+                        .Message(
+                            "Dictionary (id={id}, isLive={isLive}, hash={hash}) has been filled with {count} articles", 
+                            contentToCache.ContentId, isLive, contentToCache.GetHashCode(), articles.Length
+                        )
+                        .Property("name", contentToCache.ContentName)
+                        .Write();
+                    
 
                     return contentDic;
                 });
@@ -1470,7 +1530,12 @@ FROM
         {
             if (IsActive())
             {
-                _logger.Debug($"CounterData ProductId: {_productId} TotalCount: {_totalCount} CacheCount: {_cacheCount} HitCount: {_hitCount}");
+                _logger.Info()
+                    .Message("Article counting for product {id} completed", _productId)
+                    .Property("totalCount", _totalCount)
+                    .Property("cacheCount", _cacheCount)
+                    .Property("hitCount", _hitCount)
+                    .Write();
             }
         }
 
@@ -1480,7 +1545,7 @@ FROM
             if (IsExceeded())
             {
                 LogCounter();
-                throw new Exception($"Продукт слишком большой и не подлежит обработке. Превышено ограничение в {_articlesLimit} статей.");
+                throw new Exception($"Product is too big and not going to be processed. Max number of articles ({_articlesLimit}) limitation has been exceeded.");
             }
         }
 

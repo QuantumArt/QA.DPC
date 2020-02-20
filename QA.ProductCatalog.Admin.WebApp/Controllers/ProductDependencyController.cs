@@ -1,4 +1,4 @@
-﻿using System.Web.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using QA.ProductCatalog.Admin.WebApp.Core;
 using QA.ProductCatalog.Admin.WebApp.Models;
 

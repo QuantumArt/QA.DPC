@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FieldId" xml:space="preserve">
+    <value>Field Id</value>
+  </data>
+  <data name="FieldName" xml:space="preserve">
+    <value>Field Name</value>
+  </data>
+  <data name="FieldNameForCard" xml:space="preserve">
+    <value>Field Name for Card</value>
+  </data>
+  <data name="PublishBehaviour" xml:space="preserve">
+    <value>Publish Behaviour</value>
+  </data>
+  <data name="CloningMode" xml:space="preserve">
+    <value>Cloning Mode</value>
+  </data>
+  <data name="UpdatingMode" xml:space="preserve">
+    <value>Updating Mode</value>
+  </data>
+  <data name="DeletingMode" xml:space="preserve">
+    <value>Deleting Mode</value>
+  </data>
+  <data name="DefaultCachePeriod" xml:space="preserve">
+    <value>Default Cache Period</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="TaskId" xml:space="preserve">
+    <value>Task Id</value>
+  </data>
+  <data name="IsReadOnly" xml:space="preserve">
+    <value>Read-only</value>
+  </data>
+  <data name="LoadAllPlainFields" xml:space="preserve">
+    <value>Load all plain fields</value>
+  </data>
+  <data name="ContentName" xml:space="preserve">
+    <value>Content Name</value>
+  </data>
+  <data name="InDefinition" xml:space="preserve">
+    <value>Include in definition</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
+    <value>Created date</value>
+  </data>
+  <data name="LastStatusChangeTime" xml:space="preserve">
+    <value>Last status change time</value>
+  </data>
+  <data name="Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="DisplayName" xml:space="preserve">
+    <value>Display Name</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>User Name</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="PreloadingMode" xml:space="preserve">
+    <value>Preloading Mode</value>
+  </data>
+  <data name="RelationCondition" xml:space="preserve">
+    <value>Relation Condition</value>
+  </data>
+  <data name="RelationConditionDescription" xml:space="preserve">
+    <value>SQL-statement for article list filtration</value>
+  </data>
+  <data name="ClonePrototypeCondition" xml:space="preserve">
+    <value>Clone Prototype Condition</value>
+  </data>
+  <data name="ClonePrototypeConditionDescription" xml:space="preserve">
+    <value>SQL-statement to specify prototype article for cloning</value>
+  </data>
+  <data name="RelateToAnother" xml:space="preserve">
+    <value>Relates to content</value>
+  </data>
+  <data name="RelateToThis" xml:space="preserve">
+    <value>Relates to this content from content</value>
+  </data>
+  <data name="IgnoreLoading" xml:space="preserve">
+    <value>don't load</value>
+  </data>
+  <data name="EagerLoading" xml:space="preserve">
+    <value>eager loading</value>
+  </data>
+  <data name="LazyLoading" xml:space="preserve">
+    <value>lazy loading</value>
+  </data>
+  <data name="Publish" xml:space="preserve">
+    <value>publish</value>
+  </data>
+  <data name="DontPublish" xml:space="preserve">
+    <value>don't publish</value>
+  </data>
+  <data name="Ignore" xml:space="preserve">
+    <value>ignore</value>
+  </data>
+  <data name="UpdateOrCreate" xml:space="preserve">
+    <value>update or create</value>
+  </data>
+  <data name="DontRemove" xml:space="preserve">
+    <value>don't remove</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>remove</value>
+  </data>  
+  <data name="SetNull" xml:space="preserve">
+    <value>set null reference</value>
+  </data>
+  <data name="UseExisting" xml:space="preserve">
+    <value>use existing reference</value>
+  </data>
+  <data name="Clone" xml:space="preserve">
+    <value>clone entity</value>
+  </data>
+  <data name="ProductIdListToPublish" xml:space="preserve">
+    <value>Product Id List to Publish </value>
+  </data>
+  <data name="ProductIdList" xml:space="preserve">
+    <value>Product Id List</value>
+  </data>
+  <data name="PartialSend" xml:space="preserve">
+    <value>Send Products to all fronts (live and stage)</value>
+  </data>
+  <data name="PartialSendDescription" xml:space="preserve">
+    <value>This utility allows publishing and sending product to fronts 
+      along with deleting archived, invisible or ocassionally deleted products&lt;br /&gt;
+      You should enter list of regional or marketing product Ids (possible separators: &quot;,&quot;, &quot;;&quot;, space, newline)
+    </value>
+  </data>
+  <data name="SendProducts" xml:space="preserve">
+    <value>Send Products</value>
+  </data>
+  <data name="PublishAndSend" xml:space="preserve">
+    <value>Publish and Send</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="ProcessSpecialStatuses" xml:space="preserve">
+    <value>Process special statuses</value>
+  </data>
+  <data name="SendOnStageOnly" xml:space="preserve">
+    <value>Send on Stage only</value>
+  </data>
+  <data name="CurrentPartialSendTask" xml:space="preserve">
+    <value>Current send task</value>
+  </data>
+  <data name="OnlyOneTask" xml:space="preserve">
+    <value>Сoncurrent execution of send tasks is prohibited. Please, wait for completion of the current task.</value>
+  </data>
+  <data name="PublicationRequired" xml:space="preserve">
+    <value>Some products are required to be published before send to fronts</value>
+  </data>
+  <data name="ClickPublishAndSendButton" xml:space="preserve">
+    <value>To publish these products please click &quot;Publish and Send&quot; button</value>
+  </data>
+  <data name="JsonFieldName" xml:space="preserve">
+    <value>JSON Field Name</value>
+  </data>
+  <data name="LabelText" xml:space="preserve">
+    <value>Text in &lt;label&gt;</value>
+  </data>
+  <data name="IsClassifier" xml:space="preserve">
+    <value>Field type is classifier</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="RemovePath" xml:space="preserve">
+    <value>Path to remove field (specify only if it differs from Path)</value>
+  </data>
+  <data name="Converter" xml:space="preserve">
+    <value>Converter</value>
+  </data>
+  <data name="DontWrapInCData" xml:space="preserve">
+    <value>Don't wrap in CDATA</value>
+  </data>
+  <data name="LoadAsImage" xml:space="preserve">
+    <value>Load as Image</value>
+  </data>
+  <data name="CacheSettings" xml:space="preserve">
+    <value>Cache Settings</value>
+  </data>
+  <data name="AlreadyCached" xml:space="preserve">
+    <value>Content is already cached as dictionary</value>
+  </data>
+  <data name="ProceedCaching" xml:space="preserve">
+    <value>Cache</value>
+  </data>
+  <data name="DictionaryCachingSettings" xml:space="preserve">
+    <value>Dictionary caching settings</value>  
+  </data>
+  <data name="MissingInQp" xml:space="preserve">
+    <value>Field is missing in QP</value>  
+  </data>
+  <data name="EditXml" xml:space="preserve">
+    <value>Edit XML</value>  
+  </data>
+  <data name="EndEditXml" xml:space="preserve">
+    <value>Finish XML Editing</value>  
+  </data>
+</root>

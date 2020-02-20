@@ -1,15 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
     public abstract class ExceptionTestsBase<T>
         where T : Exception
     {
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void ExceptionSerialization()
         {
             var originalException = GetException();

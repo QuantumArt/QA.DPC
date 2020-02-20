@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -41,14 +42,18 @@ namespace QA.Core.DPC.QP.Services
             lock (_locker)
             {
                 _logger.LogInfo(() => $"Start register factory for {key}");
-                var invalidationKey = _customerProvider.GetConnectionString(key);
-                Invalidator[key] = invalidationKey;
-                OnRegister((IRegistrationContext)this ,key, invalidationKey);
+
+                if (!string.IsNullOrEmpty(key))
+                {
+                    var customer = _customerProvider.GetCustomer(key);
+                    Invalidator[key] = customer.ConnectionString;
+                    OnRegister((IRegistrationContext)this , customer);
+                }
                 _logger.LogInfo(() => $"End register for {key}");
             }
         }
 
-        protected abstract void OnRegister(IRegistrationContext context, string key, string invalidationKey);
+        protected abstract void OnRegister(IRegistrationContext context, Customer customer);
 
         protected T Resolve<T>(string key, bool autoRegister)
         {

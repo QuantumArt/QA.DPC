@@ -14,5 +14,10 @@ namespace QA.Core.ProductCatalog.Actions.Services
 	    {
 	        return "Admin";
 	    }
+
+	    public int GetLanguageId()
+	    {
+		    return 1;
+	    }
 	}
 }

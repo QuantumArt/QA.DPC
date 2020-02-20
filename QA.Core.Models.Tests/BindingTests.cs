@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
+using NUnit.Framework;
 using QA.Core.DPC.UI;
 using QA.Core.DPC.UI.Controls;
 using QA.Core.Models.Entities;
@@ -12,25 +13,17 @@ using QA.ProductCatalog.Infrastructure;
 namespace QA.Core.Models.Tests
 {
 
-    [TestClass]
+    [TestFixture]
     public class BindingTests
     {
-        [AssemblyInitialize]
-        public static void StartUp(TestContext ctx)
-        {
-            // ReSharper disable once ObjectCreationAsStatement
-            new StackPanel { Name = "" };
-            ctx.WriteLine("Started!");
-            UnityConfig.Configure();
-        }
 
-        [TestInitialize]
+        [OneTimeSetUp]
         public void Init()
         {
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestMethod1()
         {
             lock (typeof(DefaultBindingValueProviderFactory))
@@ -57,8 +50,7 @@ namespace QA.Core.Models.Tests
             }
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void TestMethodTestHierarchical1()
         {
             lock (typeof(DefaultBindingValueProviderFactory))
@@ -68,13 +60,12 @@ namespace QA.Core.Models.Tests
 
                 Assert.IsNotNull(control);
                 Assert.AreEqual("test", ((QPControlTest)((QPControlTest)control.Items[1]).Content).HierarchicalMember);
-                Assert.AreEqual("test1", ((QPControlTest)((QPControlTest)control.Items[1]).Content).HierarchicalMember);
-                Assert.IsNull(((QPControlTest)((QPControlTest)control.Items[1]).Content).HierarchicalMember);
+                Assert.AreEqual("test1", ((QPControlTest)((QPControlTest)control.Items[2]).Content).HierarchicalMember);
+                Assert.IsNull(((QPControlTest)((QPControlTest)control.Items[3]).Content).HierarchicalMember);
             }
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void Test_Binding_To_Model()
         {
             Run(() =>
@@ -109,7 +100,7 @@ namespace QA.Core.Models.Tests
 
 
 
-        [TestMethod]
+        [Test]
         public void TestStatic1()
         {
             Console.WriteLine(@"1");
@@ -128,7 +119,7 @@ namespace QA.Core.Models.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestStatic2()
         {
             Console.WriteLine(@"1");
@@ -146,8 +137,7 @@ namespace QA.Core.Models.Tests
             Assert.IsTrue(state1);
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void Test_Binding_To_Model_With_Converter()
         {
             Run(() =>
@@ -174,31 +164,31 @@ namespace QA.Core.Models.Tests
             });
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
+        [Ignore("debug only")]
         public void Test_Binding_To_Model_With__bindable_Converter()
         {
             Run(() =>
             {
-                QPModelBindingValueProvider.ThrowOnErrors = true;
-                var control = ValidationHelper.GetXaml<Group>("QA.Core.Models.Tests.Xaml.EntityEditor_BindableConverter.xaml");
+                    QPModelBindingValueProvider.ThrowOnErrors = true;
+                    var control =
+                        ValidationHelper.GetXaml<Group>(
+                            "QA.Core.Models.Tests.Xaml.EntityEditor_BindableConverter.xaml");
 
-                var model = new Article { ContentId = 1, Id = 123 };
-                model.Fields.Add("Test", new PlainArticleField { FieldName = "Test", Value = "testvalue" });
-                model.Fields.Add("Test1", new PlainArticleField { FieldName = "Test1", Value = "testvalue1" });
+                    var model = new Article {ContentId = 1, Id = 123, ContentName = "Main"};
+                    model.Fields.Add("Test", new PlainArticleField {FieldName = "Test", Value = "testvalue"});
+                    model.Fields.Add("Test1", new PlainArticleField { FieldName = "Test1", Value = "testvalue1" });
 
-                control.DataContext = model;
+                    control.DataContext = model;
 
-                var titl1 = ((Label)control.Items[0]).Title;
-                var titl2 = ((Label)control.Items[1]).Title;
-
-                Assert.AreEqual("testvalue", titl1);
-                Assert.AreEqual("testvalue1-testvalue", titl2);
+                    Assert.AreEqual("testvalue", ((Label)control.Items[0]).Title);
+                    Assert.AreEqual("testvalue1-testvalue", ((Label)control.Items[1]).Title);
             });
         }
 
 
-        [TestMethod]
+        [Test]
+        [Ignore("debug only")]
         public void Test_Binding_To_Model_With__bindable_Converter_roots()
         {
             Run(() =>
@@ -222,12 +212,11 @@ namespace QA.Core.Models.Tests
                 var label = (Label)ec.GetChildren().First();
 
                 Assert.AreEqual("testvalue-test1", label.Title);
-
             });
         }
 
 
-        [TestMethod]
+        [Test]
         public void Test_AttachedProperty()
         {
             Run(() =>
@@ -244,7 +233,7 @@ namespace QA.Core.Models.Tests
             });
         }
 
-        [TestMethod]
+        [Test]
         public void Test_AttachedProperty_with_inheritance()
         {
             Run(() =>
@@ -266,7 +255,7 @@ namespace QA.Core.Models.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void Test_Binding_AttachedProperty()
         {
             Run(() =>

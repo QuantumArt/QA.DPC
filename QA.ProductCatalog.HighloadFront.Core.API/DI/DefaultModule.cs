@@ -49,10 +49,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask").ExternallyOwned();
             builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*").ExternallyOwned();
             builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*").ExternallyOwned();
-            builder.RegisterType<ProductImporter>().ExternallyOwned();        
+            builder.RegisterType<ProductImporter>().ExternallyOwned();
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
-            builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityProvider(
+            builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityFixedProvider(
                 c.Resolve<IHttpContextAccessor>(), 
                 c.Resolve<DataOptions>().FixedCustomerCode
             ));
@@ -105,14 +105,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterScoped(c => c.Resolve<CustomerCodeInstance>().CacheProvider);
             builder.RegisterScoped(c => c.Resolve<CustomerCodeTaskInstance>().TaskService);
 
-            builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheProvider2>());
-
             if (IsQpMode)
             {
                 if (SettingsContentId != 0)
                 {
                     builder.RegisterScoped<ISettingsService>(c => new SettingsFromContentCoreService(
-                        c.Resolve<IVersionedCacheProvider2>(),
+                        c.Resolve<VersionedCacheProviderBase>(),
                         c.Resolve<IConnectionProvider>(),
                         SettingsContentId
                         ));                    

@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core.ProductCatalog.Actions.Tasks;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
@@ -24,9 +26,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _settingsService = settingsService;
             _taskService = taskService;
         }
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
-            var productIds = _freezeService.GetUnfrosenProductIds();
+            var productIds = _freezeService.GetUnfrozenProductIds();
 
             if (productIds.Any())
             {
@@ -59,12 +61,22 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                 string data = ActionData.Serialize(dataForQueue);
 
-                _taskService.AddTask(PublishAction, data, publishContext.UserId, publishContext.UserName, "Разморозка публикации");
+                _taskService.AddTask(PublishAction, data, publishContext.UserId, publishContext.UserName, TaskStrings.Unfreezing);
 
-                return "Отправлены на публикацию размороженные продукты: " + string.Join(",", productIds);
+                return ActionTaskResult.Success(new ActionTaskResultMessage()
+                {
+                    ResourceClass = nameof(TaskStrings),
+                    ResourceName = nameof(TaskStrings.ProductsUnfreezed),
+                    Extra = string.Join(",", productIds)
+                });
             }
+            
+            return ActionTaskResult.Success(new ActionTaskResultMessage()
+            {
+                ResourceClass = nameof(TaskStrings),
+                ResourceName = nameof(TaskStrings.NoProductsToUnfreeze),
+            });
 
-            return "Продуктов для разморозки не найдено";
         }
     }
 }

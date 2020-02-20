@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using QA.Core.Cache;
 using QA.Core.Logger;
 
 namespace QA.Core.DPC.QP.Cache
 {
     public class DpcContentInvalidator : IContentInvalidator 
     {
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly ILogger _logger;
 
-        public DpcContentInvalidator(IVersionedCacheProvider cacheProvider, ILogger logger)
+        public DpcContentInvalidator(VersionedCacheProviderBase cacheProvider, ILogger logger)
         {
             _cacheProvider = cacheProvider;
             _logger = logger;

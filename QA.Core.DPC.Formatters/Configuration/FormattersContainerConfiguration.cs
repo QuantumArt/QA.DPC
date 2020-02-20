@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Net.Http.Formatting;
+#if !NETSTANDARD
 using QA.Core.DocumentGenerator;
+#endif
 using QA.Core.DPC.Formatters.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Entities;
@@ -15,11 +17,13 @@ namespace QA.Core.DPC.Formatters.Configuration
 	{
 		protected override void Initialize()
 		{
-			Container.RegisterType<PdfProductFormatter>(new InjectionFactory(c => new PdfProductFormatter(c.Resolve<IDocumentGenerator>(), c.Resolve<XmlProductFormatter>())));
-			Container.RegisterType<Func<string, MediaTypeFormatter>>(new InjectionFactory(c => (Func<string, MediaTypeFormatter>)(name => c.Resolve<MediaTypeFormatter>(name))));
-			Container.RegisterType<Func<Type, MediaTypeFormatter>>(new InjectionFactory(c => (Func<Type, MediaTypeFormatter>)(type => c.Resolve<MediaTypeFormatter>(type.Name))));
+#if !NETSTANDARD			
+			Container.RegisterFactory<PdfProductFormatter>(c => new PdfProductFormatter(c.Resolve<IDocumentGenerator>(), c.Resolve<XmlProductFormatter>()));
+#endif			
+			Container.RegisterFactory<Func<string, MediaTypeFormatter>>(c => (Func<string, MediaTypeFormatter>)(name => c.Resolve<MediaTypeFormatter>(name)));
+			Container.RegisterFactory<Func<Type, MediaTypeFormatter>>(c => (Func<Type, MediaTypeFormatter>)(type => c.Resolve<MediaTypeFormatter>(type.Name)));
 
-			Container.RegisterType<Func<string, IArticleFormatter>>(new InjectionFactory(c => new Func<string, IArticleFormatter>(name => c.Resolve<IArticleFormatter>(name))));
+			Container.RegisterFactory<Func<string, IArticleFormatter>>(c => new Func<string, IArticleFormatter>(name => c.Resolve<IArticleFormatter>(name)));
 
 			var a = typeof(FormattersContainerConfiguration).Assembly;
 			var i = typeof(IArticleFormatter);
@@ -32,15 +36,22 @@ namespace QA.Core.DPC.Formatters.Configuration
 				}
 			}
             
-            Container.RegisterType<Func<XmlSchemaFormatter>>(new InjectionFactory(c => new Func<XmlSchemaFormatter>(() => c.Resolve<XmlSchemaFormatter>())));
-            Container.RegisterType<Func<XmlProductFormatter>>(new InjectionFactory(c => new Func<XmlProductFormatter>(() => c.Resolve<XmlProductFormatter>())));
-            Container.RegisterType<Func<XamlSchemaFormatter>>(new InjectionFactory(c => new Func<XamlSchemaFormatter>(() => c.Resolve<XamlSchemaFormatter>())));
-            Container.RegisterType<Func<XamlProductFormatter>>(new InjectionFactory(c => new Func<XamlProductFormatter>(() => c.Resolve<XamlProductFormatter>())));
-            Container.RegisterType<Func<PdfProductFormatter>>(new InjectionFactory(c => new Func<PdfProductFormatter>(() => c.Resolve<PdfProductFormatter>())));
-            Container.RegisterType<Func<JsonSchemaFormatter>>(new InjectionFactory(c => new Func<JsonSchemaFormatter>(() => c.Resolve<JsonSchemaFormatter>())));
-            Container.RegisterType<Func<JsonProductFormatter>>(new InjectionFactory(c => new Func<JsonProductFormatter>(() => c.Resolve<JsonProductFormatter>())));
-            Container.RegisterType<Func<BinaryModelFormatter<Article>>>(new InjectionFactory(c => new Func<BinaryModelFormatter<Article>>(() => c.Resolve<BinaryModelFormatter<Article>>())));
-            Container.RegisterType<Func<BinaryModelFormatter<Content>>>(new InjectionFactory(c => new Func<BinaryModelFormatter<Content>>(() => c.Resolve<BinaryModelFormatter<Content>>())));
+            Container.RegisterFactory<Func<XmlSchemaFormatter>>(c => new Func<XmlSchemaFormatter>(() => c.Resolve<XmlSchemaFormatter>()));
+            Container.RegisterFactory<Func<XmlProductFormatter>>(c => new Func<XmlProductFormatter>(() => c.Resolve<XmlProductFormatter>()));
+            Container.RegisterFactory<Func<XamlSchemaFormatter>>(c => new Func<XamlSchemaFormatter>(() => c.Resolve<XamlSchemaFormatter>()));
+            Container.RegisterFactory<Func<XamlProductFormatter>>(c => new Func<XamlProductFormatter>(() => c.Resolve<XamlProductFormatter>()));
+
+            Container.RegisterType<XmlProductFormatter>();
+            Container.RegisterType<XamlProductFormatter>();
+            
+#if !NETSTANDARD            
+            Container.RegisterFactory<Func<PdfProductFormatter>>(c => new Func<PdfProductFormatter>(() => c.Resolve<PdfProductFormatter>()));
+#endif            
+            Container.RegisterFactory<Func<JsonSchemaFormatter>>(c => new Func<JsonSchemaFormatter>(() => c.Resolve<JsonSchemaFormatter>()));
+            Container.RegisterFactory<Func<JsonProductFormatter>>(c => new Func<JsonProductFormatter>(() => c.Resolve<JsonProductFormatter>()));
+            Container.RegisterType<JsonProductFormatter>();
+            Container.RegisterFactory<Func<BinaryModelFormatter<Article>>>(c => new Func<BinaryModelFormatter<Article>>(() => c.Resolve<BinaryModelFormatter<Article>>()));
+            Container.RegisterFactory<Func<BinaryModelFormatter<Content>>>(c => new Func<BinaryModelFormatter<Content>>(() => c.Resolve<BinaryModelFormatter<Content>>()));
         }
 	}
 }

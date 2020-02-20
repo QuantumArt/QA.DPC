@@ -1,11 +1,11 @@
 ﻿using QA.Core.DPC.QP.Services;
 using System.Linq;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
-    [RoutePrefix("statistic")]
-    public class StatisticController : ApiController
+    [Route("statistic")]
+    public class StatisticController : Controller
     {
         private readonly IFactory _factory;
 
@@ -19,7 +19,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("Cache/{format:media_type_mapping=json}")]        
+        [Route("cache/{format:regex(^json|xml|xaml|jsonDefinition|jsonDefinition2$)}")]        
         public string[] Cache()
         {
             return _factory.Invalidator.Keys.ToArray();

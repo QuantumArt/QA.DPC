@@ -1,28 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
+using Microsoft.EntityFrameworkCore.Internal;
+using Newtonsoft.Json;
+using NLog;
+using NLog.Fluent;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Integration;
+using Quantumart.QP8.BLL;
+
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
 	public abstract class ActionTaskBase : IAction, ITask
 	{
-		private const string StandartMessageTemplate = "Обработаны статьи: {0}";
-
+		public const string ResourceClass = "TaskStrings";
+		
+		protected ILogger Logger { get; set; }
 		protected ITaskExecutionContext TaskContext { get; private set; }
 		protected ActionData ActionData { get; private set; }
 
 		public ActionTaskBase()
 		{
 			TaskContext = new EmptyTaskExecutionContext();
+			Logger = LogManager.GetLogger(GetType().ToString());
 		}
 
 		#region IAction implementation
-		public abstract string Process(ActionContext context);
+		public abstract ActionTaskResult Process(ActionContext context);
 		#endregion
 
 		#region ITask implementation
@@ -32,18 +41,26 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			ActionData = ActionData.Deserialize(data);
 
 			var context = ActionData.ActionContext;
-			string messageFromProcess = null;
+			ActionTaskResult processResult = new ActionTaskResult();
 			IEnumerable<IGrouping<string, int>> errors = null;
 			var ids = context.ContentItemIds;
 
 			try
 			{
-				messageFromProcess = Process(context);
+				Logger.Info()
+					.Message("{action} has been started", GetType().Name)
+					.Property("taskId",TaskContext.TaskId)
+					.Property("context", context)
+					.Write();
+
+				HttpContextUserProvider.ForcedUserId = context.UserId;
+				processResult = Process(context) ?? new ActionTaskResult();
+				HttpContextUserProvider.ForcedUserId = 0;
 			}
 			catch (ActionException ex)
 			{
 				var failedIds = ex.InnerExceptions.OfType<ProductException>().Select(x => x.ProductId);
-				ids = ids.Except(failedIds).ToArray();
+				processResult.FailedIds = processResult.FailedIds.Union(failedIds).ToArray();
 
 				errors = ex.InnerExceptions
 					.OfType<ProductException>()
@@ -53,46 +70,120 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 					);
 			}
 
-			if (executionContext.IsCancelled)
+			if (!executionContext.IsCancelled)
 			{
-				executionContext.Message = string.Empty;
-			}
-			else if (string.IsNullOrEmpty(messageFromProcess))
-			{
-				var sb = new StringBuilder();
-
+				ids = ids.Except(processResult.FailedIds).ToArray();
+				
 				if (ids.Any())
 				{
-					sb.AppendFormat(StandartMessageTemplate, string.Join(", ", ids));
+					processResult.IsSuccess = true;
+					
+					var idsStr = string.Join(", ", ids);
+					processResult.Messages.Add(new ActionTaskResultMessage() {
+						ResourceClass = nameof(TaskStrings), 
+						ResourceName = nameof(TaskStrings.ArticlesProcessed), 
+						Parameters = new object[] {idsStr}
+					});
 				}
 
 				if (errors != null)
 				{
 					foreach (var err in errors)
 					{
-						sb.AppendLine();
-						sb.AppendFormat("{0} : статьи {1}", err.Key, string.Join(", ", err));
+						var result = ActionTaskResult.FromString(err.Key);
+						if (result != null)
+						{
+							if (result.Messages != null && result.Messages.Any())
+							{
+								processResult.Messages.AddRange(result.Messages);
+							}
+						}
+						else
+						{
+							processResult.Messages.Add(new ActionTaskResultMessage() {
+								ResourceClass = nameof(TaskStrings), 
+								ResourceName = err.Key, 
+								Parameters = new object[] {String.Join(",", err)}
+							});		
+						}
 					}
 				}
-				
-				executionContext.Message = sb.ToString();
 			}
-			else
-			{
-				executionContext.Message = messageFromProcess;
-			}
-			
-			if (!ids.Any() && errors != null)
-			{
-				throw new ActionException(executionContext.Message, new Exception[0], null);
-			}
-		}
-		#endregion
 
+			executionContext.Result = processResult.GetMergedResult();
+			
+		}
+		
+		#endregion
+		
 
         public void Run(string data, string config, byte[] binData, ITaskExecutionContext executionContext)
         {
             Run(data, executionContext);
         }
-    }
+
+        protected T DoWithLogging<T>(Func<T> func, string message, params object[] messageParams)
+        {
+	        var timer = new Stopwatch();
+
+	        try
+	        {
+		        T result;
+		        timer.Start();
+		        result = func();
+		        timer.Stop();
+		        Logger.Info()
+			        .Message(message, messageParams)
+			        .Property("taskId", TaskContext.TaskId)
+			        .Property("elapsed", timer.ElapsedMilliseconds)
+			        .Write();                
+		        return result;
+	        }
+	        catch (Exception ex)
+	        {
+		        timer.Stop();
+		        Logger.Error()
+			        .Exception(ex)
+			        .Message(message, messageParams)
+			        .Property("taskId", TaskContext.TaskId)
+			        .Property("elapsed", timer.ElapsedMilliseconds)
+			        .Write();
+
+		        throw;
+	        }
+            
+
+        }
+
+        protected void DoWithLogging(Action func, string message, params object[] messageParams)
+        {
+	        var timer = new Stopwatch();
+	        timer.Start();
+
+	        try
+	        {
+		        func();
+	        }
+	        catch (Exception ex)
+	        {
+		        timer.Stop();
+		        Logger.Error()
+			        .Exception(ex)
+			        .Message(message, messageParams)
+			        .Property("taskId", TaskContext.TaskId)
+			        .Property("elapsed", timer.ElapsedMilliseconds)
+			        .Write();
+
+		        throw;
+	        }
+	        
+	        timer.Stop();
+	        Logger.Info()
+		        .Message(message, messageParams)
+		        .Property("taskId", TaskContext.TaskId)
+		        .Property("elapsed", timer.ElapsedMilliseconds)
+		        .Write();        
+
+        }
+	}
 }

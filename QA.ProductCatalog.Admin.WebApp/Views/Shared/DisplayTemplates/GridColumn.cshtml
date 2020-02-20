@@ -1,12 +1,13 @@
-﻿@model GridColumn
-@if (Model == null || Model.Hidden) { return; }
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.GridColumn
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @if (Model.CellTemplate == null && Model.CurrentItem != null)
 {
     @Html.DisplayFor(x => Model.CurrentItem)
 }
 else if (Model.CellTemplate != null)
 {
-    @Html.DisplayFor(x => Model.CellTemplate)
+    @Html.DisplayForUIElement(Model.CellTemplate)
 }
 else
 {

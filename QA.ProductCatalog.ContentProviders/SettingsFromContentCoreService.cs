@@ -9,11 +9,11 @@ namespace QA.ProductCatalog.ContentProviders
 
     public class SettingsFromContentCoreService : SettingsServiceBase
     {
-        private readonly IVersionedCacheProvider2 _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
 
         private readonly int _settingsContentId;
 
-        public SettingsFromContentCoreService(IVersionedCacheProvider2 cacheProvider, 
+        public SettingsFromContentCoreService(VersionedCacheProviderBase cacheProvider, 
             IConnectionProvider connectionProvider, 
             int settingsContentId)
             : base(connectionProvider, cacheProvider)
@@ -38,12 +38,12 @@ namespace QA.ProductCatalog.ContentProviders
 
         private string GetSettingValue(string title)
         {
-            var cnn = new DBConnector(_connectionString);
+            var cnn = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
             var keycolumn = FIELD_NAME_TITLE;
             var valuecolumn = FIELD_NAME_VALUE;
             var keyvalue = title.Replace("'", "''");
-            var query = $"select [{valuecolumn}] from content_{_settingsContentId}_united" +
-                        $" where archive = 0 and visible = 1 and [{keycolumn}] = '{keyvalue}'";
+            var query = $"select {valuecolumn} from content_{_settingsContentId}_united" +
+                        $" where archive = 0 and visible = 1 and {keycolumn} = '{keyvalue}'";
             var data = cnn.GetData(query);
             return data.Rows.Count > 0 ? data.Rows[0][valuecolumn].ToString() : null;
 

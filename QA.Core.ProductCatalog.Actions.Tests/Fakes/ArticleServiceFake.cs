@@ -90,6 +90,9 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			var article = (Article)Activator.CreateInstance(typeof(Article), true);
 			article.ContentId = contentId;
 			article.FieldValues = new List<FieldValue>();
+			article.Visible = true;
+			article.Status = new StatusType() { Name = "None"};
+			article.AggregatedArticles = new Article[] { };
 			return article;
 		}
 
@@ -162,24 +165,24 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 		public bool IsLive { get; set; }
 
 
-		InsertData[] IArticleService.BatchUpdate(IEnumerable<ArticleData> articles, bool createVersions = false)
+		InsertData[] IArticleService.BatchUpdate(IEnumerable<ArticleData> articles, bool createVersions)
 		{
 			throw new NotImplementedException();
 		}
 
-		InsertData[] IArticleService.BatchUpdate(IEnumerable<Article> articles, bool createVersions = false)
+		InsertData[] IArticleService.BatchUpdate(IEnumerable<Article> articles, bool createVersions)
 		{
 			throw new NotImplementedException();
 		}
 
 		public Dictionary<int, bool> CheckRelationSecurity(int contentId, int[] ids, bool isDeletable)
 		{
-			throw new NotImplementedException();
+			return ids.ToDictionary(n => n, m => true);
 		}
 
         public RulesException XamlValidationById(int articleId, bool persistChanges)
         {
-            throw new NotImplementedException();
+            return new RulesException();
         }
     }
 }

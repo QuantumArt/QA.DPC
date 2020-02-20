@@ -88,7 +88,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public ElasticClient GetElasticClient(ElasticIndex index)
         {
-            return new ElasticClient(_factory, _registry, index.Name, index.Urls, _logger, DataOptions);
+            return new ElasticClient(_factory, _registry, index.Name, index.Urls, DataOptions);
         }
 
         public virtual string GetUserName(string token)

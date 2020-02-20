@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using QA.Core;
+using QA.Core.DPC.Resources;
 using QA.Core.Linq;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
@@ -20,7 +21,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
     public class SendProductModel
     {
         public string Message { get; set; }
-        [Display(Name = "Список ID продуктов, которые следует опубликовать перед отправкой")]
+        
+        [Display(Name = "ProductIdListToPublish", ResourceType = typeof(ControlStrings))]
         public string ArticleIds { get; set; }
 
         public Article[] NeedPublishing { get; set; }
@@ -29,7 +31,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         public int[] NotFound { get; set; }
 
-        [Display(Name = "Список ID продуктов")]
+        [Display(Name = "ProductIdList", ResourceType = typeof(ControlStrings))]
         public string Ids { get; set; }
 
         internal static Result Send(int[] ids, int bundleSize)
@@ -47,12 +49,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 	        string userName = userProvider.GetUserName();
 
-            UserProvider.ForcedUserId = userId;
+            HttpContextUserProvider.ForcedUserId = userId;
 
             Parallel.ForEach(parts, new ParallelOptions { MaxDegreeOfParallelism = 12 },
                 () =>
                 {
-                    UserProvider.ForcedUserId = userId;
+                    HttpContextUserProvider.ForcedUserId = userId;
                     return new TLocal
                     {
                         ProductService = ObjectFactoryBase.Resolve<IProductService>(),
@@ -157,6 +159,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
                         errors.Add(ex);
                     }
+
+                    HttpContextUserProvider.ForcedUserId = 0;
+                    
                     return tl;
                 }, tt => { });
 
@@ -181,6 +186,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 						.Wait();
                 }
             }
+
+            HttpContextUserProvider.ForcedUserId = 0;
 
             var products = productsToPublish.ToArray();
 

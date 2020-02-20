@@ -1,10 +1,12 @@
-﻿namespace QA.ProductCatalog.Infrastructure
+﻿using System.Data;
+
+namespace QA.ProductCatalog.Infrastructure
 {
     public interface IFreezeService
     {
         FreezeState GetFreezeState(int productId);
-        int[] GetUnfrosenProductIds();
-        int[] GetFrosenProductIds(int[] productIds);
+        int[] GetUnfrozenProductIds();
+        int[] GetFrozenProductIds(int[] productIds);
         void ResetFreezing(params int[] productIds);
     }
 

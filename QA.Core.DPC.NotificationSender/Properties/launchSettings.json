@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "QA.Core.DPC.NotificationSender": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "commandLineArgs": "--console",      
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      },
+      "applicationUrl": "http://localhost:5320/swagger"
+    }
+  }
+}

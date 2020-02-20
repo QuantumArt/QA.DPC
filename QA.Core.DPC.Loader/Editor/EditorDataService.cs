@@ -136,7 +136,7 @@ namespace QA.Core.DPC.Loader.Editor
             }
             else
             {
-                throw new NotSupportedException($"Поле типа {field.GetType()} не поддерживается");
+                throw new NotSupportedException($"Field with type {field.GetType()} is not supported");
             }
         }
 

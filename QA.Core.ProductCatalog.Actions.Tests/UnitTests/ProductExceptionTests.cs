@@ -1,9 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-	[TestClass]
+	[TestFixture]
 	public class ProductExceptionTests : ExceptionTestsBase<ProductException>
 	{
 		private const int ProductId = 15;

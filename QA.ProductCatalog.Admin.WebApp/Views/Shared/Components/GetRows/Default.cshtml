@@ -1,0 +1,23 @@
+@model QA.ProductCatalog.Admin.WebApp.Models.GetRowsModel
+
+@{
+  foreach (var row in Model.GridView.GetChildren(Model.Items))
+  {
+    if (Model.GridView.RowTemplate != null)
+    {
+      Model.GridView.RowTemplate.DataContext = row.DataContext;
+    }
+    if (Model.GridView.RowTemplate == null || !(Model.GridView.RowTemplate.Hidden ?? false))
+    {
+      <tr class="@(Model.GridView.RowTemplate != null ? Model.GridView.RowTemplate.ClassName: "")">
+        @foreach (var col in row.Columns)
+        {
+          <td style="overflow: @col.Overflow.ToString().ToLower(); @(col.Padding!=null?col.Padding.ToString():"")">
+            @Html.DisplayFor(x => col)
+          </td>
+        }
+      </tr>
+    }
+  }
+}
+

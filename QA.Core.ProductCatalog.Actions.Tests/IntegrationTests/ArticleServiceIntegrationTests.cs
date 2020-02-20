@@ -1,17 +1,17 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using Unity;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {
-    [Ignore]
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class ArticleServiceIntegrationTests : IntegrationTestsBase
     {
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_ArticleService_Read()
         {
             var service = Container.Resolve<IArticleService>();
@@ -30,8 +30,8 @@ namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
             }
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_ArticleService_Save()
         {
             var service = Container.Resolve<IArticleService>();

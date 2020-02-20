@@ -23,10 +23,10 @@ namespace QA.Core.DPC.QP.API.Services
             from
                 status_type s";
 
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly IConnectionProvider _connectionProvider;     
 
-        public StatusProvider(IVersionedCacheProvider cacheProvider, IConnectionProvider connectionProvider)
+        public StatusProvider(VersionedCacheProviderBase cacheProvider, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
             _connectionProvider = connectionProvider;

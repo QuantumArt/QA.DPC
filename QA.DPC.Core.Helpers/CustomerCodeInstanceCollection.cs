@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
+using QA.Core.ProductCatalog.ActionsRunner;
 using ILogger = QA.Core.Logger.ILogger;
 using QA.ProductCatalog.ContentProviders;
 
@@ -12,14 +14,17 @@ namespace QA.DPC.Core.Helpers
 
         private readonly ILogger _logger;
 
+        private readonly TaskRunnerDelays _delays;
+
         private readonly Dictionary<string, CustomerCodeInstance> _list = new Dictionary<string, CustomerCodeInstance>();
 
         private readonly Dictionary<string, CustomerCodeTaskInstance> _taskList =
             new Dictionary<string, CustomerCodeTaskInstance>();
 
-        public CustomerCodeInstanceCollection(ILogger logger)
+        public CustomerCodeInstanceCollection(ILogger logger, TaskRunnerDelays delays)
         {
             _logger = logger;
+            _delays = delays;
         }
 
         public CustomerCodeInstance Get(IIdentityProvider provider, IConnectionProvider connectionProvider)
@@ -34,7 +39,7 @@ namespace QA.DPC.Core.Helpers
         {
             var customerCode = provider.Identity?.CustomerCode;
             CustomerCodeTaskInstance result =
-                GetCustomerCodeTaskInstance(provider, customerCode, reindexAllTaskAccessor);
+                GetCustomerCodeTaskInstance(provider, customerCode, reindexAllTaskAccessor, _delays);
             return result;
         }
 
@@ -53,7 +58,12 @@ namespace QA.DPC.Core.Helpers
             return result;
         }
 
-        private CustomerCodeTaskInstance GetCustomerCodeTaskInstance(IIdentityProvider provider, string customerCode, Func<ITask> reindexAllTaskAccessor)
+        private CustomerCodeTaskInstance GetCustomerCodeTaskInstance(
+            IIdentityProvider provider, 
+            string customerCode, 
+            Func<ITask> reindexAllTaskAccessor, 
+            TaskRunnerDelays delays
+        )
         {
             CustomerCodeTaskInstance result = null;
             if (customerCode == null || _taskList.TryGetValue(customerCode, out result)) return result;
@@ -61,7 +71,7 @@ namespace QA.DPC.Core.Helpers
             {
                 if (!_taskList.TryGetValue(customerCode, out result))
                 {
-                    result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), _logger);
+                    result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), delays);
                     _taskList.Add(customerCode, result);
                 }
             }

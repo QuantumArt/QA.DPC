@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.Admin.WebApp
 	{
 		protected override void Initialize()
 		{
-			Container.RegisterType<Func<string, string, IAction>>(new InjectionFactory(c => new Func<string, string, IAction>(
+			Container.RegisterFactory<Func<string, string, IAction>>(c => new Func<string, string, IAction>(
 				(actionKey, adapterKey) =>
 				{
 					if (c.IsRegistered<ActionAdapterBase>(adapterKey) && c.IsRegistered<ITask>(actionKey))
@@ -26,7 +26,7 @@ namespace QA.ProductCatalog.Admin.WebApp
 					{
 						return c.Resolve<IAction>(actionKey);
 					}
-				})));
+				}));
 
 			var a = typeof(TaskContainerConfiguration).Assembly;
 			foreach (var t in a.GetExportedTypes())

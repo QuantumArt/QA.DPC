@@ -6,7 +6,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
+using NLog;
+using NLog.Fluent;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Extensions.Http;
@@ -25,18 +26,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly TimeSpan _circuitBreakingInterval;
         private readonly string[] _uris;
         private readonly string _indexName;
-        private readonly ILogger _logger;
         private readonly PolicyRegistry _registry;
         private readonly List<Exception> _exceptions;
+        private readonly ILogger _logger;
         
-        public ElasticClient(IHttpClientFactory factory, PolicyRegistry registry, string indexName, string[] uris,
-            ILogger logger, DataOptions options)
+        public ElasticClient(IHttpClientFactory factory, PolicyRegistry registry, string indexName, string[] uris, DataOptions options)
         {
             _factory = factory;
             _registry = registry;
             _indexName = indexName;
             _uris = uris;
-            _logger = logger;
+            _logger = LogManager.GetCurrentClassLogger();
             _timeout = TimeSpan.FromSeconds(options.ElasticTimeout);
             _faluiresAccepted = options.FailuresBeforeCircuitBreaking;
             _circuitBreakingInterval = TimeSpan.FromSeconds(options.CircuitBreakingInterval);
@@ -140,6 +140,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private async Task<string> QueryAsync(ElasticRequestParams eparams, string json)
         {
+            
             var randomIndexes = GetRandomIndexes();
            _exceptions.Clear();
             
@@ -147,13 +148,29 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 var baseUri = _uris[index];
                 
+                if (_logger.IsTraceEnabled)
+                {
+                    _logger.Trace().Message("Processing request to Elastic")
+                        .Property("baseUri", baseUri)
+                        .Property("searchParams", eparams)
+                        .Property("json", json)
+                        .Write();
+                }
+                
                 var response = await GetHttpResponse(baseUri, eparams, json);
 
-                if (response == null) continue;
+                if (response == null)
+                {
+                    _logger.Trace("Response is null");
+                    continue;
+                }
 
                 var result = await response.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode) return result;
+                if (response.IsSuccessStatusCode)
+                {
+                    return result;
+                }
 
                 var message = !string.IsNullOrEmpty(result) ? result : response.ReasonPhrase;
                 
@@ -161,6 +178,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
+                    _logger.Trace("Not found received");
+                    
                     if (eparams.ThrowNotFound)
                     {
                         break;
@@ -191,7 +210,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var message = $"HTTP Error. Code: {code}. Response: {result}";
             _exceptions.Add(new HttpRequestException(message));
-            _logger.LogInformation(message);
+            _logger.Info(message);
         }
 
         private async Task<HttpResponseMessage> GetHttpResponse(string baseUri, ElasticRequestParams eparams, string json)
@@ -206,12 +225,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError($"Elastic connection error for {indexUri}", ex);
+                _logger.Error(ex, "Elastic connection error for {indexUri}", indexUri);
                 _exceptions.Add(ex);
             }
             catch (BrokenCircuitException ex)
             {
-                _logger.LogError($"Circuit broken for {indexUri}", ex);
+                _logger.Error(ex, "Circuit broken for {indexUri}", indexUri);
+                _exceptions.Add(ex);
+            }
+            catch (OperationCanceledException ex)
+            {
+                _logger.Info(ex, "Elastic connection timeout for {indexUri}", indexUri);
+                _exceptions.Add(ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.Info(ex, "Unexpected exception for {indexUri}", indexUri);
                 _exceptions.Add(ex);
             }
 

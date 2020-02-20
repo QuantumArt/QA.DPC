@@ -15,30 +15,8 @@ namespace QA.ProductCatalog.ContentProviders
                 e.Date,
                 c.Url as ReindexUrl,
                 'invariant' as Language
-            FROM
-                (
-                    SELECT
-                        [index].*
-                    FROM
-                    (
-                        SELECT NULL [Date]) AS t
-                        CROSS APPLY
-                        (
-                            SELECT
-	                            Name,
-	                            Address,
-	                            State,
-	                            IsDefault,
-	                            DoTrace,
-	                            [Date],
-	                            ReindexChannel,
-	                            ARCHIVE,
-	                            VISIBLE 
-                            FROM
-	                            CONTENT_{0}_UNITED
-                        ) AS [index]
-                 ) AS e
-                join CONTENT_{1}_UNITED c ON e.[ReindexChannel] = c.CONTENT_ITEM_ID
+            FROM CONTENT_{0}_UNITED e
+                join CONTENT_{1}_UNITED c ON e.ReindexChannel = c.CONTENT_ITEM_ID
             WHERE
                 c.ARCHIVE = 0 AND c.VISIBLE = 1 AND e.ARCHIVE = 0 AND e.VISIBLE = 1";
 
@@ -51,36 +29,10 @@ namespace QA.ProductCatalog.ContentProviders
                 e.DoTrace,
                 e.Date,
                 c.Url as ReindexUrl,
-                CASE WHEN l.Code IS NULL
-                    THEN 'invariant'
-                    ELSE l.Code
-                END as Language
-            FROM
-                 (
-                    SELECT
-                        [index].*
-                    FROM
-                    (
-                        SELECT NULL [Date]) AS t
-                        CROSS APPLY
-                        (
-                            SELECT
-	                            Name,
-	                            Address,
-	                            State,
-                                [Language],
-	                            IsDefault,
-	                            DoTrace,
-	                            [Date],
-	                            ReindexChannel,
-	                            ARCHIVE,
-	                            VISIBLE 
-                            FROM
-	                            CONTENT_{0}_UNITED
-                        ) AS [index]
-                 ) AS e
-                join CONTENT_{1}_UNITED c ON e.[ReindexChannel] = c.CONTENT_ITEM_ID
-                join CONTENT_{2}_UNITED l on e.[Language] = l.CONTENT_ITEM_ID
+                COALESCE(l.Code, 'invariant') as Language
+            FROM CONTENT_{0}_UNITED e
+                join CONTENT_{1}_UNITED c ON e.ReindexChannel = c.CONTENT_ITEM_ID
+                join CONTENT_{2}_UNITED l on e.Language = l.CONTENT_ITEM_ID
             WHERE
                 c.ARCHIVE = 0 AND
                 c.VISIBLE = 1 AND

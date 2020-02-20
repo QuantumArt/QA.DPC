@@ -1,5 +1,8 @@
-﻿using System.Windows.Markup;
-
+﻿#if NETSTANDARD
+using Portable.Xaml.Markup;
+#else
+using System.Windows.Markup;
+#endif
 namespace QA.Core.Models.UI
 {
     [ContentProperty("Items")]

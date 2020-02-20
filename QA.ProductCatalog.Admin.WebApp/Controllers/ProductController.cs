@@ -5,7 +5,7 @@ using QA.Core.Extensions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.UI;
 using QA.Core.Models;
@@ -15,32 +15,39 @@ using QA.Core.Models.Filters.Base;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
-using QA.Core.Web;
 using QA.ProductCatalog.Admin.WebApp.Binders;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Processors;
 using System.Globalization;
-using System.Web;
-using Unity.Exceptions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using QA.Core.Cache;
+using QA.Core.DPC.Resources;
+using QA.DPC.Core.Helpers;
+using Unity;
+using QA.ProductCatalog.Admin.WebApp.Filters;
+using ActionContext = QA.Core.ProductCatalog.Actions.ActionContext;
+using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
 
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private const string DefaultCultureKey = "_default_culture";
         private readonly Func<string, string, IAction> _getAction;
-        private readonly IVersionedCacheProvider _versionedCacheProvider;
+        private readonly VersionedCacheProviderBase _versionedCacheProvider;
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
         private readonly IProductService _productService;
+        private readonly QPHelper _qpHelper;
 
         public ProductController(Func<string, string, IAction> getAction,
-            IVersionedCacheProvider versionedCacheProvider,
+            VersionedCacheProviderBase versionedCacheProvider,
             Func<string, IArticleFormatter> getFormatter, 
             IProductLocalizationService localizationService,
-            IProductService productService
+            IProductService productService,
+            QPHelper helper
             )
         {
             _getAction = getAction;
@@ -48,6 +55,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _getFormatter = getFormatter;
             _localizationService = localizationService;
             _productService = productService;
+            _qpHelper = helper;
         }
 
         [RequireCustomAction]
@@ -58,11 +66,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             string[] filters = null,
             bool includeRelevanceInfo = true, 
             bool localize = false,
-            string lang = null)
-        {    
+            string lang = null,
+            bool changeLang = false
+            )
+        {
+            ViewBag.HostId = _qpHelper.HostId;
             if (content_item_id <= 0)
             {
-                ViewBag.Message = "Параметры действия некорректны: content_item_id должен быть больше 0.";
+                ViewBag.Message = ProductCardStrings.СontentItemIdPositive;
                 return View();
             }
 
@@ -76,24 +87,23 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (product == null)
             {
-                ViewBag.Message = "Продукт не найден.";
+                ViewBag.Message = ProductCardStrings.ProductNotFound;
                 return View();
             }
-            else if (localize)
+
+            if (localize)
             {
                 cultures = _localizationService.GetCultures();
 
                 if (lang == null)
                 {
                     var cookie = Request.Cookies[actionCode + DefaultCultureKey];
-
-                    currentCulture = cookie != null ? CultureInfo.GetCultureInfo(cookie.Value) : cultures[0];
+                    currentCulture = (string.IsNullOrEmpty(cookie) || changeLang) ? cultures[0] : CultureInfo.GetCultureInfo(cookie);
                 }
                 else
                 {
                     currentCulture = CultureInfo.GetCultureInfo(lang);
-                    var cookie = new HttpCookie(actionCode + DefaultCultureKey, lang);
-                    Response.AppendCookie(cookie);
+                    Response.Cookies.Append(actionCode + DefaultCultureKey, lang);
                 }
 
                 product = _localizationService.Localize(product, currentCulture);                
@@ -105,7 +115,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (control == null)
             {
-                ViewBag.Message = "Для указанного продукта не задано визуальное представление.";
+                ViewBag.Message = ProductCardStrings.ProductIsNotVisual;
                 return View();
             }
 
@@ -151,7 +161,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
                 if (!isRelevant)
                 {
-                    product.AddPlainField("IsRelevant", false, "Актуальность продукта");
+                    product.AddPlainField("IsRelevant", false, ProductCardStrings.ProductRelevance);
                 }
             }
 
@@ -173,16 +183,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             product.AddArticle("Diagnostics",
                 new Article()
-                    .AddPlainField("ProductLoaded", productLoadedIn, "Продукт загружен")
-                    .AddPlainField("ProductLocalized", productLocalized, "Продукт локализован")
-                    .AddPlainField("ControlLoaded", controlLoadedIn, "Карточка получена")
-                    .AddPlainField("ProductCopied", productCopied, "Продукт скопирован")                    
-                    .AddPlainField("RelevanceResolved", relevanceResolved, "Сервис актуальности получен")
-                    .AddPlainField("RelevanceLoaded", relevanceLoaded, "Актуальность получена")
-                    .AddPlainField("HierarchySorted", hierarchySorted, "Иерархия отсортирована")
-                    .AddPlainField("Stopwatch", sw));
-
-
+                    .AddPlainField("ProductLoaded", productLoadedIn, ProductCardStrings.ProductLoaded)
+                    .AddPlainField("ProductLocalized", productLocalized, ProductCardStrings.ProductLocalized)
+                    .AddPlainField("ControlLoaded", controlLoadedIn, ProductCardStrings.ControlLoaded)
+                    .AddPlainField("ProductCopied", productCopied, ProductCardStrings.ProductCopied)                    
+                    .AddPlainField("RelevanceResolved", relevanceResolved, ProductCardStrings.RelevanceResolved)
+                    .AddPlainField("RelevanceLoaded", relevanceLoaded, ProductCardStrings.RelevanceLoaded)
+                    .AddPlainField("HierarchySorted", hierarchySorted, ProductCardStrings.HierarchySorted));
 
             control.DataContext = product;
 
@@ -196,7 +203,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var product = _productService.GetProductById(content_item_id, live);
             if (product == null)
             {
-                ViewBag.Message = "Продукт не найден.";
+                ViewBag.Message = ProductCardStrings.ProductNotFound;
                 return View("GetXml");
             }
 
@@ -216,7 +223,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (product == null)
             {
-                ViewBag.Message = "Продукт не найден.";
+                ViewBag.Message = ProductCardStrings.ProductNotFound;
                 return View(formatter);
             }
 
@@ -251,15 +258,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             _versionedCacheProvider.Add(true, oneTimeKey, new string[] { }, TimeSpan.FromMinutes(10));
 
-            var urlScheme = Request.Url?.Scheme;
+            var urlScheme = Request.Scheme;
             return
                 Json(
                     new
                     {
                         Type = "Download",
                         Url = Url.Action("DownloadXml", "Product", new { content_item_id, live, oneTimeKey }, urlScheme)
-                    },
-                    JsonRequestBehavior.AllowGet);
+                    });
         }
 
 
@@ -267,14 +273,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public ActionResult DownloadXml(int content_item_id, string oneTimeKey, bool live = false)
         {
             if (_versionedCacheProvider.Get(oneTimeKey) == null)
-                return new HttpUnauthorizedResult("Access to the file is restricted because of invalid or missing key.");
+                return new UnauthorizedResult();
 
             _versionedCacheProvider.Invalidate(oneTimeKey);
 
             var product = _productService.GetProductById(content_item_id, live);
 
             if (product == null)
-                return HttpNotFound("Продукт не найден.");
+                return NotFound(ProductCardStrings.ProductNotFound);
 
             var filter = live ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
@@ -283,40 +289,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return File(Encoding.UTF8.GetBytes(xml),
                 "text/xml",
                 $"{product.Id}-{DateTime.Now:yyyy-MM-dd_HH-mm-ss}.xml");
-        }
-
-        [RequireCustomAction]
-        public async Task<ActionResult> Action(string command, [ModelBinder(typeof(ActionContextModelBinder))] ActionContext context, string adapter)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Error(ModelState);
-            }
-
-            try
-            {
-                var action = _getAction(command, adapter);
-                string message;
-
-                if (action is IAsyncAction asyncAction)
-                {
-                    message = await asyncAction.Process(context);
-                }
-                else
-                {
-                    message = action.Process(context);
-                }
-
-                return Info(message);
-            }
-            catch (ActionException ex)
-            {
-                return Error(ex);
-            }
-            catch (ResolutionFailedException)
-            {
-                return Error("Не удалось найти обработчик для команды " + command);
-            }
         }
 
         [RequireCustomAction]
@@ -337,7 +309,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 var idsList = model.ArticleIds.SplitString(' ', ',', ';', '\n', '\r').Distinct().ToArray();
                 if (idsList.Length > 200)
                 {
-                    ModelState.AddModelError("", @"Слишком много продуктов. Укажите не более 200");
+                    ModelState.AddModelError("", ProductCardStrings.TooMuchProducts);
                     return View("Send", model);
                 }
 
@@ -348,7 +320,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", @"Указаны нечисловые значения. " + ex.Message);
+                    ModelState.AddModelError("", ProductCardStrings.NotNumberValues + ". " + ex.Message);
                     return View("Send", model);
                 }
 
@@ -358,7 +330,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     {
                         var context = new ActionContext { ContentId = 288, ContentItemIds = ids };
                         action.Process(context);
-                        model.Message = "Продукты успешно опубликованы и отправлены";
+                        model.Message = ProductCardStrings.PublishedAndSendSuccess;
                     }
                     catch (ActionException ex)
                     {
@@ -373,63 +345,22 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         #region Private methods
         private void AddRelevanceData(Article article, RelevanceInfo relevanceInfo)
         {
-
-            var statusText = relevanceInfo.Relevance == ProductRelevance.Missing
-                ? "Отсутствует на витрине"
-                : relevanceInfo.Relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
-
+            var statusText = ProductCardStrings.NotRelevant;
+            if (relevanceInfo.Relevance == ProductRelevance.Missing)
+            {
+                statusText = ProductCardStrings.Missing;
+            }
+            else if (relevanceInfo.Relevance == ProductRelevance.Relevant)
+            {
+                statusText = ProductCardStrings.Relevant;
+            }
+  
             article
-                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, "Язык витрины")
-                .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
-                .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), "Код статуса на витрине")
-                .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), "Дата последней публикации")
-                .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, "Опубликовал");
-        }
-
-        private JsonResult Error(ModelStateDictionary modelstate)
-        {
-            var errors = from fv in modelstate
-                         from e in fv.Value.Errors
-                         select new { Field = fv.Key, Message = e.ErrorMessage };
-
-            return Json(new {Type = "Error", Text = "Validation", ValidationErrors = errors},
-                JsonRequestBehavior.AllowGet);
-        }
-
-        private JsonResult Error(ActionException exception)
-        {
-            if (exception.InnerExceptions.Any())
-            {
-                var sb = new StringBuilder("Не удалось обработать продукты:");
-
-                foreach (var exception1 in exception.InnerExceptions)
-                {
-                    var ex = (ProductException) exception1;
-                    sb.AppendLine();
-
-                    var exText = ex.Message;
-
-                    if (ex.InnerException != null)
-                        exText += ". " + ex.InnerException.Message;
-
-                    sb.AppendFormat("{0}: {1}", ex.ProductId, exText);
-                }
-
-                return Error(sb.ToString());
-            }
-            else
-            {
-                return Error(exception.Message);
-            }
-        }
-
-        private JsonResult Error(string text)
-        {
-            return Json(new { Type = "Error", Text = text }, JsonRequestBehavior.AllowGet);
-        }
-        private JsonResult Info(string text)
-        {
-            return Json(new { Type = "Info", Text = text }, JsonRequestBehavior.AllowGet);
+                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, ProductCardStrings.FrontLanguage)
+                .AddPlainField("ConsumerStatusText", statusText, ProductCardStrings.FrontStatus)
+                .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), ProductCardStrings.FrontStatusCode)
+                .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), ProductCardStrings.Published)
+                .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, ProductCardStrings.PublishedBy);
         }
     }
     #endregion

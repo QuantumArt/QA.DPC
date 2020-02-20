@@ -3,7 +3,7 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
 using System.Xml.Linq;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.Models.Configuration;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
@@ -12,8 +12,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 	{
 		private readonly IXmlProductService _xmlProductService;
 
-		public XmlProductServiceProfiler(IXmlProductService xmlProductService, ILogger logger)
-			: base(logger)
+		public XmlProductServiceProfiler(IXmlProductService xmlProductService)
 		{
 			if (xmlProductService == null)
 				throw new ArgumentNullException("xmlProductService");

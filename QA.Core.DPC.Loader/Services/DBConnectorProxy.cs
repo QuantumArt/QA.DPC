@@ -5,16 +5,17 @@ using System;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader.Services
 {
     public class DBConnectorProxy : IDBConnector
     {
-        private readonly IVersionedCacheProvider _cacheProvider;
-        private readonly string _connectionString;
-        public DBConnectorProxy(IConnectionProvider connectionProvider, IVersionedCacheProvider cacheProvider)
+        private readonly VersionedCacheProviderBase _cacheProvider;
+        private readonly Customer _customer;
+        public DBConnectorProxy(IConnectionProvider connectionProvider, VersionedCacheProviderBase cacheProvider)
         {
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
             _cacheProvider = cacheProvider;
         }
         public string GetUrlForFileAttribute(int fieldId)
@@ -30,7 +31,7 @@ namespace QA.Core.DPC.Loader.Services
 
         private DBConnector GetConnector()
         {
-            return new DBConnector(_connectionString);
+            return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
         }
     }
 }

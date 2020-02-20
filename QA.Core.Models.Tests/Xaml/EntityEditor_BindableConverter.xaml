@@ -3,15 +3,14 @@
             >
     <Group.Resources>
         <BindableConverter x:Key="conv"
-                           Parameter="{Binding /Test1}"
+                           Parameter="{Binding /TestItem2}"
                            ></BindableConverter>
-        <!--ищет из корня-->
         <BindableConverter x:Key="rootconv"
-                           Parameter="{Binding /Test, IsAbsolute=True}">
+                           Parameter="{Binding /TestItem, IsAbsolute=True}">
         </BindableConverter>
     </Group.Resources>
-    <Label Title="{Binding /Test}" />
-    <Label Title="{Binding /Test, Converter={Resource conv}}" />
+    <Label Title="{Binding /TestItem}" />
+    <Label Title="{Binding /TestItem2, Converter={Resource conv}}" />
     <EntityCollection Items="{Binding /TestItems}">
         <Label Title="{Binding ContentDisplayName, Converter={Resource rootconv}}"></Label>
     </EntityCollection>

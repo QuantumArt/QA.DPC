@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,19 +16,19 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     public class HealthCheckController : Controller
     {
         private readonly ElasticConfiguration _elasticConfiguration;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IHttpClientFactory _factory;
 
         public HealthCheckController(ElasticConfiguration elasticConfiguration, IHttpClientFactory factory)
         {
             _elasticConfiguration = elasticConfiguration;
-            _httpClientFactory = factory;
+            _factory = factory;
         }
 
         public async Task<ActionResult> HealthCheck(bool isSync)
         {
             var sb = new StringBuilder();
             sb.AppendLine("Application: OK");
-            var httpClient = _httpClientFactory.CreateClient();
+            var httpClient = _factory.CreateClient();
             sb.AppendLine(@"Read\Write: " + Status(_elasticConfiguration.DataOptions.CanUpdate == isSync));
             foreach (var option in _elasticConfiguration.GetElasticIndices())
             {

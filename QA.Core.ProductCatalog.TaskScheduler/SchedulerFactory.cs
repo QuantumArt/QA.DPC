@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Quartz;
 using Quartz.Core;
 using Quartz.Impl;
@@ -10,18 +12,28 @@ using Quartz.Util;
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
     public class SchedulerFactory : ISchedulerFactory
-	{
-		public ICollection<IScheduler> AllSchedulers
-		{
-			get { throw new NotImplementedException(); }
-		}
+    {
+
+	    private IScheduler _scheduler;
+
+	    public SchedulerFactory()
+	    {
+		    _scheduler = CreateScheduler();
+	    }
+		
+		public ICollection<IScheduler> AllSchedulers => new[] {_scheduler};
 
 		public IScheduler GetScheduler(string schedName)
 		{
-			throw new NotImplementedException();
+			return _scheduler;
 		}
 
 		public IScheduler GetScheduler()
+		{
+			return _scheduler;
+		}
+
+		private static IScheduler CreateScheduler()
 		{
 			var ramJobStore = new RAMJobStore();
 
@@ -32,13 +44,11 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				Name = "TasksScheduler"
 			};
 
-			var threadPool = new SimpleThreadPool();
+			var threadPool = new DefaultThreadPool();
 
 			threadPool.Initialize();
 
 			schedulerResources.ThreadPool = threadPool;
-
-			schedulerResources.ThreadExecutor = new DefaultThreadExecutor();
 
 			var quartzScheduler = new QuartzScheduler(schedulerResources, TimeSpan.Zero);
 
@@ -67,6 +77,21 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			schedRep.Bind(standartScheduler);
 
 			return standartScheduler;
+		}
+
+		public Task<IReadOnlyList<IScheduler>> GetAllSchedulers(CancellationToken cancellationToken = new CancellationToken())
+		{
+			throw new NotImplementedException();
+		}
+
+		public Task<IScheduler> GetScheduler(CancellationToken cancellationToken = new CancellationToken())
+		{
+			return Task.FromResult(_scheduler);
+		}
+
+		public Task<IScheduler> GetScheduler(string schedName, CancellationToken cancellationToken = new CancellationToken())
+		{
+			return Task.FromResult(_scheduler);
 		}
 	}
 

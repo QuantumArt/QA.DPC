@@ -1,26 +1,30 @@
 ﻿using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Validation;
+using Unity;
 using Unity.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
     [AllowAnonymous]
+    [Route("RemoteValidation")]
     public class RemoteValidationController : Controller
     {
         private readonly Func<string, IRemoteValidator2> _validationFactory;
 
         public RemoteValidationController(Func<string, IRemoteValidator2> validationFactory)
         {
-            UserProvider.ForcedUserId = 1;
             _validationFactory = validationFactory;
         }
-
-        public ActionResult Validate(string validatorKey, RemoteValidationContext context)
+        
+        [Route("{validatorKey}")]
+        public ActionResult Validate(string validatorKey, [FromBody] RemoteValidationContext context)
         {
+            HttpContextUserProvider.ForcedUserId = 1;
             var result = new RemoteValidationResult();
             try
             {
@@ -34,8 +38,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 result.Messages.Add(ex.Message);
             }
+            HttpContextUserProvider.ForcedUserId = 0;
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(result);
         }
     }
 }

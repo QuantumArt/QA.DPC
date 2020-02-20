@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QPublishing.Database;
@@ -51,9 +52,9 @@ namespace QA.Core.ProductCatalog.Actions
 			return articleService.GetFieldValues(allIds, contentId, "Id").Select(int.Parse).ToArray();
 		}
         
-        public static int[] GetAllProductIds(int siteId, int productsContentId, string connectionString)
+        public static int[] GetAllProductIds(int siteId, int productsContentId, Customer customer)
 		{
-			var dbConnector = new DBConnector(connectionString);
+			var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
 
 			string siteName = dbConnector.GetSiteName(siteId);
 
@@ -76,20 +77,22 @@ namespace QA.Core.ProductCatalog.Actions
 				0);
 
 			if (dtProducts.Rows.Count == 0)
-				throw new Exception("Нет ни одного продукта");
+				throw new Exception("No products found");
 
 			return dtProducts.AsEnumerable().Select(x => (int)(decimal)x["CONTENT_ITEM_ID"]).ToArray();
 		}
 
-        public static Dictionary<int, int[]> GetContentIds(IEnumerable<int> ids, string connectionString)
+        public static Dictionary<int, int[]> GetContentIds(IEnumerable<int> ids, Customer customer)
         {
-            var dbConnector = new DBConnector(connectionString);
+            var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+            var idList = SqlQuerySyntaxHelper.IdList(customer.DatabaseType, "@Ids", "Ids");
+            var dbCommand = dbConnector.CreateDbCommand($@"SELECT CONTENT_ID, CONTENT_ITEM_ID 
+					FROM CONTENT_ITEM 
+					{SqlQuerySyntaxHelper.WithNoLock(customer.DatabaseType)} 
+				WHERE CONTENT_ITEM_ID IN (SELECT ID FROM {idList})");
+            dbCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@Ids", ids, customer.DatabaseType));
 
-            var sqlCommand = new SqlCommand(@"SELECT CONTENT_ID, CONTENT_ITEM_ID FROM CONTENT_ITEM WITH(NOLOCK) WHERE CONTENT_ITEM_ID IN (SELECT ID FROM @Ids)");
-
-            sqlCommand.Parameters.Add(Common.GetIdsTvp(ids, "@Ids"));
-
-            var dt = dbConnector.GetRealData(sqlCommand);
+            var dt = dbConnector.GetRealData(dbCommand);
 
             return dt
                 .AsEnumerable()

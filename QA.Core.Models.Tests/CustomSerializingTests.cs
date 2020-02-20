@@ -1,34 +1,34 @@
 ﻿using System.Linq;
 using System.Reflection;
 using System.Xaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.DPC.UI;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Tests.Controls;
 
 namespace QA.Core.Models.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class CustomSerializingTests
     {
-        [TestMethod]
+        [Test]
         public void Test_XamlServices()
         {
             var t = Get<QPControlTest>("QA.Core.Models.Tests.Xaml.Test001.xaml");
         }
 
-        [TestMethod]
+        [Test]
         public void Test_XamlServices_string_content()
         {
             var t = Get<QPControlTest>("QA.Core.Models.Tests.Xaml.Test001.xaml");
             var tested = (((StackPanel)((QPControlTest)t.Content).Content).Items[1]) as QPControlTest;
 
             Assert.IsNotNull(tested);
-            Assert.IsInstanceOfType(tested.Content, typeof(string));
+            Assert.IsInstanceOf<string>(tested.Content);
             Assert.AreEqual("static text", tested.Content);
         }
         
-        [TestMethod]
+        [Test]
 		public void Test_XamlServices_recursion()
 		{
 			var t = Get<Content>("QA.Core.Models.Tests.Xaml.Recursive.xaml");
@@ -36,7 +36,7 @@ namespace QA.Core.Models.Tests
 			Assert.IsNotNull(t);
 		}
 
-		[TestMethod]
+		[Test]
 		public void Test_XamlServices_Equality()
 		{
 			var t = Get<Content>("QA.Core.Models.Tests.Xaml.Recursive.xaml");

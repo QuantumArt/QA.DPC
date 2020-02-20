@@ -8,13 +8,13 @@ using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
-	internal class ActionBaseFake : ActionBase
+	internal class ActionBaseFake : ProductActionBase
 	{
 		public int LastProductId { get; set; }
 		public Exception ExceptionToThrow { get; set; }
 
-		public ActionBaseFake(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction)
-			: base(articleService, fieldService, productservice, logger, createTransaction)
+		public ActionBaseFake(IArticleService articleService, IFieldService fieldService, IProductService productservice, Func<ITransaction> createTransaction)
+			: base(articleService, fieldService, productservice, createTransaction)
 		{
 		}
 

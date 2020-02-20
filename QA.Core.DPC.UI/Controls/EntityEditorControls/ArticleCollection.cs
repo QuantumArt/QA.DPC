@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Entities;
 using QA.Core.Models.UI;
 
@@ -54,7 +55,7 @@ namespace QA.Core.DPC.UI.Controls.EntityEditorControls
                 {
                     container.PrependChild(new ActionLink
                     {
-                        Title = "ред.",
+                        Title = ProductCardStrings.Edit,
                         CurrentItem = parent,
                         ShowIcon = true,
                         IconClass = "edit"

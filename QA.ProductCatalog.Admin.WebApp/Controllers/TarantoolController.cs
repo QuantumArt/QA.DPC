@@ -1,25 +1,46 @@
-﻿using QA.Core.Web;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Models;
+using QA.ProductCatalog.Admin.WebApp.Filters;
+using QA.ProductCatalog.Integration;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
     [RequireCustomAction]
     public class TarantoolController : Controller
     {
+        
+        private readonly HttpContext _httpContext;
+        
+        private readonly IntegrationProperties _options;
+
+        private readonly IHttpClientFactory _factory;
+        
+        public TarantoolController(
+            IHttpContextAccessor httpContextAccessor, 
+            IOptions<IntegrationProperties> options,
+            IHttpClientFactory factory
+            )
+        {
+            _httpContext = httpContextAccessor.HttpContext;
+            _options = options.Value;
+            _factory = factory;
+        }
+        
         public Uri GetBaseUrl()
         {
-            var key = ConfigurationManager.AppSettings["Tarantool.SyncApi"];
-            if (!String.IsNullOrEmpty(key))
+            var key = _options.TarantoolSyncUrl;
+            
+            if (string.IsNullOrEmpty(key)) return null;
+            
+            if (key.StartsWith("/"))
             {
-                if (key.StartsWith("/"))
-                {
-                    key = $"{HttpContext.Request.Url?.Scheme}://{HttpContext.Request.Url?.Authority}{key}";
-                }
-
+                key = $"{_httpContext.Request.Scheme}://{_httpContext.Request.Host}{key}";
             }
             return new Uri(key);
         }
@@ -35,35 +56,26 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public async Task<ActionResult> Get(string customerCode)
         {
             var uri = new Uri(GetBaseUrl(), $"api/Import/{customerCode}/get");
-
-            using (var client = new HttpClient())
-            {
-                return GetJson(await client.GetStringAsync(uri));
-            }
+            var client = _factory.CreateClient();
+            return GetJson(await client.GetStringAsync(uri));
         }
 
         [HttpPost]
         public async Task<ActionResult> Import(string customerCode)
         {
             var uri = new Uri(GetBaseUrl(), $"api/Import/{customerCode}/start");
-            
-            using (var client = new HttpClient())
-            {
-                var result = await client.PostAsync(uri, null);
-                return GetJson(await result.Content.ReadAsStringAsync());
-            }
+            var client = _factory.CreateClient();
+            var result = await client.PostAsync(uri, null);
+            return GetJson(await result.Content.ReadAsStringAsync());
         }
 
         [HttpPost]
         public async Task<ActionResult> Stop(string customerCode)
         {
             var uri = new Uri(GetBaseUrl(), $"/dpc.tarantool/api/Import/{customerCode}/stop");
-
-            using (var client = new HttpClient())
-            {
-                var result = await client.PostAsync(uri, null);
-                return GetJson(await result.Content.ReadAsStringAsync());
-            }
+            var client = _factory.CreateClient();
+            var result = await client.PostAsync(uri, null);
+            return GetJson(await result.Content.ReadAsStringAsync());
         }
 
         private ContentResult GetJson(string json)

@@ -1,4 +1,4 @@
-﻿using Microsoft.Practices.Unity.Configuration;
+﻿﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
@@ -14,59 +14,60 @@ using QA.ProductCatalog.Integration.Configuration;
 using Quartz;
 using System;
 using System.Configuration;
+using Microsoft.Extensions.Configuration;
+using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Configuration;
+using QA.Core.Logger;
+using QA.Core.ProductCatalog.Actions;
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Injection;
+using QA.Validation.Xaml.Extensions.Rules;
+using QA.Validation.Xaml;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
     public static class UnityConfig
     {
-        public static IUnityContainer Configure()
+        public static IUnityContainer Configure(IUnityContainer container, LoaderProperties loaderProperties)
         {
-            var container = RegisterTypes(new UnityContainer());
+            container = RegisterTypes(container, loaderProperties);
             ObjectFactoryConfigurator.DefaultContainer = container;
             return container;
         }
 
-        public static UnityContainer RegisterTypes(UnityContainer container)
+
+        public static IUnityContainer RegisterTypes(IUnityContainer container, LoaderProperties loaderProps)
         {
-            container.AddNewExtension<QPContainerConfiguration>();
+            container.AddExtension(new Diagnostic());
+            container.RegisterType<DynamicResourceDictionaryContainer>();
+            container.RegisterType<ProcessRemoteValidationIf>();
+            
+            container.RegisterType<IConnectionProvider, CoreConnectionProvider>();
+            container.RegisterType<ICustomerProvider, CustomerProvider>();
+            container.RegisterType<IIdentityProvider, CoreIdentityProvider>();
 
             container.AddNewExtension<ActionContainerConfiguration>();
-
             container.AddNewExtension<LoaderConfigurationExtension>();
 
-	        container.RegisterType<IUserProvider, UserProvider>();
-
-            container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
-
-			container.RegisterType<ISettingsService, SettingsFromContentService>();
-
-            container.RegisterType<TaskRunnerEntities>(new InjectionFactory(x => new TaskRunnerEntities(x.Resolve<IConnectionProvider>().GetEFConnection(DPC.QP.Models.Service.Actions))));
-
-            container.RegisterType<Func<ITaskService>>(new InjectionFactory(x => new Func<ITaskService>(() => x.Resolve<ITaskService>())));
-
-            container.RegisterType<ITaskService, TaskService>(new InjectionConstructor(typeof(TaskRunnerEntities)));
-
-            container.RegisterType<Func<string, int, ITask>>(new InjectionFactory(x => new Func<string, int, ITask>((key, userId) => GetTaskByKey(key, userId,x))));
-
-            container.RegisterType<IQPNotificationService, QPNotificationService>();
-
-            container.RegisterType<IRegionTagReplaceService, RegionTagService>();
-
-            container.RegisterType<IRegionService, RegionService>();
-
-            container.RegisterType<IXmlProductService, XmlProductService>();
-
-            container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
-
-            container.RegisterInstance(new TaskRunnerDelays(ConfigurationManager.AppSettings));
             container.RegisterType<ITasksRunner, TasksRunner>();
-
+	        container.RegisterType<IUserProvider, HttpContextUserProvider>();
+            container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
+            
+            container.RegisterFactory<Func<ITaskService>>(x => new Func<ITaskService>(() => x.Resolve<ITaskService>()));
+            
+            container.RegisterFactory<Func<string, int, ITask>>(x => new Func<string, int, ITask>((key, userId) => GetTaskByKey(key, userId,x)));
+            container.RegisterType<ITaskService, TaskService>();
+            
+            container.RegisterType<IQPNotificationService, QPNotificationService>();
+            container.RegisterType<IRegionTagReplaceService, RegionTagService>();
+            container.RegisterType<IRegionService, RegionService>();
+            container.RegisterType<IXmlProductService, XmlProductService>();
+            container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
 	        container.RegisterType<ISchedulerFactory, SchedulerFactory>();
 
+            container.RegisterSingleton<ActionsService>();
 			container.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			container.AddNewExtension<FormattersContainerConfiguration>();
 
@@ -77,28 +78,58 @@ namespace QA.Core.ProductCatalog.ActionsService
             if (connection.QPMode)
             {
                 container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).As<IFactoryWatcher>();
-                container.RegisterQpMonitoring();
             }
             else
             {                
-                container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
-                container.RegisterNonQpMonitoring();
+                container.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
+                container.RegisterConsolidationCache(autoRegister, SingleCustomerCoreProvider.Key).With<FactoryWatcher>().As<IFactoryWatcher>();
             }
 
-            container.LoadConfiguration("Default");
+            if (connection.QPMode || connection.UseQPMonitoring)
+            {
+                container.RegisterQpMonitoring();
+            }
+            else
+            {
+                container.RegisterNonQpMonitoring();        
+            }
+
+            switch (loaderProps.SettingsSource)
+            {
+                case SettingsSource.Content:
+                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+                    break;
+                case SettingsSource.AppSettings:
+                    container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+                    break;
+            }
+            
+            switch (loaderProps.DefaultSerializer)
+            {
+                case DefaultSerializer.Json:
+                    container.RegisterType<IArticleFormatter, JsonProductFormatter>();
+                    break;
+                case DefaultSerializer.Xml:
+                    container.RegisterType<IArticleFormatter, XmlProductFormatter>();
+                    break;
+            }
 
             return container;
         }
 
         private static ITask GetTaskByKey(string key, int userId, IUnityContainer container)
         {
-	        UserProvider.ForcedUserId = userId;
-
+	        HttpContextUserProvider.ForcedUserId = userId;
+            
+            ITask result = null;
 			if (container.IsRegistered<ITask>(key))
-				return container.Resolve<ITask>(key);
+                result = container.Resolve<ITask>(key);
 			else
-                return (ITask)container.Resolve(Type.GetType(key));
+                result = (ITask)container.Resolve(Type.GetType(key));
+
+            HttpContextUserProvider.ForcedUserId = 0;
+
+            return result;
         }
     }
 }

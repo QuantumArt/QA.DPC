@@ -1,4 +1,4 @@
-﻿using Microsoft.Practices.Unity.Configuration;
+﻿﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
@@ -13,6 +13,12 @@ using QA.Core.ProductCatalog.Actions.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+ using System.Collections.Generic;
+ using Microsoft.EntityFrameworkCore;
+using QA.Configuration;
+using QA.Core.DPC.Service;
+using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Unity;
 using Unity.Injection;
@@ -24,43 +30,62 @@ using INotificationChannelService = QA.ProductCatalog.ContentProviders.INotifica
 
 namespace QA.Core.DPC
 {
-    /// <summary>
-    /// Конфигуратор unity-контейнера
-    /// </summary>
     public static class UnityConfig
 	{
-		/// <summary>
-		/// Настройка unity-контейнера
-		/// </summary>
-		/// <returns></returns>
-		public static IUnityContainer Configure()
+		public static IUnityContainer Configure(IUnityContainer container, NotificationProperties props)
 		{
-		    var container = RegisterTypes(new UnityContainer());
-            ObjectFactoryConfigurator.DefaultContainer = container;
-		    return container;
+			container = RegisterTypes(container, props);
+			ObjectFactoryConfigurator.DefaultContainer = container;
+			return container;
 		}
 
-		private static IUnityContainer RegisterTypes(UnityContainer unityContainer)
+
+		public static IUnityContainer RegisterTypes(IUnityContainer unityContainer, NotificationProperties props)
 		{
-            unityContainer.AddNewExtension<QPContainerConfiguration>();
-           
-            unityContainer.RegisterType<QA.ProductCatalog.ContentProviders.IContentProvider<NotificationChannel>, NotificationChannelProvider>();
+			unityContainer.AddExtension(new Diagnostic());
+			
+			unityContainer.RegisterType<IConnectionProvider, CoreConnectionProvider>();
+			unityContainer.RegisterType<ICustomerProvider, CustomerProvider>();
+			unityContainer.RegisterType<IIdentityProvider, CoreIdentityProvider>();
+			
+            unityContainer.RegisterInstance<ILogger>(new NLogLogger("NLogClient.config"));
+            unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
 			unityContainer.RegisterType<IServiceFactory, ServiceFactory>();
-			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
+			unityContainer.RegisterFactory<ArticleService>(c => c.Resolve<IServiceFactory>().GetArticleService());
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
             unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<INotificationService, NotificationService>();
             unityContainer.RegisterType<IStatusProvider, StatusProvider>();
+           
+            unityContainer.RegisterType<IConfigurationService, ConfigurationService>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IMessageService, MessageService>();
+            
+            switch (props.SettingsSource)
+            {
+	            case SettingsSource.Content:
+		            unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+		            break;
+	            case SettingsSource.AppSettings:
+		            unityContainer.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+		            break;
+            }
+            
+            switch (props.ChannelSource)
+            {
+	            case ChannelSource.Content:
+		            unityContainer.RegisterType<INotificationProvider, NotificationContentProvider>();
+		            break;
+	            case ChannelSource.Configuration:
+		            unityContainer.RegisterType<INotificationProvider, NotificationConfigurationProvider>();
+		            break;
+            }
 
             unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();          
 
-            unityContainer.LoadConfiguration("Default");
-
             var connection = unityContainer.Resolve<IConnectionProvider>();
             var logger = unityContainer.Resolve<ILogger>();
-            unityContainer.RegisterType<NotificationsModelDataContext>(new InjectionFactory(c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))));
-
+            
             var autoRegister = true;
             var watcherInterval = TimeSpan.FromMinutes(1);
 
@@ -71,16 +96,18 @@ namespace QA.Core.DPC
             }
             else if (connection.HasConnection(QP.Models.Service.Admin))
             {                
-                unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
+                unityContainer.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
+                unityContainer.RegisterConsolidationCache(autoRegister, SingleCustomerCoreProvider.Key).With<FactoryWatcher>().As<IFactoryWatcher>();
             }
             else
             {
-                unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+                unityContainer.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
                 unityContainer.RegisterNullFactory().With<FactoryWatcher>().As<IFactoryWatcher>();
             }
 
             return unityContainer;
 		}
+
+
 	}
 }

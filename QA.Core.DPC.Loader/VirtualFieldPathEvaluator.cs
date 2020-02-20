@@ -32,7 +32,7 @@ namespace QA.Core.DPC.Loader
                     var currentEntityField = currentField as EntityField;
                     if (currentEntityField == null)
                     {
-                        throw new Exception("Генерация схемы требует что бы виртуальные поля ссылались на тип EntityField или наследник");
+                        throw new Exception("Schema generator requires virtual field to relate to EntityField type or its descendant");
                     }
 
                     parent = currentEntityField.Content;

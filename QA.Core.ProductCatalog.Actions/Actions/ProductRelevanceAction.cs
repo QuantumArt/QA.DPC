@@ -7,6 +7,7 @@ using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using System.Globalization;
 using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.Linq;
 using QA.ProductCatalog.ContentProviders;
 
@@ -27,7 +28,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _provider = provider;
         }
 
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             int marketingProductContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.MARKETING_PRODUCT_CONTENT_ID));
 
@@ -38,9 +39,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             if (productIds == null || productIds.Length == 0)
             {
                 if (context.ContentId == marketingProductContentId)
-                    throw new Exception("Нельзя обрабатывать все маркетинговые продукты сразу, виберите конкретные продукты");
+                    throw new Exception("Unable to process all marketing products. Please, select specific ones");
 
-				productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetConnection());
+				productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetCustomer());
             }
 
             object percentLocker = new object();
@@ -108,7 +109,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             Task.WaitAll(tasks);
 
-            return string.Format("Статусы {0} продуктов успешно обновлены", productIds.Length);
+            return ActionTaskResult.Success(new ActionTaskResultMessage()
+            {
+                ResourceClass = nameof(TaskStrings),
+                ResourceName = nameof(TaskStrings.StatusesUpdated),
+                Parameters = new object[]{ productIds.Length}
+            });
         }
     }
 }

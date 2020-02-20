@@ -10,7 +10,9 @@ using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.Constants;
 using Article = Quantumart.QP8.BLL.Article;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader
 {
@@ -18,7 +20,7 @@ namespace QA.Core.DPC.Loader
     {
 
         #region Глобальные переменные
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly ISettingsService _settingsService;
         private readonly IRegionService _regionService;
         private static readonly Regex DefaultRegex =
@@ -27,14 +29,14 @@ namespace QA.Core.DPC.Loader
             new Regex(@"&lt;replacement&gt;tag=(\w+)&lt;/replacement&gt;", RegexOptions.Compiled);
 
         private static readonly TimeSpan CacheInterval = new TimeSpan(0, 10, 0); 
-        private readonly string _connectionString;
+        private readonly Customer _customer;
         private readonly IArticleService _articleService;
         private readonly IFieldService _fieldService;
 
         #endregion
 
         #region Конструкторы
-        public RegionTagService(IVersionedCacheProvider cacheProvider, ISettingsService settingsService,
+        public RegionTagService(VersionedCacheProviderBase cacheProvider, ISettingsService settingsService,
             IRegionService regionService, IArticleService articleService, IFieldService fieldService,
             IConnectionProvider connectionProvider)
         {
@@ -43,7 +45,7 @@ namespace QA.Core.DPC.Loader
             _regionService = regionService;
             _articleService = articleService;
             _fieldService = fieldService;
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
             
             TagsContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.REGIONAL_TAGS_CONTENT_ID));
             TagValuesContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.REGIONAL_TAGS_VALUES_CONTENT_ID));
@@ -232,7 +234,7 @@ namespace QA.Core.DPC.Loader
             var keys = regionTags.Select(n => key + n).ToArray();
             return _cacheProvider.GetOrAddValues(keys, string.Empty, cacheTags, CacheInterval, (keysToLoad) =>
             {
-                using (new QPConnectionScope(_connectionString))
+                using (new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
                 {
                     _articleService.LoadStructureCache();  
                     

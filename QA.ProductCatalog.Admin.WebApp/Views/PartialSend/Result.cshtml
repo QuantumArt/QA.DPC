@@ -1,23 +1,28 @@
-﻿@{
+﻿@using System.Globalization
+@using QA.Core.DPC.Resources
+
+@{
     Layout = null;
 }
 <html>
 <head>
-    <title></title>
-    @Styles.Render("~/content/KendoUI/KendoUIStyles")
-    @Scripts.Render("~/bundles/KendoUI")
-    @Styles.Render("~/content/site")
-    @Scripts.Render("~/Scripts/AutoUpdateStrategy.js")
+  <title></title>
+  <link href="~/css/kendo.min.css" rel="stylesheet" />
+  <link href="~/css/site.min.css" rel="stylesheet" />
+
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
+  <script src="~/js/AutoUpdateStrategy.js"></script>
+  
 </head>
 <body>
     <div class="formLayout">
 
         <div style="display: none" id="PartialSendLinkDiv">
-            <a href="@Url.Action("Index","PartialSend")?Localize=@ViewBag.Localize.ToString()&@string.Join("&", ((string[])ViewBag.IgnoredStatus).Select(n => string.Format("IgnoredStatus=" + n)))">Отправить новую порцию</a>
+            <a href="@Url.Action("Index","PartialSend")?Localize=@ViewBag.Localize.ToString()&@string.Join("&", ((string[])ViewBag.IgnoredStatus).Select(n => string.Format("IgnoredStatus=" + n)))">@SendProductActionStrings.SendNewPackage</a>
         </div>
 
         <fieldset>
-            <legend>Ваша задача на частичную отправку</legend>
+            <legend>@SendProductActionStrings.YourPartialSendTask</legend>
             <div id="ActionTaskPropsDiv">
             </div>
         </fieldset>
@@ -30,7 +35,7 @@
 
         function UpdateForm() {
             $.ajax({
-                url: '@Url.Action("UserTask", new { taskId = Model })',
+                url: '@Url.Action("Task", new { taskId = Model })',
                 type: "GET",
                 cache: false
             }).done(

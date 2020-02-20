@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
@@ -11,8 +12,9 @@ using Quantumart.QP8.BLL.Services.API;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
 using Quantumart.QPublishing.Database;
-using QA.Core.DPC.Loader.Editor;
 using System.Data.SqlClient;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.Loader
 {
@@ -27,22 +29,14 @@ namespace QA.Core.DPC.Loader
         private readonly ContentService _contentService;
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IContextStorage _contextStorage;
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
-        private const string GetExstensionIdQuery = @"
-            declare @query nvarchar(max) = ''
-            select
-	            @query = @query +
-	            'select CONTENT_ITEM_ID id from content_'+ ltrim(str(@contentId)) +'_united where [' + ATTRIBUTE_NAME + '] = @articleId'
-            from
-	            CONTENT_ATTRIBUTE
+        private string GetExstensionIdQuery(DatabaseType dbType) => $@"
+            select ATTRIBUTE_NAME from CONTENT_ATTRIBUTE
             where
 	            CLASSIFIER_ATTRIBUTE_ID = @attributeId and
 	            CONTENT_ID = @contentId and
-	            AGGREGATED = 1
-
-            if @query<> ''
-	            exec sp_executesql @query, N'@articleId int', @articleId";
+	            AGGREGATED = {SqlQuerySyntaxHelper.ToBoolSql(dbType, true)}";
 
         public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage, IConnectionProvider connectionProvider)
         {
@@ -54,13 +48,13 @@ namespace QA.Core.DPC.Loader
 
             _contextStorage = contextStorage;
 
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
 
         public Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition)
         {
-            using (var cs = new QPConnectionScope(_connectionString))
+            using (var cs = new QPConnectionScope(_customer.ConnectionString, (Quantumart.QP8.Constants.DatabaseType)_customer.DatabaseType))
             {
                 _cacheItemWatcher.TrackChanges();
 
@@ -168,11 +162,17 @@ namespace QA.Core.DPC.Loader
                 case PlainFieldType.Numeric:
                 case PlainFieldType.O2MRelation:
                     {
-                        object number = plainFieldFromQP.IsInteger ||
-                                        plainFieldFromQP.RelationType == RelationType.OneToMany
-                            ? productDataSource.GetInt(plainFieldFromQP.Name)
-                            : (object)productDataSource.GetDecimal(plainFieldFromQP.Name);
-
+                        object number;
+                        if (plainFieldFromQP.IsInteger ||
+                            plainFieldFromQP.RelationType == RelationType.OneToMany)
+                        {
+                            number = productDataSource.GetInt(plainFieldFromQP.Name);                       
+                        }
+                        else
+                        {
+                            var dec = productDataSource.GetDecimal(plainFieldFromQP.Name);
+                            number = !plainFieldFromQP.IsDecimal && dec.HasValue ? (object) Convert.ToDouble(dec) : dec;
+                        }
 
                         if (number != null)
                         {
@@ -248,7 +248,8 @@ namespace QA.Core.DPC.Loader
                 Models.Configuration.Content valueDef = fieldInDef.ContentMapping.Values.FirstOrDefault(x => _contentService.Read(x.ContentId).NetName == contentName);
 
                 if (valueDef == null)
-                    throw new Exception(string.Format("Значение '{0}' не найдено в списке допустимых контентов ExtensionField id = {1}", contentName, fieldInDef.FieldId));
+                    throw new Exception(
+                        $"'{contentName}' value is not found in an available extension content list, id = {fieldInDef.FieldId}");
 
                 extensionArticleField.Value = valueDef.ContentId.ToString();
                 extensionArticleField.SubContentId = valueDef.ContentId;
@@ -259,7 +260,7 @@ namespace QA.Core.DPC.Loader
 
                 if (extensionArticleField.Item.Id == productDataSource.GetArticleId())
                 {
-                    var id = GetExstensionId(connector, valueDef.ContentId, fieldInDef.FieldId, extensionArticleField.Item.Id);
+                    var id = GetExtensionId(connector, valueDef.ContentId, fieldInDef.FieldId, extensionArticleField.Item.Id);
 
                     if (id.HasValue)
                     {
@@ -279,7 +280,7 @@ namespace QA.Core.DPC.Loader
         private ArticleField DeserializeBackwardField(BackwardRelationField fieldInDef, IProductDataSource productDataSource, DBConnector connector, Context context)
         {
             if (string.IsNullOrEmpty(fieldInDef.FieldName))
-                throw new Exception("В описании BackwardArticleField должен быть непустой FieldName");
+                throw new Exception("BackwardArticleField definition should have non-empty FieldName");
 
             IEnumerable<IProductDataSource> containersCollection = productDataSource.GetContainersCollection(fieldInDef.FieldName);
 
@@ -322,20 +323,28 @@ namespace QA.Core.DPC.Loader
 
                 articleField = multiArticleField;
             }
-            else throw new Exception(string.Format("В описании поле id={0} имеет тип EntityField но его RelationType не соответствует требуемым", fieldInDef.FieldId));
+            else throw new Exception(string.Format("Field definition id={0} has EntityField type but its RelationType is not valid", fieldInDef.FieldId));
 
             return articleField;
         }
 
-        private int? GetExstensionId(DBConnector connector, int contentId, int attributeId, int articleId)
+        private int? GetExtensionId(DBConnector connector, int contentId, int attributeId, int articleId)
         {
-            var sqlCommand = new SqlCommand(GetExstensionIdQuery);
+            var dbCommand = connector.CreateDbCommand(GetExstensionIdQuery(connector.DatabaseType));
 
-            sqlCommand.Parameters.AddWithValue("@contentId", contentId);
-            sqlCommand.Parameters.AddWithValue("@attributeId", attributeId);
-            sqlCommand.Parameters.AddWithValue("@articleId", articleId);
+            dbCommand.Parameters.AddWithValue("@contentId", contentId);
+            dbCommand.Parameters.AddWithValue("@attributeId", attributeId);
+            var dt = connector.GetRealData(dbCommand);
 
-            var value = connector.GetRealScalarData(sqlCommand);
+            var attributes =  dt.AsEnumerable().Select(x => x["ATTRIBUTE_NAME"]).ToArray();
+            var queries = attributes
+                .Select(a =>
+                    $"select CONTENT_ITEM_ID id from content_{contentId}_united where {a} = @articleId");
+            
+            dbCommand = connector.CreateDbCommand(string.Join(" ", queries));
+            dbCommand.Parameters.AddWithValue("@articleId", articleId);
+            
+            var value = connector.GetRealScalarData(dbCommand);
 
             return (int?)(decimal?)value;
         }

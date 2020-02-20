@@ -1,7 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.ServiceModel;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using QA.Core.DPC.Formatters.Services;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
@@ -23,13 +32,25 @@ namespace QA.ProductCatalog.Integration
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
         private readonly IIdentityProvider _identityProvider;
+        private readonly IntegrationProperties _integrationProperties;
+        private readonly IHttpClientFactory _httpClientFactory;
+        
 
-        public QPNotificationService(IContentProvider<NotificationChannel> channelProvider, Func<string, IArticleFormatter> getFormatter, IProductLocalizationService localizationService, IIdentityProvider identityProvider)
+        public QPNotificationService(
+            IContentProvider<NotificationChannel> channelProvider, 
+            Func<string, IArticleFormatter> getFormatter, 
+            IProductLocalizationService localizationService, 
+            IIdentityProvider identityProvider,
+            IOptions<IntegrationProperties> integrationProps,
+            IHttpClientFactory httpClientFactory
+        )
         {
             _channelProvider = channelProvider;
             _getFormatter = getFormatter;
             _localizationService = localizationService;
             _identityProvider = identityProvider;
+            _integrationProperties = integrationProps.Value;
+            _httpClientFactory = httpClientFactory;
         }
 
         protected override void OnInitializeClient(object service)
@@ -75,7 +96,7 @@ namespace QA.ProductCatalog.Integration
 
         private int[] PushProducts(Article[] products, bool isStage, string userName, int userId, string method, bool localize, bool autopublish, string[] forcedСhannels)
         {
-            var service = new NotificationServiceClient();
+
             var notifications = GetNotifications(products, isStage, forcedСhannels, localize, autopublish);
             if (notifications == null)
             {
@@ -85,15 +106,46 @@ namespace QA.ProductCatalog.Integration
             if (notifications.Any())
             {
                 var customerCode = _identityProvider.Identity.CustomerCode;
-                service.PushNotifications(notifications, isStage, userId, userName, method, customerCode);
+                if (!String.IsNullOrEmpty(_integrationProperties.RestNotificationUrl))
+                {
+                    var client = _httpClientFactory.CreateClient();
+                    var json = JsonConvert.SerializeObject(notifications);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = GetRestUrl(isStage, userName, userId, method, customerCode);
+                    var result = client.PutAsync(url, content).Result;
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        throw new ApplicationException("Notification sending failed with status code " + result.StatusCode);
+                    }
+                    
+
+                }
+                else if (!String.IsNullOrEmpty(_integrationProperties.WcfNotificationUrl))
+                {
+                    var myBinding = new BasicHttpBinding();
+                    var myEndpoint = new EndpointAddress(_integrationProperties.WcfNotificationUrl);
+                    var service = new NotificationServiceClient(myBinding, myEndpoint);
+                    service.PushNotifications(notifications, isStage, userId, userName, method, customerCode);
+                }                
             }
 
             return notifications.Select(n => n.ProductId).ToArray();
         }
 
+        private string GetRestUrl(bool isStage, string userName, int userId, string method, string customerCode)
+        {
+            var url = _integrationProperties.RestNotificationUrl + @"/notification";
+            url = QueryHelpers.AddQueryString(url, nameof(isStage), isStage.ToString());
+            url = QueryHelpers.AddQueryString(url, nameof(userId), userId.ToString());
+            url = QueryHelpers.AddQueryString(url, nameof(userName), userName);
+            url = QueryHelpers.AddQueryString(url, nameof(method), method);
+            url = QueryHelpers.AddQueryString(url, nameof(customerCode), customerCode);
+            return url;
+        }
+
         private async Task<int[]> PushProductsAsync(Article[] products, bool isStage, string userName, int userId, string method, bool localize, bool autopublish, string[] forcedСhannels)
         {
-            var service = new NotificationServiceClient();
+
             var notifications = GetNotifications(products, isStage, forcedСhannels, localize, autopublish);
 
             if (notifications == null)
@@ -103,7 +155,26 @@ namespace QA.ProductCatalog.Integration
             if (notifications.Any())
             {
                 var customerCode = _identityProvider.Identity.CustomerCode;
-                await service.PushNotificationsAsync(notifications, isStage, userId, userName, method, customerCode);
+                
+                if (!String.IsNullOrEmpty(_integrationProperties.RestNotificationUrl))
+                {
+                    var client = _httpClientFactory.CreateClient();
+                    var json = JsonConvert.SerializeObject(notifications);
+                    var content = new StringContent(json, Encoding.UTF8, "application/json");
+                    var url = GetRestUrl(isStage, userName, userId, method, customerCode);
+                    var result = await client.PutAsync(url, content);
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        throw new ApplicationException("Notification sending failed with status code " + result.StatusCode);
+                    }
+                }
+                else if (!String.IsNullOrEmpty(_integrationProperties.WcfNotificationUrl))
+                {
+                    var myBinding = new BasicHttpBinding();
+                    var myEndpoint = new EndpointAddress(_integrationProperties.WcfNotificationUrl);
+                    var service = new NotificationServiceClient(myBinding, myEndpoint);
+                    await service.PushNotificationsAsync(notifications, isStage, userId, userName, method, customerCode);
+                }   
             }
 
             return notifications.Select(n => n.ProductId).ToArray();
@@ -179,10 +250,19 @@ namespace QA.ProductCatalog.Integration
             }
             else if (!autopublish)
             {
-                throw new Exception("Не найдено каналов для публикации");
+                throw new Exception("No channels for publishing");
             }
 
             return notifications;
+        }
+        
+        private HttpClient CreateClient(string baseUri)
+        {
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri(baseUri);
+            client.DefaultRequestHeaders.Accept
+                .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            return client;
         }
 
         private static bool Match(string filter, Article product)

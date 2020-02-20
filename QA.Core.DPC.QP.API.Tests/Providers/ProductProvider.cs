@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
+using QA.Core.DPC.QP.Configuration;
 
 namespace QA.Core.DPC.QP.API.Tests.Providers
 {
@@ -69,7 +71,7 @@ namespace QA.Core.DPC.QP.API.Tests.Providers
 
         private IProductSimpleAPIService GetProductService(JToken product, JToken definition)
         {
-            var identityProvider = new IdentityProvider { Identity = new Identity("customerCode") };
+            var identityProvider = new IdentityProvider(new DefaultHttpContext()) { Identity = new Identity("customerCode") };
             var dataProvider = new CustomProductSimpleService<JToken, JToken>(product, definition);
             var statusProvider = new StatusProvider();
             var settingsService = new SettingsService();

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Timers;
 using QA.Core.Logger;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using Quartz;
 using Quartz.Impl.Matchers;
@@ -10,7 +11,7 @@ using Quartz.Spi;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
-    public class TaskSchedulerRunner
+	public class TaskSchedulerRunner
 	{
 		private readonly ISchedulerFactory _schedulerFactory;
 		private readonly Func<ITaskService> _taskServiceFunc;
@@ -54,17 +55,27 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 		private readonly object _stateLocker = new object();
 
+		private void CancelRequestedTasks()
+		{
+			using (var taskService = _taskServiceFunc())
+			{
+				taskService.CancelRequestedTasks();
+			}
+		}
+		
 		private void UpdateJobsAndTriggers()
 		{
 			using (var taskService = _taskServiceFunc())
 			{
+				_scheduler.JobFactory = new TaskServiceJobFactory(taskService);
+				
 				var tasks = taskService.GetScheduledTasks();
 
 				foreach (var task in tasks)
 				{
 					var jobKey = GetJobKey(task);
 
-					var existingJob = _scheduler.GetJobDetail(jobKey);
+					var existingJob = _scheduler.GetJobDetail(jobKey).Result;
 
 					var triggerKey = GetTriggerKey(task);
 
@@ -75,7 +86,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 					}
 					else
 					{
-						var existingTriggers = _scheduler.GetTriggersOfJob(existingJob.Key);
+						var existingTriggers = _scheduler.GetTriggersOfJob(existingJob.Key).Result;
 
 						//джоб уже есть но могли изменить триггер
 						if (existingTriggers == null || !existingTriggers.Any(x => x.Key.Equals(triggerKey)))
@@ -91,7 +102,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 
 				var deletedTriggers =
-					_scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup())
+					_scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup()).Result
 						.Where(x => tasks.All(task => !GetTriggerKey(task).Equals(x)))
 						.ToArray();
 
@@ -104,7 +115,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 		{
 			var triggerForJob = CreateTrigger(task);
 
-			var calendar = triggerForJob.CalendarName == null ? null : _scheduler.GetCalendar(triggerForJob.CalendarName);
+			var calendar = triggerForJob.CalendarName == null ? null : _scheduler.GetCalendar(triggerForJob.CalendarName).Result;
 
 			DateTimeOffset? firstFireDateTimeOffset = ((IOperableTrigger)triggerForJob).ComputeFirstFireTimeUtc(calendar);
 
@@ -131,7 +142,9 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 		private static IJobDetail CreateJob(Task task)
 		{
-			return JobBuilder.Create<TaskJob>().WithIdentity(GetJobKey(task)).UsingJobData("SourceTaskId", task.ID).Build();
+			return JobBuilder.Create<TaskJob>().WithIdentity(GetJobKey(task))
+				.UsingJobData("SourceTaskId", task.ID)
+				.Build();
 		}
 
 		private static ITrigger CreateTrigger(Task task)
@@ -139,7 +152,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			string[] components = task.Schedule.CronExpression.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 
 			if (components.Length < 5)
-				throw new Exception("Некорректное выражение. Должно иметь не менее 5 компонентов");
+				throw new Exception("Invalid expression. Should have no less than 5 components.");
 
 			//из http://www.quartz-scheduler.net/documentation/quartz-2.x/tutorial/crontrigger.html
 			//Support for specifying both a day-of-week and a day-of-month value is not complete (you must currently use the '?' character in one of these fields).
@@ -168,10 +181,14 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			lock (_stateLocker)
 			{
 				if (_scheduler == null)
-					_scheduler = _schedulerFactory.GetScheduler();
+				{
+					_scheduler = _schedulerFactory.GetScheduler().Result;
+				}
+				
 				else if (_scheduler.IsStarted)
-					throw new Exception("Scheduler already started");
-
+					return;
+				
+				CancelRequestedTasks();
 				UpdateJobsAndTriggers();
 
 				_scheduler.Start();
@@ -199,7 +216,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				{
 					try
 					{
-						_logger.ErrorException("Ошибка при попытке загрузить актуальные триггеры и джобы из бд", ex);
+						_logger.ErrorException("Error while receiving actual triggers and jobs", ex);
 					}
 					catch
 					{

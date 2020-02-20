@@ -9,7 +9,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 {
     public class ProductStoreFactory : ProductStoreFactoryBase
     {
-        public ProductStoreFactory(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, IVersionedCacheProvider2 cache, DataOptions options)
+        public ProductStoreFactory(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, VersionedCacheProviderBase cache, DataOptions options)
             : base(versionFactory, configuration, cache, options)
         {    
         }

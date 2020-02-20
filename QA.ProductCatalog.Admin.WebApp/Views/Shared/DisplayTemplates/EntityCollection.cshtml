@@ -1,11 +1,12 @@
-﻿@model EntityCollection
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.EntityCollection
 <!--EntityCollection
 	Items: @Model.Items
 	Template: @Model.ItemTemplate
 	SeparatorTemplate: @Model.SeparatorTemplate
 	-->
 @{
-	if (Model == null || Model.Hidden) {return;}
+	if (Model == null || (Model.Hidden ?? false)) {return;}
 	
 	bool isFirst = true;
 
@@ -25,6 +26,6 @@
 		
 		isFirst = false;
 		
-		@Html.DisplayFor(x => item)
+		@Html.DisplayForUIElement(item)
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Cache;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
@@ -9,9 +10,9 @@ namespace QA.Core.DPC.Loader.Services
 {
     public class QpCachedContextStorage : IContextStorage
     {
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
 
-        public QpCachedContextStorage(IVersionedCacheProvider cacheProvider)
+        public QpCachedContextStorage(VersionedCacheProviderBase cacheProvider)
         {
             _cacheProvider = cacheProvider;
 

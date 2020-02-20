@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
-using QA.Core.Models.UI;
+﻿#if NETSTANDARD
+using Portable.Xaml.Markup;
+#else
 using System.Windows.Markup;
+#endif
 using QA.Core.DPC.UI.Controls;
 
 namespace QA.Core.DPC.UI
@@ -13,11 +15,6 @@ namespace QA.Core.DPC.UI
 
         public bool EnableAnimation { get; set; }
         public bool IsFullSized { get; set; }
-
-        public override IEnumerable<UIElement> GetChildren(IEnumerable<object> items)
-        {
-            return base.GetChildren(items);
-        }
 
         static TabStrip()
         {

@@ -1,16 +1,18 @@
-﻿@using QA.ProductCatalog.Integration.Notifications
+﻿@using System.Globalization
+@using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Integration.Notifications
 <div class="formLayout">
     <fieldset>
-        <legend>HighloadFront</legend>
+        <legend>@HfStrings.HighloadFront</legend>
         <table border="0" id="tasks" class="inner-groupping-table" data-customer-code="@ViewBag.CustomerCode">
             <thead>
                 <tr>
-                    <th>По умолчанию</th>
-                    <th width="100px" align="center">Язык</th>
-                    <th width="100px">Тип</th>
-                    <th width="150px">Дата</th>
-                    <th colspan="2">Обработка</th>
-                    <th width="200px">Обновление</th>
+                    <th>@HfStrings.Default</th>
+                    <th width="100px" align="center">@HfStrings.Language</th>
+                    <th width="100px">@HfStrings.Type</th>
+                    <th width="150px">@HfStrings.Date</th>
+                    <th colspan="2">@HfStrings.Processing</th>
+                    <th width="200px">@HfStrings.Updating</th>
                     <th width="300px"></th>
                 </tr>
             </thead>
@@ -23,11 +25,11 @@
                     <td align="center" data-bind="text: ChannelState"></td>
                     <td align="center" data-bind="text: getDate(ChannelDate)"></td>                    
                     <td width="20" align="center">
-                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/Content/img/icons/0.gif" />
+                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/images/icons/0.gif" />
                     </td>
                     <td width="100">
-                        <img src="~/Content/KendoUI/Default/loading.gif" style="display:none" />
-                        <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">индексировать</a>
+                        <img src="~/css/KendoUI/Default/loading.gif" style="display:none" />
+                        <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">@HfStrings.ProceedIndexing</a>
                     </td>
                     <td align="center" data-bind="text: getTimePassed(TaskStart, TaskEnd)"></td>
                     <td>
@@ -40,12 +42,21 @@
 </div>
 
 @section head{
-    @Styles.Render("~/content/KendoUI/KendoUIStyles")
+  <link href="~/css/kendo.min.css" rel="stylesheet" />
 }
 
+@section jquery{
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
+}
+
+
 @section scripts{
-    @Scripts.Render("~/bundles/moment")
-    @Scripts.Render("~/bundles/knockout")
-    @Scripts.Render("~/bundles/KendoUI")
-    @Scripts.Render("~/Scripts/HighloadFront.js")
+  <script src="~/js/moment-with-locales.min.js"></script>
+  <script src="~/js/knockout.min.js"></script>
+  
+  <script>
+      moment.locale('@CultureInfo.CurrentCulture.Parent.EnglishName');  
+  </script> 
+  <script src="~/js/HighloadFront.js"></script>
+
 }

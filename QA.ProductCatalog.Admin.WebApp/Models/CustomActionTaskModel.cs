@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core.ProductCatalog.Actions.Tasks;
 
@@ -19,7 +20,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         [ScaffoldColumn(false)]
         public string IconUrl { get; set; }
 
-        [DisplayName("Описание")]
+        [Display(Name="Description", ResourceType = typeof(ControlStrings))]
         public string Description { get; set; }
     }
 }

@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+#if NETSTANDARD
+using Portable.Xaml.Markup;
+#else
 using System.Windows.Markup;
+#endif
+
 using QA.Configuration;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Tools;
 
 namespace QA.Core.Models.Configuration
@@ -26,21 +33,18 @@ namespace QA.Core.Models.Configuration
     [TypeConverter(typeof(ContentTypeConverter))]
     public sealed class Content : AttachableConfigurableItem
     {
-        [DisplayName("Только для чтения ")]
         [DefaultValue(false)]
         public bool IsReadOnly { get; set; }
 
-        [DisplayName("Грузить все простые поля")]
         [DefaultValue(true)]
         public bool LoadAllPlainFields { get; set; }
 
-        [DisplayName("Имя контента")]
         [DefaultValue(null)]
         public string ContentName { get; set; }
 
         public int ContentId { get; set; }
 
-        [DisplayName("Поведение при публикации")]
+        [Display(Name = "PublishBehaviour", ResourceType = typeof(ControlStrings))]
         [DefaultValue(PublishingMode.Publish)]
         public PublishingMode PublishingMode { get; set; }
         
@@ -51,6 +55,9 @@ namespace QA.Core.Models.Configuration
             Fields = new List<Field>();
             LoadAllPlainFields = true;
         }
+        
+        [DefaultValue(null)]
+        public TimeSpan? CachePeriod { get; set; }
 
         public Content ShallowCopy()
         {
@@ -95,7 +102,7 @@ namespace QA.Core.Models.Configuration
 
         public TimeSpan? GetCachePeriodForContent()
         {
-            return XmlMappingBehavior.RetrieveCachePeriod(this);
+            return CachePeriod;
         }
 
         public Content[] GetChildContentsIncludingSelf()

@@ -1,51 +1,73 @@
-﻿@model QA.ProductCatalog.Admin.WebApp.Models.CardModel
+﻿@using System.Globalization
+@using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Admin.WebApp.Core;
+@using QA.Core.DPC.UI;
+
+@model QA.ProductCatalog.Admin.WebApp.Models.CardModel
 @{
-    ViewBag.Title = "Продукт";
+    ViewBag.Title = @ProductCardStrings.Title;
 }
 @if (Model == null)
 {
-    <h1>Ошибка при отображении продукта.</h1>
+    <h1>@ProductCardStrings.DisplayError</h1>
     <p>@ViewBag.Message</p>
     return;
 }
 
-@section jquery{
-	@Scripts.Render("~/bundles/KendoUI")
-}
-
 @section head{
-	@Styles.Render("~/content/KendoUI/KendoUIStyles")
+  <link href="~/css/kendo.min.css" rel="stylesheet" />
+}
+@section jquery{
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
 }
 
 <div class="formLayout">    
     @if (Model.Cultures.Length > 0)
     {
-        <fieldset>
-            <legend>Локализация</legend>
-            <div class="gr-wrapper">
-            @foreach (var culture in Model.Cultures)
+      <fieldset>
+        <legend>@ProductCardStrings.Localization</legend>
+        <div class="gr-wrapper">
+          @foreach (var culture in Model.Cultures)
+          {
+            var url = Url.Current(new Dictionary<string, string>()
             {
-                <span style="padding-right:15px;">
-                    @if (culture.Equals(Model.CurrentCultute))
-                    {
-                    <b>
-                        <a class="js" href="@Url.Current(new { lang = culture.Name })">@culture.NativeName</a>
-                    </b>
-                    }
-                    else
-                    {
-                    <a class="js" href="@Url.Current(new { lang = culture.Name })">@culture.NativeName</a>
-                    }
-                </span>
-            }
-            </div>
-        </fieldset>
-    }           
-    @Html.DisplayFor(m => m.Control)
+              {"lang", culture.Name},
+              {"changeLang", "true"}
+            });
+            <span style="padding-right:15px;">
+              @if (culture.Equals(Model.CurrentCultute))
+              {
+                <b><a class="js" href="@url">@culture.NativeName</a></b>
+              }
+              else
+              {
+                <a class="js" href="@url">@culture.NativeName</a>
+              }
+            </span>
+          }
+        </div>
+      </fieldset>
+    }
+   
+    @{
+        var tabStrip = Model.Control as TabStrip;
+        var stackPanel = Model.Control as StackPanel;
+        if (tabStrip != null)
+        {
+          @Html.DisplayFor(m => tabStrip)
+        }
+        else if (stackPanel != null)
+        {
+          @Html.DisplayFor(m => stackPanel)    
+        }        
+    
+   } 
+
 </div>
 
 @section scripts{
-    @Scripts.Render("~/bundles/product/index")
+  
+  <script src="~/js/bundles/product.min.js"></script>
 
     <script>
         $(function () {

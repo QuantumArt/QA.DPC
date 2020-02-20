@@ -1,18 +1,18 @@
-﻿@using Newtonsoft.Json
+﻿@using System.Globalization
+@using Newtonsoft.Json
+@using QA.Core.DPC.Resources
 @model QA.ProductCatalog.Admin.WebApp.Models.TasksPageInfo
 
 @*переопределяем секцию с jquery*@
 @section jquery{
-	@Scripts.Render("~/bundles/KendoUI")
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
 }
 
 @*добавляем в head  свои стили*@
 @section head{
-	@Styles.Render("~/content/KendoUI/KendoUIStyles")
-
-	@Scripts.Render("~/bundles/Schedule")
-	@Styles.Render("~/content/jqcron.css")
-
+  <link href="~/css/kendo.min.css" rel="stylesheet"/>
+  <script src="~/js/bundles/schedule.min.js"></script>
+  <link href="~/css/jqCron.css" rel="stylesheet"/>
 	<style type="text/css">
 		#TasksGrid .k-loading-mask, .k-filter-menu .k-filter-help-text, .k-filter-menu .k-filter-help-text + span.k-dropdown  {
 			display: none !important;
@@ -50,12 +50,11 @@
 
 }
 
-
 @if (Model.ShowOnlyMine)
 {
 	<div id="TaskContainerDiv" class="formLayout" style="display: none">
 		<fieldset>
-			<legend>Ваша последняя задача</legend>
+			<legend>@TaskStrings.YourLastTask</legend>
 			<div id="TaskPropsDiv">
 			</div>
 		</fieldset>
@@ -68,15 +67,15 @@
 
 <script id="gridButtonsTemplate" type="text/x-kendo-template">
 	#if(StateId <= @((byte)QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)){#
-	<a class='CancelButton' onclick="cancel(#=Id#)"></a>
+	  @Html.Raw(@"<a class='CancelButton' onclick=""cancel(#=Id#)""></a>")
 	#}else{#
-	<a class='RerunButton' onclick="rerun(#=Id#)"></a>
+	  @Html.Raw(@"<a class='RerunButton' onclick=""rerun(#=Id#)""></a>")
 	#}#
 </script>
 
 @*скрипты добавляются в конец страницы в секцию scripts*@
 @section scripts{
-	@Scripts.Render("~/Scripts/AutoUpdateStrategy.js")
+  <script src="~/js/AutoUpdateStrategy.js"></script>
 
 	<script type="text/javascript">
 
@@ -90,7 +89,7 @@
 				type: "POST"
 			}).done(function(res) {
 				if (!res)
-					alert("В данном статусе задачу невозможно выполнить снова");
+					alert("@TaskStrings.CannotRepeatTask");
 
 				updatePage();
 			});
@@ -102,7 +101,7 @@
 				type: "POST"
 			}).done(function(res) {
 				if (!res)
-					alert("В данном статусе задачу невозможно отменить");
+					alert("@TaskStrings.CannotCancelTask");
 
 				updatePage();
 			});
@@ -119,7 +118,7 @@
 				{
 					modal: true,
 					actions: ["Refresh", "Close"],
-					title: "Расписание повторения задачи",
+					title: '@TaskStrings.RecurrenceSchedule',
 					width: 550,
 					height: 350,
 					close: function () { this.element.empty();}
@@ -151,22 +150,22 @@
 					columns: [
 						{ template: $("#gridButtonsTemplate").html(), width: 40 },
 						{ field: "Id", width: 60, filterable: false },
-						{ title: "Заказчик", field: "UserName", filterable: false },
+						{ title: '@TaskStrings.UserName', field: "UserName", filterable: false },
 						{
-							title: "Статус",
-							template: "<img src='@Url.Content("~/Content/img/TaskStates/")#=IconName#16.png' alt='#=State#'/> #=State#",
+							title: '@TaskStrings.Status',
+							template: "<img src='@Url.Content("~/images/TaskStates/")#=IconName#16.png' alt='#=State#'/> #=State#",
 							width: 112,
 							field: "StateId",
 							values: [
 								@(Html.Raw(string.Join(",", Model.States.Select(x => "{text:'" + x.Value + "',value:" + x.Key + "}"))))
 							]
 						},
-						{ title: "Расписание", template: "<div class='SheduleDiv'><input class='SheduleInput' type='hidden' value='#=ScheduleCronExpression#' /></div><a class='EditScheduleButton'></a>", width: 167, field: "HasSchedule" },
-						{ title: "Прогресс", template: "<div style='width:155px' class='progress'></div>", width: 167 },
-						{ title: "Имя", field: "DisplayName" },
-						{ title: "Дата создания", template: "#= kendo.toString(kendo.parseDate(CreatedTime), 'dd.MM.yy HH:mm') #", width: 121 },
-						{ title: "Последнаяя смена статуса", width: 169, template: "#= LastStatusChangeTime == null ? '': kendo.toString(kendo.parseDate(LastStatusChangeTime), 'dd.MM.yy HH:mm') #" },
-						{ title: "Сообщение", filterable: false, template: "<div class='message-details message' title='Клик для раскрытия'>#=Message == null ? '' : Message#</div>" }
+						{ title: '@TaskStrings.Schedule', template: "<div class='SheduleDiv'><input class='SheduleInput' type='hidden' value='#=ScheduleCronExpression#' /></div><a class='EditScheduleButton'></a>", width: 167, field: "HasSchedule" },
+						{ title: '@TaskStrings.Progress', template: "<div style='width:155px' class='progress'></div>", width: 167 },
+						{ title: '@TaskStrings.Name', field: "DisplayName" },
+						{ title: '@TaskStrings.Created', template: "#= kendo.toString(kendo.parseDate(CreatedTime), 'dd.MM.yy HH:mm') #", width: 121 },
+						{ title: '@TaskStrings.LastStatusChange', width: 169, template: "#= LastStatusChangeTime == null ? '': kendo.toString(kendo.parseDate(LastStatusChangeTime), 'dd.MM.yy HH:mm') #" },
+						{ title: '@TaskStrings.Message', filterable: false, template: "<div class='message-details message' title='@Html.Raw(TaskStrings.ClickToOpen)'>#=Message == null ? '' : Message#</div>" }
 					],
 					dataSource: new kendo.data.DataSource({
 						transport: {
@@ -255,10 +254,10 @@
 					filterable: {
 						extra: false,
 						messages: {
-							isFalse: "Нет",
-							isTrue: "Да",
-							filter: "Применить",
-							clear: "Отключить",
+							isFalse: '@TaskStrings.No',
+							isTrue: '@TaskStrings.Yes',
+							filter: '@TaskStrings.Apply',
+							clear: '@TaskStrings.Clear'
 						}
 					},
 					dataBound: function() {
@@ -290,7 +289,7 @@
 								enable: !model.IsCancellationRequested
 							});
 
-							$(this).kendoTooltip({ content: model.IsCancellationRequested ? "Отмена задачи уже запрошена" : "Отменить" });
+							$(this).kendoTooltip({ content: model.IsCancellationRequested ? "@TaskStrings.CancellationRequested" : "@TaskStrings.Cancel" });
 						});
 
 						$(".RerunButton", this.element).each(function() {
@@ -299,7 +298,7 @@
 								icon: "refresh"
 							});
 
-							$(this).kendoTooltip({ content: "Перезапустить" });
+							$(this).kendoTooltip({ content: "@TaskStrings.Rerun" });
 						});
 
 						$(".SheduleDiv", this.element).each(function() {
@@ -335,8 +334,8 @@
 							$(this).kendoTooltip(
 							{
 								content: model.ScheduledFromTaskId == null ?
-									"Редактировать повторение по расписанию" :
-									"Редактирование недоступно так как задача уже создана по расписанию задачи " + model.ScheduledFromTaskId,
+									"@TaskStrings.EditRecurrenceSchedule" :
+									"@TaskStrings.EditNotAllowed " + model.ScheduledFromTaskId,
 								position: "right"
 							});
 						});
@@ -391,15 +390,15 @@
 				if (task.StateId > runningStateId && lastStatusChangeTime != null && lastStatusChangeTime > window.FormRenderedServerTime && !window.AlreadyNotifiedTaskIds[task.Id]) {
 					window.AlreadyNotifiedTaskIds[task.Id] = true;
 
-					var body = "Статус: " + task.State;
+					var body = "@(TaskStrings.State): " + task.State;
 
 					if (task.Message)
 						body += "\r\n" + task.Message;
 
-					new Notification("Задача " + task.DisplayName + " обработана",
+					new Notification("@(TaskStrings.Task) " + task.DisplayName + " @(TaskStrings.Processed)",
 					{
 						body: body,
-						icon: '@Url.Content("~/Content/img/TaskStates/")' + task.IconName + '48.png'
+						icon: '@Url.Content("~/images/TaskStates/")' + task.IconName + '48.png'
 					});
 				}
 			}

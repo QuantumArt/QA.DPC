@@ -1,11 +1,12 @@
 ﻿using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;
 using System;
 using System.Data.SqlClient;
+using QA.Core.DPC.Resources;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
@@ -59,18 +60,16 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         private static bool IsProcessing = false;
         
         private readonly ISettingsService _settingsService;
-        private readonly ILogger _logger;
         private readonly string _connectionString;
         #endregion
 
-        public CleanProductVersionAction(ISettingsService settingsService, IConnectionProvider connectionProvider, ILogger logger)
+        public CleanProductVersionAction(ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _settingsService = settingsService;
             _connectionString = connectionProvider.GetConnection();
-            _logger = logger;
         }
 
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             bool canProcess = false;
             lock (Locker)
@@ -107,13 +106,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     int currentCount = 0;
                     byte progress = 0;
 
-                    _logger.LogInfo(() => $"Start CleanProductVersionAction cleanupInterval={cleanupInterval}, chunkSize={chunkSize}, expectedTotalCount={expectedTotalCount}");
+                    Logger.Info($"Start CleanProductVersionAction cleanupInterval={cleanupInterval}, chunkSize={chunkSize}, expectedTotalCount={expectedTotalCount}");
 
                     do
                     {
                         currentCount = CleanVersions(date, chunkSize, timeout);
                         processedCount += currentCount;
-                        _logger.LogInfo(() => $"Clean {currentCount} product versions");
+                        Logger.Info($"Clean {currentCount} product versions");
 
                         progress = expectedTotalCount == 0 ? (byte)100 : Math.Min((byte)(processedCount * 100 / expectedTotalCount), (byte)100);
                         TaskContext.SetProgress(progress);
@@ -126,19 +125,27 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     }
                     while (currentCount > 0);
 
-                    _logger.LogInfo(() => $"End CleanProductVersionAction processedCount={processedCount}");
+                    Logger.Info( $"End CleanProductVersionAction processedCount={processedCount}");
 
-                    return $"Cleaned {processedCount} product versions earlier than {date} with chunk size = {chunkSize}";
+                    return ActionTaskResult.Success(new ActionTaskResultMessage()
+                        {
+                            ResourceClass = nameof(TaskStrings),
+                            ResourceName = nameof(TaskStrings.VersionsCleaned),
+                            Parameters = new object[] { processedCount, date, chunkSize}
+                        });
                 }
                 finally
                 {
                     IsProcessing = false;
                 }
             }
-            else
+
+            return ActionTaskResult.Error(new ActionTaskResultMessage()
             {
-                return "CleanProductVersionAction is already running";
-            }
+                ResourceClass = nameof(TaskStrings),
+                ResourceName = nameof(TaskStrings.ActionRunning),
+                Parameters = new object[] { GetType().Name }
+            });
         }
 
         #region Private methods

@@ -1,15 +1,19 @@
 ﻿using System.Collections.Generic;
-using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions;
+using A = QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
 using System.Linq;
-using System.Web.Mvc;
-using QA.Core.Web;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using QA.Core.DPC.Resources;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Admin.WebApp.Core;
+using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -18,44 +22,48 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
     {
         private readonly ITaskService _taskService;
         private readonly IUserProvider _userProvider;
+        private readonly ICompositeViewEngine _viewEngine;
 
-        public PartialSendController(ITaskService taskService, IUserProvider userProvider)
+        public PartialSendController(ITaskService taskService, IUserProvider userProvider, ICompositeViewEngine viewEngine)
         {
             _taskService = taskService;
-
+            _viewEngine = viewEngine;
             _userProvider = userProvider;
         }
-
-        public ViewResult Index(string[] IgnoredStatus, bool localize = false)
+        
+        public ActionResult Index(string[] ignoredStatus, bool localize = false)
         {
             ViewBag.Localize = localize;
-            ViewBag.IgnoredStatus = IgnoredStatus ?? Enumerable.Empty<string>().ToArray();  
+            ViewBag.IgnoredStatus = ignoredStatus ?? Enumerable.Empty<string>().ToArray();  
 			return View();
         }
 
-        public PartialViewResult CurrentActiveTask()
+        [HttpGet]
+        public ActionResult Active()
         {
 			var task = _taskService.GetLastTask(null, State.Running, typeof(SendProductAction).Name);
 
             if (task != null)
                 return PartialView("ActionProps", new TaskModel(task));
             else
-                return null;
+                return Content("");
         }
 
-        public ActionResult UserTask(int taskId)
+        [HttpGet]
+        public async Task<ActionResult> Task(int taskId)
         {
-            var task = _taskService.GetTask(taskId);
+            var task = _taskService.GetTask(taskId, true);
 
             bool taskProcessingFinished = task.StateID != (byte)State.Running && task.StateID != (byte)State.New;
 
-            return Json(new { taskProcessingFinished, taskHtml = this.RenderRazorViewToString("ActionProps", new TaskModel(task)) }, JsonRequestBehavior.AllowGet);
+            return Json(new { taskProcessingFinished, taskHtml = await this.RenderRazorViewToString(_viewEngine, "ActionProps", new TaskModel(task)) });
         }
 
-        public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] IgnoredStatus, bool stageOnly, bool localize = false)
+        [HttpPost]
+        public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] ignoredStatus, bool stageOnly, bool localize = false)
         {
             int[] ids = null;
-			IgnoredStatus = IgnoredStatus ??  Enumerable.Empty<string>().ToArray();
+			ignoredStatus = ignoredStatus ??  Enumerable.Empty<string>().ToArray();
 
             try
             {
@@ -66,15 +74,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                         .ToArray();
 
 				if (ids.Length == 0)
-					ModelState.AddModelError("idsStr", "Список ID не может быть пустым");
+					ModelState.AddModelError("idsStr", "Ids list should not be empty");
 
             }
             catch
             {
-                ModelState.AddModelError("idsStr", "Введен некорректный список ID");
+                ModelState.AddModelError("idsStr", "Incorrect Ids list");
             }
 
-			ViewBag.IgnoredStatus = IgnoredStatus;
+			ViewBag.IgnoredStatus = ignoredStatus;
             ViewBag.Localize = localize;
 
 
@@ -86,7 +94,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 				var parameters = new Dictionary<string, string>();
 				if (!proceedIgnoredStatus)
 				{
-					parameters.Add("IgnoredStatus", string.Join(",", IgnoredStatus));
+					parameters.Add("IgnoredStatus", string.Join(",", ignoredStatus));
 				}
 
                 if (stageOnly)
@@ -101,12 +109,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 		            ActionData.Serialize(new ActionData
 		            {
 			            ActionContext =
-				            new ActionContext {ContentItemIds = ids, ContentId = 288, Parameters = parameters, UserId = userId, UserName = userName}
+				            new A.ActionContext() {ContentItemIds = ids, ContentId = 288, Parameters = parameters, UserId = userId, UserName = userName}
 		            });
 
 				var taskKey = typeof(SendProductAction).Name;
 
-                int taskId = _taskService.AddTask(taskKey, taskData, userId, userName, "Частичная отправка");
+                int taskId = _taskService.AddTask(taskKey, taskData, userId, userName, TaskStrings.PartialSend);
 
 				return View("Result", taskId);
             }
