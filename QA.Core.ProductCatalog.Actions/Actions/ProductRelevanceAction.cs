@@ -39,7 +39,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             if (productIds == null || productIds.Length == 0)
             {
                 if (context.ContentId == marketingProductContentId)
-                    throw new Exception("Нельзя обрабатывать все маркетинговые продукты сразу, виберите конкретные продукты");
+                    throw new Exception("Unable to process all marketing products. Please, select specific ones");
 
 				productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetCustomer());
             }

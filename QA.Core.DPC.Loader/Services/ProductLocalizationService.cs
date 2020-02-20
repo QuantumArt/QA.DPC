@@ -256,7 +256,7 @@ namespace QA.Core.DPC.Loader.Services
 
             if (invalidFields.Any())
             {
-                throw new Exception($"Поля {string.Join(", ", invalidFields)} имеют разный тип в локализованных версиях");
+                throw new Exception($"Fields {string.Join(", ", invalidFields)} have different types in localized versions");
             }
 
             return group;
