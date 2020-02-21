@@ -7,17 +7,17 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 {
     public class TaskJob : IJob
     {
-	    private ITaskService _service;
+	    private readonly ITaskService _service;
 		public TaskJob(ITaskService service)
 		{
 			_service = service;
 		}
-		
-		public int SourceTaskId { private get; set; }
 
 		public Task Execute(IJobExecutionContext context)
 		{
-			_service.SpawnTask(SourceTaskId);
+			var dataMap = context.JobDetail.JobDataMap;
+			var id = dataMap.GetIntValue("SourceTaskId");
+			_service.SpawnTask(id);
 			return Task.CompletedTask;
 		}
 	}

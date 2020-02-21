@@ -8,7 +8,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 {
     public class TaskServiceJobFactory : IJobFactory
     {
-        private ITaskService _service;
+        private readonly ITaskService _service;
 
         public TaskServiceJobFactory(ITaskService service)
         {
@@ -22,7 +22,6 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
         public void ReturnJob(IJob job)
         {
-            throw new NotImplementedException();
         }
     }
 }
