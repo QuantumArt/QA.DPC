@@ -2,12 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Timers;
-using QA.Core.Logger;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using Quartz;
 using Quartz.Impl.Matchers;
 using Quartz.Spi;
+using NLog;
+using NLog.Fluent;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
@@ -15,14 +16,13 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 	{
 		private readonly ISchedulerFactory _schedulerFactory;
 		private readonly Func<ITaskService> _taskServiceFunc;
+		private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+		
 
-		public TaskSchedulerRunner(ISchedulerFactory schedulerFactory, Func<ITaskService> taskServiceFunc, ILogger logger)
+		public TaskSchedulerRunner(ISchedulerFactory schedulerFactory, Func<ITaskService> taskServiceFunc)
 		{
 			_schedulerFactory = schedulerFactory;
-
 			_taskServiceFunc = taskServiceFunc;
-
-			_logger = logger;
 		}
 
 		private int _secondsToUpdateJobsAndTriggers = 5;
@@ -83,6 +83,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 					if (existingJob == null)
 					{
 						ScheduleJobIfNotInPast(CreateJob(task), task);
+						_logger.Info("Task {taskId} has been scheduled.", task.ID);
 					}
 					else
 					{
@@ -96,6 +97,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 									_scheduler.UnscheduleJob(existingTrigger.Key);
 
 							ScheduleJobIfNotInPast(existingJob, task);
+							_logger.Info("Schedule has been changed for task {taskId}", task.ID);
 						}
 					}
 				}
@@ -124,10 +126,14 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			if (firstFireDateTimeOffset.HasValue)
 				_scheduler.ScheduleJob(jobDetail, triggerForJob);
 			else
+			{
 				using (var taskService = _taskServiceFunc())
 				{
 					taskService.SaveSchedule(task.ID, false, null);
 				}
+
+				_logger.Info("Onetime schedule has been removed from database for task {taskId}", task.ID);
+			}
 		}
 
 		private static JobKey GetJobKey(Task task)
@@ -174,7 +180,6 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 		}
 
 		private System.Timers.Timer _timerForSchedulerUpdate;
-		private ILogger _logger;
 
 		public void Start()
 		{

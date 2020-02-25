@@ -1,23 +1,36 @@
-﻿using QA.Core.ProductCatalog.ActionsRunner;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
+﻿using NLog;
+using NLog.Fluent;
+using QA.Core.ProductCatalog.ActionsRunner;
 using Quartz;
+using Unity.Injection;
 using Task = System.Threading.Tasks.Task;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
     public class TaskJob : IJob
     {
-	    private ITaskService _service;
+	    private readonly ITaskService _service;
+
+	    private static ILogger _logger = LogManager.GetCurrentClassLogger();
+	    
+	    
 		public TaskJob(ITaskService service)
 		{
 			_service = service;
 		}
-		
-		public int SourceTaskId { private get; set; }
 
 		public Task Execute(IJobExecutionContext context)
 		{
-			_service.SpawnTask(SourceTaskId);
+			var dataMap = context.JobDetail.JobDataMap;
+			var id = dataMap.GetIntValue("SourceTaskId");
+			
+			_logger.Info()
+				.Message("Calling task {taskId} by schedule.", id)
+				.Property("scheduleTime", context.ScheduledFireTimeUtc)
+				.Property("fireTime", context.FireTimeUtc)
+				.Write();
+
+			_service.SpawnTask(id);
 			return Task.CompletedTask;
 		}
 	}

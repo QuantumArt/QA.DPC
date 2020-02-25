@@ -67,7 +67,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 {
                     ResourceClass = nameof(TaskStrings),
                     ResourceName = nameof(TaskStrings.ProductsUnfreezed),
-                    Extra = string.Join(",", productIds)
+                    Extra = string.Join(", ", productIds)
                 });
             }
             

@@ -43,6 +43,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 
             if (_options.EnableScheduleProcess)
             {
+                _logger.Info("Scheduler for {serviceName} started", _options.Name);
                 _taskSchedulerRunner.Start();
             }
 
