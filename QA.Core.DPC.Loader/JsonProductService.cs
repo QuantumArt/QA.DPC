@@ -773,7 +773,7 @@ namespace QA.Core.DPC.Loader
                 case PlainFieldType.File:
                 {
                     var valueUrl = $@"{shortFieldUrl}/{value}";
-                    var size = Common.GetFileSize(_factory, _loaderProperties, _dbConnector, fieldId, $"{longFieldUrl}/{value}");
+                    var size = Common.GetFileSize(_factory, _loaderProperties, _dbConnector, fieldId, value, $"{longFieldUrl}/{value}");
 
                     return new PlainFieldFileInfo
                     {
