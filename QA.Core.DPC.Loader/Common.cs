@@ -89,7 +89,7 @@ namespace QA.Core.DPC.Loader
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error()
+                    Logger.Warn()
                         .Exception(ex)
                         .Message("Cannot receive file size with url: {url}", url)
                         .Write();
@@ -101,7 +101,7 @@ namespace QA.Core.DPC.Loader
             var path= GetFileFromQpFieldPath(cnn, fieldId, shortFieldUrl);
             if (File.Exists(path)) return (int) new FileInfo(path).Length;
             
-            Logger.Error()
+            Logger.Warn()
                 .Message("Cannot find file with path: {path}", path)
                 .Write();
                     
