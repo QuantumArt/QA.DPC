@@ -76,11 +76,11 @@ namespace QA.Core.DPC.Loader
             return fileName;
         }
 
-        public static int GetFileSize(IHttpClientFactory httpClientFactory, LoaderProperties loaderProperties, DBConnector cnn, int fieldId, string fieldUrl)
+        public static int GetFileSize(IHttpClientFactory httpClientFactory, LoaderProperties loaderProperties, DBConnector cnn, int fieldId, string shortFieldUrl, string longFieldUrl)
         {
             if (loaderProperties.UseFileSizeService)
             {
-                var url = GetFileStorageUrl(cnn, fieldId, fieldUrl);
+                var url = GetFileStorageUrl(cnn, fieldId, longFieldUrl);
                 var client = httpClientFactory.CreateClient();
                 try
                 {
@@ -89,7 +89,7 @@ namespace QA.Core.DPC.Loader
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error()
+                    Logger.Warn()
                         .Exception(ex)
                         .Message("Cannot receive file size with url: {url}", url)
                         .Write();
@@ -98,8 +98,15 @@ namespace QA.Core.DPC.Loader
                 }
             }
 
-            var path = GetFileFromQpFieldPath(cnn, fieldId, fieldUrl);
-            return File.Exists(path) ? (int) new FileInfo(path).Length : 0;
+            var path= GetFileFromQpFieldPath(cnn, fieldId, shortFieldUrl);
+            if (File.Exists(path)) return (int) new FileInfo(path).Length;
+            
+            Logger.Warn()
+                .Message("Cannot find file with path: {path}", path)
+                .Write();
+                    
+            return 0;
+
         }
     }
 }

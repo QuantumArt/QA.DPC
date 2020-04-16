@@ -412,7 +412,7 @@ namespace QA.Core.DPC.Loader
 	            
 	            if (article.PlainFieldType == PlainFieldType.File && !renderFileAsImage)
 	            {
-		            var size = Common.GetFileSize(_factory, _loaderProperties, cnn, fieldId, $@"{fieldUrl}/{value}");
+		            var size = Common.GetFileSize(_factory, _loaderProperties, cnn, fieldId, value, $@"{fieldUrl}/{value}");
 		            return new[]
 		            {
 			            new XElement("Name", Common.GetFileNameByUrl(cnn, fieldId, valueUrl)),
