@@ -122,7 +122,7 @@ QA.Product.Index =
 
       $(".control-image__img").each(function() {
         if (this.naturalWidth && this.naturalHeight) {
-          let d = `${this.naturalWidth}x${this.naturalHeight}`;
+          let d = this.naturalWidth + "x" + this.naturalHeight;
           $(this)
             .parent()
             .find(".control-image__tooltip")
