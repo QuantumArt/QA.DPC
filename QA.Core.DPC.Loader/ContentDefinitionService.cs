@@ -295,7 +295,7 @@ namespace QA.Core.DPC.Loader
         private Dictionary<string, string> GetDefinitionFields(
             int xamlContentId, int contentId, int productTypeId, bool isLive = false, bool forEditor = false)
         {
-            string keyInCache = $"{nameof(GetDefinitionFields)}_{xamlContentId}_{productTypeId}_{contentId}_{isLive}";
+            string keyInCache = $"{nameof(GetDefinitionFields)}_{xamlContentId}_{productTypeId}_{contentId}_{isLive}_{forEditor}";
 
             return _cacheProvider.GetOrAdd(keyInCache, new[] { xamlContentId.ToString() }, _cachePeriod, () =>
             {
