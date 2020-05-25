@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Collections;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
@@ -34,7 +35,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         private static IWebHost BuildWebHost(this string[] args)
         {
             var config = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
                 .Build();
             
