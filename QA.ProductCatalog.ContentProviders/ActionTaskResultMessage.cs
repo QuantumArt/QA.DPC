@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Resources;
 using System.Text;
@@ -21,12 +22,17 @@ namespace QA.ProductCatalog.ContentProviders
 
         public override string ToString()
         {
+            return ToString(CultureInfo.CurrentUICulture);
+        }
+
+        public string ToString(CultureInfo ci)
+        {
             var sb = new StringBuilder();
             var result = Message;
             if (!string.IsNullOrEmpty(ResourceName) && !string.IsNullOrEmpty(ResourceClass))
             {
                 var rm = new ResourceManager("QA.Core.DPC.Resources." + ResourceClass, typeof(TaskStrings).Assembly);
-                result = rm.GetString(ResourceName) ?? ResourceName;
+                result = rm.GetString(ResourceName, ci) ?? ResourceName;
             }
             
             if (Parameters != null && Parameters.Any())

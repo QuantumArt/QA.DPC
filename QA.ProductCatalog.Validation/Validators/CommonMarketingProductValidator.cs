@@ -52,7 +52,7 @@ namespace QA.ProductCatalog.Validation.Validators
 		                ResourceClass = ValidationHelper.ResourceClass,
 		                ResourceName = nameof(RemoteValidationMessages.SameTypeMarketingProductProducts),
 	                };
-					result.AddModelError(helper.GetPropertyName(productsName), JsonConvert.SerializeObject(message));
+					result.AddModelError(helper.GetPropertyName(productsName), helper.ToString(message));
 					return result;
 				}
 
@@ -69,7 +69,7 @@ namespace QA.ProductCatalog.Validation.Validators
 						};
 						
 						result.AddModelError(
-								helper.GetPropertyName(Constants.FieldAlias), JsonConvert.SerializeObject(message)
+								helper.GetPropertyName(Constants.FieldAlias), helper.ToString(message)
 						);
 					}
 				}

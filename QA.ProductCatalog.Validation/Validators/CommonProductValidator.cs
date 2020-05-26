@@ -187,7 +187,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     };
 
                     result.AddModelError(
-                        helper.GetPropertyName(markProductName), JsonConvert.SerializeObject(message)
+                        helper.GetPropertyName(markProductName), helper.ToString(message)
                      );
                 }
             }
