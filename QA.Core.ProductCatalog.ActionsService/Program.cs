@@ -40,6 +40,7 @@ namespace QA.Core.ProductCatalog.ActionsService
                 .Build();
             
             var builder = WebHost.CreateDefaultBuilder(args)
+                    .UseContentRoot(AppContext.BaseDirectory)
                     .UseConfiguration(config)
                     .ConfigureLogging((hostingContext, logging) =>
                     {

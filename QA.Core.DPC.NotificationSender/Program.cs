@@ -38,6 +38,7 @@ namespace QA.Core.DPC
                 .Build();
             
             var builder = WebHost.CreateDefaultBuilder(args)
+                    .UseContentRoot(AppContext.BaseDirectory)
                     .UseConfiguration(config)
                     .ConfigureLogging((hostingContext, logging) =>
                     {
