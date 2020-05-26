@@ -320,12 +320,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public static string ToString(RemoteValidationContext model, ActionTaskResultMessage atrm)
         {
-            if (!String.IsNullOrEmpty(model.CustomerCode)) // call from QP
-            {
-                return atrm.ToString(new CultureInfo(model.CurrentUICulture));
-            }
-
-            return JsonConvert.SerializeObject(atrm);  
+            return model.LocalizeMessages ? atrm.ToString(new CultureInfo(model.CurrentUICulture)) : JsonConvert.SerializeObject(atrm);
         }
 
         public void CheckSiteId(int contentId)

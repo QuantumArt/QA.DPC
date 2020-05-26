@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-using Flurl.Http.Configuration;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;

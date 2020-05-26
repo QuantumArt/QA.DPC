@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
-using QP8.Infrastructure.Logging.Extensions;
 using Quantumart.QP8.BLL;
 
 namespace QA.ProductCatalog.ContentProviders
