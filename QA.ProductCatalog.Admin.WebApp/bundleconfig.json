@@ -50,9 +50,9 @@
       "wwwroot/js/jquery.scrollto.js",
       "wwwroot/js/json2.js",
       "wwwroot/js/pmrpc.js",
-      "wwwroot/js/qp/qp8backendApi.interaction.js",
-      "wwwroot/js/qp/qa.utils.js",
-      "wwwroot/js/qp/qa.integration.js"      
+      "wwwroot/js/qp/QP8BackendApi.Interaction.js",
+      "wwwroot/js/qp/QA.Utils.js",
+      "wwwroot/js/qp/QA.Integration.js"      
     ]
   },
   

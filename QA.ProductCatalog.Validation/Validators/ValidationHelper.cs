@@ -4,6 +4,7 @@ using QA.Validation.Xaml.Extensions.Rules.Remote;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -52,7 +53,8 @@ namespace QA.ProductCatalog.Validation.Validators
                     ResourceName = nameof(RemoteValidationMessages.MissingParam),
                     Parameters = new object[] {alias}
                 };
-                Result.AddErrorMessage(JsonConvert.SerializeObject(result));
+                Result.AddErrorMessage(
+                    ToString(result));
             }
             return def;
         }
@@ -125,7 +127,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     Parameters = new object[] {String.Join(", ", resultIds)}
                 };
                 
-                Result.AddModelError(GetPropertyName(regionsName), JsonConvert.SerializeObject(message));
+                Result.AddModelError(GetPropertyName(regionsName), ToString(message));
             }
         }
 
@@ -170,7 +172,7 @@ namespace QA.ProductCatalog.Validation.Validators
                 Parameters = new object[] {string.Join(", ", resultIds)}
             };
 
-            Result.AddModelError(GetPropertyName(productsName), JsonConvert.SerializeObject(result));
+            Result.AddModelError(GetPropertyName(productsName), ToString(result));
 
             return false;
         }
@@ -269,7 +271,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     Parameters = new object[] {string.Join(", ", resultIds.Distinct())}
                 };
 
-                Result.AddModelError(GetPropertyName(parametersFieldName), JsonConvert.SerializeObject(result));
+                Result.AddModelError(GetPropertyName(parametersFieldName), ToString(result));
             }
         }
 
@@ -287,7 +289,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     Parameters = new object[] {string.Join(",", relIds.Distinct())}
                 };
                 
-                Result.AddModelError(GetPropertyName(idFieldName), JsonConvert.SerializeObject(result));
+                Result.AddModelError(GetPropertyName(idFieldName), ToString(result));
             }
         }
 
@@ -307,8 +309,18 @@ namespace QA.ProductCatalog.Validation.Validators
                     Parameters = new object[] {string.Join(",", duplicateServices)}
                 };
 
-                Result.AddModelError(GetPropertyName(idFieldName), JsonConvert.SerializeObject(result));
+                Result.AddModelError(GetPropertyName(idFieldName), ToString(result));
             }
+        }
+
+        public string ToString(ActionTaskResultMessage atrm)
+        {
+            return ToString(Model, atrm);
+        }
+
+        public static string ToString(RemoteValidationContext model, ActionTaskResultMessage atrm)
+        {
+            return model.LocalizeMessages ? atrm.ToString(new CultureInfo(model.CurrentUICulture)) : JsonConvert.SerializeObject(atrm);
         }
 
         public void CheckSiteId(int contentId)

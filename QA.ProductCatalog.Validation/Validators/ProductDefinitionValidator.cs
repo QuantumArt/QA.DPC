@@ -39,7 +39,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     ResourceName = nameof(RemoteValidationMessages.FieldNotFound),
                     Parameters = new object[] {FieldXmlDefinition}
                 };
-                result.Messages.Add(JsonConvert.SerializeObject(message));
+                result.Messages.Add(ValidationHelper.ToString(context, message));
             }
 
             var xaml = context.ProvideValueExact<string>(xmlDefinition);
@@ -58,7 +58,7 @@ namespace QA.ProductCatalog.Validation.Validators
                         ResourceName = nameof(RemoteValidationMessages.NotValidXamlDefinition),
                         Parameters = new object[] { ex.Message }
                     };
-                    result.Messages.Add(JsonConvert.SerializeObject(message));
+                    result.Messages.Add(ValidationHelper.ToString(context, message));
                     return result;
                 }
 
@@ -83,7 +83,7 @@ namespace QA.ProductCatalog.Validation.Validators
                                     ResourceName = nameof(RemoteValidationMessages.JsonDefinitionError),
                                     Parameters = new object[] { ex.Message }
                                 };
-                                result.Messages.Add(JsonConvert.SerializeObject(message));
+                                result.Messages.Add(ValidationHelper.ToString(context, message));
                                 return result;
                             }
                         }

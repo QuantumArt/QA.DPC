@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     ResourceName = nameof(RemoteValidationMessages.MissingParam),
                     Parameters = new object[] {FieldFilter}
                 };
-                result.AddErrorMessage(JsonConvert.SerializeObject(message));
+                result.AddErrorMessage(ValidationHelper.ToString(context, message));
             }
             else
             {
@@ -39,7 +39,7 @@ namespace QA.ProductCatalog.Validation.Validators
                         ResourceName = nameof(RemoteValidationMessages.InvalidFilter),
                         Parameters = new object[] {normalizedFilter}
                     };
-                    result.AddModelError(filterDefinition.PropertyName, JsonConvert.SerializeObject(message));
+                    result.AddModelError(filterDefinition.PropertyName, ValidationHelper.ToString(context, message));
                 }
             }
 
