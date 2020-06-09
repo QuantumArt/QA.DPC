@@ -1,29 +1,33 @@
 ﻿<#
 .SYNOPSIS
-Installs DPC.WebAPI
+Installs reference front
 
 .DESCRIPTION
-DPC.WebAPI provides program interface for executing CRUD-operations with products and calling DPC custom actions
+Dpc.Front is a reference front created as web application. It contains published products which is used for QP8.Catalog internal purposes, 
+such as reindexing ElasticSearch, tracking of publication history.
 
 .EXAMPLE
-  .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -siteName 'Dpc.WebApi' -logPath 'C:\Logs'
+  .\InstallConsolidationSiteSync.ps1 -port 8013 -logPath 'C:\Logs'
 
 .EXAMPLE
-   .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -logPath 'C:\Logs'
+  .\InstallConsolidationSiteSync.ps1 -port 8012 -siteName 'DPC.Front' -logPath 'C:\Logs' -useProductVersions $true 
 #>
 param(
-    ## Dpc.WebApi site name
+    ## Dpc.Front site name
     [Parameter()]
-    [String] $siteName ='Dpc.WebApi',
-    ## Dpc.WebApi port
+    [String] $siteName ='Dpc.Front',
+    ## Dpc.Front port
     [Parameter(Mandatory = $true)]
     [int] $port,
     ## Logs folder
     [Parameter(Mandatory = $true)]
-    [String] $logPath,    
-    ## DPC.NotificationSender port
-    [Parameter(Mandatory = $true)]
-    [int] $notifyPort
+    [String] $logPath,
+    ## DPC instance name
+    [Parameter()]
+    [string] $instanceId = 'Dev',
+    ## Use versions (publication history) or not
+    [Parameter()]
+    [bool] $useProductVersions = $false
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -52,13 +56,13 @@ $sitePath = Join-Path $root $siteName
 Write-Output $sitePath
 New-Item -Path $sitePath -ItemType Directory -Force
 
+$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
-$sourcePath = Join-Path $parentPath "WebApi"
+$sourcePath = Join-Path $parentPath "Front"
 
 Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
 
-$nLogPath = Join-Path $sitePath "NLogClient.config"
-
+$nLogPath = Join-Path $sitePath "NLog.config"
 [xml]$nlog = Get-Content -Path $nLogPath
 
 $nlog.nlog.internalLogFile = [string](Join-Path $logPath "internal-log.txt")
@@ -74,23 +78,14 @@ $node.writeTo = "fileInfo"
 
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
+$appsettingsPath = Join-Path $sitePath "appsettings.json"
 
-$appSettingsPath = Join-Path $sitePath "appsettings.json"
-$json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
+$appsettings = Get-Content -Path $appsettingsPath  | ConvertFrom-Json
+$appsettings.Data | Add-Member NoteProperty "UseProductVersions" $useProductVersions -Force
+$appsettings.Data | Add-Member NoteProperty "InstanceId" $instanceId -Force
 
-$loader = $json.Loader
-$loader.UseFileSizeService = $false
-
-$integration = ($json | Get-Member "Integration")
-if (!$integration) {
-    $integration = New-Object PSObject
-    $json | Add-Member NoteProperty "Integration" $integration
-}
-
-$integration | Add-Member NoteProperty "RestNotificationUrl" "http://${env:COMPUTERNAME}:$notifyPort" -Force
-
-Set-ItemProperty $appSettingsPath -name IsReadOnly -value $false
-$json | ConvertTo-Json | Out-File $appSettingsPath
+Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
+$appsettings | ConvertTo-Json | Set-Content -Path $appsettingsPath
 
 $p = Get-Item "IIS:\AppPools\$siteName" -ErrorAction SilentlyContinue
 

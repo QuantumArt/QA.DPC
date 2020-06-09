@@ -28,87 +28,102 @@
   .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -sourceBackupPath \\storage\catalog_consolidation.bak -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
 #>
 param(
-    ## Флаг очистки ранее установленных компонент каталога
+    ## Cleanup (or not) previous version of catalog
     [Parameter()]
     [bool] $cleanUp = $true,
-    ## Сервер баз данных
+    ## Database server name
     [Parameter(Mandatory = $true)]
     [string] $databaseServer,
-    ## Путь к бэкапу базы каталога
+    ## Backup file for copying onto database server
     [Parameter()]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $sourceBackupPath,
-    ## Локальный путь к бэкапу базы каталога на сервере баз данных
+    ## Backup file for restoring (server local - for SQL Server)
     [Parameter()]
     [string] $targetBackupPath = 'c:\temp\catalog_consolidation.bak',
-    ## Пользователь для коннекта к базе данных каталога
+    ## Catalog database user name
     [Parameter()]
     [string] $customerLogin,
-    ## Пароль для коннекта к базе данных каталога
+    ## Catalog database user password
     [Parameter()]
     [string] $customerPassword,
-    ## Путь к скрипту актуализации базы данных каталога
+    ## Path to sql script for bringing catalog database up-to-date
     [Parameter()]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $currentSqlPath,
-    ## Кастомер код каталога
+    ## Catalog customer code
     [Parameter(Mandatory = $true)]
-    [string] $customerCode, 
-    ## Порт DPC.NotificationSender
+    [string] $customerCode,
+    ## DPC.NotificationSender service port
+    [Parameter()]
+    [int] $actionsPort = 8011, 
+    ## DPC.NotificationSender service port
     [Parameter()]
     [int] $notifyPort = 8012,
-    ## Порт Dpc.SiteSync
+    ## Dpc.Front site port
     [Parameter()]
-    [int] $siteSyncPort = 8013,
-    ## Порт Dpc.SearchApi
+    [int] $frontPort = 8013,
+    ## Dpc.SearchApi site port
     [Parameter()]
     [int] $searchApiPort = 8014,
-    ## Порт Dpc.SyncApi
+    ## Dpc.SyncApi site port
     [Parameter()]
     [int] $syncApiPort = 8015,
-    ## Порт Dpc.WebApi
+    ## Dpc.WebApi site port
     [Parameter()]
     [int] $webApiPort = 8016,
-    ## Порт бэкэнда QP
+    ## QP site port
     [Parameter(Mandatory = $true)]
     [int] $backendPort,
-    ## Хост кластера Elasticsearch
+    ## Elasticsearch cluster address
     [Parameter(Mandatory = $true)]
     [string] $elasticsearchHost,
-    ## Путь к каталогу установки сервисов каталога
+    ## Folder to install services
     [Parameter(Mandatory = $true)]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $installRoot,
-    ## Флаг версионности на референсной витрине
+    ## Store product versions (or not) on DPC.Front
     [Parameter()]
     [bool] $useProductVersions = $false,
-    ## Название QP
+    ## QP site name
     [Parameter()]
     [string] $qpName = 'QP8',
-    ## Название Dpc.Admin
+    ## Dpc.Admin site name
     [Parameter()]
     [string] $adminName = 'Dpc.Admin',
-    ## Название DPC.ActionsService
+    ## DPC.ActionsService service name
     [Parameter()]
     [string] $actionsName = 'DPC.ActionsService',
-    ## Название Dpc.SearchApi
+    ## Dpc.SearchApi site name
     [Parameter()]
     [string] $searchApiName = 'Dpc.SearchApi',
-    ## Название DPC.NotificationSender
+    ## DPC.NotificationSender service name
     [Parameter()]
     [string] $notificationsName = 'DPC.NotificationSender',
-    ## Название Dpc.SiteSync
+    ## Dpc.Front site name
     [Parameter()]
-    [string] $siteSyncName = 'Dpc.SiteSync',
-    ## Название Dpc.WebApi
+    [string] $frontName = 'Dpc.Front',
+    ## Dpc.WebApi site name
     [Parameter()]
     [string] $webApiName = 'Dpc.WebApi',
-    ## Название Dpc.SyncApi
+    ## Dpc.SyncApi site name
     [Parameter()]
     [string] $syncApiName = 'Dpc.SyncApi',
-    ## Путь к файлу логов
+    ## Unique instance name (for fronts)
     [Parameter()]
-    [string]$logPath
+    [string] $instanceId = 'Dev',
+    ## Log folder path
+    [Parameter()]
+    [string] $logPath = 'C:\Logs',
+    ## Extra validation libraries (comma-separated)
+    [Parameter()]
+    [string] $libraries = '',
+    ## Database type: 0 - SQL Server, 1 - Postgres
+    [Parameter()]
+    [int] $dbType = 0,
+    ## Elasticsearch storage options JSON
+    [Parameter()]
+    [string] $elasticStoreOptions = ''
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -128,7 +143,7 @@ $highloadFrontArtifactName = 'HighloadFront'
 $siteSyncArtifactName = 'Front'
 $webApiArtifactName = 'WebApi'
 
-$siteSyncHost = "${env:COMPUTERNAME}:$siteSyncPort"
+$siteSyncHost = "${env:COMPUTERNAME}:$frontPort"
 $syncApiHost = "${env:COMPUTERNAME}:$syncApiPort"
 $adminHost = "${env:COMPUTERNAME}:$backendPort/$adminName"
 
@@ -139,7 +154,7 @@ if (-not $currentSqlPath){
     $path = Join-Path $currentPath "current.sql"
     if (Test-Path $path){
         $currentSqlPath = $path
-    }else{
+    } else{
         throw "currentSqlPath is not found on $path"
     }
 }
@@ -154,49 +169,47 @@ if (-not $sourceBackupPath){
 Import-Module WebAdministration
 Import-Module SqlServer
 
-. (Join-Path $currentPath "Modules\Add-DatabaseUser.ps1")
-. (Join-Path $currentPath "Modules\Restore-Database.ps1")
-. (Join-Path $currentPath "Modules\Get-ConnectionString.ps1")
+. (Join-Path $currentPath "Modules\Database.ps1")
 . (Join-Path $currentPath "Modules\CustomerCode.ps1")
 . (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
-. (Join-Path $currentPath "Modules\Get-DefaultDatabaseDir.ps1")
+
 
 $validationPath = Join-Path $currentPath "ValidateConsolidation.ps1"
 Invoke-Expression "$validationPath -DatabaseServer '$databaseServer'"
 
 if ($cleanUp){
     $uninstallPath = Join-Path $currentPath "UninstallConsolidation.ps1"
-    $params = "-CustomerCode '$customerCode' -InstallRoot '$installRoot' -Admin '$adminName' -NotificationSender '$notificationsName' -ActionsService '$actionsName' -SiteSync '$siteSyncName' -WebApi '$webApiName' -SyncApi '$syncApiName' -SearchApi '$searchApiName' -QpName '$qpName'"
+    $params = "-CustomerCode '$customerCode' -InstallRoot '$installRoot' -Admin '$adminName' -NotificationSender '$notificationsName' -ActionsService '$actionsName' -SiteSync '$frontName' -WebApi '$webApiName' -SyncApi '$syncApiName' -SearchApi '$searchApiName' -QpName '$qpName'"
     Invoke-Expression "$uninstallPath $params"
 }
 
-Invoke-Expression "$validationPath -NotifyPort $notifyPort -SiteSyncPort $syncApiPort -SearchApiPort $searchApiPort -SyncApiPort $syncApiPort -WebApiPort $webApiPort"
+Invoke-Expression "$validationPath -actionsPort $actionsPort -notifyPort $notifyPort -frontPort $frontPort -searchApiPort $searchApiPort -syncApiPort $syncApiPort -webApiPort $webApiPort"
 
-$installAdminiPath = Join-Path $currentPath "InstallConsolidationAdmin.ps1"
-Invoke-Expression "$installAdminiPath -NotifyPort $notifyPort -SyncPort $syncApiPort -Admin '$adminName' -Qp '$qpName'"
+$scriptName = Join-Path $currentPath "InstallConsolidationAdmin.ps1"
+Invoke-Expression "$scriptName -actionsPort $actionsPort -notifyPort $notifyPort -syncApiPort $syncApiPort -Admin '$adminName' -Qp '$qpName' -LogPath '$logPath' -Libraries '$libraries'"
 
-$installNotificationSenderPath = Join-Path $currentPath "InstallConsolidationNotificationSender.ps1"
+$scriptName = Join-Path $currentPath "InstallConsolidationNotificationSender.ps1"
 $source = Join-Path $parentPath $notificationsArtifactName
-Invoke-Expression "$installNotificationSenderPath -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$notificationsName' -Source '$source'"
+Invoke-Expression "$scriptName -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$notificationsName' -Source '$source' -LogPath '$logPath' -InstanceId $instanceId"
 
-$installActionsServicePath = Join-Path $currentPath "InstallConsolidationActionsService.ps1"
+$scriptName = Join-Path $currentPath "InstallConsolidationActionsService.ps1"
 $source = Join-Path $parentPath $actionsArtifactName
-Invoke-Expression "$installActionsServicePath -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$actionsName' -Source '$source'"
+Invoke-Expression "$scriptName -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$actionsName' -Source '$source' -LogPath '$logPath'"
 
-$installSiteSyncPath = Join-Path $currentPath "InstallConsolidationSiteSync.ps1"
+$scriptName = Join-Path $currentPath "InstallConsolidationFront.ps1"
 $source = Join-Path $parentPath $siteSyncArtifactName
-Invoke-Expression "$installSiteSyncPath -Port $siteSyncPort -SiteName '$siteSyncName' -UseProductVersions `$$useProductVersions"
+Invoke-Expression "$scriptName -Port $frontPort -SiteName '$frontName' -UseProductVersions `$$useProductVersions -LogPath '$logPath' -InstanceId $instanceId"
 
-$installHighloadFrontPath = Join-Path $currentPath "InstallConsolidationHighloadFront.ps1"
+$scriptName = Join-Path $currentPath "InstallConsolidationHighloadFront.ps1"
 $source = Join-Path $parentPath $highloadFrontArtifactName
-Invoke-Expression "$installHighloadFrontPath -Port $syncApiPort -SiteName '$syncApiName' -CanUpdate `$$true"
-Invoke-Expression "$installHighloadFrontPath -Port $searchApiPort -SiteName '$searchApiName' -CanUpdate `$$false"
+Invoke-Expression "$scriptName -Port $syncApiPort -SiteName '$syncApiName' -CanUpdate `$$true -LogPath '$logPath' -InstanceId $instanceId -elasticStoreOptions '$elasticStoreOptions'"
+Invoke-Expression "$scriptName -Port $searchApiPort -SiteName '$searchApiName' -CanUpdate `$$false -LogPath '$logPath' -InstanceId $instanceId"
 
-$installWebApiPath = Join-Path $currentPath "InstallConsolidationWebApi.ps1"
+$scriptName = Join-Path $currentPath "InstallConsolidationWebApi.ps1"
 $source = Join-Path $parentPath $webApiArtifactName
-Invoke-Expression "$installWebApiPath -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort"
+Invoke-Expression "$scriptName -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort -LogPath '$logPath'"
 
-$installCustomerCodePath = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
-$params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost'"
+$scriptName = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
+$params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost' -DbType $dbType"
 if (-not [string]::IsNullOrEmpty($sourceBackupPath)) { $params = "$params -SourceBackupPath '$sourceBackupPath'" }
-Invoke-Expression "$installCustomerCodePath $params"
+Invoke-Expression "$scriptName $params"

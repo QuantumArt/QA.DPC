@@ -13,15 +13,18 @@
   .\ValidateConsolidation.ps1 -databaseServer 'dbhost'
   
 .EXAMPLE
-  .\ValidateConsolidation.ps1 -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016
+  .\ValidateConsolidation.ps1 -actionsPort 8011 -notifyPort 8012 -frontPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016
 #>
 param(
+    ## Порт DPC.ActionsService
+    [Parameter()]
+    [int] $actionsPort,
     ## Порт DPC.NotificationSender
     [Parameter()]
     [int] $notifyPort,
-    ## Порт Dpc.SiteSync
+    ## Порт Dpc.Front
     [Parameter()]
-    [int] $siteSyncPort,
+    [int] $frontPort,
     ## Порт Dpc.SearchApi
     [Parameter()]
     [int] $searchApiPort,
@@ -71,17 +74,19 @@ function Test-Port
   
 }
 
-Import-Module -Name SqlServer
+$useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
+$moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
+Import-Module $moduleName
 
 If ($databaseServer){
-  $requiredRuintime = '2.2.1'
+  $requiredRuintime = '2.2.8'
   $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
   If ($actualRuntime -notcontains $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
 
   $path = Get-QPConfigurationPath
 
   Try {
-    $connectionString = Get-ConnectionString -ServerInstance $databaseServer -Username $login -Password $password
+    $connectionString = Get-ConnectionString -server $databaseServer -user $login -pass $password
     $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $connectionString
     $sqlConnection.Open()
   } Catch {
@@ -91,7 +96,9 @@ If ($databaseServer){
   }
 }
 
+Test-Port -Port $actionsPort -Name "ActionsPort"
 Test-Port -Port $notifyPort -Name "NotifyPort"
-Test-Port -Port $siteSyncPort -Name "SiteSyncPort"
+Test-Port -Port $frontPort -Name "FrontPort"
+Test-Port -Port $syncApiPort -Name "SyncApiPort"
 Test-Port -Port $searchApiPort -Name "SearchApiPort"
 Test-Port -Port $webApiPort -Name "WebApiPort"

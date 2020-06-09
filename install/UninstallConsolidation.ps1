@@ -23,7 +23,7 @@ param(
     ## Название Dpc.Admin
     [String] $admin = 'Dpc.Admin',
     ## Название Dpc.SiteSync
-    [String] $siteSync = 'Dpc.SiteSync',
+    [String] $front = 'Dpc.Front',
     ## Название Dpc.WebApi
     [String] $webApi = 'Dpc.WebApi',
     ## Название Dpc.SyncApi
@@ -126,7 +126,7 @@ function DeleteSite
 DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
 DeleteSite -qp $qpName -name $admin
-DeleteSite -name $siteSync
+DeleteSite -name $front
 DeleteSite -name $webApi
 DeleteSite -name $syncApi
 DeleteSite -name $searchApi

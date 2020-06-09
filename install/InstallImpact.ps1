@@ -1,29 +1,38 @@
 ﻿<#
 .SYNOPSIS
-Installs DPC.WebAPI
+Installs DPC.Impact
 
 .DESCRIPTION
-DPC.WebAPI provides program interface for executing CRUD-operations with products and calling DPC custom actions
+DPC.Impact is a web service which uses product information from ElasticSearch and returns product calculator data.
 
 .EXAMPLE
-  .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -siteName 'Dpc.WebApi' -logPath 'C:\Logs'
+  .\InstallImpact.ps1 -port 8033 -logPath 'C:\Logs' -elasticBaseAddress 'http://elastic01:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
 
 .EXAMPLE
-   .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -logPath 'C:\Logs'
+ .\InstallImpact.ps1 -port 8032 -siteName 'DPC.Impact' -logPath 'C:\Logs' -elasticBaseAddress 'http://elastic01:9200;http://elastic02:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
 #>
 param(
-    ## Dpc.WebApi site name
+    ## HighloadFront site name
     [Parameter()]
-    [String] $siteName ='Dpc.WebApi',
-    ## Dpc.WebApi port
+    [String] $siteName = 'Dpc.Impact',
+    ## HighloadFront port
     [Parameter(Mandatory = $true)]
     [int] $port,
+    ## Flag which allows updating ElasticSearch indices
+    [Parameter(Mandatory = $true)]
+    [string] $elasticBaseAddress,
+    ## Elasticsearch conneciton timeout (sec)
+    [Parameter()]
+    [int] $timeout = 60,
     ## Logs folder
     [Parameter(Mandatory = $true)]
-    [String] $logPath,    
-    ## DPC.NotificationSender port
+    [String] $logPath,
+    ## Live index name
     [Parameter(Mandatory = $true)]
-    [int] $notifyPort
+    [String] $liveIndexName,
+    ## Stage index name
+    [Parameter(Mandatory = $true)]
+    [String] $stageIndexName
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -53,12 +62,11 @@ Write-Output $sitePath
 New-Item -Path $sitePath -ItemType Directory -Force
 
 $parentPath = Split-Path -parent $currentPath
-$sourcePath = Join-Path $parentPath "WebApi"
+$sourcePath = Join-Path $parentPath "Impact"
 
 Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
 
-$nLogPath = Join-Path $sitePath "NLogClient.config"
-
+$nLogPath = Join-Path $sitePath "NLog.config"
 [xml]$nlog = Get-Content -Path $nLogPath
 
 $nlog.nlog.internalLogFile = [string](Join-Path $logPath "internal-log.txt")
@@ -72,25 +80,24 @@ $node.writeTo = "fileException"
 $node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Info'}
 $node.writeTo = "fileInfo"
 
+$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Trace'}
+$node.removeAttribute("writeTo")
+
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
 $appSettingsPath = Join-Path $sitePath "appsettings.json"
 $json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 
-$loader = $json.Loader
-$loader.UseFileSizeService = $false
+$json.ElasticBaseAddress = $elasticBaseAddress
+$json.ElasticIndexes = @()
+$json.ElasticIndexes += (New-Object PSObject -Property @{Name=$liveIndexName; State="live"; Language="invariant" })
+$json.ElasticIndexes += (New-Object PSObject -Property @{Name=$stageIndexName; State="stage"; Language="invariant" })
 
-$integration = ($json | Get-Member "Integration")
-if (!$integration) {
-    $integration = New-Object PSObject
-    $json | Add-Member NoteProperty "Integration" $integration
-}
+$json | Add-Member NoteProperty "HttpTimeout" $timeout -Force
 
-$integration | Add-Member NoteProperty "RestNotificationUrl" "http://${env:COMPUTERNAME}:$notifyPort" -Force
-
-Set-ItemProperty $appSettingsPath -name IsReadOnly -value $false
-$json | ConvertTo-Json | Out-File $appSettingsPath
+Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
+$json | ConvertTo-Json -Depth 5 | Set-Content -Path $appsettingsPath
 
 $p = Get-Item "IIS:\AppPools\$siteName" -ErrorAction SilentlyContinue
 

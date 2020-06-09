@@ -1,42 +1,46 @@
 ﻿<#
 .SYNOPSIS
-Установка сервиса выполнения задач
+Installs DPC.ActionsService
 
 .DESCRIPTION
-Cервис выполнения задач DPC.ActionsService это win служба для выполнения Custom Actions без блокировки интерфейса бэкэнда и выполнения задач по расписанию
+DPC.ActionsService is a windows service for processing long DPC tasks e.g product publication and calling routine tasks by schedule
 
 .EXAMPLE
-  .\InstallConsolidationActionsService.ps1 -notifyPort 8012 -installRoot 'C:\QA' -source 'C:\Catalog\ActionsRunner'
+  .\InstallConsolidationActionsService.ps1 -actionsPort 8011 -notifyPort 8012 -installRoot 'C:\QA' -logPath 'C:\Logs' 
 
 .EXAMPLE
-  .\InstallConsolidationActionsService.ps1 -notifyPort 8012 -installRoot 'C:\QA' -name 'DPC.ActionsService' -source 'C:\Catalog\ActionsRunner'
+  .\InstallConsolidationActionsService.ps1 -actionsPort 8011 -notifyPort 8012 -installRoot 'C:\QA' -logPath 'C:\Logs' -name 'DPC.ActionsService' 
 
 #>
 param(
-    ## Алиас DPC.ActionsService
+    ## Service Name
     [Parameter()]
     [String] $name = 'DPC.ActionsService',
-    ## Название DPC.ActionsService
+    ## Service Display Name
     [Parameter()]
     [String] $displayName = 'DPC Actions Service',
-    ## Описание DPC.ActionsService
+    ## Service Description
     [Parameter()]
     [String] $description = 'Run long tasks for DPC with updating progress',
-    ## Путь к каталогу установки сервисов каталога
+    ## Path to install DPC Services
     [Parameter(Mandatory = $true)]
     [String] $installRoot,
-    ## Пользователь от которого будет запущен сервис
+    ## User account to run service
     [Parameter()]
     [String] $login = 'NT AUTHORITY\SYSTEM',
-    ## Пароль пользователя
+    ## User password to run service
     [Parameter()]
     [String] $password = 'dummy',
-    ## Порт DPC.NotificationSender
+    ## Service port to run
+    [Parameter(Mandatory = $true)]
+    [int] $actionsPort,
+    ## DPC.Notificationsender port
     [Parameter(Mandatory = $true)]
     [int] $notifyPort,
-    ## Путь к сервису, откуда он будет установлен
-    [Parameter(Mandatory = $true)]    
-    [String] $source
+    ## Logs folder
+    [Parameter(Mandatory = $true)]
+    [String] $logPath   
+
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -46,48 +50,69 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-$projectName = "QA.Core.ProductCatalog.ActionsService"
-$installPath = Join-Path $installRoot $name
-
-
 $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
-$InstallServicePath = Join-Path $currentPath "InstallService.ps1"
-Invoke-Expression "$InstallServicePath -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
 
+. (Join-Path $currentPath "Modules\Install-Service.ps1")
+
+$parentPath = Split-Path -parent $currentPath
+$sourcePath = Join-Path $parentPath "ActionsService"
+
+$installParams = @{
+  name = $name;
+  displayName = $displayName;
+  description = $description;
+  installRoot = $installRoot;
+  login = $login;
+  password = $password;
+  projectName = "QA.Core.ProductCatalog.ActionsService";
+  source = $sourcePath;
+  start = $false
+}
+
+Install-Service @installParams
+
+$installPath = Join-Path $installRoot $name
 $nLogPath = Join-Path $installPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
-$var = $nlog.nlog.targets.target | Where-Object {$_.name -eq 'fileinfo'}
-$var2 = $nlog.nlog.targets.target | Where-Object {$_.name -eq 'fileexception'}
-$var.fileName = $var.fileName -Replace $projectName, $name
-$var.archiveFileName = $var.archiveFileName -Replace $projectName, $name
-$var2.fileName = $var2.fileName -Replace $projectName, $name
-$var2.archiveFileName = $var2.archiveFileName -Replace $projectName, $name
+
+$nlog.nlog.internalLogFile = [string](Join-Path $logPath "internal-log.txt")
+
+$node = $nlog.nlog.variable | Where-Object {$_.name -eq 'logDirectory'}
+$node.value = [string](Join-Path $logPath $name)
+
+$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Warn,Error,Fatal'}
+$node.writeTo = "fileException"
+
+$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Info'}
+$node.writeTo = "fileInfo"
+
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
-$appConfigPath = Join-Path $installPath "$projectName.exe.config"
-[xml]$app = Get-Content -Path $appConfigPath
+$appSettingsPath = Join-Path $installPath "appsettings.json"
+$json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 
-$qpMode = $app.CreateElement('add')
-$qpMode.SetAttribute('key', 'QPMode')
-$qpMode.SetAttribute('value', 'true')
-$app.configuration.appSettings.AppendChild($qpMode)
+$json.Loader.UseFileSizeService = $false
+$json.Properties.EnableScheduleProcess = $false
 
-$app.SelectSingleNode('//configuration/applicationSettings/QA.Core.ProductCatalog.ActionsService.Properties.Settings/setting[@name="EnableSheduleProcess"]/value').InnerXml = 'False'
+$integration = ($json | Get-Member "Integration")
+if (!$integration) {
+    $integration = New-Object PSObject
+    $json | Add-Member NoteProperty "Integration" $integration
+}
 
-$app.configuration.RemoveChild($app.configuration.connectionStrings)
+$integration | Add-Member NoteProperty "RestNotificationUrl" "http://${env:COMPUTERNAME}:$notifyPort" -Force
 
-$container = $app.configuration.unity.container
-$articleFormatter = $container.register | Where-Object {$_.type -eq 'IArticleFormatter'}
-$articleFormatter.mapTo = "JsonProductFormatter";
-$settingsService = $container.register | Where-Object {$_.type -eq 'ISettingsService'}
-$settingsService.mapTo = "SettingsFromQpService";
+Set-ItemProperty $appSettingsPath -name IsReadOnly -value $false
+$json | ConvertTo-Json | Out-File $appSettingsPath
 
-$endpoint = $app.configuration.'system.serviceModel'.client.endpoint
-$endpoint.address = "http://${env:COMPUTERNAME}:$notifyPort/DpcNotificationService"
+$hostingPath = Join-Path $installPath "hosting.json"
+$json = Get-Content -Path $hostingPath | ConvertFrom-Json
 
-Set-ItemProperty $appConfigPath -name IsReadOnly -value $false
-$app.Save($appConfigPath)
+$json.urls = "http://*:${actionsPort}"
+
+Set-ItemProperty $hostingPath -name IsReadOnly -value $false
+$json | ConvertTo-Json | Out-File $hostingPath
 
 $s = Get-Service $name
 

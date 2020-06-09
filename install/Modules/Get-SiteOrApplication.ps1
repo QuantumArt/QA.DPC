@@ -35,12 +35,6 @@ function Get-SiteOrApplication
     # http://help.octopusdeploy.com/discussions/problems/5172-error-using-get-website-in-predeploy-because-of-filenotfoundexception
     $s = Get-Item "IIS:\sites\$siteName" -ErrorAction SilentlyContinue
   }
-
-  if (-not ($s))
-  {
-    throw "Site (or application) $siteName is not found"
-  }
-
   return $s
 }
 

@@ -1,11 +1,11 @@
 ﻿<#
 .SYNOPSIS
-Установка бэкэнда каталога
+Installs QP8.Catalog administration module
 
 .DESCRIPTION
-Бэкэнда каталога Dpc.Admin это web приложение, содержит компоненты:
-- Custom Actions для обработки продуктов
-- Remote validation для продуктов
+QP8.Catalog administration module contains the following components:
+- Custom Actions for product processing
+- Remote validators for products
 
 .EXAMPLE
   .\InstallConsolidationAdmin.ps1 -notifyPort 8012 -syncPort 8013
@@ -14,21 +14,28 @@
   .\InstallConsolidationAdmin.ps1 -notifyPort 8012 -syncPort 8013 -admin 'Dpc.Admin' -qp 'QP8' -backend 'Backend'
 #>
 param(
-    ## Название QP
+    ## QP site name
     [Parameter()]
     [String] $qp ='QP8',
-    ## Название бэкэнда QP
+    ## QP application name
     [Parameter()]
     [String] $backend ='Backend',
-    ## Название Dpc.Admin
+    ## Dpc.Admin application name
     [Parameter()]
     [String] $admin ='Dpc.Admin',
-    ## Порт DPC.NotificationSender
+    ## DPC.NotificationSender port
     [Parameter(Mandatory = $true)]
     [int] $notifyPort,
-    ## Порт Dpc.SiteSync
+    ## Dpc.SiteSync port
     [Parameter(Mandatory = $true)]
-    [int] $syncPort
+    [int] $syncPort,
+    ## Logs folder
+    [Parameter(Mandatory = $true)]
+    [String] $logPath,
+    ## Extra Validation Libraries
+    [Parameter()]
+    [String] $libraries = ''
+
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -38,90 +45,72 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-Import-Module WebAdministration
+$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 
-$qpApp = Get-Item "IIS:\sites\$qp" -ErrorAction SilentlyContinue
+Import-Module WebAdministration
+. (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
+
+$qpApp = Get-SiteOrApplication -name $qp 
 if (!$qpApp) { throw "QP application $qp is not exists"}
 
-$adminApp = Get-Item "IIS:\sites\$qp\$admin" -ErrorAction SilentlyContinue
+$adminApp = Get-SiteOrApplication -name $qp -application $admin 
 if ($adminApp) { throw "Admin application $admin is exists"}
 
-$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
+
 $parentPath = Split-Path -parent $currentPath
 $sourcePath = Join-Path $parentPath "Admin"
 
-$backendPath = (Get-SiteOrApplication -name $qp -application $backend -Verbose).PhysicalPath
-$root = Split-Path -parent $backendPath
+$backendApp = Get-SiteOrApplication -name $qp -application $backend 
+if (!$backendApp)
+{
+    $backendApp = $qpApp
+}
+$root = Split-Path -parent $backendApp.PhysicalPath
+
 $adminPath = Join-Path $root $admin
 New-Item -Path $adminPath -ItemType Directory -Force
 
 Copy-Item "$sourcePath\*" -Destination $adminPath -Force -Recurse
 
-$projectName = "QA.ProductCatalog.Admin.WebApp"
 $nLogPath = Join-Path $adminPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
-$var = $nlog.nlog.targets.target | Where-Object {$_.name -eq 'fileinfo'}
-$var2 = $nlog.nlog.targets.target | Where-Object {$_.name -eq 'fileexception'}
 
-$var.fileName = $var.fileName -Replace $projectName, "$qp.$admin"
-$var.archiveFileName = $var.archiveFileName -Replace $projectName, "$qp.$admin"
-$var2.fileName = $var2.fileName -Replace $projectName, "$qp.$admin"
-$var2.archiveFileName = $var2.archiveFileName -Replace $projectName, "$qp.$admin"
+$nlog.nlog.internalLogFile = [string](Join-Path $logPath "internal-log.txt")
 
-$var3 = $nlog.nlog.targets.target | Where-Object {$_.name -eq 'debug'}
-if ($var3)
-{
-    $var3.ParentNode.RemoveChild($var3)
-}
-$var4 = $nlog.nlog.rules.logger | Where-Object {$_.level -eq 'Debug'}
-$var4.writeTo = "fileInfo"
+$var = $nlog.nlog.variable | Where-Object {$_.name -eq 'logDirectory'}
+$var.value = [string](Join-Path $logPath "$qp.$admin")
+
+$var2 = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Warn,Error,Fatal'}
+$var2.writeTo = "fileException"
+
+$var3 = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Info'}
+$var3.writeTo = "fileInfo"
 
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
-$webConfigPath = Join-Path $adminPath "Web.config"
-[xml]$web = Get-Content -Path $webConfigPath
+$appSettingsPath = Join-Path $adminPath "appsettings.json"
+$json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 
-$syncApi = $web.configuration.appSettings.add | Where-Object {$_.key -eq 'HighloadFront.SyncApi'}
-if ($syncApi){
-    $web.configuration.appSettings.RemoveChild($syncApi)
+$loader = $json.Loader
+$loader.UseFileSizeService = $false
+
+$integration = ($json | Get-Member "Integration")
+if (!$integration) {
+    $integration = New-Object PSObject
+    $json | Add-Member NoteProperty "Integration" $integration
 }
 
-$warmUp = $web.configuration.appSettings.add | Where-Object {$_.key -eq 'LoaderWarmUpProductId'}
-if ($warmUp){
-    $web.configuration.appSettings.RemoveChild($warmUp)
+$integration | Add-Member NoteProperty "RestNotificationUrl" "http://${env:COMPUTERNAME}:$notifyPort" -Force
+$integration | Add-Member NoteProperty "HighloadFrontSyncUrl" "http://${env:COMPUTERNAME}:$syncPort" -Force
+if ($libraries) {
+    $libarr = @()
+    foreach ($lib in $libraries.Split(',')) { $libarr += $lib.Trim()}
+    $integration | Add-Member NoteProperty "ExtraValidationLibraries" $libarr -Force
 }
 
-$qpMode = $web.CreateElement('add')
-$qpMode.SetAttribute('key', 'QPMode')
-$qpMode.SetAttribute('value', 'true')
-$web.configuration.appSettings.AppendChild($qpMode)
-
-$syncApi = $web.CreateElement('add')
-$syncApi.SetAttribute('key', 'HighloadFront.SyncApi')
-$syncApi.SetAttribute('value', "http://${env:COMPUTERNAME}:$syncPort")
-$web.configuration.appSettings.AppendChild($syncApi)
-
-$web.configuration.RemoveChild($web.configuration.connectionStrings)
-
-$container = $web.configuration.unity.container
-$productControlProvider = $container.register | Where-Object {$_.type -eq 'IProductControlProvider'}
-$productControlProvider.mapTo = "ContentBasedProductControlProvider";
-$settingsService = $container.register | Where-Object {$_.type -eq 'ISettingsService'}
-$settingsService.mapTo = "SettingsFromQpService";
-$articleFormatter = $container.register | Where-Object {$_.type -eq 'IArticleFormatter'}
-$articleFormatter.mapTo = "JsonProductFormatter";
-
-$endpoint = $web.configuration.'system.serviceModel'.client.endpoint
-$endpoint.address = "http://${env:COMPUTERNAME}:$notifyPort/DpcNotificationService"
-
-Set-ItemProperty $webConfigPath -name IsReadOnly -value $false
-$web.Save($webConfigPath)
-
-Copy-Item $webConfigPath ($webConfigPath -replace ".config", ".config2")
-Copy-Item $nLogPath ($nLogPath -replace ".config", ".config2")
-Remove-Item -Path (Join-Path $adminPath "*.config") -Force
-Get-ChildItem (Join-Path $adminPath "*.config2") | Rename-Item -newname { $_.name -replace '\.config2','.config' }
+Set-ItemProperty $appSettingsPath -name IsReadOnly -value $false
+$json | ConvertTo-Json | Out-File $appSettingsPath
 
 $adminPool = Get-Item "IIS:\AppPools\$qp.$admin" -ErrorAction SilentlyContinue
 
