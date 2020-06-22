@@ -17,7 +17,7 @@ param(
     [string] $databaseServer,
     ## Backup file for copying onto database Server
     [Parameter()]
-    [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
+    [ValidateScript({ if ($_) { Test-Path $_} })]
     [string] $sourceBackupPath,
     ## Backup file for restoring (server local - for SQL Server)
     [Parameter(Mandatory = $true)]
@@ -64,7 +64,7 @@ function PSqlToPsObject
     )
 
     $result = New-Object PsObject
-    foreach (var $line in $lines) {
+    foreach ($line in $lines) {
         $values = $result.Split('|')
         if ($values.Length -lt 2) {
             break
@@ -117,7 +117,7 @@ $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
 Import-Module $moduleName
 
 . (Join-Path $currentPath "Modules\Database.ps1")
-. (Join-Path $currentPath "Modules\CustomerCode.ps1"
+. (Join-Path $currentPath "Modules\CustomerCode.ps1")
 
 if (Get-CustomerCode -CustomerCode $customerCode)
 {
@@ -138,7 +138,11 @@ if (-not $customerPassword){
 
 if (-not [string]::IsNullOrEmpty($sourceBackupPath))
 {
-    $sharedTargetBackupPath =  "\\" + $databaseServer.Trim() + "\" + $targetBackupPath.Replace(":", "$")
+    if ($dbType -eq 0) {
+        $sharedTargetBackupPath =  "\\" + $databaseServer.Trim() + "\" + $targetBackupPath.Replace(":", "$")
+    } else {
+        $sharedTargetBackupPath = $targetBackupPath
+    }
     Write-Verbose "Copy backup from $sourceBackupPath to $sharedTargetBackupPath"  -Verbose
     
     try
@@ -190,10 +194,22 @@ $fieldId = GetFieldId -connectionParams $cnnParams -key "ELASTIC_INDEXES_CONTENT
 ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{elasticsearch}" -value $elasticsearchHost
 
 $validationPlaceholder = "adminhost"
-$validationQuery = "update site set XAML_DICTIONARIES = cast(replace(cast(XAML_DICTIONARIES as nvarchar(max)), '$validationPlaceholder', '$adminHost') as ntext) where XAML_DICTIONARIES like '%$validationPlaceholder%'"
+if ($dbType -eq 0) {
+    $validationQuery = "update site set XAML_DICTIONARIES = cast(replace(cast(XAML_DICTIONARIES as nvarchar(max)), '$validationPlaceholder', '$adminHost') as ntext) where XAML_DICTIONARIES like '%$validationPlaceholder%'"
+} else {
+    $validationQuery = "update site set XAML_DICTIONARIES = replace(XAML_DICTIONARIES, '$validationPlaceholder', '$adminHost') where XAML_DICTIONARIES like '%$validationPlaceholder%'"
+}
 Execute-Sql @cnnParams -query $validationQuery  
  
 Write-Verbose "updated"  
 
-$connectionString = "Provider=SQLOLEDB;Initial Catalog=$customerCode;Data Source=$databaseServer;User ID=$customerLogin;Password=$customerPassword"
+$savedParams = @{
+    Server = $databaseServer;
+    Database = $customerCode;
+    User = $customerLogin;
+    Pass = $customerPassword;
+    DbType = $dbType;
+}
+
+$connectionString = Get-ConnectionString @savedParams
 Add-CustomerCode -CustomerCode $customerCode -ConnectionString $connectionString

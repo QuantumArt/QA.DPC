@@ -177,7 +177,7 @@ Import-Module SqlServer
 $validationPath = Join-Path $currentPath "ValidateConsolidation.ps1"
 Invoke-Expression "$validationPath -DatabaseServer '$databaseServer'"
 
-if ($cleanUp){
+if ($cleanUp) {
     $uninstallPath = Join-Path $currentPath "UninstallConsolidation.ps1"
     $params = "-CustomerCode '$customerCode' -InstallRoot '$installRoot' -Admin '$adminName' -NotificationSender '$notificationsName' -ActionsService '$actionsName' -SiteSync '$frontName' -WebApi '$webApiName' -SyncApi '$syncApiName' -SearchApi '$searchApiName' -QpName '$qpName'"
     Invoke-Expression "$uninstallPath $params"
@@ -211,5 +211,7 @@ Invoke-Expression "$scriptName -Port $webApiPort -SiteName '$webApiName' -Notify
 
 $scriptName = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
 $params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost' -DbType $dbType"
-if (-not [string]::IsNullOrEmpty($sourceBackupPath)) { $params = "$params -SourceBackupPath '$sourceBackupPath'" }
+if (-not [string]::IsNullOrEmpty($sourceBackupPath)) { 
+    $params = "$params -SourceBackupPath '$sourceBackupPath'" 
+}
 Invoke-Expression "$scriptName $params"

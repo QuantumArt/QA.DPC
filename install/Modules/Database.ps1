@@ -4,9 +4,9 @@ function Execute-Sql {
         [String] $database ='',
         [Parameter(Mandatory = $true)]
         [String] $server ='',
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [String] $name ='',
-        [Parameter(Mandatory = $true)]
+        [Parameter()]
         [String] $pass = '',
         [Parameter(Mandatory = $true)]
         [String] $query = '',
@@ -20,6 +20,7 @@ function Execute-Sql {
             \! chcp 1251
             \pset pager off
             $query"" | psql -qtAx -d '$cnnString'"
+        Write-Verbose $expr
         $result = Invoke-Expression $expr
     }
     else {
@@ -27,12 +28,22 @@ function Execute-Sql {
         $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
         Import-Module $moduleName
 
-        
-
         $invokeParams = @{
-            ConnectionString = $cnnString;
             Query = $query;
             QueryTimeout = 0
+        }
+
+        if ($useSqlPs) {
+            $invokeParams.ServerInstance = $server
+            if ($db)  {
+                $invokeParams.Database = $db
+            }
+            if ($user -and $pass) {
+                $invokeParams.Username = $user
+                $invokeParams.Password = $pass 
+            } 
+        } else {
+            $invokeParams.ConnectionString = $cnnString;
         }
 
         $result = Invoke-Sqlcmd @invokeParams -Verbose -AbortOnError
@@ -49,17 +60,20 @@ function Get-ConnectionString
     .DESCRIPTION
     Allows to get connection string for given server
     
-    .PARAMETER serverInstance
+    .PARAMETER server
     Database server name
 
-    .PARAMETER databaseName
+    .PARAMETER database
     Database name
 
-    .PARAMETER userName
+    .PARAMETER name
     Database server login
 
-    .PARAMETER password
+    .PARAMETER pass
     Database server password
+    
+    .PARAMETER dbType
+    Database type: 0 - SQL Server, 1 - PostgreSQL
   #>
   [CmdletBinding()]
   param(
@@ -75,24 +89,13 @@ function Get-ConnectionString
   )
 
   if ($dbType -eq 1) {
-    $db = if ([string]::IsNullOrEmpty($databaseName)) { "postgres" } else { $databaseName }
-    return "postgresql://${userName}:$password@$serverInstance/$db"
+    $db = if ($database) { $database } else { "postgres" }
+    return "postgresql://${name}:$pass@$server/$db"
   } else {
-    if (-not [string]::IsNullOrEmpty($databaseName))
-    {
-      $databasePart = "Initial Catalog=$databaseName;"
-    }
-  
-    if ( -not [string]::IsNullOrEmpty($userName) -and -not [string]::IsNullOrEmpty($password))
-    {
-      $securityPart = "User ID=$userName;Password=$password;"    
-    }
-    else
-    {
-      $securityPart = "Integrated Security=True;"    
-    }
-  
-    return "Data Source=$serverInstance;$databasePart$securityPart"
+    $databasePart = if ($database) { "Initial Catalog=$database;" } else { "" }
+    $securityPart = if ($name -and $pass) { "User ID=$name;Password=$pass;" }
+    else { "Integrated Security=True;" }
+    return "Data Source=$server;$databasePart$securityPart"
   }
 
 }
@@ -126,6 +129,9 @@ function Add-DatabaseUser
 
     .PARAMETER password
     Database server password
+
+    .PARAMETER dbType
+    Database type: 0 - SQL Server, 1 - PostgreSQL
   #>
   [CmdletBinding()]
   param(
@@ -138,7 +144,7 @@ function Add-DatabaseUser
     [Parameter(Mandatory = $true)]
     [string] $userPassword,
     [Parameter()]
-    [string] $resetUserPassword = $false,
+    [bool] $resetUserPassword = $false,
     [Parameter()]
     [String] $login,
     [Parameter()]
@@ -148,31 +154,36 @@ function Add-DatabaseUser
   $executeParams = @{
     database = $databaseName;
     server = $databaseServer;
-    user = $userName;
-    pass = $userPassword;
     dbType = $dbType;
+  }
+
+  if ($login -and $password) {
+    $executeParams.name = $login;
+    $executeParams.pass = $password;
   }
 
   if ($dbType -eq 1) 
   {
     $resetQuery = if ($resetUserPassword) {"
         ALTER USER $userName WITH PASSWORD '$userPassword';
-        RAISE NOTICE 'Changed password for user $userName';"
-    } else { "RAISE NOTICE 'User $userName' already exists" }
+        RAISE NOTICE 'Changed password for user $userName';"} 
+      else { "RAISE NOTICE 'User ''$userName'' already exists';" }
 
-    $createQuery = "do `$`$
+    $createQuery = "do ```$```$
     begin
       CREATE USER $userName WITH PASSWORD '$userPassword';
-      RAISE NOTICE 'User $userName has been successfully created';
+      RAISE NOTICE 'User ''$userName'' has been successfully created';
       EXCEPTION
         WHEN duplicate_object THEN
           $resetQuery
-    end `$`$;"
+    end ```$```$;"
     
+    Write-Verbose $createQuery
     $result = Execute-Sql @executeParams -query $createQuery
     Write-Verbose $result
 
     $grantQuery = "GRANT ALL PRIVILEGES ON DATABASE $databaseName TO $userName"
+    Write-Verbose $grantQuery
     $result = Execute-Sql @executeParams -query $grantQuery
     Write-Verbose $result
 
@@ -184,8 +195,8 @@ function Add-DatabaseUser
     $resetPasswordQuery = if ($resetUserPassword) {"
         ALTER LOGIN $userName WITH PASSWORD = N'$userPassword'
         ALTER LOGIN $userName ENABLE
-        SELECT 2 val"
-    } else { "SELECT 0 val"  }
+        SELECT 2 val"} 
+      else { "SELECT 0 val"  }
       
     $loginQuery = "
       IF NOT EXISTS(SELECT NULL FROM [master].[dbo].[syslogins] WHERE [Name] = '$userName' )
@@ -259,6 +270,9 @@ function Restore-Database
 
     .PARAMETER password
     Database server password (should be omitted in case of Windows Authentication)
+
+    .PARAMETER dbType
+    Database type: 0 - SQL Server, 1 - PostgreSQL
   #>
   [CmdletBinding()]
   param(
@@ -280,7 +294,7 @@ function Restore-Database
 
   $executeParams = @{
     server = $databaseServer;
-    user = $login;
+    name = $login;
     pass = $password;
     dbType = $dbType;
   }
@@ -292,8 +306,8 @@ function Restore-Database
 
     Execute-Sql @executeParams -query $createQuery
     $cnnString = Get-ConnectionString @executeParams -database $databaseName 
-
-    Invoke-Expression "pg_restore -d '$cnnString' '$backupPath'"
+    $numCores = (Get-WmiObject -class Win32_ComputerSystem).NumberOfLogicalProcessors
+    Invoke-Expression "pg_restore -Fc -d '$cnnString' -j $numCores '$backupPath'"
 
   } else {
     $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
@@ -334,5 +348,4 @@ function Restore-Database
   
     Write-Output "$databaseName is restored"
   }
-
 }
