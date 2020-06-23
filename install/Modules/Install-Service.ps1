@@ -23,8 +23,7 @@
     [Parameter(Mandatory=$true)]
     [String] $login,
     [Parameter(Mandatory=$true)]
-    [String] $password,
-    [Bool] $start = $true
+    [String] $password
   )
 
   If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -43,29 +42,21 @@
 
   if (Test-Path $source -PathType Container)
   {
-      Write-Verbose "Copy item from $source to $installFolder ..." -Verbose
+      Write-Host "Copy item from $source to $installFolder ..." 
       Copy-Item "$source\*" "$installFolder" -Force -Recurse
-      Write-Verbose "Done" -Verbose
+      Write-Host "Done" 
   }
   elseif (Test-Path $source -PathType Leaf)
   {
-      Write-Verbose "Unzipping from $source to $installFolder ..." -Verbose
+      Write-Host "Unzipping from $source to $installFolder ..."
       Expand-Archive -LiteralPath $source -DestinationPath $installFolder -Force
   }
 
   $secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
   $mycreds = New-Object System.Management.Automation.PSCredential ($login, $secpasswd)
 
-  Write-Verbose "Installing service: $name" -Verbose
+  Write-Host "Installing service: $name"
   New-Service -name $name -binaryPathName "dotnet $installFolder\$projectName.dll" -Description $description -displayName $displayName -startupType Automatic -credential $mycreds
-  Write-Verbose "Installation completed: $name"
+  Write-Host "Installation completed: $name"
 
-  Write-Verbose "Waiting for a while..." -Verbose
-  Start-Sleep -s 5
-  Write-Verbose "Done" -Verbose
-
-  if ($start)
-  {
-    Start-WinService $name $timeout -Verbose
-  }
 }

@@ -1,33 +1,33 @@
 ﻿<#
-.SYNOPSIS
-Установка каталога
+    .SYNOPSIS
+    Установка каталога
 
-.DESCRIPTION
-В процессе установки каталога:
-- Провдодится валидация параметров и окружения на возможность установки
-- Опционально очищаются ранее установленные компоненты каталога
-- Устанавливаются сервисы:
-    • Dpc.Admin: Бэкэнд каталога
-    • DPC.ActionsService: Сервис выполнения задач
-    • DPC.NotificationSender: Сервис публикации продуктов
-    • Dpc.SiteSync: Референсная витрина
-    • Dpc.SyncApi: Витрина индексации продуктов в Elasticsearch
-    • Dpc.SearchApi: Поиск продуктов по индексам Elasticsearch
-    • Dpc.WebApi: API каталога      
-- Развертывается база данных каталога из бэкапа
-- База каталога обновляется до актуального состояния
-- Регистрируется в QP кастомер код каталога
+    .DESCRIPTION
+    В процессе установки каталога:
+    - Провдодится валидация параметров и окружения на возможность установки
+    - Опционально очищаются ранее установленные компоненты каталога
+    - Устанавливаются сервисы:
+        • Dpc.Admin: Бэкэнд каталога
+        • DPC.ActionsService: Сервис выполнения задач
+        • DPC.NotificationSender: Сервис публикации продуктов
+        • Dpc.SiteSync: Референсная витрина
+        • Dpc.SyncApi: Витрина индексации продуктов в Elasticsearch
+        • Dpc.SearchApi: Поиск продуктов по индексам Elasticsearch
+        • Dpc.WebApi: API каталога      
+    - Развертывается база данных каталога из бэкапа
+    - База каталога обновляется до актуального состояния
+    - Регистрируется в QP кастомер код каталога
 
-.EXAMPLE
-  .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -backendPort 89
+    .EXAMPLE
+    .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -backendPort 89
 
-.EXAMPLE
-  .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
+    .EXAMPLE
+    .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
 
-.EXAMPLE
-  .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -sourceBackupPath \\storage\catalog_consolidation.bak -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
+    .EXAMPLE
+    .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -sourceBackupPath \\storage\catalog_consolidation.bak -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
 #>
-param(
+param (
     ## Cleanup (or not) previous version of catalog
     [Parameter()]
     [bool] $cleanUp = $true,
@@ -36,7 +36,7 @@ param(
     [string] $databaseServer,
     ## Backup file for copying onto database server
     [Parameter()]
-    [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
+    [ValidateScript({ if ($_) { Test-Path $_} })]
     [string] $sourceBackupPath,
     ## Backup file for restoring (server local - for SQL Server)
     [Parameter()]
@@ -49,7 +49,7 @@ param(
     [string] $customerPassword,
     ## Path to sql script for bringing catalog database up-to-date
     [Parameter()]
-    [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
+    [ValidateScript({ if ($_) { Test-Path $_} })]
     [string] $currentSqlPath,
     ## Catalog customer code
     [Parameter(Mandatory = $true)]
@@ -80,7 +80,7 @@ param(
     [string] $elasticsearchHost,
     ## Folder to install services
     [Parameter(Mandatory = $true)]
-    [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
+    [ValidateScript({ if ($_) { Test-Path $_} })]
     [string] $installRoot,
     ## Store product versions (or not) on DPC.Front
     [Parameter()]
@@ -150,16 +150,16 @@ $adminHost = "${env:COMPUTERNAME}:$backendPort/$adminName"
 $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
 
-if (-not $currentSqlPath){
+if (!$currentSqlPath) {
     $path = Join-Path $currentPath "current.sql"
     if (Test-Path $path){
         $currentSqlPath = $path
-    } else{
+    } else { 
         throw "currentSqlPath is not found on $path"
     }
 }
 
-if (-not $sourceBackupPath){
+if (!$sourceBackupPath) {
     $path = Join-Path $currentPath "catalog_consolidation.bak"
     if (Test-Path $path){
         $sourceBackupPath = $path;
@@ -211,7 +211,7 @@ Invoke-Expression "$scriptName -Port $webApiPort -SiteName '$webApiName' -Notify
 
 $scriptName = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
 $params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost' -DbType $dbType"
-if (-not [string]::IsNullOrEmpty($sourceBackupPath)) { 
+if ($sourceBackupPath) { 
     $params = "$params -SourceBackupPath '$sourceBackupPath'" 
 }
 Invoke-Expression "$scriptName $params"

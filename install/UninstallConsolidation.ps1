@@ -58,29 +58,29 @@ function DeleteService
 
     if ($s){
         if ( $s.Status -eq "Running"){
-            Write-Output "* stoping $name"
+            Write-Host "* stoping $name"
             $s.Stop()
             $s.WaitForStatus("Stopped", "00:03:00")
             Start-Sleep -s 10
-            Write-Output "* stoped"
+            Write-Host "* stoped"
         }
 
         $sobj = Get-WmiObject -Class Win32_Service -Filter "Name='$name'" 
         $sobj.Delete()    
-        Write-Output "$name deleted"   
+        Write-Host "$name deleted"   
     }
     else{
-        Write-Output "$name is not installed"
+        Write-Host "$name is not installed"
     }
 
     $path = Join-Path $installRoot $name
 
     if (Test-Path $path){
         Remove-Item $path -Recurse
-        Write-Output "$name files removed"
+        Write-Host "$name files removed"
     }
     else{
-        Write-Output "$name files is not exists"
+        Write-Host "$name files is not exists"
     }
 }
 
@@ -107,18 +107,18 @@ function DeleteSite
     $path =  $app.PhysicalPath
 
     Remove-Item $alias -Recurse -Force    
-    Write-Output "$qp\$name deleted"
+    Write-Host "$qp\$name deleted"
 
     if ($pool){
         Remove-Item $poolAlias -Recurse -Force
-        Write-Output "pool $poolAlias deleted"
+        Write-Host "pool $poolAlias deleted"
     }
 
     Start-Sleep -s 10
 
     if (Test-Path $path){
         Remove-Item $path -Recurse
-        Write-Output "$qp\$name files removed"
+        Write-Host "$qp\$name files removed"
     }
   }
 }

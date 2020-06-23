@@ -76,7 +76,9 @@ function Test-Port
 
 $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
 $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
-Import-Module $moduleName
+if (-not(Get-Module -Name $moduleName)) {
+  Import-Module $moduleName
+}
 
 If ($databaseServer){
   $requiredRuintime = '2.2.8'

@@ -66,7 +66,6 @@ $installParams = @{
   password = $password;
   projectName = "QA.Core.DPC.NotificationSender";
   source = $sourcePath;
-  start = $false
 }
 
 Install-Service @installParams 
@@ -109,10 +108,10 @@ $s = Get-Service $name
 
 if ( $s.Status -eq "Stopped")
 {
-    Write-Output "Starting service $name..."
+    Write-Host "Starting service $name..."
     $s.Start()
 }
 $timeout = "00:03:00";
 try { $s.WaitForStatus("Running", $timeout) } catch [System.ServiceProcess.TimeoutException] { throw [System.ApplicationException] "Service '$name' hasn't been started in '$timeout' interval" } 
-Write-Output "$name Running"
+Write-Host "$name Running"
 
