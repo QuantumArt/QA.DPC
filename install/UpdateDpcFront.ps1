@@ -8,7 +8,10 @@ param(
     [bool] $isJson = $true 
 )
 
-Import-Module WebAdministration
+
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}
 
 if ([string]::IsNullOrEmpty($source)) { throw "Parameter source is empty" }
 if ([string]::IsNullOrEmpty($siteName)) { throw "Site name is empty" }

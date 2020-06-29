@@ -40,7 +40,13 @@ param (
     [string] $sourceBackupPath,
     ## Backup file for restoring (server local - for SQL Server)
     [Parameter()]
-    [string] $targetBackupPath = 'c:\temp\catalog_consolidation.bak',
+    [string] $targetBackupPath,
+    ## Admin database user name
+    [Parameter()]
+    [String] $login,
+    ## Admin database user password
+    [Parameter()]
+    [String] $password,
     ## Catalog database user name
     [Parameter()]
     [string] $customerLogin,
@@ -159,15 +165,21 @@ if (!$currentSqlPath) {
     }
 }
 
+$defaultBackupName = if ($dbType -eq 0) { "catalog_consolidation.bak" } else { "catalog.dump" }
 if (!$sourceBackupPath) {
-    $path = Join-Path $currentPath "catalog_consolidation.bak"
+    $path = Join-Path $currentPath $defaultBackupName
     if (Test-Path $path){
         $sourceBackupPath = $path;
     }
 }
 
-Import-Module WebAdministration
-Import-Module SqlServer
+if (!$targetBackupPath) {
+    $targetBackupPath = "C:\temp\$defaultBackupName"
+}
+
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}
 
 . (Join-Path $currentPath "Modules\Database.ps1")
 . (Join-Path $currentPath "Modules\CustomerCode.ps1")

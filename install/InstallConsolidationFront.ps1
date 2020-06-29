@@ -39,7 +39,6 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 
-Import-Module WebAdministration
 . (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
 
 $b = Get-WebBinding -Port $port

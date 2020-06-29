@@ -26,7 +26,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-Import-Module WebAdministration
+
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}
 
 $siteName = Read-Or-Default $siteName "Please enter site name for DPC SiteSync" "DPC.SiteSync"
 $port = Read-Or-Default $port "Please enter port for DPC SiteSync binding" "95"

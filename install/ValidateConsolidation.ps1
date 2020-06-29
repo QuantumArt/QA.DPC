@@ -1,19 +1,19 @@
 ﻿<#
-.SYNOPSIS
-Проверка возможности установки компонент каталога
+    .SYNOPSIS
+    Проверка возможности установки компонент каталога
 
-.DESCRIPTION
-Проверяет:
-- Наличие нужного NETCore runtime
-- QP установлен
-- Доступность сервера баз данных
-- Доступность портов
+    .DESCRIPTION
+    Проверяет:
+    - Наличие нужного NETCore runtime
+    - QP установлен
+    - Доступность сервера баз данных
+    - Доступность портов
 
-.EXAMPLE
-  .\ValidateConsolidation.ps1 -databaseServer 'dbhost'
-  
-.EXAMPLE
-  .\ValidateConsolidation.ps1 -actionsPort 8011 -notifyPort 8012 -frontPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016
+    .EXAMPLE
+    .\ValidateConsolidation.ps1 -databaseServer 'dbhost'
+    
+    .EXAMPLE
+    .\ValidateConsolidation.ps1 -actionsPort 8011 -notifyPort 8012 -frontPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016
 #>
 param(
     ## Порт DPC.ActionsService
@@ -54,48 +54,47 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 function Test-Port
 {
-  param(
-    [int] $port,
-    [string] $name
-  )
+    param(
+        [int] $port,
+        [string] $name
+    )
 
-  if ($port){
-    $connected = $false
+    if ($port) {
+        $connected = $false
 
-    Try{
-      $connected = (New-Object System.Net.Sockets.TcpClient('localhost', $port)).Connected
-    }Catch{    
+        Try{
+            $connected = (New-Object System.Net.Sockets.TcpClient('localhost', $port)).Connected
+        } Catch { }
+
+        If ($connected){
+            Throw "$name $port is busy"
+        }
     }
-
-    If ($connected){
-      Throw "$name $port is busy"
-    }
-  }
   
 }
 
 $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
 $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
 if (-not(Get-Module -Name $moduleName)) {
-  Import-Module $moduleName
+    Import-Module $moduleName
 }
 
-If ($databaseServer){
-  $requiredRuintime = '2.2.8'
-  $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
-  If ($actualRuntime -notcontains $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
+If ($databaseServer) {
+    $requiredRuintime = '2.2.8'
+    $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
+    If ($actualRuntime -notcontains $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
 
-  $path = Get-QPConfigurationPath
+    $path = Get-QPConfigurationPath
 
-  Try {
-    $connectionString = Get-ConnectionString -server $databaseServer -user $login -pass $password
-    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $connectionString
-    $sqlConnection.Open()
-  } Catch {
-    Throw "SQL server $databaseServer is inaccessible"
-  } Finally {
-    $sqlConnection.Close()
-  }
+    Try {
+        $connectionString = Get-ConnectionString -server $databaseServer -user $login -pass $password
+        $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $connectionString
+        $sqlConnection.Open()
+    } Catch {
+        Throw "SQL server $databaseServer is inaccessible"
+    } Finally {
+        $sqlConnection.Close()
+    }
 }
 
 Test-Port -Port $actionsPort -Name "ActionsPort"
