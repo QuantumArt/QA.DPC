@@ -212,3 +212,5 @@ $savedParams = @{
 
 $connectionString = Get-ConnectionString @savedParams -forConfig $true
 Add-CustomerCode -CustomerCode $customerCode -ConnectionString $connectionString -dbType $dbType
+
+Apply-QPConfigurationPathx64

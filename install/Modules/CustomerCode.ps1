@@ -27,6 +27,25 @@ function Get-QPConfigurationPath
     return $path
 }
 
+function Apply-QPConfigurationPathx64
+{
+    $registryPath = "Registry::HKLM\Software\Wow6432Node\Quantum Art\Q-Publishing"
+    $registryPath2 = "Registry::HKLM\Software\Quantum Art\Q-Publishing"
+
+    $item = Get-ItemProperty -Path $registryPath -ErrorAction SilentlyContinue
+    $item2 = Get-ItemProperty -Path $registryPath2 -ErrorAction SilentlyContinue
+    if ($item -and !$item2) {
+        $path = $item."Configuration file"
+
+        if (!$path) { throw "QP is not installed" }
+        if (-not(Test-Path $path))  { throw "QP configuration $path is missing" }
+
+        New-Item -Path $registryPath2 -Force | Out-Null
+        Set-ItemProperty -Path $registryPath2 -Name "Configuration File" -Value $path
+    }
+}
+
+
 function Get-CustomerCode
 {
     <#

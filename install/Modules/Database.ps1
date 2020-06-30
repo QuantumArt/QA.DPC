@@ -393,7 +393,7 @@ function Restore-Database
         "IF (EXISTS (SELECT null FROM [master].[dbo].[sysdatabases] WHERE name = N'$databaseName'))
             ALTER DATABASE [$databaseName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; 
         RESTORE DATABASE [$databaseName]
-            FROM DISK = N'$backupPath' WITH FILE = 1"
+            FROM DISK = N'$backupPath' WITH REPLACE, FILE = 1"
   
         foreach ($databaseFile in $databaseFiles)
         {

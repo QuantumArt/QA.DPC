@@ -52,6 +52,9 @@ $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $qpApp = Get-SiteOrApplication -name $qp 
 if (!$qpApp) { throw "QP application $qp is not exists"}
 
+# fix QP installation
+$qpApp.Bindings.Collection | % { $_.bindingInformation = $_.bindingInformation.Replace("localhost", "")}
+
 $adminApp = Get-SiteOrApplication -name $qp -application $admin 
 if ($adminApp) { throw "Admin application $admin is exists"}
 
