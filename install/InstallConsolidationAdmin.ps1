@@ -26,9 +26,9 @@ param(
     ## DPC.NotificationSender port
     [Parameter(Mandatory = $true)]
     [int] $notifyPort,
-    ## Dpc.SiteSync port
+    ## Dpc.Sync port
     [Parameter(Mandatory = $true)]
-    [int] $syncPort,
+    [int] $syncApiPort,
     ## Logs folder
     [Parameter(Mandatory = $true)]
     [String] $logPath,
@@ -101,7 +101,7 @@ if (!$integration) {
 }
 
 $integration | Add-Member NoteProperty "RestNotificationUrl" "http://${env:COMPUTERNAME}:$notifyPort" -Force
-$integration | Add-Member NoteProperty "HighloadFrontSyncUrl" "http://${env:COMPUTERNAME}:$syncPort" -Force
+$integration | Add-Member NoteProperty "HighloadFrontSyncUrl" "http://${env:COMPUTERNAME}:$syncApiPort" -Force
 if ($libraries) {
     $libarr = @()
     foreach ($lib in $libraries.Split(',')) { $libarr += $lib.Trim()}

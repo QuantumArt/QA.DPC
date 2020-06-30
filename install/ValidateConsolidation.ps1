@@ -94,7 +94,7 @@ If ($databaseServer) {
     If ($actualRuntime -notcontains $requiredRuintime){ Throw "Check .NET Core runtime $requiredRuintime : failed" }
 
     Try {
-        Execute-Sql -server $databaseServer -user $login -pass $password -query "select 1 as result" -dbType $dbType
+        Execute-Sql -server $databaseServer -name $login -pass $password -query "select 1 as result" -dbType $dbType
     } Catch {
         Write-Error $_.Exception
         Throw "Test connection to  $databaseServer : failed"

@@ -10,7 +10,7 @@
 
     .EXAMPLE
     .\InstallConsolidationCustomerCode.ps1 -databaseServer 'dbhost' -targetBackupPath 'c:\temp\catalog_consolidation.bak' -customerCode 'catalog_consolidation' -customerLogin 'login' -customerPassword '1q2w#E$R' 
-    -currentSqlPath '\\storage\Developers_share\QP\current.sql' -siteSyncHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin'
+    -currentSqlPath '\\storage\Developers_share\QP\current.sql' -frontHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin'
 #>
 param(
     ## Database Server
@@ -26,9 +26,9 @@ param(
     ## Catalog customer code
     [Parameter(Mandatory = $true)]
     [string] $customerCode,
-    ## Dpc.SiteSync host
+    ## Dpc.Front host
     [Parameter(Mandatory = $true)]
-    [string] $siteSyncHost,
+    [string] $frontHost,
     ## Dpc.SyncApi host
     [Parameter(Mandatory = $true)]
     [string] $syncApiHost,
@@ -182,7 +182,7 @@ Write-Host "Current.sql updated"
 Write-Host "Update database"  
 
 $fieldId = GetFieldId -connectionParams $cnnParams -key "NOTIFICATION_SENDER_CHANNELS_CONTENT_ID" -field "Url"
-ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{site_sync}" -value $siteSyncHost
+ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{site_sync}" -value $frontHost
 ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{elastic_sync}" -value $syncApiHost
 
 $fieldId = GetFieldId -connectionParams $cnnParams -key "ELASTIC_INDEXES_CONTENT_ID" -field "Name"

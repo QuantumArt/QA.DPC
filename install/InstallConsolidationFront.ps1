@@ -7,10 +7,10 @@ Dpc.Front is a reference front created as web application. It contains published
 such as reindexing ElasticSearch, tracking of publication history.
 
 .EXAMPLE
-  .\InstallConsolidationSiteSync.ps1 -port 8013 -logPath 'C:\Logs'
+  .\InstallConsolidationFront.ps1 -port 8013 -logPath 'C:\Logs'
 
 .EXAMPLE
-  .\InstallConsolidationSiteSync.ps1 -port 8012 -siteName 'DPC.Front' -logPath 'C:\Logs' -useProductVersions $true 
+  .\InstallConsolidationFront.ps1 -port 8012 -siteName 'DPC.Front' -logPath 'C:\Logs' -useProductVersions $true 
 #>
 param(
     ## Dpc.Front site name

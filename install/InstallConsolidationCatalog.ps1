@@ -10,7 +10,7 @@
         • Dpc.Admin: Бэкэнд каталога
         • DPC.ActionsService: Сервис выполнения задач
         • DPC.NotificationSender: Сервис публикации продуктов
-        • Dpc.SiteSync: Референсная витрина
+        • Dpc.Front: Референсная витрина
         • Dpc.SyncApi: Витрина индексации продуктов в Elasticsearch
         • Dpc.SearchApi: Поиск продуктов по индексам Elasticsearch
         • Dpc.WebApi: API каталога      
@@ -22,10 +22,10 @@
     .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -backendPort 89
 
     .EXAMPLE
-    .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
+    .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -frontPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
 
     .EXAMPLE
-    .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -sourceBackupPath \\storage\catalog_consolidation.bak -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
+    .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -sourceBackupPath \\storage\catalog_consolidation.bak -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -frontPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
 #>
 param (
     ## Cleanup (or not) previous version of catalog
@@ -146,10 +146,10 @@ if ($logPath){
 $actionsArtifactName = 'ActionsRunner' 
 $notificationsArtifactName = 'NotificationsSender'
 $highloadFrontArtifactName = 'HighloadFront'
-$siteSyncArtifactName = 'Front'
+$frontArtifactName = 'Front'
 $webApiArtifactName = 'WebApi'
 
-$siteSyncHost = "${env:COMPUTERNAME}:$frontPort"
+$frontHost = "${env:COMPUTERNAME}:$frontPort"
 $syncApiHost = "${env:COMPUTERNAME}:$syncApiPort"
 $adminHost = "${env:COMPUTERNAME}:$backendPort/$adminName"
 
@@ -191,25 +191,25 @@ Invoke-Expression "$validationPath -DatabaseServer '$databaseServer' -login '$lo
 
 if ($cleanUp) {
     $uninstallPath = Join-Path $currentPath "UninstallConsolidation.ps1"
-    $params = "-CustomerCode '$customerCode' -InstallRoot '$installRoot' -Admin '$adminName' -NotificationSender '$notificationsName' -ActionsService '$actionsName' -SiteSync '$frontName' -WebApi '$webApiName' -SyncApi '$syncApiName' -SearchApi '$searchApiName' -QpName '$qpName'"
+    $params = "-CustomerCode '$customerCode' -InstallRoot '$installRoot' -Admin '$adminName' -NotificationSender '$notificationsName' -ActionsService '$actionsName' -Front '$frontName' -WebApi '$webApiName' -SyncApi '$syncApiName' -SearchApi '$searchApiName' -QpName '$qpName'"
     Invoke-Expression "$uninstallPath $params"
 }
 
 Invoke-Expression "$validationPath -actionsPort $actionsPort -notifyPort $notifyPort -frontPort $frontPort -searchApiPort $searchApiPort -syncApiPort $syncApiPort -webApiPort $webApiPort"
 
 $scriptName = Join-Path $currentPath "InstallConsolidationAdmin.ps1"
-Invoke-Expression "$scriptName -actionsPort $actionsPort -notifyPort $notifyPort -syncApiPort $syncApiPort -Admin '$adminName' -Qp '$qpName' -LogPath '$logPath' -Libraries '$libraries'"
+Invoke-Expression "$scriptName -notifyPort $notifyPort -syncApiPort $syncApiPort -Admin '$adminName' -Qp '$qpName' -LogPath '$logPath' -Libraries '$libraries'"
 
 $scriptName = Join-Path $currentPath "InstallConsolidationNotificationSender.ps1"
 $source = Join-Path $parentPath $notificationsArtifactName
-Invoke-Expression "$scriptName -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$notificationsName' -Source '$source' -LogPath '$logPath' -InstanceId $instanceId"
+Invoke-Expression "$scriptName -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$notificationsName' -LogPath '$logPath' -InstanceId $instanceId"
 
 $scriptName = Join-Path $currentPath "InstallConsolidationActionsService.ps1"
 $source = Join-Path $parentPath $actionsArtifactName
-Invoke-Expression "$scriptName -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$actionsName' -Source '$source' -LogPath '$logPath'"
+Invoke-Expression "$scriptName -actionsPort $actionsPort -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$actionsName' -LogPath '$logPath'"
 
 $scriptName = Join-Path $currentPath "InstallConsolidationFront.ps1"
-$source = Join-Path $parentPath $siteSyncArtifactName
+$source = Join-Path $parentPath $frontArtifactName
 Invoke-Expression "$scriptName -Port $frontPort -SiteName '$frontName' -UseProductVersions `$$useProductVersions -LogPath '$logPath' -InstanceId $instanceId"
 
 $scriptName = Join-Path $currentPath "InstallConsolidationHighloadFront.ps1"
@@ -222,7 +222,7 @@ $source = Join-Path $parentPath $webApiArtifactName
 Invoke-Expression "$scriptName -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort -LogPath '$logPath'"
 
 $scriptName = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
-$params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost' -DbType $dbType"
+$params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -FrontHost '$frontHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost' -DbType $dbType"
 if ($sourceBackupPath) { 
     $params = "$params -SourceBackupPath '$sourceBackupPath'" 
 }

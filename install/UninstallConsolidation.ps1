@@ -13,7 +13,7 @@
 - Удаляется кастомер код каталога из QP
 
 .EXAMPLE
-  .\UninstallConsolidation.ps1 -customerCode 'catalog_consolidation' -installRoot 'C:\QA' -admin 'Dpc.Admin' -notificationSender 'DPC.NotificationSender' -actionsService 'DPC.ActionsService' -siteSync 'Dpc.SiteSync' -webApi 'Dpc.WebApi' -syncApi 'Dpc.SyncApi' -searchApi 'Dpc.SearchApi'
+  .\UninstallConsolidation.ps1 -customerCode 'catalog_consolidation' -installRoot 'C:\QA' -admin 'Dpc.Admin' -notificationSender 'DPC.NotificationSender' -actionsService 'DPC.ActionsService' -front 'Dpc.Front' -webApi 'Dpc.WebApi' -syncApi 'Dpc.SyncApi' -searchApi 'Dpc.SearchApi'
 #>
 param(
     ## Название DPC.NotificationSender
@@ -22,7 +22,7 @@ param(
     [String] $actionsService = 'DPC.ActionsService',
     ## Название Dpc.Admin
     [String] $admin = 'Dpc.Admin',
-    ## Название Dpc.SiteSync
+    ## Название Dpc.Front
     [String] $front = 'Dpc.Front',
     ## Название Dpc.WebApi
     [String] $webApi = 'Dpc.WebApi',
