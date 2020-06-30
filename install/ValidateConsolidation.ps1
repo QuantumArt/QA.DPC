@@ -42,7 +42,10 @@ param(
     [String] $login,
     ## Пароль для сервера баз данных
     [Parameter()]
-    [String] $password
+    [String] $password,
+    ## Database type: 0 - SQL Server, 1 - Postgres
+    [Parameter()]
+    [int] $dbType = 0
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -81,20 +84,21 @@ if (-not(Get-Module -Name $moduleName)) {
 
 If ($databaseServer) {
     $requiredRuintime = '2.2.8'
-    $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
-    If ($actualRuntime -notcontains $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
-
-    $path = Get-QPConfigurationPath
+    
+    Try {
+        $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
+    } Catch {
+        Write-Error $_.Exception
+        Throw "Check .NET Core runtime : failed"
+    } 
+    If ($actualRuntime -notcontains $requiredRuintime){ Throw "Check .NET Core runtime $requiredRuintime : failed" }
 
     Try {
-        $connectionString = Get-ConnectionString -server $databaseServer -user $login -pass $password
-        $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $connectionString
-        $sqlConnection.Open()
+        Execute-Sql -server $databaseServer -user $login -pass $password -query "select 1 as result" -dbType $dbType
     } Catch {
-        Throw "SQL server $databaseServer is inaccessible"
-    } Finally {
-        $sqlConnection.Close()
-    }
+        Write-Error $_.Exception
+        Throw "Test connection to  $databaseServer : failed"
+    } 
 }
 
 Test-Port -Port $actionsPort -Name "ActionsPort"

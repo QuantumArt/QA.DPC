@@ -96,15 +96,17 @@ function DeleteSite
 
   if ($qp){
     $alias = "IIS:\sites\$qp\$name"
-    $poolAlias = Get-Item "IIS:\AppPools\$qp.$name"
+    $poolAlias = Get-Item "IIS:\AppPools\$qp.$name" -ErrorAction SilentlyContinue
   }
   else{
     $alias = "IIS:\sites\$name"
-    $poolAlias = Get-Item "IIS:\AppPools\$name"
+    $poolAlias = Get-Item "IIS:\AppPools\$name" -ErrorAction SilentlyContinue
   }
   
   $app = Get-Item $alias -ErrorAction SilentlyContinue
-  $pool = Get-Item $poolAlias -ErrorAction SilentlyContinue
+  if ($poolAlias) {
+    $pool = Get-Item $poolAlias -ErrorAction SilentlyContinue
+  }
 
   if ($app) {      
     $path =  $app.PhysicalPath

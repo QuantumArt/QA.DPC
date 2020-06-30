@@ -187,7 +187,7 @@ if (-not(Get-Module -Name WebAdministration)) {
 
 
 $validationPath = Join-Path $currentPath "ValidateConsolidation.ps1"
-Invoke-Expression "$validationPath -DatabaseServer '$databaseServer'"
+Invoke-Expression "$validationPath -DatabaseServer '$databaseServer' -login '$login' -password '$password' -dbType $dbType"
 
 if ($cleanUp) {
     $uninstallPath = Join-Path $currentPath "UninstallConsolidation.ps1"
