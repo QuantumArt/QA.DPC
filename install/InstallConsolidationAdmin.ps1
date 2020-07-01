@@ -53,7 +53,8 @@ $qpApp = Get-SiteOrApplication -name $qp
 if (!$qpApp) { throw "QP application $qp is not exists"}
 
 # fix QP installation
-$qpApp.Bindings.Collection | % { $_.bindingInformation = $_.bindingInformation.Replace("localhost", "")}
+$bi = Get-WebBinding -Name $qp | ForEach-Object { $_.bindingInformation = $_.bindingInformation.Replace("localhost", "")}
+Set-ItemProperty -Path "IIS:\Sites\$qp" -Name Bindings -Value $bi
 
 $adminApp = Get-SiteOrApplication -name $qp -application $admin 
 if ($adminApp) { throw "Admin application $admin is exists"}

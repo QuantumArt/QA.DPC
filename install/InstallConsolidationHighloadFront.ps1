@@ -106,13 +106,6 @@ if ($elasticStoreOptions) {
     }
 }
 
-
-if ($elasticStoreOptions -and $elasticStoreOptions.Count -gt 0) {
-    foreach ($key in $elasticStoreOptions.Keys) {
-        $s | Add-Member NoteProperty $key $elasticStoreOptions[$key] -Force
-    }
-}
-
 Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
 $json | ConvertTo-Json -Depth 5 | Set-Content -Path $appsettingsPath
 

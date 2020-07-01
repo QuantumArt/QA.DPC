@@ -65,7 +65,7 @@ function DeleteService
             $s.Stop()
             $s.WaitForStatus("Stopped", "00:03:00")
             Start-Sleep -s 10
-            Write-Host "* stoped"
+            Write-Host "* stopped"
         }
 
         $sobj = Get-WmiObject -Class Win32_Service -Filter "Name='$name'" 
@@ -79,7 +79,7 @@ function DeleteService
     $path = Join-Path $installRoot $name
 
     if (Test-Path $path){
-        Remove-Item $path -Recurse
+        Remove-Item $path -Recurse -Force
         Write-Host "$name files removed"
     }
     else{
@@ -115,6 +115,7 @@ function DeleteSite
     Write-Host "$qp\$name deleted"
 
     if ($pool){
+        $pool.Stop()
         Remove-Item $poolAlias -Recurse -Force
         Write-Host "pool $poolAlias deleted"
     }
@@ -122,7 +123,7 @@ function DeleteSite
     Start-Sleep -s 10
 
     if (Test-Path $path){
-        Remove-Item $path -Recurse
+        Remove-Item $path -Recurse -Force
         Write-Host "$qp\$name files removed"
     }
   }
