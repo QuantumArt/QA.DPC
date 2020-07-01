@@ -140,7 +140,8 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 }
 
 if ($logPath){
-    Start-Transcript -Path $logPath -Append
+    $installLog = Join-Path $logPath "install.log"
+    Start-Transcript -Path $installLog -Append
 }
 
 $actionsArtifactName = 'ActionsRunner' 

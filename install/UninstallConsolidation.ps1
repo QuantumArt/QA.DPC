@@ -89,45 +89,71 @@ function DeleteService
 
 function DeleteSite
 {
-  param(
-     [string] $qp,
-     [string] $name
-  )  
+    param(
+        [string] $qp,
+        [string] $name
+    )  
 
-  if ($qp){
-    $alias = "IIS:\sites\$qp\$name"
-    $poolAlias = Get-Item "IIS:\AppPools\$qp.$name" -ErrorAction SilentlyContinue
-  }
-  else{
-    $alias = "IIS:\sites\$name"
-    $poolAlias = Get-Item "IIS:\AppPools\$name" -ErrorAction SilentlyContinue
-  }
-  
-  $app = Get-Item $alias -ErrorAction SilentlyContinue
-  if ($poolAlias) {
-    $pool = Get-Item $poolAlias -ErrorAction SilentlyContinue
-  }
+    $alias = if ($qp) { "IIS:\sites\$qp\$name" } else { "IIS:\sites\$name" }
+    $app = Get-Item $alias -ErrorAction SilentlyContinue
 
-  if ($app) {      
-    $path =  $app.PhysicalPath
+    if ($app) {      
+        $path =  $app.PhysicalPath
+        $pool = $app.applicationPool
 
-    Remove-Item $alias -Recurse -Force    
-    Write-Host "$qp\$name deleted"
+        if ($pool) {
+            Stop-AppPool $pool | Out-Null
+            Write-Host "$qp\$name pool deleted"
+        }
 
-    if ($pool){
-        $pool.Stop()
-        Remove-Item $poolAlias -Recurse -Force
-        Write-Host "pool $poolAlias deleted"
+        Remove-Item $alias -Recurse -Force    
+        Write-Host "$qp\$name deleted"
+
+        if (Test-Path $path){
+            Remove-Item $path -Recurse -Force
+            Write-Host "$qp\$name files deleted"
+        }
     }
-
-    Start-Sleep -s 10
-
-    if (Test-Path $path){
-        Remove-Item $path -Recurse -Force
-        Write-Host "$qp\$name files removed"
-    }
-  }
 }
+
+function Stop-AppPool
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        [String] $AppPoolName
+    )
+
+    $s = Get-Item "IIS:\AppPools\$AppPoolName" -ErrorAction SilentlyContinue
+
+    if (!$s) { throw "AppPool $AppPoolName not found"}
+
+    if ( $s.State -ne "Stopped")
+    {
+        Write-Verbose "Stopping AppPool $AppPoolName..." -Verbose
+        $s.Stop()
+        $endTime = $(get-date).AddMinutes('1')
+        while($(get-date) -lt $endtime)
+        {
+            Start-Sleep -Seconds 1
+            if ($s.State -ne "Stopping")
+            {
+                if ($s.State -eq "Stopped") {
+                    Write-Verbose "Stopped" -Verbose
+                }
+                break
+            }
+        }
+    }
+
+    return $s.State -eq "Stopped"
+}
+
+
+$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
+
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}   
 
 DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
