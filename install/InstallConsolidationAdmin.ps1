@@ -72,7 +72,7 @@ if (!$backendApp)
 $root = Split-Path -parent $backendApp.PhysicalPath
 
 $adminPath = Join-Path $root $admin
-New-Item -Path $adminPath -ItemType Directory -Force
+New-Item -Path $adminPath -ItemType Directory -Force | Out-Null
 
 Copy-Item "$sourcePath\*" -Destination $adminPath -Force -Recurse
 
@@ -128,6 +128,6 @@ if (!$adminPool) {
     Write-Host "Done"
 }
 
-New-Item "IIS:\sites\$qp\$admin" -physicalPath $adminPath -applicationPool "$qp.$admin" -type Application
+New-Item "IIS:\sites\$qp\$admin" -physicalPath $adminPath -applicationPool "$qp.$admin" -type Application | Out-Null
 
 

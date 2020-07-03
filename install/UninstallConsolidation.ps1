@@ -61,15 +61,15 @@ function DeleteService
 
     if ($s){
         if ( $s.Status -eq "Running"){
-            Write-Host "* stoping $name"
+            Write-Host "$name stopping "
             $s.Stop()
             $s.WaitForStatus("Stopped", "00:03:00")
             Start-Sleep -s 10
-            Write-Host "* stopped"
+            Write-Host "$name stopped"
         }
 
         $sobj = Get-WmiObject -Class Win32_Service -Filter "Name='$name'" 
-        $sobj.Delete()    
+        $sobj.Delete() | Out-Null    
         Write-Host "$name deleted"   
     }
     else{
@@ -95,23 +95,26 @@ function DeleteSite
     )  
 
     $alias = if ($qp) { "IIS:\sites\$qp\$name" } else { "IIS:\sites\$name" }
+    $displayName = if ($qp) { "application $name for site $qp" } else { "Site $name" }
+
     $app = Get-Item $alias -ErrorAction SilentlyContinue
 
     if ($app) {      
         $path =  $app.PhysicalPath
-        $pool = $app.applicationPool
+        $poolName = $app.applicationPool
 
-        if ($pool) {
-            Stop-AppPool $pool | Out-Null
-            Write-Host "$qp\$name pool deleted"
+        if ($poolName) {
+            Stop-AppPool $poolName | Out-Null
+            Remove-Item "IIS:\AppPools\$poolName" -Recurse -Force
+            Write-Host "pool $poolName deleted"
         }
 
         Remove-Item $alias -Recurse -Force    
-        Write-Host "$qp\$name deleted"
+        Write-Host "$displayName deleted"
 
         if (Test-Path $path){
             Remove-Item $path -Recurse -Force
-            Write-Host "$qp\$name files deleted"
+            Write-Host "files of $displayName deleted"
         }
     }
 }

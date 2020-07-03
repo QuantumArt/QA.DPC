@@ -171,7 +171,7 @@ function Remove-CustomerCode
             }
             else
             {        
-                $customers.RemoveChild($customer)
+                $customers.RemoveChild($customer) | Out-Null
                 $xml.Save($configurationPath)
                 Write-Verbose "Customer code $customerCode is removed"
             }

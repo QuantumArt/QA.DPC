@@ -36,9 +36,9 @@
   $s = Get-Service $name -ErrorAction SilentlyContinue
   if ($s) { throw "Server $name already installed" }
 
-  if (-not(Test-Path $installRoot)) { New-Item $installRoot -ItemType Directory }
+  if (-not(Test-Path $installRoot)) { New-Item $installRoot -ItemType Directory | Out-Null }
   $installFolder = Join-Path $installRoot $name
-  if (Test-Path $installFolder) { throw "Service folder $installFolder already exists" } else { New-Item $installFolder -ItemType Directory }
+  if (Test-Path $installFolder) { throw "Service folder $installFolder already exists" } else { New-Item $installFolder -ItemType Directory | Out-Null }
 
   if (Test-Path $source -PathType Container)
   {

@@ -61,7 +61,7 @@ if (!$def) { throw "Default Web Site doesn't exist"}
 $root = $def.PhysicalPath -replace "%SystemDrive%",$env:SystemDrive
 $sitePath = Join-Path $root $siteName
 Write-Verbose $sitePath
-New-Item -Path $sitePath -ItemType Directory -Force
+New-Item -Path $sitePath -ItemType Directory -Force | Out-Null
 
 $parentPath = Split-Path -parent $currentPath
 $sourcePath = Join-Path $parentPath "HighloadFront"
