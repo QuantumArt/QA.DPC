@@ -1,13 +1,13 @@
 ﻿<#
     .SYNOPSIS
-    Проверка возможности установки компонент каталога
+    Validates whether catalog could be installed
 
     .DESCRIPTION
-    Проверяет:
-    - Наличие нужного NETCore runtime
-    - QP установлен
-    - Доступность сервера баз данных
-    - Доступность портов
+    Checks:
+    - .NET Core Runtime 2.2.8 is installed
+    - QP is installed
+    - Database Server is avaialable for current user (or with specific credentials)
+    - Ports are available
 
     .EXAMPLE
     .\ValidateConsolidation.ps1 -databaseServer 'dbhost'

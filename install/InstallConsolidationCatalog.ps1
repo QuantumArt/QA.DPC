@@ -1,22 +1,22 @@
 ﻿<#
     .SYNOPSIS
-    Установка каталога
+    Installs QP.ProductCatalog components
 
     .DESCRIPTION
-    В процессе установки каталога:
-    - Провдодится валидация параметров и окружения на возможность установки
-    - Опционально очищаются ранее установленные компоненты каталога
-    - Устанавливаются сервисы:
-        • Dpc.Admin: Бэкэнд каталога
-        • DPC.ActionsService: Сервис выполнения задач
-        • DPC.NotificationSender: Сервис публикации продуктов
-        • Dpc.Front: Референсная витрина
-        • Dpc.SyncApi: Витрина индексации продуктов в Elasticsearch
-        • Dpc.SearchApi: Поиск продуктов по индексам Elasticsearch
-        • Dpc.WebApi: API каталога      
-    - Развертывается база данных каталога из бэкапа
-    - База каталога обновляется до актуального состояния
-    - Регистрируется в QP кастомер код каталога
+    During installation script does the following actions:
+    - Validates input parameters and environment
+    - Deletes components from previous installation
+    - Installs services and applications:
+        • Dpc.Admin: Catalog administration module
+        • DPC.ActionsService: Task execution service
+        • DPC.NotificationSender: Product publication service
+        • Dpc.Front: Reference front
+        • Dpc.SyncApi: API for writing product JSONs into ElasticSearch
+        • Dpc.SearchApi: API for searching products in Elasticsearch
+        • Dpc.WebApi: API for CRUD operations with products      
+    - Restores sample catalog database from backup
+    - Updates sample catalog database to actual state
+    - Registers sample catalog database as QP customer code
 
     .EXAMPLE
     .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -backendPort 89

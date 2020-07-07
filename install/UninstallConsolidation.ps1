@@ -1,16 +1,16 @@
 ﻿<#
 .SYNOPSIS
-Удаление ранее установленных компонент каталога
+Deletes components from previous installation
 
 .DESCRIPTION
-В процессе удуления
-- Для всех сервисов каталога:
-    • сервис останавливается
-    • удаляются его файлы
-- Для всех вею приложений каталога:
-    • удаляется web приложение из IIS
-    • удаляется его файлы
-- Удаляется кастомер код каталога из QP
+While deleting
+- For windows services:
+    • service is stopped
+    • service files are removed
+- For web applications:
+    • application is removed from IIS
+    • application files are removed
+- Deletes customer code from QP
 
 .EXAMPLE
   .\UninstallConsolidation.ps1 -customerCode 'catalog_consolidation' -installRoot 'C:\QA' -admin 'Dpc.Admin' -notificationSender 'DPC.NotificationSender' -actionsService 'DPC.ActionsService' -front 'Dpc.Front' -webApi 'Dpc.WebApi' -syncApi 'Dpc.SyncApi' -searchApi 'Dpc.SearchApi'

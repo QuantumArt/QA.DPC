@@ -1,6 +1,6 @@
 ﻿<#
     .SYNOPSIS
-    Customer code registration
+    Registers Customer code in QP
 
     .DESCRIPTION
     Registers new customer code for catalog in QP:

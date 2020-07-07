@@ -3,7 +3,7 @@
 Installs DPC.NotificationSender
 
 .DESCRIPTION
-DPC.ActionsService is a windows service for sending published products to fronts which could be both internal (DPC.Front, DPC.HighloadFront) and external
+DPC.NotificationSender is a windows service which sends published products to fronts both internal (DPC.Front, DPC.HighloadFront) and external
 
 .EXAMPLE
   .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -logPath 'C:\Logs'
