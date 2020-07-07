@@ -128,9 +128,7 @@ function Stop-AppPool
 
     $s = Get-Item "IIS:\AppPools\$AppPoolName" -ErrorAction SilentlyContinue
 
-    if (!$s) { throw "AppPool $AppPoolName not found"}
-
-    if ( $s.State -ne "Stopped")
+    if ($s -and $s.State -ne "Stopped")
     {
         Write-Verbose "Stopping AppPool $AppPoolName..." -Verbose
         $s.Stop()

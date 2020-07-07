@@ -227,4 +227,7 @@ $params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPat
 if ($sourceBackupPath) { 
     $params = "$params -SourceBackupPath '$sourceBackupPath'" 
 }
+if ($login -and $password) {
+    $params = "$params  -Login '$login' -Password '$password'" 
+}
 Invoke-Expression "$scriptName $params"
