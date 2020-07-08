@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>net471;netcoreapp2.2</TargetFrameworks>
     <LangVersion>latest</LangVersion>
+    <TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
+    <TypeScriptBuildMode>true</TypeScriptBuildMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.2'">
     <DefineConstants>NETSTANDARD</DefineConstants>
