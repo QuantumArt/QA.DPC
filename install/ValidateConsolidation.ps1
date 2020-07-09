@@ -1,27 +1,30 @@
 ﻿<#
-.SYNOPSIS
-Проверка возможности установки компонент каталога
+    .SYNOPSIS
+    Validates whether catalog could be installed
 
-.DESCRIPTION
-Проверяет:
-- Наличие нужного NETCore runtime
-- QP установлен
-- Доступность сервера баз данных
-- Доступность портов
+    .DESCRIPTION
+    Checks:
+    - .NET Core Runtime 2.2.8 is installed
+    - QP is installed
+    - Database Server is avaialable for current user (or with specific credentials)
+    - Ports are available
 
-.EXAMPLE
-  .\ValidateConsolidation.ps1 -databaseServer 'dbhost'
-  
-.EXAMPLE
-  .\ValidateConsolidation.ps1 -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016
+    .EXAMPLE
+    .\ValidateConsolidation.ps1 -databaseServer 'dbhost'
+    
+    .EXAMPLE
+    .\ValidateConsolidation.ps1 -actionsPort 8011 -notifyPort 8012 -frontPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016
 #>
 param(
+    ## Порт DPC.ActionsService
+    [Parameter()]
+    [int] $actionsPort,
     ## Порт DPC.NotificationSender
     [Parameter()]
     [int] $notifyPort,
-    ## Порт Dpc.SiteSync
+    ## Порт Dpc.Front
     [Parameter()]
-    [int] $siteSyncPort,
+    [int] $frontPort,
     ## Порт Dpc.SearchApi
     [Parameter()]
     [int] $searchApiPort,
@@ -39,7 +42,10 @@ param(
     [String] $login,
     ## Пароль для сервера баз данных
     [Parameter()]
-    [String] $password
+    [String] $password,
+    ## Database type: 0 - SQL Server, 1 - Postgres
+    [Parameter()]
+    [int] $dbType = 0
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -51,47 +57,53 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 function Test-Port
 {
-  param(
-    [int] $port,
-    [string] $name
-  )
+    param(
+        [int] $port,
+        [string] $name
+    )
 
-  if ($port){
-    $connected = $false
+    if ($port) {
+        $connected = $false
 
-    Try{
-      $connected = (New-Object System.Net.Sockets.TcpClient('localhost', $port)).Connected
-    }Catch{    
+        Try{
+            $connected = (New-Object System.Net.Sockets.TcpClient('localhost', $port)).Connected
+        } Catch { }
+
+        If ($connected){
+            Throw "$name $port is busy"
+        }
     }
-
-    If ($connected){
-      Throw "$name $port is busy"
-    }
-  }
   
 }
 
-Import-Module -Name SqlServer
-
-If ($databaseServer){
-  $requiredRuintime = '2.2.1'
-  $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
-  If ($actualRuntime -notcontains $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
-
-  $path = Get-QPConfigurationPath
-
-  Try {
-    $connectionString = Get-ConnectionString -ServerInstance $databaseServer -Username $login -Password $password
-    $sqlConnection = New-Object System.Data.SqlClient.SqlConnection $connectionString
-    $sqlConnection.Open()
-  } Catch {
-    Throw "SQL server $databaseServer is inaccessible"
-  } Finally {
-    $sqlConnection.Close()
-  }
+$useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
+$moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
+if (-not(Get-Module -Name $moduleName)) {
+    Import-Module $moduleName
 }
 
+If ($databaseServer) {
+    $requiredRuintime = '2.2.8'
+    
+    Try {
+        $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
+    } Catch {
+        Write-Error $_.Exception
+        Throw "Check .NET Core runtime : failed"
+    } 
+    If ($actualRuntime -notcontains $requiredRuintime){ Throw "Check .NET Core runtime $requiredRuintime : failed" }
+
+    Try {
+        Execute-Sql -server $databaseServer -name $login -pass $password -query "select 1 as result" -dbType $dbType | Out-Null
+    } Catch {
+        Write-Error $_.Exception
+        Throw "Test connection to  $databaseServer : failed"
+    } 
+}
+
+Test-Port -Port $actionsPort -Name "ActionsPort"
 Test-Port -Port $notifyPort -Name "NotifyPort"
-Test-Port -Port $siteSyncPort -Name "SiteSyncPort"
+Test-Port -Port $frontPort -Name "FrontPort"
+Test-Port -Port $syncApiPort -Name "SyncApiPort"
 Test-Port -Port $searchApiPort -Name "SearchApiPort"
 Test-Port -Port $webApiPort -Name "WebApiPort"

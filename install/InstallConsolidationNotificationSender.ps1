@@ -1,15 +1,15 @@
 ﻿<#
 .SYNOPSIS
-Установка сервиса публикации продуктов
+Installs DPC.NotificationSender
 
 .DESCRIPTION
-Cервис публикации продуктов DPC.NotificationSender это win служба для рассылки публикуемых продуктов по витринам
+DPC.NotificationSender is a windows service which sends published products to fronts both internal (DPC.Front, DPC.HighloadFront) and external
 
 .EXAMPLE
-  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -source 'C:\Catalog\NotificationsSender'
+  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -logPath 'C:\Logs'
 
 .EXAMPLE
-  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -name 'DPC.NotificationSender' -source 'C:\Catalog\NotificationsSender'
+  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -logPath 'C:\Logs' -name 'DPC.NotificationSender' 
 
 #>
 param(
@@ -34,9 +34,12 @@ param(
     ## Порт DPC.NotificationSender
     [Parameter(Mandatory = $true)]
     [int] $notifyPort,
-    ## Путь к сервису, откуда он будет установлен
+    ## DPC instance name
+    [Parameter()]
+    [string] $instanceId = 'Dev',
+    ## Logs folder
     [Parameter(Mandatory = $true)]
-    [String] $source
+    [String] $logPath
 )
 
 
@@ -47,57 +50,68 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-$projectName = "QA.Core.DPC.NotificationSender"
-$installPath = Join-Path $installRoot $name
-
-
 $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
-$installServicePath = Join-Path $currentPath "InstallService.ps1"
-Invoke-Expression "$installServicePath -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
 
+. (Join-Path $currentPath "Modules\Install-Service.ps1")
+
+$parentPath = Split-Path -parent $currentPath
+$sourcePath = Join-Path $parentPath "NotificationSender"
+
+$installParams = @{
+  name = $name;
+  displayName = $displayName;
+  description = $description;
+  installRoot = $installRoot;
+  login = $login;
+  password = $password;
+  projectName = "QA.Core.DPC.NotificationSender";
+  source = $sourcePath;
+}
+
+Install-Service @installParams 
+
+$installPath = Join-Path $installRoot $name
 $nLogPath = Join-Path $installPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
-$var = $nlog.nlog.targets.target | Where-Object {$_.name -eq 'fileinfo'}
-$var2 = $nlog.nlog.targets.target | Where-Object {$_.name -eq 'fileexception'}
-$var.fileName = $var.fileName -Replace $projectName, $name
-$var.archiveFileName = $var.archiveFileName -Replace $projectName, $name
-$var2.fileName = $var2.fileName -Replace $projectName, $name
-$var2.archiveFileName = $var2.archiveFileName -Replace $projectName, $name
+
+$nlog.nlog.internalLogFile = [string](Join-Path $logPath "internal-log.txt")
+
+$node = $nlog.nlog.variable | Where-Object {$_.name -eq 'logDirectory'}
+$node.value = [string](Join-Path $logPath $name)
+
+$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Warn,Error,Fatal'}
+$node.writeTo = "fileException"
+
+$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Info'}
+$node.writeTo = "fileInfo"
+
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
-$appConfigPath = Join-Path $installPath "$projectName.exe.config"
-[xml]$app = Get-Content -Path $appConfigPath
+$appSettingsPath = Join-Path $installPath "appsettings.json"
+$json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 
+$json.Properties | Add-Member NoteProperty "InstanceId" $instanceId -Force
 
-$qpMode = $app.CreateElement('add')
-$qpMode.SetAttribute('key', 'QPMode')
-$qpMode.SetAttribute('value', 'true')
-$app.SelectSingleNode('//configuration/appSettings').AppendChild($qpMode)
+Set-ItemProperty $appSettingsPath -name IsReadOnly -value $false
+$json | ConvertTo-Json | Out-File $appSettingsPath
 
-$app.configuration.RemoveChild($app.configuration.connectionStrings)
+$hostingPath = Join-Path $installPath "hosting.json"
+$json = Get-Content -Path $hostingPath | ConvertFrom-Json
 
-$container = $app.configuration.unity.container
-$notificationProvider = $container.register | Where-Object {$_.type -eq 'INotificationProvider'}
-$notificationProvider.mapTo = "NotificationContentProvider";
-$settingsService = $container.register | Where-Object {$_.type -eq 'ISettingsService'}
-$settingsService.mapTo = "SettingsFromQpService";
+$json.urls = "http://*:${notifyPort}"
 
-$endpoint = $app.configuration.'system.serviceModel'.services.service.host.baseAddresses.add 
-$endpoint.baseAddress = "http://${env:COMPUTERNAME}:$notifyPort/DpcNotificationService"
-
-Set-ItemProperty $appConfigPath -name IsReadOnly -value $false
-$app.Save($appConfigPath)
-
+Set-ItemProperty $hostingPath -name IsReadOnly -value $false
+$json | ConvertTo-Json | Out-File $hostingPath
 
 $s = Get-Service $name
 
 if ( $s.Status -eq "Stopped")
 {
-    Write-Output "Starting service $name..."
+    Write-Host "Starting service $name..."
     $s.Start()
 }
 $timeout = "00:03:00";
 try { $s.WaitForStatus("Running", $timeout) } catch [System.ServiceProcess.TimeoutException] { throw [System.ApplicationException] "Service '$name' hasn't been started in '$timeout' interval" } 
-Write-Output "$name Running"
+Write-Host "$name Running"
 

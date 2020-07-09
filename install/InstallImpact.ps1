@@ -1,41 +1,38 @@
 ﻿<#
 .SYNOPSIS
-Installs HighloadFront
+Installs DPC.Impact
 
 .DESCRIPTION
-HighloadFront is a web application for working with Elasticsearch indices.
-Used in two possible options:
-- Dpc.SyncApi: For updating Elasticsearch indicies
-- Dpc.SearchApi: For searching into Elasticsearch indices
+DPC.Impact is a web service which uses product information from ElasticSearch and returns product calculator data.
 
 .EXAMPLE
-  .\InstallConsolidationHighloadFront.ps1 -port 8015 -siteName 'Dpc.SyncApi' -canUpdate $true -logPath 'C:\Logs' -timeout 45 
+  .\InstallImpact.ps1 -port 8033 -logPath 'C:\Logs' -elasticBaseAddress 'http://elastic01:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
 
 .EXAMPLE
-   .\InstallConsolidationHighloadFront.ps1 -port 8014 -siteName 'Dpc.SearchApi' -canUpdate $false -logPath 'C:\Logs' -sonicElasticStore "{""ValueSeparator"":""{or}"";""WildcardStarMark"":""{any}""} -Verbose
+ .\InstallImpact.ps1 -port 8032 -siteName 'DPC.Impact' -logPath 'C:\Logs' -elasticBaseAddress 'http://elastic01:9200;http://elastic02:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
 #>
 param(
     ## HighloadFront site name
-    [Parameter(Mandatory = $true)]
-    [String] $siteName,
+    [Parameter()]
+    [String] $siteName = 'Dpc.Impact',
     ## HighloadFront port
     [Parameter(Mandatory = $true)]
     [int] $port,
     ## Flag which allows updating ElasticSearch indices
     [Parameter(Mandatory = $true)]
-    [bool] $canUpdate,
+    [string] $elasticBaseAddress,
     ## Elasticsearch conneciton timeout (sec)
     [Parameter()]
     [int] $timeout = 60,
     ## Logs folder
     [Parameter(Mandatory = $true)]
     [String] $logPath,
-    ## DPC instance name
-    [Parameter()]
-    [string] $instanceId = 'Dev',
-    ## Elasticsearch storage options JSON
-    [Parameter()]
-    [string] $elasticStoreOptions = ''
+    ## Live index name
+    [Parameter(Mandatory = $true)]
+    [String] $liveIndexName,
+    ## Stage index name
+    [Parameter(Mandatory = $true)]
+    [String] $stageIndexName
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -64,7 +61,7 @@ Write-Verbose $sitePath
 New-Item -Path $sitePath -ItemType Directory -Force | Out-Null
 
 $parentPath = Split-Path -parent $currentPath
-$sourcePath = Join-Path $parentPath "HighloadFront"
+$sourcePath = Join-Path $parentPath "Impact"
 
 Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
 
@@ -91,20 +88,12 @@ $nlog.Save($nLogPath)
 $appSettingsPath = Join-Path $sitePath "appsettings.json"
 $json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 
-$json.Data | Add-Member NoteProperty "ElasticTimeout" $timeout -Force
-$json.Data | Add-Member NoteProperty "InstanceId" $instanceId -Force
-$json.Data.CanUpdate = $canUpdate
+$json.ElasticBaseAddress = $elasticBaseAddress
+$json.ElasticIndexes = @()
+$json.ElasticIndexes += (New-Object PSObject -Property @{Name=$liveIndexName; State="live"; Language="invariant" })
+$json.ElasticIndexes += (New-Object PSObject -Property @{Name=$stageIndexName; State="stage"; Language="invariant" })
 
-if ($elasticStoreOptions) {
-    $elasticStoreJson = $elasticStoreOptions | ConvertFrom-Json
-    if ($elasticStoreJson) {
-        $elasticStoreJson.psobject.Properties | % {
-            $json.SonicElasticStore | Add-Member -MemberType $_.MemberType -Name $_.Name -Value $_.Value -Force
-        }
-    } else {
-        Write-Verbose "Invalid `$elasticStoreOptions json, merge skipped"
-    }
-}
+$json | Add-Member NoteProperty "HttpTimeout" $timeout -Force
 
 Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
 $json | ConvertTo-Json -Depth 5 | Set-Content -Path $appsettingsPath

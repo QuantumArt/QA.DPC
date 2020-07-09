@@ -1,19 +1,19 @@
 ﻿<#
 .SYNOPSIS
-Удаление ранее установленных компонент каталога
+Deletes components from previous installation
 
 .DESCRIPTION
-В процессе удуления
-- Для всех сервисов каталога:
-    • сервис останавливается
-    • удаляются его файлы
-- Для всех вею приложений каталога:
-    • удаляется web приложение из IIS
-    • удаляется его файлы
-- Удаляется кастомер код каталога из QP
+While deleting
+- For windows services:
+    • service is stopped
+    • service files are removed
+- For web applications:
+    • application is removed from IIS
+    • application files are removed
+- Deletes customer code from QP
 
 .EXAMPLE
-  .\UninstallConsolidation.ps1 -customerCode 'catalog_consolidation' -installRoot 'C:\QA' -admin 'Dpc.Admin' -notificationSender 'DPC.NotificationSender' -actionsService 'DPC.ActionsService' -siteSync 'Dpc.SiteSync' -webApi 'Dpc.WebApi' -syncApi 'Dpc.SyncApi' -searchApi 'Dpc.SearchApi'
+  .\UninstallConsolidation.ps1 -customerCode 'catalog_consolidation' -installRoot 'C:\QA' -admin 'Dpc.Admin' -notificationSender 'DPC.NotificationSender' -actionsService 'DPC.ActionsService' -front 'Dpc.Front' -webApi 'Dpc.WebApi' -syncApi 'Dpc.SyncApi' -searchApi 'Dpc.SearchApi'
 #>
 param(
     ## Название DPC.NotificationSender
@@ -22,8 +22,8 @@ param(
     [String] $actionsService = 'DPC.ActionsService',
     ## Название Dpc.Admin
     [String] $admin = 'Dpc.Admin',
-    ## Название Dpc.SiteSync
-    [String] $siteSync = 'Dpc.SiteSync',
+    ## Название Dpc.Front
+    [String] $front = 'Dpc.Front',
     ## Название Dpc.WebApi
     [String] $webApi = 'Dpc.WebApi',
     ## Название Dpc.SyncApi
@@ -45,7 +45,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-Import-Module WebAdministration
+
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}
 
 function DeleteService    
 {
@@ -58,75 +61,105 @@ function DeleteService
 
     if ($s){
         if ( $s.Status -eq "Running"){
-            Write-Output "* stoping $name"
+            Write-Host "$name stopping "
             $s.Stop()
             $s.WaitForStatus("Stopped", "00:03:00")
             Start-Sleep -s 10
-            Write-Output "* stoped"
+            Write-Host "$name stopped"
         }
 
         $sobj = Get-WmiObject -Class Win32_Service -Filter "Name='$name'" 
-        $sobj.Delete()    
-        Write-Output "$name deleted"   
+        $sobj.Delete() | Out-Null    
+        Write-Host "$name deleted"   
     }
     else{
-        Write-Output "$name is not installed"
+        Write-Host "$name is not installed"
     }
 
     $path = Join-Path $installRoot $name
 
     if (Test-Path $path){
-        Remove-Item $path -Recurse
-        Write-Output "$name files removed"
+        Remove-Item $path -Recurse -Force
+        Write-Host "$name files removed"
     }
     else{
-        Write-Output "$name files is not exists"
+        Write-Host "$name files is not exists"
     }
 }
 
 function DeleteSite
 {
-  param(
-     [string] $qp,
-     [string] $name
-  )  
+    param(
+        [string] $qp,
+        [string] $name
+    )  
 
-  if ($qp){
-    $alias = "IIS:\sites\$qp\$name"
-    $poolAlias = Get-Item "IIS:\AppPools\$qp.$name"
-  }
-  else{
-    $alias = "IIS:\sites\$name"
-    $poolAlias = Get-Item "IIS:\AppPools\$name"
-  }
-  
-  $app = Get-Item $alias -ErrorAction SilentlyContinue
-  $pool = Get-Item $poolAlias -ErrorAction SilentlyContinue
+    $alias = if ($qp) { "IIS:\sites\$qp\$name" } else { "IIS:\sites\$name" }
+    $displayName = if ($qp) { "application $name for site $qp" } else { "Site $name" }
 
-  if ($app) {      
-    $path =  $app.PhysicalPath
+    $app = Get-Item $alias -ErrorAction SilentlyContinue
 
-    Remove-Item $alias -Recurse -Force    
-    Write-Output "$qp\$name deleted"
+    if ($app) {      
+        $path =  $app.PhysicalPath
+        $poolName = $app.applicationPool
 
-    if ($pool){
-        Remove-Item $poolAlias -Recurse -Force
-        Write-Output "pool $poolAlias deleted"
+        if ($poolName) {
+            Stop-AppPool $poolName | Out-Null
+            Remove-Item "IIS:\AppPools\$poolName" -Recurse -Force
+            Write-Host "pool $poolName deleted"
+        }
+
+        Remove-Item $alias -Recurse -Force    
+        Write-Host "$displayName deleted"
+
+        if (Test-Path $path){
+            Remove-Item $path -Recurse -Force
+            Write-Host "files of $displayName deleted"
+        }
     }
-
-    Start-Sleep -s 10
-
-    if (Test-Path $path){
-        Remove-Item $path -Recurse
-        Write-Output "$qp\$name files removed"
-    }
-  }
 }
+
+function Stop-AppPool
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        [String] $AppPoolName
+    )
+
+    $s = Get-Item "IIS:\AppPools\$AppPoolName" -ErrorAction SilentlyContinue
+
+    if ($s -and $s.State -ne "Stopped")
+    {
+        Write-Verbose "Stopping AppPool $AppPoolName..." -Verbose
+        $s.Stop()
+        $endTime = $(get-date).AddMinutes('1')
+        while($(get-date) -lt $endtime)
+        {
+            Start-Sleep -Seconds 1
+            if ($s.State -ne "Stopping")
+            {
+                if ($s.State -eq "Stopped") {
+                    Write-Verbose "Stopped" -Verbose
+                }
+                break
+            }
+        }
+    }
+
+    return $s.State -eq "Stopped"
+}
+
+
+$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
+
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}   
 
 DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
 DeleteSite -qp $qpName -name $admin
-DeleteSite -name $siteSync
+DeleteSite -name $front
 DeleteSite -name $webApi
 DeleteSite -name $syncApi
 DeleteSite -name $searchApi
