@@ -18,7 +18,7 @@ import {
   getChildType,
   resolveIdentifier,
   isReferenceType,
-  clone
+  clone, IAnyModelType
 } from "mobx-state-tree";
 import { isArray } from "Utils/TypeChecks";
 
@@ -182,13 +182,15 @@ export const validationMixin = (self: Object) => {
       if (isCollectionChange) {
         if (isStateTreeNode(oldValue)) {
           // @ts-ignore
-          const elementType = getChildType(oldValue);
+          const elementType = getChildType(oldValue) as IAnyModelType;
           if (isReferenceType(elementType)) {
             if (isObservableArray(oldValue)) {
+              // @ts-ignore
               fieldState.baseValue = getSnapshot(oldValue).map(id =>
                 resolveIdentifier(elementType, self, id)
               );
             } else if (isObservableMap(oldValue)) {
+              // @ts-ignore
               const mapSnapshot = getSnapshot(oldValue);
               fieldState.baseValue = new Map(
                 Object.keys(mapSnapshot).map(

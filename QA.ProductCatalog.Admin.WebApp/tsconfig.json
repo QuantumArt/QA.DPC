@@ -5,7 +5,7 @@
     "checkJs": true,
     "module": "esNext",
     "moduleResolution": "node",
-    "target": "es5",
+    "target": "es6",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

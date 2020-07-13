@@ -29,6 +29,7 @@ import {
   isEnumField
 } from "Models/EditorSchemaModels";
 
+// @ts-ignore
 type ModelType<S, T> = IModelType<ModelProperties, any, S, S, T>;
 
 export class DataContext<TTables extends TablesObject = TablesObject> {

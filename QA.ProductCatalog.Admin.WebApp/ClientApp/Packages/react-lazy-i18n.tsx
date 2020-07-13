@@ -184,6 +184,7 @@ function loadResources(
     self._locale = locale;
     const resourcesOrPromise = loadResources(locale);
     if (resourcesOrPromise instanceof Promise) {
+      // @ts-ignore
       resourcesOrPromise.catch(() => null).then(resources => {
         if (self._locale === locale) {
           if (resources && isObject(resources.default)) {

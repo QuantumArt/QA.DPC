@@ -211,9 +211,11 @@ describe("mst-validation-mixin", () => {
 
     unprotect(article);
 
+    // @ts-ignore
     const shouldHaveComments = (value: IMSTMap<any, any, Comment>) =>
       value && value.keys().next().done ? "Статья должна иметь комментарии" : undefined;
 
+    // @ts-ignore
     const maxComments = (max: number) => (value: IMSTMap<any, any, Comment>) =>
       value && Array.from(value.keys()).length > max
         ? `Допустимо не более ${max} комментариев`

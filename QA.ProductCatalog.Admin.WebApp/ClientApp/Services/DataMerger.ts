@@ -1,6 +1,6 @@
 import { inject } from "react-ioc";
 import { action, comparer } from "mobx";
-import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
+import {getSnapshot, isStateTreeNode, IStateTreeNode} from "mobx-state-tree";
 import { isArray } from "Utils/TypeChecks";
 import {
   TablesSnapshot,
@@ -40,7 +40,8 @@ export class DataMerger {
   }
 
   public articleHasConfilcts(article: ArticleObject, snapshot: ArticleSnapshot) {
-    const oldSnapshot = getSnapshot<ArticleSnapshot>(article);
+    // TODO: Fix type coercion
+    const oldSnapshot = getSnapshot<ArticleSnapshot>(article as IStateTreeNode);
 
     for (const [name, fieldSnapshot] of Object.entries(snapshot)) {
       const fieldValue = article[name];
@@ -83,7 +84,8 @@ export class DataMerger {
   public mergeArticle(article: ArticleObject, snapshot: ArticleSnapshot, strategy: MergeStrategy) {
     article.clearErrors();
 
-    const articleSnapshot = getSnapshot<ArticleSnapshot>(article);
+    // TODO: Fix type coercion
+    const articleSnapshot = getSnapshot<ArticleSnapshot>(article as IStateTreeNode);
 
     Object.entries(snapshot).forEach(([name, fieldSnapshot]) => {
       const fieldValue = article[name];

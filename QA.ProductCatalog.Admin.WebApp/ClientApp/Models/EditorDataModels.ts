@@ -6,7 +6,7 @@ import { ValidatableObject } from "mst-validation-mixin";
 export interface IArray<T extends ArticleObject> extends IObservableArray<T> {}
 
 export interface IMap<T extends ArticleObject> extends ObservableMap<string, T> {
-  put(value: T | Object): T;
+  put(value: T | object): T;
 }
 
 export interface TablesObject {
@@ -16,6 +16,7 @@ export interface TablesObject {
 /** Объект, содержащий поля нормальной статьи или статьи-расширения */
 export interface ArticleObject
   extends ValidatableObject,
+    // @ts-ignore
     IStateTreeNode<ArticleSnapshot, ArticleSnapshot> {
   [field: string]: any;
   /** Серверный Id статьи, полученный при сохранении в БД */
