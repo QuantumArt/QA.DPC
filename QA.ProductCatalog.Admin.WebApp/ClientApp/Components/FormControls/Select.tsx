@@ -43,6 +43,7 @@ export class Select extends ValidatableControl<SelectProps> {
     let value = model[name];
     if ((multiple || props.multi) && isObservableArray(value)) {
       if (isStateTreeNode(value)) {
+        // @ts-ignore
         value = getSnapshot(value);
       } else {
         value = value.peek();
