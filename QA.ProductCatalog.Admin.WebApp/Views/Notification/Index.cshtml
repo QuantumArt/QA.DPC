@@ -3,179 +3,213 @@
 @model ConfigurationInfo
 
 <div class="formLayout">
-    @if (Model == null)
+  @if (Model == null)
+  {
+    <div class="row-container">
+      <div class="alert">
+        <span class="alert__icon bp3-icon-standard bp3-icon-warning-sign bp3-intent-warning"></span>
+        <span>@ChannelStrings.Unavailable</span>
+      </div>
+    </div>
+  }
+  else if (Model.ActualSettings == null && Model.CurrentSettings == null)
+  {
+    <div class="row-container">
+      <div class="alert">
+        <span class="alert__icon bp3-icon-standard bp3-icon-warning-sign bp3-intent-warning"></span>
+        <span>@ChannelStrings.NotConsolidated</span>
+      </div>
+    </div>
+  }
+  else
+  {
+    if (!Model.IsActual)
     {
-        <fieldset>
-            <legend>@ChannelStrings.Important</legend>
-            <div class="gr-wrapper">
-                @ChannelStrings.Unavailable
-            </div>
-        </fieldset>
+      <div class="row-container">
+        <div class="alert">
+          <span class="alert__icon bp3-icon-standard bp3-icon-warning-sign bp3-intent-warning"></span>
+          <span>@ChannelStrings.NotificationSenderChanged</span>
+          @Html.ActionLink(@ChannelStrings.Update, "UpdateConfiguration", null, new { @class = "js" })
+        </div>
+      </div>
     }
-    else if (Model.ActualSettings == null && Model.CurrentSettings == null)
-    {
-        <fieldset>
-            <legend>@ChannelStrings.Important</legend>
-            <div class="gr-wrapper">
-                @ChannelStrings.NotConsolidated
-            </div>
-        </fieldset>
-    }
-    else
-    {
-        if (!Model.IsActual)
-        {
-            <fieldset>
-              <legend>@ChannelStrings.Important</legend>
-                <div class="gr-wrapper">
-                    @ChannelStrings.NotificationSenderChanged @Html.ActionLink(@ChannelStrings.Update, "UpdateConfiguration", null, new { @class = "js" })
-                </div>
-            </fieldset>
-        }
-        <fieldset>
-            <legend>@ChannelStrings.SystemSettings</legend>
-            <div class="gr-wrapper">
-                <div class="group-panel-item">
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.ChannelProviderDesc" class="plain-field-capture label " style="">@ChannelStrings.ChannelProvider</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Model.NotificationProvider</span>
-                        </dd>
-                    </dl>
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.StartTimeDesc" class="plain-field-capture label " style="">@ChannelStrings.StartTime</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Model.Started</span>
-                        </dd>
-                    </dl>
-                </div>
-             </div>
-        </fieldset>
+    <fieldset>
+      <legend>@ChannelStrings.SystemSettings</legend>
+      <div class="gr-wrapper">
+        <div class="group-panel-item">
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.ChannelProviderDesc" class="plain-field-capture label " style="">@ChannelStrings.ChannelProvider</dt>
+            <dd style="" class="plain-field-value field">
+              <span title="" class="label None" style="">@Model.NotificationProvider</span>
+            </dd>
+          </dl>
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.StartTimeDesc" class="plain-field-capture label " style="">@ChannelStrings.StartTime</dt>
+            <dd style="" class="plain-field-value field">
+              <span title="" class="label None" style="">@Model.Started.ToString("dd.MM.yyyy")</span>
+              <span title="" class="label None half-transparent" style="">@Model.Started.ToString("HH:mm")</span>
+            </dd>
+          </dl>
+        </div>
+      </div>
+    </fieldset>
 
-        <fieldset>
-            <legend>@ChannelStrings.Channels</legend>
-            <table class="inner-groupping-table">
-                <thead>
-                    <tr>
-                        <th>@ChannelStrings.Channel</th>
-                        <th>@ChannelStrings.Queue</th>
-                        <th>@ChannelStrings.EnqueueTime</th>
-                        <th>@ChannelStrings.PublishingTime</th>
-                        <th>@ChannelStrings.ProductId</th>
-                        <th>@ChannelStrings.PublishingStatus</th>
-                        <th>@ChannelStrings.ChannelStatus</th>
-                    </tr>
-                </thead>
-                <tbody>
-                @foreach (var channel in Model.Channels)
-    {
-                    <tr>
-                        <td>@channel.Name</td>
-                        <td>@channel.Count</td>
-                        <td>@channel.LastQueued</td>
-                        <td>@channel.LastPublished</td>
-                        <td>@channel.LastId</td>
-                        <td>@channel.LastStatus</td>
-                        @switch (channel.State)
-                        {
-                            case State.Actual:
-                                <td class="icon"></td>
-                                break;
-                            case State.Chanded:
-                                <td class="refresh icon"></td>
-                                break;
-                            case State.Deleted:
-                                <td class="delete icon"></td>
-                                break;
-                            case State.New:
-                                <td class="add icon"></td>
-                                break;
-                        }
+    <fieldset>
+      <legend>@ChannelStrings.Channels</legend>
+      <table class="inner-groupping-table">
+        <thead>
+          <tr>
+            <th>@ChannelStrings.Channel</th>
+            <th>@ChannelStrings.Queue</th>
+            <th>@ChannelStrings.EnqueueTime</th>
+            <th>@ChannelStrings.PublishingTime</th>
+            <th>@ChannelStrings.ProductId</th>
+            <th>@ChannelStrings.PublishingStatus</th>
+            <th>@ChannelStrings.ChannelStatus</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach (var channel in Model.Channels)
+          {
+            <tr>
+              <td>@channel.Name</td>
+              <td>@channel.Count</td>
+              <td>@channel.LastQueued?.ToString("dd.MM.yyyy HH:mm")</td>
+              <td>@channel.LastPublished?.ToString("dd.MM.yyyy HH:mm")</td>
+              <td>@channel.LastId</td>
+              @if (@channel.LastStatus.ToUpper().Equals("OK"))
+              {
+                <td>
+                  <span class="chip chip--ok">
+                    <span class="chip__icon bp3-icon-standard bp3-icon-tick-circle"></span>
+                    <span>@channel.LastStatus</span>
+                  </span>
+                </td>
+              }
+              else
+              {
+                <td>
+                  <span class="chip chip--danger">
+                    <span class="chip__icon bp3-icon-standard bp3-icon-disable"></span>
+                    <span>@channel.LastStatus</span>
+                  </span>
+                </td>
+              }
+              <td></td>
+              @switch (channel.State)
+              {
+                case State.Chanded:
+                  <td>
+                    <span class="chip chip--pending">
+                      <span class="chip__icon bp3-icon-standard bp3-icon-refresh"></span>
+                      <span>Chanded</span>
+                    </span>
+                  </td>
+                  break;
+                case State.Deleted:
+                  <td>
+                    <span class="chip chip--danger">
+                      <span class="chip__icon bp3-icon-standard bp3-icon-disable"></span>
+                      <span>Disconnected</span>
+                    </span>
+                  </td>
+                  break;
+                case State.New:
+                  <td>
+                    <span class="chip chip--ok">
+                      <span class="chip__icon bp3-icon-standard bp3-icon-add"></span>
+                      <span>Added</span>
+                    </span>
+                  </td>
+                  break;
+                default:
+                  <td></td>
+                  break;
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </fieldset>
 
-                    </tr>
-                }
-                </tbody>
-            </table>
-        </fieldset>
-
-        <fieldset>
-            <legend>@ChannelStrings.GeneralSettings</legend>
-            <div class="gr-wrapper">
-                <div class="group-panel-item">
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.AutoPublicationDesc" class="plain-field-capture label " style="">@ChannelStrings.AutoPublication</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.Autopublish)</span>
-                        </dd>
-                        @if (Model.CurrentSettings.Autopublish != Model.ActualSettings.Autopublish)
-    {
-                        <dd style="" class="plain-field-value field">
-                            <div title="" class="refresh icon" style=""></div>
-                        </dd>
-                        }
-                    </dl>
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.SendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.SendInterval</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) с</span>
-                        </dd>
-                        @if (Model.CurrentSettings.CheckInterval != Model.ActualSettings.CheckInterval)
-    {
-                            <dd style="" class="plain-field-value field">
-                                <div title="" class="refresh icon" style=""></div>
-                            </dd>
-                        }
-                    </dl>
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.ErrorSendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.ErrorSendInterval</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) с</span>
-                        </dd>
-                        @if (Model.CurrentSettings.WaitIntervalAfterErrors != Model.ActualSettings.WaitIntervalAfterErrors)
-    {
-                            <dd style="" class="plain-field-value field">
-                                <div title="" class="refresh icon" style=""></div>
-                            </dd>
-                        }
-                    </dl>
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.ErrNumBeforeWaitDesc" class="plain-field-capture label " style="">@ChannelStrings.ErrNumBeforeWait</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.ErrorCountBeforeWait)</span>
-                        </dd>
-                        @if (Model.CurrentSettings.ErrorCountBeforeWait != Model.ActualSettings.ErrorCountBeforeWait)
-    {
-                            <dd style="" class="plain-field-value field">
-                                <div title="" class="refresh icon" style=""></div>
-                            </dd>
-                        }
-                    </dl>
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.PackageSizeDesc" class="plain-field-capture label " style="">@ChannelStrings.PackageSize</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.PackageSize)</span>
-                        </dd>
-                        @if (Model.CurrentSettings.PackageSize != Model.ActualSettings.PackageSize)
-    {
-                            <dd style="" class="plain-field-value field">
-                                <div title="" class="refresh icon" style=""></div>
-                            </dd>
-                        }
-                    </dl>
-                    <dl class="plain-field row">
-                        <dt title="@ChannelStrings.NotifyTimeoutDesc" class="plain-field-capture label " style="">@ChannelStrings.NotifyTimeout</dt>
-                        <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) c</span>
-                        </dd>
-                        @if (Model.CurrentSettings.TimeOut != Model.ActualSettings.TimeOut)
-    {
-                            <dd style="" class="plain-field-value field">
-                                <div title="" class="refresh icon" style=""></div>
-                            </dd>
-                        }
-                    </dl>
-                </div>
-            </div>
-        </fieldset>
-    }
+    <fieldset>
+      <legend>@ChannelStrings.GeneralSettings</legend>
+      <div class="gr-wrapper">
+        <div class="group-panel-item">
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.AutoPublicationDesc" class="plain-field-capture label " style="">@ChannelStrings.AutoPublication</dt>
+            <dd style="" class="plain-field-value field transparent">
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.Autopublish)</span>
+            </dd>
+            @if (Model.CurrentSettings.Autopublish != Model.ActualSettings.Autopublish)
+            {
+              <dd style="" class="plain-field-value field">
+                <div title="" class="refresh icon" style=""></div>
+              </dd>
+            }
+          </dl>
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.SendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.SendInterval</dt>
+            <dd style="" class="plain-field-value field">
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) <span class="half-transparent">сек</span></span>
+            </dd>
+            @if (Model.CurrentSettings.CheckInterval != Model.ActualSettings.CheckInterval)
+            {
+              <dd style="" class="plain-field-value field">
+                <div title="" class="refresh icon" style=""></div>
+              </dd>
+            }
+          </dl>
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.ErrorSendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.ErrorSendInterval</dt>
+            <dd style="" class="plain-field-value field">
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) <span class="half-transparent">сек</span></span>
+            </dd>
+            @if (Model.CurrentSettings.WaitIntervalAfterErrors != Model.ActualSettings.WaitIntervalAfterErrors)
+            {
+              <dd style="" class="plain-field-value field">
+                <div title="" class="refresh icon" style=""></div>
+              </dd>
+            }
+          </dl>
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.ErrNumBeforeWaitDesc" class="plain-field-capture label " style="">@ChannelStrings.ErrNumBeforeWait</dt>
+            <dd style="" class="plain-field-value field">
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.ErrorCountBeforeWait)</span>
+            </dd>
+            @if (Model.CurrentSettings.ErrorCountBeforeWait != Model.ActualSettings.ErrorCountBeforeWait)
+            {
+              <dd style="" class="plain-field-value field">
+                <div title="" class="refresh icon" style=""></div>
+              </dd>
+            }
+          </dl>
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.PackageSizeDesc" class="plain-field-capture label " style="">@ChannelStrings.PackageSize</dt>
+            <dd style="" class="plain-field-value field">
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.PackageSize)</span>
+            </dd>
+            @if (Model.CurrentSettings.PackageSize != Model.ActualSettings.PackageSize)
+            {
+              <dd style="" class="plain-field-value field">
+                <div title="" class="refresh icon" style=""></div>
+              </dd>
+            }
+          </dl>
+          <dl class="plain-field row">
+            <dt title="@ChannelStrings.NotifyTimeoutDesc" class="plain-field-capture label " style="">@ChannelStrings.NotifyTimeout</dt>
+            <dd style="" class="plain-field-value field">
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) <span class="half-transparent">сек</span></span>
+            </dd>
+            @if (Model.CurrentSettings.TimeOut != Model.ActualSettings.TimeOut)
+            {
+              <dd style="" class="plain-field-value field">
+                <div title="" class="refresh icon" style=""></div>
+              </dd>
+            }
+          </dl>
+        </div>
+      </div>
+    </fieldset>
+  }
 </div>

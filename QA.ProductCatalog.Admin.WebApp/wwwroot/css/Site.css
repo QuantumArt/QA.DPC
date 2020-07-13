@@ -1,56 +1,64 @@
 ﻿body {
-  background-color: #fff;
+  background-color: #f5f8fa;
   font-family: Verdana, Arial, Helvetica, sans-serif;
-  font-size: 0.7em;
+  font-size: 0.875rem;
   margin: 0;
   padding: 0;
 }
 
-.formLayout {
-  margin: 5px;
+.row-container {
+  padding: 10px 20px;
 }
 
 .formLayout fieldset {
-  margin: 0 0 0.5em 0;
-  padding: 15px;
-  border: 1px solid #909090;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  clear: both;
-  position: relative;
+  margin: 0 0 1.875rem 0;
+  padding: 10px 20px 0 20px;
+  border: none;
+}
+
+.formLayout fieldset:first-child {
+  margin-top: 0.625rem;
 }
 
 .formLayout fieldset > legend {
-  margin: 0 0 0.5em 0;
-  padding: 0 3px 0 5px;
+  padding: 0;
+  font-size: 1.375rem;
   font-weight: bold;
 }
 
 .formLayout .row {
-  clear: both;
+  display: flex;
+  align-items: center;
   padding: 0;
-  margin: 0;
+  margin: 0 0 20px 0;
   min-height: 1em;
 }
 
+.formLayout .row:last-child {
+  margin-bottom: 0;
+}
+
 .formLayout dt.label {
-  display: inline-block;
   margin: 0;
-  padding: 0;
-  width: 18em;
+  padding: 0 1.625rem 0 0;
+  width: 13.125rem;
   font-style: normal;
+}
+
+.formLayout dd.field {
+  margin: 0;
+  padding: 10px;
+  flex-grow: 1;
+  background-color: rgba(206, 217, 224, 0.2);
+}
+
+.formLayout dd.transparent {
+  background-color: initial;
 }
 
 .formLayout dt.label,
 .formLayout dd.field {
-  padding-bottom: 0.5em;
-  display: inline-block;
   vertical-align: top;
-}
-
-.formLayout dd.field {
-  margin: 0;
 }
 
 .formLayout input,
@@ -409,12 +417,45 @@ table {
 }
 
 .inner-groupping-table {
-  margin: 0;
+  margin: 0 0 4px 0;
   padding: 0;
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.inner-groupping-table {
-  margin-bottom: 2px;
+.inner-groupping-table thead th {
+  border-width: 1px 0;
+  border-style: solid;
+  border-color: rgba(16, 22, 26, 0.15);
+}
+
+.inner-groupping-table tbody tr:last-child td {
+  border-bottom: 1px solid rgba(16, 22, 26, 0.15);
+}
+
+.inner-groupping-table th {
+  text-align: left;
+  font-weight: 500;
+}
+
+.inner-groupping-table tr th:first-child,
+.inner-groupping-table tr td:first-child {
+  padding-left: 20px;
+}
+
+.inner-groupping-table th,
+.inner-groupping-table td {
+  padding-top: 12px;
+  padding-bottom: 10px;
+}
+
+.inner-groupping-table tbody tr:hover {
+  background-color: white;
+}
+
+fieldset .inner-groupping-table {
+  margin-left: -20px;
+  width: calc(100% + 40px);
 }
 
 tr.collapsible-row {
@@ -548,4 +589,45 @@ body,
 
 .plainfield__text__area {
   overflow-y: auto;
+}
+
+.half-transparent {
+  opacity: 0.5;
+}
+
+.chip {
+  padding: 4px 7px 4px 4px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 16px;
+  color: white;
+}
+
+.chip--ok {
+  background-color: #0f9960;
+}
+
+.chip--pending {
+  background-color: #137cbd;
+}
+
+.chip--danger {
+  background-color: #db3737;
+}
+
+.chip__icon {
+  margin-right: 4px;
+  color: white;
+}
+
+.alert {
+  padding: 10px;
+  font-size: 14px;
+  line-height: 18px;
+  border-radius: 3px;
+  background-color: rgba(217, 130, 43, 0.15);
+}
+
+.alert__icon {
+  margin-right: 10px;
 }
