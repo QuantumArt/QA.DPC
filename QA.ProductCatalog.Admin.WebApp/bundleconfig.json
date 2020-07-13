@@ -1,5 +1,19 @@
 [
   {
+    "outputFileName": "wwwroot/css/blueprint/blueprint-icons.min.css",
+    "inputFiles": [
+      "wwwroot/css/blueprint/blueprint-icons.css"
+    ]
+  },
+
+  {
+    "outputFileName": "wwwroot/css/blueprint/blueprint.min.css",
+    "inputFiles": [
+      "wwwroot/css/blueprint/blueprint.css"
+    ]
+  },
+
+  {
     "outputFileName": "wwwroot/css/site.min.css",
     "inputFiles": [
       "wwwroot/css/site.css"
@@ -25,8 +39,8 @@
       "wwwroot/css/XmlViewer.css"
     ]
   },
-  
-  
+
+
   {
     "outputFileName": "wwwroot/js/jquery.min.js",
     "inputFiles": [
@@ -52,10 +66,10 @@
       "wwwroot/js/pmrpc.js",
       "wwwroot/js/qp/QP8BackendApi.Interaction.js",
       "wwwroot/js/qp/QA.Utils.js",
-      "wwwroot/js/qp/QA.Integration.js"      
+      "wwwroot/js/qp/QA.Integration.js"
     ]
   },
-  
+
   {
     "outputFileName": "wwwroot/js/bundles/codemirror.min.js",
     "inputFiles": [
