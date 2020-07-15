@@ -81,6 +81,12 @@
   <ItemGroup>
     <Content Remove="Content\**" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="ReactViews\file.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="ReactViews\file.tsx" />
+  </ItemGroup>
 </Project>
 
 

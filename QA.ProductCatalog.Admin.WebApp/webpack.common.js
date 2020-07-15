@@ -15,13 +15,13 @@ const assetProcessing = outDir => ({
 });
 
 module.exports = {
-  entry: ["core-js/stable", "whatwg-fetch", "./src/index.tsx"],
+  entry: ["core-js/stable", "whatwg-fetch", "./ReactViews/index.tsx"],
   resolve: {
     extensions: [".ts", ".tsx", ".js", ".json", ".css", ".scss", ".svg"],
-    alias: {
-      app: path.resolve(__dirname, "src/app/"),
-      assets: path.resolve(__dirname, "src/assets/")
-    }
+    // alias: {
+    //   app: path.resolve(__dirname, "src/app/"),
+    //   assets: path.resolve(__dirname, "src/assets/")
+    // }
   },
   output: {
     globalObject: "this"
@@ -57,19 +57,19 @@ module.exports = {
         test: /\.(jpg|jpeg|png|gif)?$/,
         use: assetProcessing("images")
       },
-      {
-        test: /\.svg?$/,
-        oneOf: [
-          {
-            issuer: /\.(scss|css)?$/,
-            use: assetProcessing("images")
-          },
-          {
-            issuer: /\.tsx?$/,
-            use: "@svgr/webpack"
-          }
-        ]
-      },
+      // {
+      //   test: /\.svg?$/,
+      //   oneOf: [
+      //     {
+      //       issuer: /\.(scss|css)?$/,
+      //       use: assetProcessing("images")
+      //     },
+      //     {
+      //       issuer: /\.tsx?$/,
+      //       use: "@svgr/webpack"
+      //     }
+      //   ]
+      // },
       {
         test: /\.(woff|woff2|eot|ttf|otf)?$/,
         use: assetProcessing("fonts")
