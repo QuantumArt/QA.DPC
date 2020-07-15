@@ -1,12 +1,13 @@
 /* eslint-disable */
-const merge = require("webpack-merge");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require("path");
+const { merge } = require("webpack-merge");
+const webpack = require("webpack");
 const common = require("./webpack.common");
 const threadLoader = require("thread-loader");
 
 const poolOptions = {
   workerParallelJobs: 50,
-  poolTimeout: Infinity,
+  poolTimeout: 2000,
   name: "Typescript",
   workerNodeArgs: ["--max-old-space-size=4096"]
 };
@@ -15,12 +16,13 @@ threadLoader.warmup(poolOptions, ["ts-loader", "url-loader"]);
 
 module.exports = merge(common, {
   mode: "development",
-  devtool: "source-map",
+  devtool: "eval-source-map",
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.(tsx?|jsx?)$/,
         exclude: /node_modules/,
+        include: /(ClientApp|Views|ReactViews)/,
         use: [
           {
             loader: "thread-loader",
@@ -30,7 +32,9 @@ module.exports = merge(common, {
             loader: "ts-loader",
             options: {
               transpileOnly: true,
-              happyPackMode: true
+              happyPackMode: true,
+              configFile: path.resolve(__dirname, "tsconfig.json"),
+              logLevel: "error"
             }
           }
         ]
@@ -52,27 +56,11 @@ module.exports = merge(common, {
       }
     ]
   },
-  devServer: {
-    hot: true,
-    port: 3001,
-    open: true,
-    historyApiFallback: {
-      disableDotRule: true
-    },
-    stats: "minimal",
-    clientLogLevel: "warning"
-  },
-  node: {
-    // workaround for webpack-dev-server issue
-    // https://github.com/webpack/webpack-dev-server/issues/60#issuecomment-103411179
-    fs: "empty",
-    net: "empty"
-  },
   plugins: [
-    new HtmlWebpackPlugin({
-      title: "Beeline IoT",
-      baseHref: "/",
-      template: "./src/assets/index.html"
-    })
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify("development"),
+      DEBUG: true
+    }),
+    new webpack.WatchIgnorePlugin([/\.js$/, /\.d\.ts$/])
   ]
 });

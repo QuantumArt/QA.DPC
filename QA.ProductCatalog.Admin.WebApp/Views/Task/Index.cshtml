@@ -1,8 +1,8 @@
 ﻿@using System.Globalization
 @using Newtonsoft.Json
 @using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.ProductCatalog.Admin.WebApp.Models.TasksPageInfo
-
 @*переопределяем секцию с jquery*@
 @section jquery{
   <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
@@ -10,10 +10,10 @@
 
 @*добавляем в head  свои стили*@
 @section head{
-  <link href="~/css/kendo.min.css" rel="stylesheet"/>
+  <link href="~/css/kendo.min.css" rel="stylesheet" />
   <script src="~/js/bundles/schedule.min.js"></script>
-  <link href="~/css/jqCron.css" rel="stylesheet"/>
-	<style type="text/css">
+  <link href="~/css/jqCron.css" rel="stylesheet" />
+  <style type="text/css">
 		#TasksGrid .k-loading-mask, .k-filter-menu .k-filter-help-text, .k-filter-menu .k-filter-help-text + span.k-dropdown  {
 			display: none !important;
 		}
@@ -34,49 +34,49 @@
 			float: right
 		}
 
-         .k-grid .message{
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+    .k-grid .message{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
 		@if (!Model.AllowSchedule)
 		{
 		 @:.EditScheduleButton{display:none !important}
 		}
 
-	</style>
+  </style>
 
 }
 
 @if (Model.ShowOnlyMine)
 {
-	<div id="TaskContainerDiv" class="formLayout" style="display: none">
-		<fieldset>
-			<legend>@TaskStrings.YourLastTask</legend>
-			<div id="TaskPropsDiv">
-			</div>
-		</fieldset>
-	</div>
+  <div id="TaskContainerDiv" class="formLayout" style="display: none">
+    <fieldset>
+      <legend>@TaskStrings.YourLastTask</legend>
+      <div id="TaskPropsDiv">
+      </div>
+    </fieldset>
+  </div>
 }
-<div id="SchedulerWindow">
-</div>
-<div id="TasksGrid">
-</div>
+<div id="SchedulerWindow" tt="asd"></div>
+<div id="TasksGrid"></div>
+<div id="task"></div>
+<script src="~/js/bundles/Task/Index.js"></script>
 
 <script id="gridButtonsTemplate" type="text/x-kendo-template">
-	#if(StateId <= @((byte)QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)){#
-	  @Html.Raw(@"<a class='CancelButton' onclick=""cancel(#=Id#)""></a>")
-	#}else{#
-	  @Html.Raw(@"<a class='RerunButton' onclick=""rerun(#=Id#)""></a>")
-	#}#
+  #if(StateId <= @((byte)QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)){#
+  @Html.Raw(@"<a class='CancelButton' onclick=""cancel(#=Id#)""></a>")
+  #}else{#
+  @Html.Raw(@"<a class='RerunButton' onclick=""rerun(#=Id#)""></a>")
+  #}#
 </script>
 
 @*скрипты добавляются в конец страницы в секцию scripts*@
 @section scripts{
   <script src="~/js/AutoUpdateStrategy.js"></script>
 
-	<script type="text/javascript">
+  <script type="text/javascript">
 
 		function updatePage() {
 			$("#TasksGrid").data("kendoGrid").dataSource.query();
@@ -403,5 +403,5 @@
 			}
 		}
 
-	</script>
+  </script>
 }

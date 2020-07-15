@@ -25,9 +25,9 @@
     "types": [ "node", "webpack-env", "jest" ],
     "baseUrl": ".",
     "paths": {
-      "*": [ "ClientApp/*", "ClientApp/Packages/*" ]
+      "*": [ "ClientApp/*", "ClientApp/Packages/*", "ReactViews/*" ]
     },
     "outDir": "wwwroot/js/Bundles"
   },
-  "include": ["ClientApp/**/*", "Views/**/*"]
+  "include": ["ClientApp/**/*", "Views/**/*", "ReactViews/**/*"]
 }
