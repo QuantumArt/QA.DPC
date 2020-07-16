@@ -46,10 +46,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         [HttpGet]
         [RequireCustomAction]
-        public ActionResult Index(string customerCode)
+        public ActionResult Index(string customerCode, bool beta = false)
         {
-            ViewBag.HostId = _qpHelper.HostId;            
+            ViewBag.HostId = _qpHelper.HostId;
             ViewBag.CustomerCode = customerCode;
+            if (beta) {
+                return View("HighloadFront");
+            }
             return View();
 		}
 
