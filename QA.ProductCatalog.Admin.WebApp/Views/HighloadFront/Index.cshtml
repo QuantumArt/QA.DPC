@@ -1,62 +1,54 @@
 ﻿@using System.Globalization
 @using QA.Core.DPC.Resources
-@using QA.ProductCatalog.Integration.Notifications
+
 <div class="formLayout">
-    <fieldset>
-        <legend>@HfStrings.HighloadFront</legend>
-        <table border="0" id="tasks" class="inner-groupping-table" data-customer-code="@ViewBag.CustomerCode">
-            <thead>
-                <tr>
-                    <th>@HfStrings.Default</th>
-                    <th width="100px" align="center">@HfStrings.Language</th>
-                    <th width="100px">@HfStrings.Type</th>
-                    <th width="150px">@HfStrings.Date</th>
-                    <th colspan="2">@HfStrings.Processing</th>
-                    <th width="200px">@HfStrings.Updating</th>
-                    <th width="300px"></th>
-                </tr>
-            </thead>
-            <tbody data-bind="foreach: tasks">
-                <tr>
-                    <td align="center">
-                        <input type="checkbox" disabled data-bind="checked: IsDefault" />
-                    </td>
-                    <td align="center" data-bind="text: ChannelLanguage"></td>
-                    <td align="center" data-bind="text: ChannelState"></td>
-                    <td align="center" data-bind="text: getDate(ChannelDate)"></td>                    
-                    <td width="20" align="center">
-                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/images/icons/0.gif" />
-                    </td>
-                    <td width="100">
-                        <img src="~/css/KendoUI/Default/loading.gif" style="display:none" />
-                        <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">@HfStrings.ProceedIndexing</a>
-                    </td>
-                    <td align="center" data-bind="text: getTimePassed(TaskStart, TaskEnd)"></td>
-                    <td>
-                        <div data-bind="updateProgress: TaskProgress"></div>
-                    </td>
-                </tr>          
-            </tbody>
-        </table>
-</fieldset>
+  <fieldset>
+    <legend>@HfStrings.HighloadFront</legend>
+    <table id="tasks" class="inner-groupping-table" data-customer-code="@ViewBag.CustomerCode">
+      <thead>
+        <tr>
+          <th>@HfStrings.Default</th>
+          <th width="100px">@HfStrings.Language</th>
+          <th width="100px">@HfStrings.Type</th>
+          <th width="150px">@HfStrings.Date</th>
+          <th>@HfStrings.Processing</th>
+          <th width="200px">@HfStrings.Updating</th>
+          <th width="300px">@HfStrings.Progress</th>
+        </tr>
+      </thead>
+      <tbody data-bind="foreach: tasks">
+        <tr>
+          <td>
+            <input type="checkbox" disabled data-bind="checked: IsDefault" />
+          </td>
+          <td data-bind="text: ChannelLanguage"></td>
+          <td data-bind="text: ChannelState"></td>
+          <td data-bind="text: getDate(ChannelDate)"></td>
+          <td width="100">
+            <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">@HfStrings.ProceedIndexing</a>
+          </td>
+          <td data-bind="text: getTimePassed(TaskStart, TaskEnd)"></td>
+          <td>
+            <div class="progress-bar">
+              <div class="progress-bar__bar-wrapper">
+                <div class="bp3-progress-bar bp3-no-stripes bp3-no-animation">
+                  <div data-bind="updateProgress: TaskProgress" class="bp3-progress-meter"></div>
+                </div>
+              </div>
+              <span data-bind="text: $parent.getProgress($data)" class="progress-bar__label"></span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
 </div>
 
-@section head{
-  <link href="~/css/kendo.min.css" rel="stylesheet" />
-}
-
-@section jquery{
-  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
-}
-
-
-@section scripts{
+@section scripts {
   <script src="~/js/moment-with-locales.min.js"></script>
   <script src="~/js/knockout.min.js"></script>
-  
   <script>
-      moment.locale('@CultureInfo.CurrentCulture.Parent.EnglishName');  
-  </script> 
-  <script src="~/js/HighloadFront.js"></script>
-
+      moment.locale('@CultureInfo.CurrentCulture.Parent.EnglishName');
+  </script>
+  <script src="~/js/HighloadFront.min.js"></script>
 }

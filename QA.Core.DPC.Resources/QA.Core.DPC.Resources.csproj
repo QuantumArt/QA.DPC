@@ -17,6 +17,9 @@
         <Generator>PublicResXFileCodeGenerator</Generator>
         <LastGenOutput>ControlStrings.Designer.cs</LastGenOutput>
       </EmbeddedResource>
+      <EmbeddedResource Update="HfStrings.resx">
+        <Generator></Generator>
+      </EmbeddedResource>
     </ItemGroup>
 
 </Project>
