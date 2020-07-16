@@ -84,6 +84,7 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^3.10.0",
+    "ace-builds": "^1.4.12",
     "classnames": "^2.2.6",
     "core-js": "^3.6.5",
     "hoist-non-react-statics": "^3.2.1",
@@ -97,6 +98,7 @@
     "nprogress": "^0.2.0",
     "qs": "^6.6.0",
     "react": "^16.13.1",
+    "react-ace": "^9.1.1",
     "react-datetime": "^2.16.3",
     "react-dom": "^16.13.1",
     "react-flexbox-grid": "^2.1.2",

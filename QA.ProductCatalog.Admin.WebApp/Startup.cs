@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,8 +10,6 @@ using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Binders;
-using QA.ProductCatalog.Integration;
-using Swashbuckle.AspNetCore.Swagger;
 using Unity;
 
 namespace QA.ProductCatalog.Admin.WebApp
@@ -57,7 +52,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
-            
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.Secure = CookieSecurePolicy.SameAsRequest;
@@ -78,8 +73,9 @@ namespace QA.ProductCatalog.Admin.WebApp
                         options.EnableEndpointRouting = false;
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
+                .AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true)
                 .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2); 
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
            
         }
         

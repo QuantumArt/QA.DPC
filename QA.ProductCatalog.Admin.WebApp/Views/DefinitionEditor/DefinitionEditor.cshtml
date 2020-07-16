@@ -1,0 +1,11 @@
+﻿@using System.Globalization
+@using QA.Core.DPC.Resources
+@model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
+
+  <script>
+    window.definitionEditor = {
+      xml: "@Model.Xml",
+    };
+  </script>
+  <div id="definitionEditor"></div>
+  <script src="~/js/bundles/DefinitionEditor/DefinitionEditor.js"></script>

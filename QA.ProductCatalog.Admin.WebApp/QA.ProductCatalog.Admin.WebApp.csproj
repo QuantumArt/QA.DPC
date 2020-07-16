@@ -82,11 +82,15 @@
     <Content Remove="Content\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="ReactViews\Containers\DefinitionEditor\index.tsx" />
     <None Remove="ReactViews\file.tsx" />
+    <None Remove="Views\DefinitionEditor\DefinitionEditor.tsx" />
     <None Remove="Views\HighloadFront\HighloadFront.tsx" />
     <None Remove="Views\Task\Task.tsx" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="ReactViews\Containers\DefinitionEditor\index.tsx" />
+    <TypeScriptCompile Include="Views\DefinitionEditor\DefinitionEditor.tsx" />
     <TypeScriptCompile Include="Views\HighloadFront\HighloadFront.tsx" />
     <TypeScriptCompile Include="Views\Task\Task.tsx" />
   </ItemGroup>
