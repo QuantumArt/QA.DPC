@@ -83,10 +83,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="ReactViews\file.tsx" />
-    <None Remove="Views\Task\Index.tsx" />
+    <None Remove="Views\Task\Task.tsx" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Views\Task\Index.tsx" />
+    <TypeScriptCompile Include="Views\Task\Task.tsx" />
   </ItemGroup>
 </Project>
 

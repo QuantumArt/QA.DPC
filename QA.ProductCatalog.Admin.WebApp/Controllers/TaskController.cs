@@ -28,9 +28,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false)
+        public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false, bool beta = false)
         {
             var tasksPageInfo = new TasksPageInfo { ShowOnlyMine = showOnlyMine == true, Notify = notify == true, States = _taskService.GetAllStates(), AllowSchedule = allowSchedule };
+
+            if (beta) {
+                return View("Task", tasksPageInfo);
+            }
 
             return View(tasksPageInfo);
         }
