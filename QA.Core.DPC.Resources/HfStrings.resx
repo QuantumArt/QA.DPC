@@ -140,5 +140,8 @@
   </data>
   <data name="ProceedIndexing" xml:space="preserve">
     <value>proceed indexing</value>
-  </data>  
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
 </root>

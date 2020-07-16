@@ -8,10 +8,7 @@ ko.bindingHandlers.updateProgress = {
     viewModel,
     bindingContext
   ) {
-    $(element).kendoProgressBar({
-      value: viewModel.TaskProgress,
-      type: "percent"
-    });
+    $(element).attr("style", "width:" + (viewModel.TaskState || 0) + "%");
   },
   update: function(
     element,
@@ -20,10 +17,7 @@ ko.bindingHandlers.updateProgress = {
     viewModel,
     bindingContext
   ) {
-    $(element).kendoProgressBar({
-      value: viewModel.TaskProgress,
-      type: "percent"
-    });
+    $(element).attr("style", "width:" + (viewModel.TaskState || 0) + "%");
   }
 };
 
@@ -34,14 +28,10 @@ $(document).ready(function() {
 
 function TasksViewModel() {
   var self = this;
+
   self.tasks = ko.observableArray();
 
-  self.index = function(task, event) {
-    $(event.target).hide();
-    $(event.target)
-      .parent()
-      .find("img")
-      .show();
+  self.index = function(task) {
     indexChanel(task.ChannelLanguage, task.ChannelState);
   };
 
@@ -49,8 +39,8 @@ function TasksViewModel() {
     return getTaskStateDescription(task.TaskState);
   };
 
-  self.getStateLogo = function(task) {
-    return getTaskStateLogo(task.TaskState);
+  self.getProgress = function(task) {
+    return (task.TaskState || 0) + "%";
   };
 
   self.isButtonVisible = function(task) {
@@ -98,7 +88,7 @@ function indexChanel(language, state) {
 }
 
 function getTimePassed(time1, time2) {
-  var timePassed = time1 || time1;
+  var timePassed = time1 || time2;
   if (timePassed) {
     return moment(timePassed).fromNow();
   }
@@ -112,24 +102,6 @@ function getDate(date) {
   }
 
   return null;
-}
-
-function getTaskStateLogo(state) {
-  if (state == null) {
-    return "images/icons/0.gif";
-  } else if (state == 1) {
-    return "images/TaskStates/New16.png";
-  } else if (state == 2) {
-    return "images/TaskStates/Running16.png";
-  } else if (state == 3) {
-    return "images/TaskStates/Done16.png";
-  } else if (state == 4) {
-    return "images/TaskStates/Failed16.png";
-  } else if (state == 5) {
-    return "images/TaskStates/Cancelled16.png";
-  }
-
-  return "images/icons/0.gif";
 }
 
 function getTaskStateDescription(state) {
