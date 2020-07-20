@@ -3,6 +3,34 @@
 @using QA.Core.DPC.Resources
 @using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.ProductCatalog.Admin.WebApp.Models.TasksPageInfo
-
   <div id="task"></div>
-  <script src="~/js/bundles/Task/Task.js"></script>
+
+@section scripts{
+  <script type="text/javascript" defer>
+    window.QP.Tasks = {
+      tableFields: {
+        userName: '@TaskStrings.UserName',
+        status: '@TaskStrings.Status',
+        statusValues: [
+        @(Html.Raw(string.Join(",", Model.States.Select(x => "{text:'" + x.Value + "',value:" + x.Key + "}"))))
+        ],
+        schedule: '@TaskStrings.Schedule',
+        progress: '@TaskStrings.Progress',
+        name: '@TaskStrings.Name',
+        created: '@TaskStrings.Created',
+        lastStatusChange: '@TaskStrings.LastStatusChange',
+        message: '@TaskStrings.Message',
+      },
+      tableFilters: {
+        messages: {
+          isFalse: '@TaskStrings.No',
+          isTrue: '@TaskStrings.Yes',
+          filter: '@TaskStrings.Apply',
+          clear: '@TaskStrings.Clear'
+        }
+      }
+    }
+  </script>
+
+  <script src="~/js/bundles/Task/Task.js" defer></script>
+}
