@@ -3,7 +3,7 @@ import { useTable, usePagination } from "react-table";
 import { Button } from "@blueprintjs/core";
 import "./_reset.scss";
 import "./style.scss";
-// import cn from "classnames";
+import cn from "classnames";
 
 export function Grid({ columns, data }) {
   // Use the state and functions returned from useTable to build your UI
@@ -56,7 +56,7 @@ export function Grid({ columns, data }) {
               <tr {...row.getRowProps()} className="grid-body__tr">
                 {row.cells.map(cell => {
                   return (
-                    <td {...cell.getCellProps()} className="grid-body__td grid__cell">
+                    <td {...cell.getCellProps()} className={cn("grid-body__td grid__cell", {})}>
                       {cell.render("Cell")}
                     </td>
                   );

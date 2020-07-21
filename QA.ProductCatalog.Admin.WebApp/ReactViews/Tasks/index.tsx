@@ -27,6 +27,10 @@ const Task = () => {
         accessor: "Id"
       },
       {
+        Header: userName,
+        accessor: "UserName"
+      },
+      {
         Header: status,
         accessor: "StateId",
         Cell: StatusCell
@@ -47,20 +51,41 @@ const Task = () => {
         }
       },
       {
-        Header: userName,
-        accessor: "UserName"
-      },
-      {
         Header: name,
         accessor: "DisplayName"
       },
       {
         Header: created,
-        accessor: "CreatedTime"
+        accessor: "CreatedTime",
+        Cell: ({ value }) => {
+          const date = new Date(value);
+          let dd: string | number = date.getDate();
+          let mm: string | number = date.getMonth() + 1;
+          if (mm < 10) {
+            mm = "0" + mm;
+          }
+          if (dd < 10) {
+            dd = "0" + dd;
+          }
+          return `${dd}.${mm}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+        }
       },
+      //TODO вынести в компонент
       {
         Header: lastStatusChange,
-        accessor: "LastStatusChangeTime"
+        accessor: "LastStatusChangeTime",
+        Cell: ({ value }) => {
+          const date = new Date(value);
+          let dd: string | number = date.getDate();
+          let mm: string | number = date.getMonth() + 1;
+          if (mm < 10) {
+            mm = "0" + mm;
+          }
+          if (dd < 10) {
+            dd = "0" + dd;
+          }
+          return `${dd}.${mm}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
+        }
       },
       {
         Header: message,
