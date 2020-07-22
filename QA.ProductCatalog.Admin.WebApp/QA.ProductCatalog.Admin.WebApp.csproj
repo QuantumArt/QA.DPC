@@ -87,7 +87,7 @@
     <None Remove="Views\Task\Task.tsx" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Views\HighloadFront\HighloadFront.tsx" />
+    <TypeScriptCompile Include="Views\HighloadFront\Index.tsx" />
     <TypeScriptCompile Include="Views\Task\Task.tsx" />
   </ItemGroup>
 </Project>
