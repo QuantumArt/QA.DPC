@@ -40,6 +40,7 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
   public tables: TTables = null;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
+    // @ts-ignore
     this._tablesType = compileTablesType(mergedSchemas, () => this._nextId--);
     this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
   }
