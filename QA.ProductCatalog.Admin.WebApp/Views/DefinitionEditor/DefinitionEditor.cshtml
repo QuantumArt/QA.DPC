@@ -2,10 +2,11 @@
 @using QA.Core.DPC.Resources
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
-  <script>
+<script>
     window.definitionEditor = {
       xml: "@Model.Xml",
     };
-  </script>
-  <div id="definitionEditor"></div>
-  <script src="~/js/bundles/DefinitionEditor/DefinitionEditor.js"></script>
+</script>
+@Html.TextArea("code", Model.Xml, new { disabled = "disabled", cols = 100, rows = 10 })
+<div id="definitionEditor"></div>
+<script src="~/js/bundles/DefinitionEditor/DefinitionEditor.js"></script>
