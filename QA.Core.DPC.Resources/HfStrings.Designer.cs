@@ -124,7 +124,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Тип.
+        ///   Looks up a localized string similar to Type.
         /// </summary>
         public static string Type {
             get {
