@@ -93,11 +93,11 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="ReactViews\DefinitionEditor\index.tsx" />
+    <TypeScriptCompile Include="Views\HighloadFront\Index.tsx" />
     <TypeScriptCompile Include="ReactViews\Shared\Components\index.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Types\global.d.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Utils\index.ts" />
     <TypeScriptCompile Include="Views\DefinitionEditor\DefinitionEditor.tsx" />
-    <TypeScriptCompile Include="Views\HighloadFront\HighloadFront.tsx" />
     <TypeScriptCompile Include="Views\Task\Task.tsx" />
   </ItemGroup>
 </Project>
