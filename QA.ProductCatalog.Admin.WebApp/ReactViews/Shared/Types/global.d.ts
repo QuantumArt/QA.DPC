@@ -5,7 +5,6 @@
 
 declare interface Window {
   QP: {
-    //for Task view
     Tasks: {
       tableFields: {
         userName: string;
@@ -27,6 +26,21 @@ declare interface Window {
           clear: string;
         };
       };
+    };
+  };
+  highloadFront?: {
+    legend: string;
+    customerCode: string;
+    processingIndex: string;
+    culture: string;
+    columnHeaders: {
+      default: string;
+      language: string;
+      type: string;
+      date: string;
+      processing: string;
+      updating: string;
+      progress: string;
     };
   };
 }

@@ -631,16 +631,3 @@ body,
 .alert__icon {
   margin-right: 10px;
 }
-
-.progress-bar {
-  display: flex;
-  align-items: center;
-}
-
-.progress-bar__bar-wrapper {
-  width: 120px;
-}
-
-.progress-bar__label {
-  margin-left: 5px;
-}

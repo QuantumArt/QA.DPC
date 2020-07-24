@@ -62,7 +62,7 @@
     <ProjectReference Include="..\QA.Core.DPC.QP.Autopublish\QA.Core.DPC.QP.Autopublish.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.UI\QA.Core.DPC.UI.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Validation\QA.ProductCatalog.Validation.csproj" />
-    
+
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties" />
@@ -97,7 +97,7 @@
     <TypeScriptCompile Include="ReactViews\Shared\Types\global.d.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Utils\index.ts" />
     <TypeScriptCompile Include="Views\DefinitionEditor\DefinitionEditor.tsx" />
-    <TypeScriptCompile Include="Views\HighloadFront\HighloadFront.tsx" />
+    <TypeScriptCompile Include="Views\HighloadFront\Index.tsx" />
     <TypeScriptCompile Include="Views\Task\Task.tsx" />
   </ItemGroup>
 </Project>
