@@ -9,10 +9,8 @@ interface IProgressBarProps {
   className: string;
 }
 
-export const ProgressBarCell = ({ value, stateId }) => {
+export const ProgressBarCell = ({ value, stateId }: { value: number; stateId: number }) => {
   if (!value) return null;
-  const statusValues = window.QP.Tasks.tableFields.statusValues;
-  console.log(statusValues);
   const progressBarProps: IProgressBarProps = {
     value: value / 100,
     intent: Intent.NONE,

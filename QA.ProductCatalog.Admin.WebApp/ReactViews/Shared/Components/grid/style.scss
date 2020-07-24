@@ -1,12 +1,22 @@
 $head-border-color: rgba(16, 22, 26, 0.15);
+$text-color: rgb(24, 32, 38);
 
 .grid {
   &__cell {
-    color: rgb(24, 32, 38);
+    color: $text-color;
     font-family: SFProText, sans-serif;
     font-size: 14px;
     line-height: 18px;
   }
+
+  /*custom cells*/
+  &__rerun-cell {
+    min-width: 60px;
+  }
+  &__date-cell {
+    min-width: 146px;
+  }
+  /*end custom cells*/
 
   .grid-head,
   .grid-body {
@@ -33,9 +43,38 @@ $head-border-color: rgba(16, 22, 26, 0.15);
 
   .grid-body {
     &__tr {
+      &:hover {
+        background: white;
+
+        .inside-cell {
+          display: inline-block;
+        }
+      }
     }
 
-    &__td {
+    .inside-cell--hidden {
+      display: none;
+
+      &:hover {
+        display: inline-block;
+      }
     }
+  }
+}
+
+.truncate-cell {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.bp3-tooltip {
+  .bp3-tooltip-indicator {
+    border-bottom: none;
+  }
+  .bp3-popover-content {
+    font-family: SFProText, sans-serif;
+    font-size: 14px;
+    max-width: 210px;
+    color: rgba(245, 248, 250, 0.56);
   }
 }

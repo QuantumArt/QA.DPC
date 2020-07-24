@@ -108,6 +108,7 @@
     "react-text-mask": "^5.4.3",
     "react-textarea-autosize": "^7.1.0",
     "react-transition-group": "^2.5.0",
+    "react-truncate": "^2.4.0",
     "tslib": "^1.13.0",
     "whatwg-fetch": "^3.2.0"
   },
