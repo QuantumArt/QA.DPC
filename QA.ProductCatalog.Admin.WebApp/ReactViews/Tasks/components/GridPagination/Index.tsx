@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@blueprintjs/core";
-import "./style.scss";
+import "./Style.scss";
 
 interface IPaginationOptions {
   previousPage: () => void;
@@ -12,12 +12,12 @@ interface IPaginationOptions {
   showTo: number;
 }
 
-export const Pagination = ({
+export const GridPagination = ({
   paginationOptions,
-  loading
+  isLoading
 }: {
   paginationOptions: IPaginationOptions;
-  loading: boolean;
+  isLoading: boolean;
 }) => {
   const {
     previousPage,
@@ -41,14 +41,14 @@ export const Pagination = ({
           className="pagination__button"
           icon="chevron-left"
           onClick={previousPage}
-          disabled={!canPreviousPage || loading}
+          disabled={!canPreviousPage || isLoading}
           outlined
         />
         <Button
-          className="pagination__button"
+          className="pagination__button pagination__button--with-left-margin"
           icon="chevron-right"
           onClick={nextPage}
-          disabled={!canNextPage || loading}
+          disabled={!canNextPage || isLoading}
           outlined
         />
       </div>

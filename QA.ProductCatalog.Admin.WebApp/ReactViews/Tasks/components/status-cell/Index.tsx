@@ -1,7 +1,6 @@
-import { ITagProps } from "@blueprintjs/core/src/components/tag/tag";
-import { Intent, Tag } from "@blueprintjs/core";
+import { Intent, Tag, ITagProps } from "@blueprintjs/core";
 import React from "react";
-import "./style.scss";
+import "./Style.scss";
 
 interface StatusCell {
   label: string;
@@ -17,7 +16,7 @@ export const StatusCell = ({ value }) => {
   if (!statusObj) return null;
 
   const StatusCellObj: StatusCell = {
-    label: statusObj.text,
+    label: statusObj.label,
     props: { round: true, icon: false, intent: Intent.NONE }
   };
 
@@ -25,11 +24,11 @@ export const StatusCell = ({ value }) => {
     case 3:
       Object.assign(StatusCellObj.props, { icon: "tick-circle", intent: Intent.SUCCESS });
       break;
-    case 2:
+    case 1:
       Object.assign(StatusCellObj.props, { icon: "pause", intent: Intent.WARNING });
       break;
-    case 1:
-      Object.assign(StatusCellObj.props, { icon: "automatic-updates", intent: Intent.PRIMARY });
+    case 2:
+      Object.assign(StatusCellObj.props, { icon: "refresh", intent: Intent.PRIMARY });
       break;
   }
 

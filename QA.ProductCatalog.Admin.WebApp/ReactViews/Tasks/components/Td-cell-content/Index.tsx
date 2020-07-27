@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Classes, Tooltip } from "@blueprintjs/core";
-import { Position } from "@blueprintjs/core/lib/esm/common/position";
 import cn from "classnames";
 import Truncate from "react-truncate";
 
@@ -46,7 +45,7 @@ export const TdCellContent = ({ cell, refBody, loading }) => {
     return (
       <Tooltip
         className={Classes.TOOLTIP_INDICATOR}
-        position={Position.LEFT}
+        position={"left"}
         usePortal={true}
         content={cell.render("Cell")}
         portalContainer={refBody.current}

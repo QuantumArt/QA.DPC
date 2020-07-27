@@ -9,8 +9,8 @@ declare interface Window {
       tableFields: {
         userName: string;
         status: number;
-        statusValues: { text: string; value: number }[];
-        schedule: boolean;
+        statusValues: { label: string; value: number }[];
+        schedule: string;
         progress: number;
         name: string;
         created: string;

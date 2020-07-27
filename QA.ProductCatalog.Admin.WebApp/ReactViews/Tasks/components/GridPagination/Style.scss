@@ -36,6 +36,9 @@ $text-color: rgb(24, 32, 38);
   &__button {
     min-height: 24px;
     min-width: 24px;
+    &--with-left-margin {
+      margin-left: 10px;
+    }
     .bp3-icon {
       color: #000000;
     }

@@ -1,13 +1,13 @@
 import React from "react";
-import { Icon, Intent } from "@blueprintjs/core";
-import "./style.scss";
+import { Icon } from "@blueprintjs/core";
+import "./Style.scss";
 
 export const RerunCell = ({ id, method }) => {
   return (
     <div className="rerun-container">
       <Icon
         className="rerun-container__icon"
-        intent={Intent.PRIMARY}
+        intent="primary"
         onClick={() => method(id)}
         icon="refresh"
       />

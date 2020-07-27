@@ -1,44 +1,49 @@
-import { Intent, ProgressBar } from "@blueprintjs/core";
+import { Intent } from "@blueprintjs/core";
 import React from "react";
-import "./style.scss";
+import "./Style.scss";
+import ProgressBar from "Shared/Components/ProgressBar";
 
 interface IProgressBarProps {
   value: number;
-  intent: Intent;
   animate: boolean;
-  className: string;
+  stripes: boolean;
+  intent: Intent;
 }
 
 export const ProgressBarCell = ({ value, stateId }: { value: number; stateId: number }) => {
-  if (!value) return null;
+  if (value !== 0 && !value) return null;
   const progressBarProps: IProgressBarProps = {
-    value: value / 100,
+    value: value,
     intent: Intent.NONE,
     animate: false,
-    className: ""
+    stripes: false
   };
 
   switch (true) {
     case value === 100 && stateId === 3:
       progressBarProps.intent = Intent.SUCCESS;
-      progressBarProps.className = "bp3-no-stripes";
       break;
     //если пауза
     case stateId === 3:
       progressBarProps.intent = Intent.WARNING;
-      progressBarProps.className = "bp3-no-stripes";
       break;
     //если в процессе
     case stateId === 2:
       progressBarProps.intent = Intent.PRIMARY;
       progressBarProps.animate = true;
+      progressBarProps.stripes = true;
+      progressBarProps.value = 30;
       break;
   }
 
   return (
     <div className="progress-bar-cell">
-      <ProgressBar {...progressBarProps} className="bp3-no-stripes" />
-      <span className="progress-bar-cell__label">{value}%</span>
+      <ProgressBar
+        defaultBarProps={progressBarProps}
+        barWidth="140px"
+        labelWidth="40px"
+        labelClassName="progress-bar-cell__label"
+      />
     </div>
   );
 };

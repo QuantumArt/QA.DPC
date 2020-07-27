@@ -2,12 +2,30 @@
 import { useTable, usePagination } from "react-table";
 import cn from "classnames";
 import { PaginationActions } from "Shared/Enums";
-import { TdCellContent } from "Shared/Components";
-import { Pagination } from "Shared/Components/pagination";
-import "./_reset.scss";
-import "./style.scss";
+import { GridPagination, TdCellContent } from "../";
+import "./Style.scss";
+import { Pagination } from "Tasks/TaskStore";
 
-export function Grid({ columns, data, paginationOptions, loading }) {
+interface IProps {
+  isLoading: boolean;
+  total: number;
+  customPagination: Pagination;
+  data: any[];
+  /**
+   * custom columns props
+   * showOnHover: показывать поле только при наведении
+   * truncate: {
+   * onWidth: схлопывать при указананой ширине
+   * possibleRows: возможных строк
+   * }
+   */
+  columns: {
+    showOnHover?: boolean;
+    truncate?: { onWidth: number; possibleRows: 1 | 2 };
+  };
+}
+
+export const Grid = ({ columns, data, customPagination, total, isLoading }: IProps) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -20,13 +38,16 @@ export function Grid({ columns, data, paginationOptions, loading }) {
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize: paginationOptions.pagination.take }
+      initialState: {
+        pageIndex: 0,
+        pageSize: customPagination.initPaginationOptions.take
+      }
     },
     usePagination
   );
-  const canNextPage = () =>
-    data.length + paginationOptions.pagination.skip !== paginationOptions.total;
-  const canPreviousPage = () => paginationOptions.pagination.skip !== 0;
+  const { skip } = customPagination.getPaginationOptions;
+  const canNextPage = () => data.length + skip !== total;
+  const canPreviousPage = () => skip !== 0;
 
   const gridBody = useRef(null);
 
@@ -49,7 +70,6 @@ export function Grid({ columns, data, paginationOptions, loading }) {
           {page.map(row => {
             prepareRow(row);
             return (
-              // className="bp3-skeleton" для прелоадера
               <tr {...row.getRowProps()} className="grid-body__tr">
                 {row.cells.map(cell => {
                   return (
@@ -57,7 +77,7 @@ export function Grid({ columns, data, paginationOptions, loading }) {
                       {...cell.getCellProps()}
                       className={cn("grid-body__td grid__cell", cell.column.className)}
                     >
-                      <TdCellContent cell={cell} refBody={gridBody} loading={loading} />
+                      <TdCellContent cell={cell} refBody={gridBody} loading={isLoading} />
                     </td>
                   );
                 })}
@@ -67,24 +87,24 @@ export function Grid({ columns, data, paginationOptions, loading }) {
         </tbody>
       </table>
 
-      <Pagination
+      <GridPagination
         paginationOptions={{
           previousPage: () => {
-            paginationOptions.fetchData(PaginationActions.DecrementPage);
+            customPagination.changePage(PaginationActions.DecrementPage);
             previousPage();
           },
           nextPage: () => {
             nextPage();
-            paginationOptions.fetchData(PaginationActions.IncrementPage);
+            customPagination.changePage(PaginationActions.IncrementPage);
           },
           canNextPage: canNextPage(),
           canPreviousPage: canPreviousPage(),
-          total: paginationOptions.total,
-          showFrom: paginationOptions.pagination.skip,
-          showTo: data.length + paginationOptions.pagination.skip
+          total: total,
+          showFrom: skip,
+          showTo: data.length + skip
         }}
-        loading={loading}
+        isLoading={isLoading}
       />
     </>
   );
-}
+};

@@ -12,7 +12,7 @@
         userName: '@TaskStrings.UserName',
         status: '@TaskStrings.Status',
         statusValues: [
-        @(Html.Raw(string.Join(",", Model.States.Select(x => "{text:'" + x.Value + "',value:" + x.Key + "}"))))
+        @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
         ],
         schedule: '@TaskStrings.Schedule',
         progress: '@TaskStrings.Progress',
