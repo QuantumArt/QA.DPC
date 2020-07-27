@@ -7,9 +7,9 @@ import {
   StatusCell,
   Grid,
   StatusFilterContent,
-  ScheduleFilterContent
+  ScheduleFilterContent,
+  FilterButtonsWrapper
 } from "./Components";
-import { FilterButtonsWrapper } from "Tasks/Components/Filter-buttons-wrapper";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
 import { TaskGridFilterType } from "Shared/Enums";

@@ -1,25 +1,51 @@
-import { Popover, Icon } from "@blueprintjs/core";
-import React from "react";
-import "./style.scss";
-import { Position } from "@blueprintjs/core/lib/esm/common/position";
+import { Button, Intent } from "@blueprintjs/core";
+import React, { useState } from "react";
+import "./Style.scss";
+import { observer } from "mobx-react-lite";
+import { Filter } from "../../TaskStore";
 
 interface Props {
-  label: string | number;
-  children: string | JSX.Element;
+  filter?: Filter;
+  children: React.ReactElement<any>;
+  acceptLabel?: string;
+  revokeLabel?: string;
 }
 
-export const FilterTooltip = ({ label, children }: Props) => {
-  return (
-    <Popover
-      content={children}
-      position={Position.BOTTOM}
-      usePortal={true}
-      // forward ref
-      portalClassName="grid-body"
-    >
-      <span className="filter-cell">
-        {label} <Icon className="filter-cell__icon" iconSize={14} icon="filter" intent="primary" />
-      </span>
-    </Popover>
-  );
-};
+export const FilterButtonsWrapper = observer(
+  ({ filter, children, acceptLabel, revokeLabel }: Props) => {
+    const [value, setValue] = useState(filter.value);
+    return (
+      <div className="filter-options-wrap">
+        {React.Children.map(children, child => {
+          return React.cloneElement(child, { setValue, value });
+        })}
+
+        <div className="filter-options-wrap__buttons-wrap">
+          <Button
+            intent={Intent.PRIMARY}
+            outlined
+            className="filter-options-wrap__button"
+            onClick={() => {
+              filter.setValue(value);
+              filter.toggleActive(true);
+            }}
+          >
+            {acceptLabel || "Применить"}
+          </Button>
+
+          <Button
+            outlined
+            disabled={!filter.isActive}
+            className="filter-options-wrap__button"
+            onClick={() => {
+              filter.setValue(null);
+              filter.toggleActive(false);
+            }}
+          >
+            {revokeLabel || "Отключить"}
+          </Button>
+        </div>
+      </div>
+    );
+  }
+);
