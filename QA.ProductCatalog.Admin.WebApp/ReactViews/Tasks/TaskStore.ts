@@ -235,22 +235,19 @@ export class TaskStore {
     }
   };
 
-  rerun = async (taskId: number) => {
-    const queryStr: string = qs.stringify({
-      taskId
-    });
-    const requestUrl = `${rootUrl}/Task/Rerun?${queryStr}`;
-
-    fetch(requestUrl, { method: "POST" })
-      .then(response => {
-        return response.json();
-      })
-      .then(response => {
-        console.log(response);
-      })
-      .catch(e => {
-        console.error(e.text());
+  fetchRerunTask = async (taskId: number) => {
+    try {
+      const queryStr: string = qs.stringify({
+        taskId
       });
+      const requestUrl = `${rootUrl}/Task/Rerun?${queryStr}`;
+      const response = await fetch(requestUrl, { method: "POST" });
+      if (response.ok) {
+        console.log("rerun on task " + taskId);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 }
 export const TaskStoreContext = createContext(new TaskStore());

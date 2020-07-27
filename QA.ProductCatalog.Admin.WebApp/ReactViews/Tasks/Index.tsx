@@ -119,7 +119,7 @@ export const Task = observer(() => {
         className: "grid__rerun-cell",
         Cell: (cellProps: any) => {
           const Id = cellProps.row.values.Id;
-          return <RerunCell id={Id} method={store.rerun} />;
+          return <RerunCell id={Id} method={store.fetchRerunTask} />;
         }
       }
     ],
