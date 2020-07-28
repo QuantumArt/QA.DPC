@@ -1,6 +1,6 @@
 ﻿import { action, computed, observable, runInAction } from "mobx";
 import { createContext } from "react";
-import { PaginationActions, TaskGridFilterType } from "Shared/Enums";
+import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { apiService } from "Tasks/Api-services";
 import { FilterOptions, PaginationOptions, Task } from "Tasks/Api-services/DataContracts";
 
@@ -46,26 +46,30 @@ export class Pagination {
     });
   };
 }
+declare type filterValueType = string;
 
 export class Filter {
-  constructor(onChangeFilter: () => Promise<void>, field: string) {
+  constructor(onChangeFilter: () => Promise<void>, field: string, getMappedValue?: () => boolean) {
     this.onChangeFilter = onChangeFilter;
     this.field = field;
+    this.getMappedValue = getMappedValue;
   }
   @observable isActive: boolean = false;
-  field: string;
-  operator: string = "eq";
-  value: string | boolean;
+  private field: string;
+  private operator: string = "eq";
+  value: filterValueType;
+
+  private getMappedValue: () => boolean;
   onChangeFilter: () => Promise<void>;
-  setValue = (value: string | boolean) => {
+  setValue = (value: filterValueType) => {
     this.value = value;
   };
 
-  get filterOptions(): FilterOptions {
+  get filterOptionsForRequest(): FilterOptions {
     return {
       field: this.field,
       operator: this.operator,
-      value: this.value
+      value: this.getMappedValue ? this.getMappedValue() : this.value
     };
   }
 
@@ -79,12 +83,15 @@ export class Filter {
 export class TaskStore {
   readonly FETCH_TIMEOUT = 5000;
   @observable private gridData: Task[] = [];
-  @observable total: number = 0;
+  @observable private myLastTask: Task;
+  @observable private total: number = 0;
   @observable isLoading: boolean = true;
   @observable.ref pagination: Pagination = new Pagination((operation: PaginationActions) => {
     this.withLoader(() => this.fetchGridData(operation));
   });
-
+  filterValueMapper = function() {
+    return this.value === ScheduleFilterValues.YES;
+  };
   @observable filters: Map<TaskGridFilterType, Filter> = new Map([
     [
       TaskGridFilterType.StatusFilter,
@@ -92,7 +99,11 @@ export class TaskStore {
     ],
     [
       TaskGridFilterType.ScheduleFilter,
-      new Filter(() => this.withLoader(() => this.fetchGridData()), "HasSchedule")
+      new Filter(
+        () => this.withLoader(() => this.fetchGridData()),
+        "HasSchedule",
+        this.filterValueMapper
+      )
     ]
   ]);
 
@@ -133,6 +144,16 @@ export class TaskStore {
     this.total = total;
   };
 
+  @action
+  setMyLastTask = (task: Task): void => {
+    this.myLastTask = task;
+  };
+
+  @computed
+  get lastTask(): Task {
+    return this.myLastTask;
+  }
+
   @computed
   get getTotal(): number {
     return this.total;
@@ -145,18 +166,10 @@ export class TaskStore {
 
   getFiltersOptions = (): FilterOptions[] => {
     const filtersOptions = [];
-    this.filters.forEach((value, key) => {
-      if (value.isActive) {
-        const options = this.filters.get(key).filterOptions;
-        const isBooleanString = (val: string | boolean): boolean =>
-          val === "true" || val === "false";
-
-        if (isBooleanString(options.value)) {
-          options.value = Boolean(value);
-        }
-        filtersOptions.push(options);
-      }
-    });
+    this.filters.forEach(
+      (value, key) =>
+        value.isActive && filtersOptions.push(this.filters.get(key).filterOptionsForRequest)
+    );
     return filtersOptions.length ? filtersOptions : null;
   };
 
@@ -178,6 +191,7 @@ export class TaskStore {
       const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
       this.setGridData(response.tasks);
       this.setTotal(response.totalTasks);
+      this.setMyLastTask(response.myLastTask);
       this.pagination.setPagination(paginationOptions);
     } catch (e) {
       console.error(e);

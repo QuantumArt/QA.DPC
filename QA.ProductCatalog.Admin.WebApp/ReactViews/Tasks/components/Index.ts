@@ -9,3 +9,4 @@ export * from "./Status-cell";
 export * from "./Td-cell-content";
 export * from "./Status-filter-content";
 export * from "./Schedule-filter-content";
+export * from "./My-last-task";

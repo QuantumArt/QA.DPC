@@ -8,11 +8,12 @@ import {
   Grid,
   StatusFilterContent,
   ScheduleFilterContent,
-  FilterButtonsWrapper
+  FilterButtonsWrapper,
+  MyLastTask
 } from "./Components";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
-import { TaskGridFilterType } from "Shared/Enums";
+import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import "./_reset.scss";
 import "./Style.scss";
 
@@ -30,6 +31,8 @@ export const Task = observer(() => {
     statusValues
   } = window.QP.Tasks.tableFields;
 
+  console.log(statusValues);
+
   useEffect(() => {
     store.init();
   }, []);
@@ -43,7 +46,7 @@ export const Task = observer(() => {
       {
         Header: userName,
         accessor: "UserName",
-        truncate: { onWidth: 120, possibleRows: 1 } //possible rows param max 2 default 1
+        truncate: { onWidth: 120, possibleRows: 1 }
       },
       {
         Header: (
@@ -70,7 +73,10 @@ export const Task = observer(() => {
               revokeLabel={window.QP.Tasks.tableFilters.messages.clear}
             >
               <ScheduleFilterContent
-                options={[{ label: "Да", value: "true" }, { label: "Нет", value: "false" }]}
+                options={[
+                  { label: "Да", value: ScheduleFilterValues.YES },
+                  { label: "Нет", value: ScheduleFilterValues.NO }
+                ]}
               />
             </FilterButtonsWrapper>
           </FilterTooltip>
@@ -128,11 +134,13 @@ export const Task = observer(() => {
 
   return (
     <div className="task-wrapper">
+      <MyLastTask task={store.lastTask} />
+
       <Grid
         columns={gridColumns}
         data={store.getGridData}
         customPagination={store.pagination}
-        total={store.total}
+        total={store.getTotal}
         isLoading={store.isLoading}
       />
     </div>

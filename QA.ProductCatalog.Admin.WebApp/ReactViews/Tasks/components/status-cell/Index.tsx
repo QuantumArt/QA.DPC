@@ -1,13 +1,16 @@
-import { Intent, Tag, ITagProps } from "@blueprintjs/core";
+import { Tag, ITagProps } from "@blueprintjs/core";
 import React from "react";
 import "./Style.scss";
+import { getTaskIntentDependsOnStatus } from "Shared/Utils";
+import { TaskStatuses } from "Shared/Enums";
+import cn from "classnames";
 
 interface StatusCell {
   label: string;
   props: ITagProps;
 }
 
-export const StatusCell = ({ value }) => {
+export const StatusCell = ({ value, className }) => {
   const statusValues = window.QP.Tasks.tableFields.statusValues;
   const statusObj = statusValues.find(status => {
     return status.value === value;
@@ -17,23 +20,23 @@ export const StatusCell = ({ value }) => {
 
   const StatusCellObj: StatusCell = {
     label: statusObj.label,
-    props: { round: true, icon: false, intent: Intent.NONE }
+    props: { round: true, icon: false, intent: getTaskIntentDependsOnStatus(value) }
   };
 
   switch (statusObj.value) {
-    case 3:
-      Object.assign(StatusCellObj.props, { icon: "tick-circle", intent: Intent.SUCCESS });
+    case TaskStatuses.Success:
+      Object.assign(StatusCellObj.props, { icon: "tick-circle" });
       break;
-    case 1:
-      Object.assign(StatusCellObj.props, { icon: "pause", intent: Intent.WARNING });
+    case TaskStatuses.New:
+      Object.assign(StatusCellObj.props, { icon: "pause" });
       break;
-    case 2:
-      Object.assign(StatusCellObj.props, { icon: "refresh", intent: Intent.PRIMARY });
+    case TaskStatuses.Progress:
+      Object.assign(StatusCellObj.props, { icon: "refresh" });
       break;
   }
 
   return (
-    <Tag {...StatusCellObj.props} className="status-cell-tag">
+    <Tag {...StatusCellObj.props} className={cn("status-cell-tag", className)}>
       {StatusCellObj.label}
     </Tag>
   );

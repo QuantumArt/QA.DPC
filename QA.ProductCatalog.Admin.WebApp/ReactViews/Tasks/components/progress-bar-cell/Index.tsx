@@ -2,6 +2,8 @@ import { Intent } from "@blueprintjs/core";
 import React from "react";
 import "./Style.scss";
 import ProgressBar from "Shared/Components/ProgressBar";
+import { TaskStatuses } from "Shared/Enums";
+import { getTaskIntentDependsOnStatus } from "Shared/Utils";
 
 interface IProgressBarProps {
   value: number;
@@ -14,25 +16,16 @@ export const ProgressBarCell = ({ value, stateId }: { value: number; stateId: nu
   if (value !== 0 && !value) return null;
   const progressBarProps: IProgressBarProps = {
     value: value,
-    intent: Intent.NONE,
+    intent: getTaskIntentDependsOnStatus(stateId),
     animate: false,
     stripes: false
   };
+  if (stateId === TaskStatuses.Cancelled || stateId === TaskStatuses.Error) return null;
 
   switch (true) {
-    case value === 100 && stateId === 3:
-      progressBarProps.intent = Intent.SUCCESS;
-      break;
-    //если пауза
-    case stateId === 3:
-      progressBarProps.intent = Intent.WARNING;
-      break;
-    //если в процессе
-    case stateId === 2:
-      progressBarProps.intent = Intent.PRIMARY;
+    case stateId === TaskStatuses.Progress:
       progressBarProps.animate = true;
       progressBarProps.stripes = true;
-      progressBarProps.value = 30;
       break;
   }
 
