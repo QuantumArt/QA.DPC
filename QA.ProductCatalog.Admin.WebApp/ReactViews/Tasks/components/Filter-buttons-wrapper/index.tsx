@@ -1,8 +1,8 @@
 import { Button, Intent } from "@blueprintjs/core";
 import React, { useState } from "react";
-import "./Style.scss";
 import { Filter } from "../../TaskStore";
 import { observer } from "mobx-react-lite";
+import "./Style.scss";
 
 interface Props {
   filter?: Filter;

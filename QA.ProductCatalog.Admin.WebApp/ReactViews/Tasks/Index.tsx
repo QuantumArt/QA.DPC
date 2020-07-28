@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   FilterTooltip,
   RerunCell,
@@ -97,21 +97,21 @@ export const Task = observer(() => {
       {
         Header: name,
         accessor: "DisplayName",
-        truncate: { onWidth: 120, possibleRows: 1 } //possible rows param max 2 default 1
+        truncate: { onWidth: 120, possibleRows: 1 }
       },
       {
         Header: created,
         accessor: "CreatedTime",
         Cell: DateCell,
         className: "grid__date-cell",
-        truncate: { onWidth: 110, possibleRows: 1 } //possible rows param max 2 default 1
+        truncate: { onWidth: 110, possibleRows: 1 }
       },
       {
         Header: lastStatusChange,
         accessor: "LastStatusChangeTime",
         Cell: DateCell,
         className: "grid__date-cell",
-        truncate: { onWidth: 110, possibleRows: 1 } //possible rows param max 2 default 1
+        truncate: { onWidth: 110, possibleRows: 1 }
       },
       {
         Header: message,

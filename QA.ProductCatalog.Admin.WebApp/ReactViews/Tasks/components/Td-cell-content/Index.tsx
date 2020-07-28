@@ -12,21 +12,34 @@ export const TdCellContent = ({ cell, refBody, loading }) => {
   const fontSizeOneRow = 16;
   const fontSizeTwoRows = 34;
 
+  //эффект который при рендере проверяет ширину и высоту строки и схлопывает ее добавляя тултип если это нужно
   useEffect(
     () => {
+      if (!cell.value || !isWithTruncate || !cellRef.current) return;
       if (
-        cellRef.current &&
-        isWithTruncate &&
         !isTooltip &&
         (cellRef.current.offsetWidth > cell.column.truncate.onWidth ||
           (cell.column.truncate.possibleRows === 1 &&
             cellRef.current.offsetHeight > fontSizeOneRow) ||
           (cell.column.truncate.possibleRows === 2 &&
             cellRef.current.offsetHeight > fontSizeTwoRows))
-      )
+      ) {
         setIsTruncate(true);
+        return;
+      }
+      if (
+        isTooltip &&
+        cellRef.current &&
+        (cellRef.current.offsetWidth < cell.column.truncate.onWidth ||
+          (cell.column.truncate.possibleRows === 1 &&
+            cellRef.current.offsetHeight < fontSizeOneRow) ||
+          (cell.column.truncate.possibleRows === 2 &&
+            cellRef.current.offsetHeight < fontSizeTwoRows))
+      ) {
+        setIsTooltip(false);
+      }
     },
-    [cell.value]
+    [cell.value, loading]
   );
 
   const setTooltip = (isTruncated: boolean) => isTruncated && setIsTooltip(true);
@@ -55,7 +68,13 @@ export const TdCellContent = ({ cell, refBody, loading }) => {
   }
 
   if (isTruncate && !loading) {
-    return <TruncateString onTruncate={param => setTooltip(param)} />;
+    return (
+      <TruncateString
+        onTruncate={param => {
+          setTooltip(param);
+        }}
+      />
+    );
   }
 
   return (

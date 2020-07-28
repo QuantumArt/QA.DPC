@@ -1,4 +1,4 @@
-﻿import React, { useRef } from "react";
+import React, { useRef } from "react";
 import { useTable, usePagination } from "react-table";
 import cn from "classnames";
 import { PaginationActions } from "Shared/Enums";
