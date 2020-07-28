@@ -1,4 +1,6 @@
 declare interface Window {
+  definitionEditor: DefinitionEditorSettings;
+  pmrpc: any;
   highloadFront?: {
     legend: string;
     customerCode: string;

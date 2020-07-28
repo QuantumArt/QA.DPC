@@ -7,60 +7,61 @@
 }
 
 @section head{
-  
+
   <link rel="stylesheet" href="~/css/kendo.min.css">
-  <link href="~/css/DefinitionEditor.css" rel="stylesheet"/>
-  <link href="~/css/codemirror.min.css" rel="stylesheet"/>
-	
+  <link href="~/css/DefinitionEditor.css" rel="stylesheet" />
+  <link href="~/css/codemirror.min.css" rel="stylesheet" />
+
   <script src="~/js/bundles/codemirror.min.js"></script>
   <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
   <script src="~/js/DefinitionEditor.js"></script>
 }
 
 <div id="verticalRootSplitter">
-	<div>
-		<div id="horizontalTreeAndPropsSplitter">
-			<div id="treeViewContainer">
-				<div id="treeView"></div>
-			</div>
-			<div id="propsPane"></div>
-		</div>
-	</div>
-	<div id="xamlPane">
-		<div id="dvToolbar"></div>
-		@await Html.PartialAsync("XmlViewer", Model.Xml ?? string.Empty )
-	</div>
+  <div>
+    <div id="horizontalTreeAndPropsSplitter">
+      <div id="treeViewContainer">
+        <div id="treeView"></div>
+      </div>
+      <div id="propsPane"></div>
+    </div>
+  </div>
+  <div id="xamlPane">
+    <div id="dvToolbar"></div>
+    @await Html.PartialAsync("XmlViewer", Model.Xml ?? string.Empty)
+  </div>
 </div>
 
 <script id="treeNodeTemplate" type="text/x-kendo-template">
-	<span class="#=item.NotInDefinition?'NotInDefinition':''#">
-		#if(item.IsDictionaries){#
-		<span class="IsDictionaries">@Html.Raw(ControlStrings.DictionaryCachingSettings)</span>
-		#}else{#
-		#: item.text #
-		#}#
-		#if(item.MissingInQp && !item.IsDictionaries){#
-		<span class="MissingInQp">@Html.Raw(ControlStrings.MissingInQp)</span>
-		#}#
-	</span>
+  <span class="#=item.NotInDefinition?'NotInDefinition':''#">
+    #if(item.IsDictionaries){#
+    <span class="IsDictionaries">@Html.Raw(ControlStrings.DictionaryCachingSettings)</span>
+    #}else{#
+    #: item.text #
+    #}#
+    #if(item.MissingInQp && !item.IsDictionaries){#
+    <span class="MissingInQp">@Html.Raw(ControlStrings.MissingInQp)</span>
+    #}#
+  </span>
 </script>
 
 @section scripts{
 
-  
-  
+
+
   <script>
 
 		$(document).ready(function() {
-		    DefinitionEditor.init(@(Model.ContentItemId.HasValue ? "true" : "false"),
+			DefinitionEditor.init(
+						@(Model.ContentItemId.HasValue ? "true" : "false"),
             '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
             '@Url.Action("GetSingleNode")',
             '@Url.Action("GetDefinitionLevel")',
             '@Url.Action("Edit")',
             '@ControlStrings.Save',
-            '@ControlStrings.EditXml',            
-            '@ControlStrings.EndEditXml',               
+            '@ControlStrings.EditXml',
+            '@ControlStrings.EndEditXml',
         );
 		});
-	</script>
+  </script>
 }

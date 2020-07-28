@@ -2,11 +2,20 @@
 @using QA.Core.DPC.Resources
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
-<script>
+  <script>
     window.definitionEditor = {
       xml: "@Model.Xml",
+      saveToDb: @(Model.ContentItemId.HasValue ? "true" : "false"),
+      saveDefinitionUrl: '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
+      getSingleNodeUrl: '@Url.Action("GetSingleNode")',
+      getDefinitionLevelUrl: '@Url.Action("GetDefinitionLevel")',
+      editUrl: '@Url.Action("Edit")',
+      saveText: '@ControlStrings.Save',
+      editText: '@ControlStrings.EditXml',
+      endEditText: '@ControlStrings.EndEditXml',
     };
-</script>
-@Html.TextArea("code", Model.Xml, new { disabled = "disabled", cols = 100, rows = 10 })
+  </script>
+@*@Html.TextArea("code", Model.Xml, new { disabled = "disabled", cols = 100, rows = 10 })*@
 <div id="definitionEditor"></div>
+<script src="~/js/pmrpc.js"></script>
 <script src="~/js/bundles/DefinitionEditor/DefinitionEditor.js"></script>

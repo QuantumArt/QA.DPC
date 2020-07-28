@@ -82,6 +82,11 @@
     <Content Remove="Content\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="ReactViews\DefinitionEditor\Components\Header\Index.tsx" />
+    <None Remove="ReactViews\DefinitionEditor\Components\Tree\Index.tsx" />
+    <None Remove="ReactViews\DefinitionEditor\DefinitionEditor.tsx" />
+    <None Remove="ReactViews\DefinitionEditor\DefinitionEditorStore.ts" />
+    <None Remove="ReactViews\DefinitionEditor\DefinitionEditorTypes.d.ts" />
     <None Remove="ReactViews\DefinitionEditor\index.tsx" />
     <None Remove="ReactViews\file.tsx" />
     <None Remove="ReactViews\Shared\Components\index.ts" />
@@ -92,6 +97,11 @@
     <None Remove="Views\Task\Task.tsx" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="ReactViews\DefinitionEditor\Components\Header\Index.tsx" />
+    <TypeScriptCompile Include="ReactViews\DefinitionEditor\Components\Tree\Index.tsx" />
+    <TypeScriptCompile Include="ReactViews\DefinitionEditor\DefinitionEditorTypes.d.ts" />
+    <TypeScriptCompile Include="ReactViews\DefinitionEditor\DefinitionEditor.tsx" />
+    <TypeScriptCompile Include="ReactViews\DefinitionEditor\DefinitionEditorStore.ts" />
     <TypeScriptCompile Include="ReactViews\DefinitionEditor\index.tsx" />
     <TypeScriptCompile Include="Views\HighloadFront\Index.tsx" />
     <TypeScriptCompile Include="ReactViews\Shared\Components\index.ts" />
