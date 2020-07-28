@@ -1,48 +1,8 @@
 ﻿import { action, computed, observable, runInAction } from "mobx";
 import { createContext } from "react";
-import qs from "qs";
 import { PaginationActions, TaskGridFilterType } from "Shared/Enums";
-
-interface IGridResponse {
-  data: {
-    tasks: IGridTask[];
-    totalTasks: number;
-  };
-}
-
-interface IGridTask {
-  CreatedTime: string;
-  DisplayName: string;
-  HasSchedule: boolean;
-  IconName: string;
-  Id: number;
-  IsCancellationRequested: boolean;
-  LastStatusChangeTime: string;
-  Message: string;
-  Name: string;
-  Progress: number;
-  ScheduleCronExpression: any;
-  ScheduledFromTaskId: any;
-  State: string;
-  StateId: number;
-  UserName: string;
-}
-
-interface IPaginationOptions {
-  skip: number;
-  take: number;
-  showOnlyMine: boolean;
-}
-
-interface IFilterOptions {
-  field: string;
-  operator: string;
-  value: string | boolean;
-}
-
-//copied from common.ts ClientApp
-const urlFromHead = document.head.getAttribute("root-url") || "";
-const rootUrl = urlFromHead.endsWith("/") ? urlFromHead.slice(0, -1) : urlFromHead;
+import { apiService } from "Tasks/Api-services";
+import { FilterOptions, PaginationOptions, Task } from "Tasks/Api-services/DataContracts";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
@@ -52,15 +12,15 @@ export class Pagination {
   @observable private skip: number = 0;
   private readonly take: number = 10;
   @observable private showOnlyMine: boolean = true;
-  changePage: (operation: PaginationActions) => void;
-  readonly initPaginationOptions: IPaginationOptions = {
+  readonly changePage: (operation: PaginationActions) => void;
+  readonly initPaginationOptions: PaginationOptions = {
     skip: 0,
     take: 10,
     showOnlyMine: true
   };
 
   @computed
-  get getPaginationOptions(): IPaginationOptions {
+  get getPaginationOptions(): PaginationOptions {
     return {
       skip: this.skip,
       take: this.take,
@@ -68,10 +28,21 @@ export class Pagination {
     };
   }
 
-  setPagination = (props: IPaginationOptions) => {
+  setPagination = (props: PaginationOptions) => {
     runInAction(() => {
       this.skip = props.skip;
       this.showOnlyMine = props.showOnlyMine;
+    });
+  };
+
+  calcPaginationOptionsOnOperation = (operation: PaginationActions): PaginationOptions => {
+    const paginationOptions = this.getPaginationOptions;
+    if (operation === PaginationActions.None) return this.getPaginationOptions;
+    return Object.assign(this.getPaginationOptions, {
+      skip:
+        operation === PaginationActions.IncrementPage
+          ? (paginationOptions.skip += this.initPaginationOptions.take)
+          : (paginationOptions.skip -= this.initPaginationOptions.take)
     });
   };
 }
@@ -90,7 +61,7 @@ export class Filter {
     this.value = value;
   };
 
-  get filterOptions(): IFilterOptions {
+  get filterOptions(): FilterOptions {
     return {
       field: this.field,
       operator: this.operator,
@@ -107,7 +78,7 @@ export class Filter {
 
 export class TaskStore {
   readonly FETCH_TIMEOUT = 5000;
-  @observable private gridData: IGridTask[] = [];
+  @observable private gridData: Task[] = [];
   @observable total: number = 0;
   @observable isLoading: boolean = true;
   @observable.ref pagination: Pagination = new Pagination((operation: PaginationActions) => {
@@ -132,16 +103,14 @@ export class TaskStore {
 
   cyclicFetchGrid = async (): Promise<void> => {
     try {
-      const paginationOptions = this.getCalculatedPagination(PaginationActions.None);
-      const filtersOptions = this.getFiltersOptions();
-      const response = await fetch(
-        this.createGridDataRequestUrl(paginationOptions, filtersOptions)
+      const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(
+        PaginationActions.None
       );
-      if (response.ok) {
-        const { data }: IGridResponse = await response.json();
-        this.setGridData(data.tasks);
-        this.setTotal(data.totalTasks);
-      }
+      const filtersOptions = this.getFiltersOptions();
+
+      const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
+      this.setGridData(response.tasks);
+      this.setTotal(response.totalTasks);
     } catch (e) {
       console.error(e, "err on cyclic fetch");
     } finally {
@@ -150,7 +119,7 @@ export class TaskStore {
   };
 
   @action
-  setGridData = (data: IGridTask[]) => {
+  setGridData = (data: Task[]) => {
     this.gridData = data;
   };
 
@@ -165,44 +134,30 @@ export class TaskStore {
   };
 
   @computed
-  get getGridData(): IGridTask[] {
+  get getTotal(): number {
+    return this.total;
+  }
+
+  @computed
+  get getGridData(): Task[] {
     return this.gridData;
   }
 
-  //TODO переписать в мапперы
-  getCalculatedPagination = (operation: PaginationActions): IPaginationOptions => {
-    const paginationOptions = this.pagination.getPaginationOptions;
-    if (operation === PaginationActions.None) return this.pagination.getPaginationOptions;
-    return Object.assign(this.pagination, {
-      skip:
-        operation === PaginationActions.IncrementPage
-          ? (paginationOptions.skip += this.pagination.initPaginationOptions.take)
-          : (paginationOptions.skip -= this.pagination.initPaginationOptions.take)
-    });
-  };
-  getFiltersOptions = (): IFilterOptions[] => {
+  getFiltersOptions = (): FilterOptions[] => {
     const filtersOptions = [];
     this.filters.forEach((value, key) => {
       if (value.isActive) {
         const options = this.filters.get(key).filterOptions;
-        if (options.value === "true" || options.value === "false") {
+        const isBooleanString = (val: string | boolean): boolean =>
+          val === "true" || val === "false";
+
+        if (isBooleanString(options.value)) {
           options.value = Boolean(value);
         }
         filtersOptions.push(options);
       }
     });
     return filtersOptions.length ? filtersOptions : null;
-  };
-
-  createGridDataRequestUrl = (
-    paginationOpts: IPaginationOptions,
-    filtersOpts: IFilterOptions[]
-  ): string => {
-    const filterString = filtersOpts
-      ? "&filterJson=" + encodeURIComponent(JSON.stringify(filtersOpts))
-      : "";
-    const queryStr: string = qs.stringify(paginationOpts) + filterString;
-    return `${rootUrl}/Task/TasksData?${queryStr}`;
   };
 
   withLoader = async (cb: () => Promise<void>): Promise<void> => {
@@ -218,18 +173,12 @@ export class TaskStore {
 
   fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> => {
     try {
-      const paginationOptions = this.getCalculatedPagination(operation);
+      const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(operation);
       const filtersOptions = this.getFiltersOptions();
-      const response = await fetch(
-        this.createGridDataRequestUrl(paginationOptions, filtersOptions)
-      );
-
-      if (response.ok) {
-        const { data }: IGridResponse = await response.json();
-        this.setGridData(data.tasks);
-        this.setTotal(data.totalTasks);
-        this.pagination.setPagination(paginationOptions);
-      }
+      const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
+      this.setGridData(response.tasks);
+      this.setTotal(response.totalTasks);
+      this.pagination.setPagination(paginationOptions);
     } catch (e) {
       console.error(e);
     }
@@ -237,14 +186,7 @@ export class TaskStore {
 
   fetchRerunTask = async (taskId: number) => {
     try {
-      const queryStr: string = qs.stringify({
-        taskId
-      });
-      const requestUrl = `${rootUrl}/Task/Rerun?${queryStr}`;
-      const response = await fetch(requestUrl, { method: "POST" });
-      if (response.ok) {
-        console.log("rerun on task " + taskId);
-      }
+      await apiService.fetchRerunTask(taskId);
     } catch (e) {
       console.error(e);
     }

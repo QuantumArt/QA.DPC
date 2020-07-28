@@ -1,5 +1,5 @@
 export * from "./Date-cell";
-export * from "./GridPagination";
+export * from "./Grid-pagination";
 export * from "./Filter-buttons-wrapper";
 export * from "./Filter-tooltip";
 export * from "./Grid";

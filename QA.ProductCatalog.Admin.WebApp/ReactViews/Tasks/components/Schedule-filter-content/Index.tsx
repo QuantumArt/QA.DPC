@@ -14,12 +14,11 @@ export const ScheduleFilterContent = ({ setValue, options, value }: IProps) => {
     <RadioGroup
       className="filter-options-radio"
       options={options}
-      value={value}
       inline
       onChange={event => {
         setValue(event.currentTarget.value);
       }}
-      selectedValue={value}
+      selectedValue={value || "true"}
     />
   );
 };
