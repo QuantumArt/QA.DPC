@@ -3,6 +3,8 @@ import { observer } from "mobx-react";
 import moment from "moment";
 import { Button, Intent } from "@blueprintjs/core";
 
+import { Chip, ProgressBar } from "Shared/Components";
+
 import Store from "../PartialSendStore";
 
 import { getStateInfoByStateId } from "../Utils";
@@ -24,12 +26,10 @@ export default class Result extends Component<Props> {
   }
 
   renderValue = (value: any): any => {
-    return value != null ? value : "&nbsp;";
+    return value != null ? value : <span>&nbsp;</span>;
   };
 
   render(): ReactNode {
-    console.log("Result");
-
     const { legend, labels, sendNewPackageButton } = window.partialSend.result;
     const {
       displayName,
@@ -52,7 +52,7 @@ export default class Result extends Component<Props> {
       return null;
     }
 
-    const stateInfo = getStateInfoByStateId(task.stateId);
+    const [stateIntent, stateIconName] = getStateInfoByStateId(task.stateId);
 
     return (
       <div className="formLayout">
@@ -78,7 +78,7 @@ export default class Result extends Component<Props> {
                   </span>
                 </>
               ) : (
-                "&nbsp;"
+                <span>&nbsp;</span>
               )}
             </dd>
           </dl>
@@ -88,16 +88,32 @@ export default class Result extends Component<Props> {
           </dl>
           <dl className="plain-field row">
             <dt className="plain-field-capture label">{state}</dt>
-            <dd className="plain-field-value field">{this.renderValue(task.state)}</dd>
+            <dd className="plain-field-value field">
+              <Chip
+                intent={stateIntent}
+                iconName={stateIconName}
+                text={this.renderValue(task.state)}
+              />
+            </dd>
           </dl>
           <dl className="plain-field row">
             <dt className="plain-field-capture label">{progress}</dt>
-            <dd className="plain-field-value field">{this.renderValue(task.progress)}</dd>
+            <dd className="plain-field-value field">
+              <ProgressBar
+                barWidth="120px"
+                defaultBarProps={{
+                  value: task.progress,
+                  animate: false,
+                  stripes: false,
+                  intent: stateIntent
+                }}
+              />
+            </dd>
           </dl>
           <dl className="plain-field row">
             <dt className="plain-field-capture label">{lastStatusChangeTime}</dt>
             <dd className="plain-field-value field">
-              {task.lastStatusChangeTime && (
+              {task.lastStatusChangeTime ? (
                 <>
                   <span>{moment(task.lastStatusChangeTime).format("DD MMM YYYY")}</span>
                   &nbsp;
@@ -105,6 +121,8 @@ export default class Result extends Component<Props> {
                     {moment(task.lastStatusChangeTime).format("HH:mm")}
                   </span>
                 </>
+              ) : (
+                <span>&nbsp;</span>
               )}
             </dd>
           </dl>

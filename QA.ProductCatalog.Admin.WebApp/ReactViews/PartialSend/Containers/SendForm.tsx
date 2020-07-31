@@ -12,8 +12,6 @@ type Props = {
 @observer
 export default class SendForm extends Component<Props> {
   render(): ReactNode {
-    console.log("SendForm");
-
     const {
       hidden: { ignoredStatuses, localize },
       legend,
@@ -45,8 +43,6 @@ export default class SendForm extends Component<Props> {
           <legend>{legend}</legend>
           <p className="partial-send__description">{description}</p>
           <form
-            // action="/PartialSend/Send"
-            // method="post"
             onSubmit={event => {
               event.preventDefault();
               const form = event.target as HTMLFormElement;

@@ -84,6 +84,7 @@
   <ItemGroup>
     <None Remove="ReactViews\DefinitionEditor\index.tsx" />
     <None Remove="ReactViews\file.tsx" />
+    <None Remove="ReactViews\Shared\Components\Chip\Index.tsx" />
     <None Remove="ReactViews\Shared\Components\index.ts" />
     <None Remove="ReactViews\Shared\index.ts" />
     <None Remove="ReactViews\Shared\Types\global.d.ts" />
@@ -97,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="ReactViews\DefinitionEditor\index.tsx" />
+    <TypeScriptCompile Include="ReactViews\Shared\Components\Chip\Index.tsx" />
     <TypeScriptCompile Include="ReactViews\Shared\Components\index.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Types\global.d.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Utils\index.ts" />

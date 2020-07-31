@@ -2,10 +2,9 @@ import React from "react";
 import { Callout, Icon, IProgressBarProps, Tooltip } from "@blueprintjs/core";
 import { Task } from "Tasks/Api-services/DataContracts";
 import { DateCell, StatusCell } from "Tasks/Components";
-import { getTaskIntentDependsOnStatus } from "Shared/Utils";
 import ProgressBar from "Shared/Components/ProgressBar";
 import { TaskStatuses } from "Shared/Enums";
-import { getClassNameByIntent } from "Shared/Utils/Get-classname-by-intent";
+import { getClassNameByIntent, getTaskIntentDependsOnStatus } from "Shared/Utils";
 import cn from "classnames";
 import "./Style.scss";
 

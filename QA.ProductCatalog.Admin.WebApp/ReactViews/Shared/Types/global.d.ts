@@ -28,6 +28,7 @@ declare interface Window {
       };
     };
   };
+
   highloadFront?: {
     legend: string;
     customerCode: string;

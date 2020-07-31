@@ -1,1 +1,2 @@
-﻿export * from "./Get-task-intent";
+﻿export * from "./TaskHelper";
+export * from "./GetClassnameByIntent";

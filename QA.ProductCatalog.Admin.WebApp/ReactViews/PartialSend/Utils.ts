@@ -1,20 +1,14 @@
 import { Intent } from "@blueprintjs/core";
+import { IconName } from "@blueprintjs/icons";
 
-import { TaskState } from "../Shared/Enums";
+import { getTaskIntentDependsOnState, getTaskIconDependsOnState } from "Shared/Utils";
 
-const getStateInfoByStateId = (stateId: TaskState): [Intent, string] => {
-  switch (stateId) {
-    case TaskState.New:
-      return [Intent.PRIMARY, "circle-arrow-up"];
-    case TaskState.Running:
-      return [Intent.PRIMARY, "refresh"];
-    case TaskState.Done:
-      return [Intent.SUCCESS, "tick-circle"];
-    case TaskState.Failed:
-      return [Intent.DANGER, "delete"];
-    case TaskState.Cancelled:
-      return [Intent.DANGER, "disable"];
-  }
+import { TaskState } from "Shared/Enums";
+
+const getStateInfoByStateId = (stateId: TaskState): [Intent, IconName] => {
+  const intent = getTaskIntentDependsOnState(stateId);
+  const iconName = getTaskIconDependsOnState(stateId);
+  return [intent, iconName];
 };
 
 export { getStateInfoByStateId };
