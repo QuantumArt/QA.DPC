@@ -1,14 +1,14 @@
 import { observable, action } from "mobx";
 import moment from "moment";
 
-import { Task } from "../Shared/Types";
+import { TaskItem } from "../Shared/Types";
 import { TaskState } from "../Shared/Enums";
 
 export default class HighloadFrontStore {
   @observable private timerId: NodeJS.Timeout;
-  @observable tasks: Task[] = [];
+  @observable tasks: TaskItem[] = [];
 
-  @action setTasks = (value: Task[]): void => {
+  @action setTasks = (value: TaskItem[]): void => {
     this.tasks = value;
   };
 
@@ -24,7 +24,7 @@ export default class HighloadFrontStore {
 
     if (response.ok) {
       const json = await response.json();
-      const tasks = json as Task[];
+      const tasks = json as TaskItem[];
       this.setTasks(tasks);
     }
   };
@@ -39,7 +39,7 @@ export default class HighloadFrontStore {
     return taskState != TaskState.New && taskState != TaskState.Running;
   };
 
-  onIndexChannel = async (task: Task): Promise<void> => {
+  handleIndexChannel = async (task: TaskItem): Promise<void> => {
     const { customerCode } = window.highloadFront;
     await fetch(
       `/HighloadFront/IndexChanel?customerCode=${customerCode}&url=api/sync/${

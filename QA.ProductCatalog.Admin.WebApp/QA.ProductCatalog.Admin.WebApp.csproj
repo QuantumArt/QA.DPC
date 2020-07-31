@@ -83,11 +83,19 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="ReactViews\file.tsx" />
+    <None Remove="ReactViews\PartialSend\Containers\index.ts" />
+    <None Remove="ReactViews\PartialSend\Containers\Result.tsx" />
+    <None Remove="ReactViews\PartialSend\Containers\SendForm.tsx" />
     <None Remove="Views\HighloadFront\HighloadFront.tsx" />
+    <None Remove="Views\PartialSend\Index.tsx" />
     <None Remove="Views\Task\Task.tsx" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="ReactViews\PartialSend\Containers\index.ts" />
+    <TypeScriptCompile Include="ReactViews\PartialSend\Containers\Result.tsx" />
+    <TypeScriptCompile Include="ReactViews\PartialSend\Containers\SendForm.tsx" />
     <TypeScriptCompile Include="Views\HighloadFront\Index.tsx" />
+    <TypeScriptCompile Include="Views\PartialSend\Index.tsx" />
     <TypeScriptCompile Include="Views\Task\Task.tsx" />
   </ItemGroup>
 </Project>

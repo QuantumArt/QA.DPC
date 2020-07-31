@@ -31,7 +31,7 @@ export default class HighloadFront extends Component<Props> {
       getFormattedChannelDate,
       getTimePassed,
       isIndexingAvailable,
-      onIndexChannel
+      handleIndexChannel
     } = this.props.store;
     const { highloadFront } = window;
     const { columnHeaders } = highloadFront;
@@ -66,7 +66,7 @@ export default class HighloadFront extends Component<Props> {
                   <td>{getFormattedChannelDate(task.ChannelDate)}</td>
                   <td width="100px">
                     {isIndexingAvailable(task.TaskState) && (
-                      <a href="#" onClick={() => onIndexChannel(task)}>
+                      <a href="#" onClick={() => handleIndexChannel(task)}>
                         {highloadFront.processingIndex}
                       </a>
                     )}

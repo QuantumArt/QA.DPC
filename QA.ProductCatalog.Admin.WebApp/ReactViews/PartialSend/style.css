@@ -1,0 +1,8 @@
+.partial-send__description {
+  max-width: 812px;
+}
+
+.partial-send__ids {
+  margin-bottom: 10px;
+  resize: vertical;
+}

@@ -1,93 +1,49 @@
-﻿@using System.Globalization
-@using QA.Core.DPC.Resources
-@section head{
-  <link href="~/css/kendo.min.css" rel="stylesheet" />
-}
-@section jquery{
-  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
-}
+﻿@using QA.Core.DPC.Resources
+@using System.Globalization
 
-<div class="formLayout">
-    <fieldset>
-        <legend>@ControlStrings.PartialSend</legend>
-        <p>@Html.Raw(ControlStrings.PartialSendDescription)</p>
-      <div id="SendDiv" style="display: none">
-        <form action="@Url.Action("Send")" method="post">
-          @Html.ValidationSummary()
-          @Html.TextArea("idsStr", new { cols = 125, rows = 10 })
-        
-          <p>
-            <div id="proceedIgnoredStatusDiv">
-              @Html.CheckBox("proceedIgnoredStatus", new Dictionary<string, object>() { { "id", "proceedIgnoredStatus" } })
-              <label for="proceedIgnoredStatus">@ControlStrings.ProcessSpecialStatuses</label>
-            </div>
-            @Html.CheckBox("stageOnly", false, new { id = "stageOnlyCb", onchange="$('#proceedIgnoredStatusDiv').toggle()" })
-            <label for="stageOnlyCb">@ControlStrings.SendOnStageOnly</label>
+@{
+  var ignoredStatusesList = new string[ViewBag.IgnoredStatus.Length];
+  for (var i = 0; i < ViewBag.IgnoredStatus.Length; i++)
+  {
+    ignoredStatusesList[i] = '"' + $"{ViewBag.IgnoredStatus[i]}" + '"';
+  }
 
-            @foreach (var st in ViewBag.IgnoredStatus)
-            {
-              <input type="hidden" name="IgnoredStatus" value="@st" />
-            }
-
-            <input type="hidden" name="Localize" value="@ViewBag.Localize.ToString()" />
-          </p>
-          <p>
-            <input id="save" type="submit" value="@ControlStrings.SendProducts" />
-          </p>         
-        </form>
-      </div>
-      
-      <div id="CurrentTaskDiv" style="display: none">
-        <div style="color: red; font-weight: bold;">@ControlStrings.OnlyOneTask</div>
-        <div class="formLayout">
-          <fieldset>
-            <legend>@ControlStrings.CurrentPartialSendTask</legend>
-            <div id="ActionTaskPropsDiv">
-            </div>
-          </fieldset>
-        </div>
-      </div>
-    </fieldset>
-</div>
-
-@section scripts{
-    <script src="~/js/AutoUpdateStrategy.js"></script>
-    
-    <script>
-    
-            AutoUpdateStrategy.updateRequestFunction = UpdateForm;
-    
-            $(document).ready(function () { UpdateForm(); });
-    
-            function UpdateForm() {
-                $.ajax({
-                    url: "@Url.Action("Active")",
-                    type: "GET",
-                    cache: false
-                }).done(
-                function (actionPropsHtml) {
-    
-                    if (actionPropsHtml == "") {
-                        $("#CurrentTaskDiv").hide();
-    
-                        $("#SendDiv").show();
-                    } else {
-                        $("#CurrentTaskDiv").show();
-    
-                        $("#ActionTaskPropsDiv").html(actionPropsHtml);
-    
-                        $("#SendDiv").hide();
-                    }
-    
-                    AutoUpdateStrategy.notifyUpdateRequestEnded();
-                })
-                .fail(
-                        function (jqXHR) {
-                            AutoUpdateStrategy.notifyUpdateRequestFailed(jqXHR.status);
-                        }
-                    );
-            }
-    
-     </script>
+  var ignoredStatuses = String.Join(", ", @ignoredStatusesList);
 }
 
+<script>
+  window.partialSend = {
+    getActiveTaskIdUrl: "@Url.Action("Active")",
+    sendForm: {
+      hidden: {
+        ignoredStatuses: [@Html.Raw(@ignoredStatuses)],
+        localize: "@ViewBag.Localize.ToString()",
+      },
+      legend: "@ControlStrings.PartialSend",
+      description: '@Html.Raw(ControlStrings.PartialSendDescription)',
+      processSpecialStatusesCheckbox: "@ControlStrings.ProcessSpecialStatuses",
+      sendOnStageOnlyCheckbox: "@ControlStrings.SendOnStageOnly",
+      sendUrl: "@Url.Action("Send")",
+      sendButton: "@ControlStrings.SendProducts",
+    },
+    result: {
+      culture: "@CultureInfo.CurrentCulture.Parent.EnglishName",
+      legend: "@SendProductActionStrings.YourPartialSendTask",
+      getTaskUrl: "@Url.Action("Task")",
+      labels: {
+        displayName: "@ControlStrings.DisplayName",
+        id: "Id",
+        createdDate: "@ControlStrings.CreatedDate",
+        userName: "@ControlStrings.UserName",
+        state: "@ControlStrings.State",
+        progress: "@ControlStrings.Progress",
+        lastStatusChangeTime: "@ControlStrings.LastStatusChangeTime",
+        message: "@ControlStrings.Message",
+      },
+      sendNewPackageButton: "@SendProductActionStrings.SendNewPackage",
+     }
+  }
+</script>
+
+<div id="root" />
+<script src="~/js/bundles/PartialSend/Index.js"></script>
