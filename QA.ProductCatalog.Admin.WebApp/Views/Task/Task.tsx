@@ -1,4 +1,5 @@
 ﻿import React from "react";
 import { render } from "react-dom";
+import { Task } from "Tasks";
 
-render(<div>tes1t</div>, document.getElementById("task"));
+render(<Task />, document.getElementById("task"));

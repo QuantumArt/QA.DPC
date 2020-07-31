@@ -1,0 +1,46 @@
+$text-color: rgb(24, 32, 38);
+
+.pagination {
+  padding: 20px 10px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 24px;
+  color: $text-color;
+  font-weight: normal;
+
+  .pagination__info-container {
+    display: inline-flex;
+    height: 24px;
+    min-width: 86px;
+    align-items: center;
+    margin-right: 10px;
+    background: linear-gradient(
+        -180deg,
+        rgba(255, 255, 255, 0.64) 0%,
+        rgba(255, 255, 255, 0) 100%
+      )
+      rgb(245, 248, 250);
+    border-radius: 3px;
+    box-shadow: inset 0px -1px 1px 0px rgba(16, 22, 26, 0.1),
+      inset 0px 0px 0px 1px rgba(16, 22, 26, 0.2);
+  }
+  &__info {
+    padding: 0 10px;
+  }
+  &__buttons-container:nth-child(n) {
+    margin-right: 40px;
+  }
+
+  &__button {
+    min-height: 24px;
+    min-width: 24px;
+    &--with-left-margin {
+      margin-left: 10px;
+    }
+    .bp3-icon {
+      color: #000000;
+    }
+  }
+}

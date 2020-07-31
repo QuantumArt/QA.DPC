@@ -86,9 +86,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			ScheduledFromTaskId = efTask.ScheduledFromTaskID;
 
-	        HasSchedule = efTask.ScheduleID.HasValue && efTask.Schedule.Enabled;
+	        HasSchedule = efTask.ScheduleID.HasValue && (efTask.Schedule?.Enabled ?? false);
 
-	        ScheduleCronExpression = HasSchedule ? efTask.Schedule.CronExpression : null;
+	        ScheduleCronExpression = HasSchedule ? efTask.Schedule?.CronExpression : null;
         }
     }
 }
