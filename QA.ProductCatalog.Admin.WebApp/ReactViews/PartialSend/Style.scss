@@ -1,0 +1,22 @@
+.PartialSend {
+  height: 100%;
+
+  &__description {
+    max-width: 812px;
+  }
+
+  &__ids {
+    margin-bottom: 10px;
+    resize: vertical;
+  }
+}
+
+#root {
+  height: 100%;
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

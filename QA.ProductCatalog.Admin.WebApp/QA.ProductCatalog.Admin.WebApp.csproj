@@ -86,6 +86,8 @@
     <None Remove="ReactViews\file.tsx" />
     <None Remove="ReactViews\Shared\Components\Chip\Index.tsx" />
     <None Remove="ReactViews\Shared\Components\index.ts" />
+    <None Remove="ReactViews\Shared\Components\Toaster\Index.tsx" />
+    <None Remove="ReactViews\Shared\Enums\FetchStatus.ts" />
     <None Remove="ReactViews\Shared\index.ts" />
     <None Remove="ReactViews\Shared\Types\global.d.ts" />
     <None Remove="Views\DefinitionEditor\DefinitionEditor.tsx" />
@@ -100,6 +102,8 @@
     <TypeScriptCompile Include="ReactViews\DefinitionEditor\index.tsx" />
     <TypeScriptCompile Include="ReactViews\Shared\Components\Chip\Index.tsx" />
     <TypeScriptCompile Include="ReactViews\Shared\Components\index.ts" />
+    <TypeScriptCompile Include="ReactViews\Shared\Components\Toaster\Index.tsx" />
+    <TypeScriptCompile Include="ReactViews\Shared\Enums\FetchStatus.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Types\global.d.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Utils\index.ts" />
     <TypeScriptCompile Include="Views\DefinitionEditor\DefinitionEditor.tsx" />

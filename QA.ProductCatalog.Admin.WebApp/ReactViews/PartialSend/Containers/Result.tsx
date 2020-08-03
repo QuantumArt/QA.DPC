@@ -1,7 +1,7 @@
 ﻿import React, { Component, ReactNode } from "react";
 import { observer } from "mobx-react";
 import moment from "moment";
-import { Button, Intent } from "@blueprintjs/core";
+import { Button, Intent, Spinner } from "@blueprintjs/core";
 
 import { Chip, ProgressBar } from "Shared/Components";
 
@@ -49,13 +49,17 @@ export default class Result extends Component<Props> {
     }
 
     if (!task) {
-      return null;
+      return (
+        <div className="formLayout centered PartialSend">
+          <Spinner />
+        </div>
+      );
     }
 
     const [stateIntent, stateIconName] = getStateInfoByStateId(task.stateId);
 
     return (
-      <div className="formLayout">
+      <div className="formLayout PartialSend">
         <fieldset>
           <legend>{legend}</legend>
           <dl className="plain-field row">

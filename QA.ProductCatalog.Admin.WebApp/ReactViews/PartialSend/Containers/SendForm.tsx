@@ -2,6 +2,8 @@
 import { observer } from "mobx-react";
 import { FormGroup, TextArea, Checkbox, Button, Intent } from "@blueprintjs/core";
 
+import { FetchStatus } from "Shared/Enums";
+
 import Store from "../PartialSendStore";
 import { CurrentStep } from "../enums";
 
@@ -30,7 +32,8 @@ export default class SendForm extends Component<Props> {
       setProcessSpecialStatuses,
       sendOnStageOnly,
       setSendOnStageOnly,
-      isValidForm
+      isValidForm,
+      fetchStatus
     } = this.props.store;
 
     if (currentStep !== CurrentStep.SendForm) {
@@ -38,10 +41,10 @@ export default class SendForm extends Component<Props> {
     }
 
     return (
-      <div className="formLayout">
+      <div className="formLayout PartialSend">
         <fieldset>
           <legend>{legend}</legend>
-          <p className="partial-send__description">{description}</p>
+          <p className="PartialSend__description">{description}</p>
           <form
             onSubmit={event => {
               event.preventDefault();
@@ -67,7 +70,7 @@ export default class SendForm extends Component<Props> {
                 rows={10}
                 value={ids}
                 onChange={event => setIds(event.target.value)}
-                className="partial-send__ids"
+                className="PartialSend__ids"
               />
             </FormGroup>
             {!sendOnStageOnly && (
@@ -91,7 +94,11 @@ export default class SendForm extends Component<Props> {
               label={sendOnStageOnlyCheckbox}
             />
             <input type="hidden" name="stageOnly" value="false" />
-            <Button type="submit" text={sendButton} />
+            <Button
+              type="submit"
+              disabled={fetchStatus === FetchStatus.Failure}
+              text={sendButton}
+            />
           </form>
         </fieldset>
       </div>

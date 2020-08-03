@@ -1,6 +1,9 @@
 import { observable, action } from "mobx";
 
-import { TaskModel } from "../Shared/Types";
+import { TaskModel } from "Shared/Types";
+import { MAX_FETCH_COUNT } from "Shared/Constants";
+import { FetchStatus } from "Shared/Enums";
+
 import { CurrentStep } from "./Enums";
 
 type TaskResponse = {
@@ -15,6 +18,11 @@ type TaskIdResponse = {
 export default class PartialSendStore {
   @observable timerId: NodeJS.Timeout;
   @observable currentStep: CurrentStep = CurrentStep.Empty;
+  @observable fetchStatus: FetchStatus = FetchStatus.Idle;
+  @observable failureFetchCount: number = 0;
+  @observable fetchError: string;
+  @observable responseStatus: number;
+  @observable cyclicFunctionEnded: boolean = false;
 
   @observable ids: string;
   @observable processSpecialStatuses: boolean = false;
@@ -33,6 +41,26 @@ export default class PartialSendStore {
 
   @action setCurrentStep = (value: CurrentStep): void => {
     this.currentStep = value;
+  };
+
+  @action setFetchStatus = (value: FetchStatus): void => {
+    this.fetchStatus = value;
+  };
+
+  @action setFailureFetchCount = (value: number): void => {
+    this.failureFetchCount = value;
+  };
+
+  @action setFetchError = (value: string): void => {
+    this.fetchError = value;
+  };
+
+  @action setResponseStatus = (value: number): void => {
+    this.responseStatus = value;
+  };
+
+  @action setCyclicFunctionEnded = (value: boolean): void => {
+    this.cyclicFunctionEnded = value;
   };
 
   @action setIds = (value: string): void => {
@@ -84,42 +112,86 @@ export default class PartialSendStore {
   };
 
   fetchTask = async (): Promise<void> => {
+    this.setFetchStatus(FetchStatus.Loading);
+
     const { getTaskUrl } = window.partialSend.result;
     const response = await fetch(`${getTaskUrl}?taskId=${this.taskId}`);
+    this.setResponseStatus(response.status);
     if (response.ok) {
+      this.setFetchStatus(FetchStatus.Success);
       const json = await response.json();
       const { taskProcessingFinished, taskModel } = json as TaskResponse;
       this.setTaskProcessingFinished(taskProcessingFinished);
       this.setTask(taskModel);
+    } else {
+      this.setFetchStatus(FetchStatus.Failure);
+      if (this.fetchStatus === 401) {
+        this.setFetchError("Сессия устарела. Переоткройте или обновите вкладку.");
+      } else {
+        this.setFetchError("Сервер недоступен. Переоткройте или обновите вкладку.");
+      }
+      this.setFailureFetchCount(this.failureFetchCount + 1);
+    }
+  };
+
+  cyclicFetchTask = async (): Promise<void> => {
+    await this.fetchTask();
+    if (this.fetchStatus === FetchStatus.Success) {
+      if (!this.taskProcessingFinished) {
+        let timerId = setTimeout(this.cyclicFetchTask, 2000);
+        this.setTimerId(timerId);
+      } else {
+        this.setFailureFetchCount(0);
+        this.setFetchError(null);
+        clearTimeout(this.timerId);
+      }
+    }
+
+    if (this.fetchStatus === FetchStatus.Failure) {
+      if (this.failureFetchCount >= MAX_FETCH_COUNT) {
+        clearTimeout(this.timerId);
+      } else {
+        let timerId = setTimeout(this.cyclicFetchTask, 10000);
+        this.setTimerId(timerId);
+      }
     }
   };
 
   fetchActiveTask = async (): Promise<void> => {
     const { getActiveTaskIdUrl } = window.partialSend;
     const response = await fetch(getActiveTaskIdUrl);
+    this.setResponseStatus(response.status);
     if (response.ok) {
+      this.setFetchStatus(FetchStatus.Success);
       const json = await response.json();
       const { taskId } = json as TaskIdResponse;
       this.setTaskId(taskId);
+    } else {
+      this.setFetchStatus(FetchStatus.Failure);
+      if (this.fetchStatus === 401) {
+        this.setFetchError("Сессия устарела. Переоткройте или обновите вкладку.");
+      } else {
+        this.setFetchError("Сервер недоступен. Переоткройте или обновите вкладку.");
+      }
+      this.setFailureFetchCount(this.failureFetchCount + 1);
     }
   };
 
-  cyclicFetchTask = async (): Promise<void> => {
-    await this.fetchTask();
-    if (!this.taskProcessingFinished) {
-      let timerId = setTimeout(this.fetchTask, 2000);
-      this.setTimerId(timerId);
-    } else {
+  cyclicFetchActiveTask = async (): Promise<void> => {
+    await this.fetchActiveTask();
+    if (this.fetchStatus === FetchStatus.Success) {
+      this.setFailureFetchCount(0);
+      this.setFetchError(null);
       clearTimeout(this.timerId);
     }
-  };
 
-  partialSendRefreshData = async (): Promise<void> => {
-    await this.fetchActiveTask();
-    if (this.taskId) {
-      this.setCurrentStep(CurrentStep.Result);
-    } else {
-      this.setCurrentStep(CurrentStep.SendForm);
+    if (this.fetchStatus === FetchStatus.Failure) {
+      if (this.failureFetchCount >= MAX_FETCH_COUNT) {
+        clearTimeout(this.timerId);
+      } else {
+        let timerId = setTimeout(this.cyclicFetchActiveTask, 10000);
+        this.setTimerId(timerId);
+      }
     }
   };
 
@@ -137,12 +209,31 @@ export default class PartialSendStore {
     }
   };
 
-  handleSendNewPackage = (): void => {
-    this.setCurrentStep(CurrentStep.SendForm);
+  resetNetworkInfo = (): void => {
+    this.setFetchStatus(FetchStatus.Idle);
+    this.setFailureFetchCount(0);
+    this.setFetchError(null);
+    this.setResponseStatus(null);
+  };
+
+  resetTaskInfo = (): void => {
     this.setTaskId(null);
     this.setTask(null);
+    this.setTaskProcessingFinished(false);
+  };
+
+  resetForm = (): void => {
+    this.setIsValidForm(true);
+    this.setIdsValidationError("");
     this.setIds("");
     this.setProcessSpecialStatuses(false);
     this.setSendOnStageOnly(false);
+  };
+
+  handleSendNewPackage = (): void => {
+    this.setCurrentStep(CurrentStep.SendForm);
+    this.resetNetworkInfo();
+    this.resetTaskInfo();
+    this.resetForm();
   };
 }
