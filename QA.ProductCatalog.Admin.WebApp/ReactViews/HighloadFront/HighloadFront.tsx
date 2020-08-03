@@ -2,6 +2,8 @@ import React, { ReactNode, Component } from "react";
 import { observer } from "mobx-react";
 import { locale } from "moment";
 
+import { getTaskIntentDependsOnState } from "Shared/Utils";
+
 import Store from "./store";
 
 import { ProgressBar } from "Shared/Components";
@@ -42,15 +44,24 @@ export default class HighloadFront extends Component<Props> {
           <legend>{highloadFront.legend}</legend>
         </fieldset>
         <table className="inner-groupping-table">
+          <colgroup>
+            <col style={{ width: "15%" }} />
+            <col style={{ width: "10%" }} />
+            <col style={{ width: "9%" }} />
+            <col style={{ width: "15%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "14%" }} />
+            <col style={{ width: "23%" }} />
+          </colgroup>
           <thead>
             <tr>
               <th>{columnHeaders.default}</th>
-              <th width="100px">{columnHeaders.language}</th>
-              <th width="100px">{columnHeaders.type}</th>
-              <th width="150px">{columnHeaders.date}</th>
+              <th>{columnHeaders.language}</th>
+              <th>{columnHeaders.type}</th>
+              <th>{columnHeaders.date}</th>
               <th>{columnHeaders.processing}</th>
-              <th width="200px">{columnHeaders.updating}</th>
-              <th width="300px">{columnHeaders.progress}</th>
+              <th>{columnHeaders.updating}</th>
+              <th>{columnHeaders.progress}</th>
             </tr>
           </thead>
           <tbody>
@@ -64,7 +75,7 @@ export default class HighloadFront extends Component<Props> {
                   <td>{task.ChannelLanguage}</td>
                   <td>{task.ChannelState}</td>
                   <td>{getFormattedChannelDate(task.ChannelDate)}</td>
-                  <td width="100px">
+                  <td>
                     {isIndexingAvailable(task.TaskState) && (
                       <a href="#" onClick={() => handleIndexChannel(task)}>
                         {highloadFront.processingIndex}
@@ -73,7 +84,15 @@ export default class HighloadFront extends Component<Props> {
                   </td>
                   <td>{getTimePassed(task.TaskStart, task.TaskEnd)}</td>
                   <td>
-                    <ProgressBar barWidth="120px" defaultBarProps={{ value: task.TaskProgress }} />
+                    <ProgressBar
+                      barWidth="120px"
+                      defaultBarProps={{
+                        value: task.TaskProgress,
+                        intent: getTaskIntentDependsOnState(task.TaskState),
+                        animate: false,
+                        stripes: false
+                      }}
+                    />
                   </td>
                 </tr>
               ))}
