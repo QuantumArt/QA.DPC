@@ -32,7 +32,7 @@
       items: [
         {
           type: "button",
-          text: saveText, 
+          text: saveText,
           enable: false,
           id: "SaveButton",
           click: DefinitionEditor.SaveXml
@@ -52,13 +52,13 @@
         }
       ]
     });
- 
+
     if (DefinitionEditor._saveToDb) DefinitionEditor.InitTree();
     else {
       pmrpc.register({
         publicProcedureName: "DefinitionEditor.SetXml",
         procedure: function(xml) {
-          console.log("DefinitionEditor.SetXml called with", xml);
+          // console.log("DefinitionEditor.SetXml called with", xml);
 
           var xmlEmpty = xml.match(/ contentid="\d+"/i) == null;
 
@@ -239,7 +239,7 @@
         transport: {
           read: function(options) {
             kendo.ui.progress($("#treeViewContainer"), true);
-
+            console.log(options);
             $.ajax({
               url: DefinitionEditor._getDefinitionLevelUrl,
               dataType: "json",

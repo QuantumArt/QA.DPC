@@ -1,5 +1,5 @@
-﻿import { observable, action } from "mobx";
-import parser from "fast-xml-parser";
+﻿import { action, observable, when } from "mobx";
+import { parse } from "fast-xml-parser";
 
 type ValidationError = {
   err: { code: string; msg: string; line: number };
@@ -7,7 +7,7 @@ type ValidationError = {
 
 export default class DefinitionEditorStore {
   @observable xml: string;
-  xmlIsValid: true | ValidationError;
+  @observable rootId: string;
 
   constructor(private settings: DefinitionEditorSettings) {
     window.pmrpc.register({
@@ -15,12 +15,19 @@ export default class DefinitionEditorStore {
       procedure: xml => {
         const xmlEmpty = xml.match(/ contentid="\d+"/i) == null;
         if (!xmlEmpty) {
-          this.xml = xml;
+          this.setXml(xml);
+          this.setRootId(xml);
         } else {
           this.setInitialXml();
         }
       }
     });
+    when(
+      () => this.rootId != null,
+      () => {
+        this.getDefinitionLevel(this.rootId);
+      }
+    );
 
     window.pmrpc.call({
       destination: parent,
@@ -40,14 +47,54 @@ export default class DefinitionEditorStore {
         .replace(/&gt;/g, ">")
         .replace(/&apos;/g, '"')
         .replace(/&quot;/g, "'");
-      this.xmlIsValid = parser.validate(xml);
-      this.xml = xml;
+      this.setXml(xml);
+      this.setRootId(xml);
     } else {
-      this.xml = "";
+      this.setXml("");
     }
   };
 
-  private initTree = () => {};
+  @action
+  private setRootId = (xml: string) => {
+    this.rootId = this.parseXml(xml).Content[`${this.attributeNamePrefix}ContentId`];
+  };
 
-  private setXml = () => {};
+  private getDefinitionLevel = async (path: string) => {
+    const res = await fetch(this.settings.getDefinitionLevelUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8"
+      },
+      body: JSON.stringify({
+        path: `/${path}`,
+        xml: this.xml
+      })
+    });
+    console.log(res);
+    return res;
+  };
+
+  @action
+  private setXml = (xml: string) => {
+    this.xml = xml;
+  };
+
+  private parseXml = (xml: string, mode: boolean | "strict" = false) => {
+    try {
+      return parse(
+        xml,
+        {
+          ignoreAttributes: false,
+          arrayMode: mode,
+          attributeNamePrefix: this.attributeNamePrefix
+        },
+        true
+      );
+    } catch (error) {
+      console.log(error.message);
+      return null;
+    }
+  };
+
+  private attributeNamePrefix: string = "attr_";
 }
