@@ -17,6 +17,9 @@ declare interface Window {
         lastStatusChange: string;
         message: string;
       };
+      utils: {
+        cronExpression: string;
+      };
       tableFilters: {
         //отображение названий в селекте фильтров
         messages: {

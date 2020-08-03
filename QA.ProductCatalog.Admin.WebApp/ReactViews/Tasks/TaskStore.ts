@@ -198,9 +198,22 @@ export class TaskStore {
     }
   };
 
-  fetchRerunTask = async (taskId: number) => {
+  fetchRerunTask = async (taskId: number): Promise<void> => {
     try {
       await apiService.fetchRerunTask(taskId);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  setSchedule = async (
+    taskId: number,
+    isEnabled: boolean,
+    cronExpression: string,
+    repeatType = "on"
+  ): Promise<void> => {
+    try {
+      await apiService.fetchSchedule(taskId, isEnabled, cronExpression, repeatType);
     } catch (e) {
       console.error(e);
     }

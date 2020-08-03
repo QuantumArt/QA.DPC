@@ -1,16 +1,19 @@
 import React, { useEffect } from "react";
 import {
-  FilterTooltip,
-  RerunCell,
-  DateCell,
-  ProgressBarCell,
+  GridHeadFilterTooltip,
+  ProgressBarGridCell,
   StatusCell,
   Grid,
+  MyLastTask,
+  ScheduleGridCell,
+  DateGridCell,
+  RerunGridCell
+} from "./Components";
+import {
   StatusFilterContent,
   ScheduleFilterContent,
-  FilterButtonsWrapper,
-  MyLastTask
-} from "./Components";
+  FilterButtonsWrapper
+} from "./Components/GridHeadFilterTooltip/Subcomponents";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
@@ -31,7 +34,7 @@ export const Task = observer(() => {
     statusValues
   } = window.QP.Tasks.tableFields;
 
-  console.log(statusValues);
+  console.log(window.QP.Tasks);
 
   useEffect(() => {
     store.init();
@@ -50,21 +53,24 @@ export const Task = observer(() => {
       },
       {
         Header: (
-          <FilterTooltip label={status} filter={store.filters.get(TaskGridFilterType.StatusFilter)}>
+          <GridHeadFilterTooltip
+            label={status}
+            filter={store.filters.get(TaskGridFilterType.StatusFilter)}
+          >
             <FilterButtonsWrapper
               acceptLabel={window.QP.Tasks.tableFilters.messages.filter}
               revokeLabel={window.QP.Tasks.tableFilters.messages.clear}
             >
               <StatusFilterContent options={statusValues} />
             </FilterButtonsWrapper>
-          </FilterTooltip>
+          </GridHeadFilterTooltip>
         ),
         accessor: "StateId",
         Cell: StatusCell
       },
       {
         Header: (
-          <FilterTooltip
+          <GridHeadFilterTooltip
             label={schedule}
             filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
           >
@@ -79,9 +85,20 @@ export const Task = observer(() => {
                 ]}
               />
             </FilterButtonsWrapper>
-          </FilterTooltip>
+          </GridHeadFilterTooltip>
         ),
-        accessor: "HasSchedule"
+        accessor: "HasSchedule",
+        // Cell: ScheduleCell,
+        Cell: (cellProps: any) => {
+          const { Id } = cellProps.row.values;
+          return (
+            <ScheduleGridCell
+              taskId={Id}
+              scheduleCronExpression={cellProps.data[cellProps.row.index].ScheduleCronExpression}
+              hasSchedule={cellProps.value}
+            />
+          );
+        }
         //что-то сделать с этими параметрами
         // ScheduleCronExpression: null
         // ScheduledFromTaskId: null
@@ -91,7 +108,7 @@ export const Task = observer(() => {
         accessor: "Progress",
         Cell: (cellProps: any) => {
           const stateId = cellProps.cell.row.values.StateId;
-          return <ProgressBarCell value={cellProps.value} stateId={stateId} />;
+          return <ProgressBarGridCell value={cellProps.value} stateId={stateId} />;
         }
       },
       {
@@ -102,14 +119,14 @@ export const Task = observer(() => {
       {
         Header: created,
         accessor: "CreatedTime",
-        Cell: DateCell,
+        Cell: DateGridCell,
         className: "grid__date-cell",
         truncate: { onWidth: 110, possibleRows: 1 }
       },
       {
         Header: lastStatusChange,
         accessor: "LastStatusChangeTime",
-        Cell: DateCell,
+        Cell: DateGridCell,
         className: "grid__date-cell",
         truncate: { onWidth: 110, possibleRows: 1 }
       },
@@ -125,7 +142,7 @@ export const Task = observer(() => {
         className: "grid__rerun-cell",
         Cell: (cellProps: any) => {
           const Id = cellProps.row.values.Id;
-          return <RerunCell id={Id} method={store.fetchRerunTask} />;
+          return <RerunGridCell id={Id} method={store.fetchRerunTask} />;
         }
       }
     ],

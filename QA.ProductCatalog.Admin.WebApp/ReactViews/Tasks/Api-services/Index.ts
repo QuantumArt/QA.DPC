@@ -1,6 +1,6 @@
-import { GridResponse } from "Tasks/Api-services/DataContracts/GridResponse";
-import { IGridResponse } from "Tasks/Api-services/Api-interfaces/Grid-response";
-import { mapGridResponse } from "Tasks/Api-services/Mappers/Map-grid-response";
+import { GridResponse } from "./DataContracts/GridResponse";
+import { IGridResponse } from "./ApiInterfaces/GridResponse";
+import { mapGridResponse } from "./Mappers/MapGridResponse";
 import qs from "qs";
 import { FilterOptions, PaginationOptions } from "Tasks/Api-services/DataContracts";
 
@@ -55,6 +55,40 @@ class ApiService {
     });
     const requestUrl = `${rootUrl}/Task/Rerun?${queryStr}`;
     await fetch(requestUrl, { method: "POST" });
+  };
+
+  /**
+   * POST /​Task/SaveSchedule
+   *
+   * @param taskId id задачи
+   * @param cronExpression
+   * @param repeatType on/
+   * @param isEnabled boolean | [boolean]
+   *
+   */
+  fetchSchedule = async (
+    taskId: number,
+    isEnabled: boolean,
+    cronExpression: string,
+    repeatType = "on"
+  ): Promise<void> => {
+    const queryStr: string = qs.stringify({
+      taskId
+    });
+    const requestUrl = `${rootUrl}/Task/SaveSchedule?${queryStr}`;
+    const response = await fetch(requestUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        Enabled: isEnabled === true ? [true, false] : false,
+        TaskId: taskId,
+        CronExpression: cronExpression,
+        repeatType
+      }),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      }
+    });
+    console.log(response);
   };
 }
 

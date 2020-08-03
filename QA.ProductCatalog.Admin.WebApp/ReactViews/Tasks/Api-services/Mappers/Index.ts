@@ -1,2 +1,2 @@
-export * from "./Map-grid-response";
-export * from "./Map-task";
+export * from "./MapGridResponse";
+export * from "./MapTask";
