@@ -97,17 +97,18 @@ export default class PartialSendStore {
 
   handleValidateForm = (): void => {
     if (this.ids) {
-      const parsedIds = [
-        ...new Set(
-          this.ids
-            .split(/[,;\s\r?\n]/)
-            .filter(id => id.length > 0)
-            .map(id => parseInt(id))
-            .filter(id => !isNaN(id))
-        )
-      ];
+      const parsedIds = this.ids
+        .split(/[,;\s\r?\n]/)
+        .filter(id => id.length > 0)
+        .map(id => parseInt(id));
 
-      if (parsedIds.length > 0) {
+      const notNumbers = parsedIds.filter(id => isNaN(id));
+      const uniqueIds = [...new Set(parsedIds.filter(id => !isNaN(id)))];
+
+      if (notNumbers.length > 0) {
+        this.setIsValidForm(false);
+        this.setIdsValidationError("Incorrect Ids list");
+      } else if (uniqueIds.length > 0) {
         this.setIsValidForm(true);
         this.setIdsValidationError(null);
       } else {

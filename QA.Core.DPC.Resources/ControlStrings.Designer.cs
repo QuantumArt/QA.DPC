@@ -448,7 +448,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &lt;span class=&quot;highlighted&quot;&gt;&quot;,&quot;&lt;/span&gt;, &lt;span class=&quot;highlighted&quot;&gt;&quot;;&quot;&lt;/span&gt;, &lt;span class=&quot;highlighted&quot;&gt;space&lt;/span&gt;, &lt;span class=&quot;highlighted&quot;&gt;newline&lt;/span&gt;).
+        ///   Looks up a localized string similar to This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &lt;span class=&quot;highlighted&quot;&gt;,&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;highlighted&quot;&gt;;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;highlighted&quot;&gt;space&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;highlighted&quot;&gt;newline&lt;/span&gt;).
         /// </summary>
         public static string PartialSendDescription {
             get {
@@ -615,6 +615,15 @@ namespace QA.Core.DPC.Resources {
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to s.
+        /// </summary>
+        public static string Seconds {
+            get {
+                return ResourceManager.GetString("Seconds", resourceCulture);
             }
         }
         

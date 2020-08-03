@@ -253,7 +253,7 @@
     <value>Send Products to all fronts (live and stage)</value>
   </data>
   <data name="PartialSendDescription" xml:space="preserve">
-    <value>This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &lt;span class="highlighted"&gt;","&lt;/span&gt;, &lt;span class="highlighted"&gt;";"&lt;/span&gt;, &lt;span class="highlighted"&gt;space&lt;/span&gt;, &lt;span class="highlighted"&gt;newline&lt;/span&gt;)</value>
+    <value>This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &lt;span class="highlighted"&gt;,&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;space&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;newline&lt;/span&gt;)</value>
   </data>
   <data name="SendProducts" xml:space="preserve">
     <value>Send Products</value>
@@ -329,5 +329,8 @@
   </data>
   <data name="EndEditXml" xml:space="preserve">
     <value>Finish XML Editing</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>s</value>
   </data>
 </root>

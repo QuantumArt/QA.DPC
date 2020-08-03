@@ -1,5 +1,6 @@
 ﻿@using QA.Core.DPC.Resources
 @using QA.ProductCatalog.Integration.Notifications
+@using QA.Core.DPC.Resources
 @model ConfigurationInfo
 
 <div class="formLayout">
@@ -150,7 +151,7 @@
           <dl class="plain-field row">
             <dt title="@ChannelStrings.SendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.SendInterval</dt>
             <dd style="" class="plain-field-value field">
-              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) <span class="half-transparent">сек</span></span>
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) <span class="half-transparent">@ControlStrings.Seconds</span></span>
             </dd>
             @if (Model.CurrentSettings.CheckInterval != Model.ActualSettings.CheckInterval)
             {
@@ -162,7 +163,7 @@
           <dl class="plain-field row">
             <dt title="@ChannelStrings.ErrorSendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.ErrorSendInterval</dt>
             <dd style="" class="plain-field-value field">
-              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) <span class="half-transparent">сек</span></span>
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) <span class="half-transparent">@ControlStrings.Seconds</span></span>
             </dd>
             @if (Model.CurrentSettings.WaitIntervalAfterErrors != Model.ActualSettings.WaitIntervalAfterErrors)
             {
@@ -198,7 +199,7 @@
           <dl class="plain-field row">
             <dt title="@ChannelStrings.NotifyTimeoutDesc" class="plain-field-capture label " style="">@ChannelStrings.NotifyTimeout</dt>
             <dd style="" class="plain-field-value field">
-              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) <span class="half-transparent">сек</span></span>
+              <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) <span class="half-transparent">@ControlStrings.Seconds</span></span>
             </dd>
             @if (Model.CurrentSettings.TimeOut != Model.ActualSettings.TimeOut)
             {

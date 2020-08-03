@@ -633,5 +633,6 @@ body,
 }
 
 .highlighted {
+  padding: 0 8px;
   background-color: rgba(206, 217, 224, 0.6);
 }

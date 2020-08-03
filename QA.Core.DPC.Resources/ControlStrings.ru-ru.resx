@@ -253,10 +253,7 @@
     <value>Отправка продуктов на все витрины (live и stage)</value>
   </data>
   <data name="PartialSendDescription" xml:space="preserve">
-    <value>Данная утилита позволяет публиковать и отправлять продукты на витрины, &lt;br /&gt;
-      а также удалять с витрин архивные, невидимые или по ошибке не удаленные продукты. &lt;br /&gt;
-      В поле следует вводить список Id региональных продуктов (возможные разделители: ",", ";", пробел, новая строчка)
-    </value>
+    <value>Данная утилита позволяет публиковать и отправлять продукты на витрины, а также удалять с витрин архивные, невидимые или по ошибке не удаленные продукты. В поле следует вводить список Id региональных продуктов (возможные разделители: &lt;span class="highlighted"&gt;,&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;пробел&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;новая строчка&lt;/span&gt;)</value>
   </data>
   <data name="SendProducts" xml:space="preserve">
     <value>Отправить продукты</value>
@@ -332,5 +329,8 @@
   </data>
   <data name="EndEditXml" xml:space="preserve">
     <value>Завершить правку XML</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>сек</value>
   </data>
 </root>

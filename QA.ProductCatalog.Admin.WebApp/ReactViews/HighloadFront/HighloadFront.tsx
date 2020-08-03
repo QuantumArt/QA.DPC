@@ -1,6 +1,7 @@
 import React, { ReactNode, Component } from "react";
 import { observer } from "mobx-react";
 import { locale } from "moment";
+import { Checkbox } from "@blueprintjs/core";
 
 import { getTaskIntentDependsOnState } from "Shared/Utils";
 
@@ -70,7 +71,7 @@ export default class HighloadFront extends Component<Props> {
               tasks.map((task, index) => (
                 <tr key={index}>
                   <td>
-                    <input disabled type="checkbox" checked={task.IsDefault} />
+                    <Checkbox disabled checked={task.IsDefault} />
                   </td>
                   <td>{task.ChannelLanguage}</td>
                   <td>{task.ChannelState}</td>
