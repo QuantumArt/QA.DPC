@@ -29,7 +29,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _userProvider = userProvider;
         }
 
-        public ActionResult Index(string[] ignoredStatus, bool localize = false, bool beta = false)
+        public ActionResult Index(string[] ignoredStatus, bool localize = false)
         {
             ViewBag.Localize = localize;
             ViewBag.IgnoredStatus = ignoredStatus ?? Enumerable.Empty<string>().ToArray();
