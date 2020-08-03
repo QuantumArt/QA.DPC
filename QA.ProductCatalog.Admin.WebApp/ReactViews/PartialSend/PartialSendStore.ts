@@ -97,7 +97,16 @@ export default class PartialSendStore {
 
   handleValidateForm = (): void => {
     if (this.ids) {
-      const parsedIds = [...new Set(this.ids.split(/[,;\s\r?\n]/).filter(id => id.length > 0))];
+      const parsedIds = [
+        ...new Set(
+          this.ids
+            .split(/[,;\s\r?\n]/)
+            .filter(id => id.length > 0)
+            .map(id => parseInt(id))
+            .filter(id => !isNaN(id))
+        )
+      ];
+
       if (parsedIds.length > 0) {
         this.setIsValidForm(true);
         this.setIdsValidationError(null);
