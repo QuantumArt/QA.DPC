@@ -44,7 +44,10 @@ export default class SendForm extends Component<Props> {
       <div className="formLayout PartialSend">
         <fieldset>
           <legend>{legend}</legend>
-          <p className="PartialSend__description">{description}</p>
+          <p
+            className="PartialSend__description"
+            dangerouslySetInnerHTML={{ __html: description }}
+          />
           <form
             onSubmit={event => {
               event.preventDefault();

@@ -448,7 +448,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &quot;,&quot;, &quot;;&quot;, space, newline).
+        ///   Looks up a localized string similar to This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &lt;span class=&quot;highlighted&quot;&gt;&quot;,&quot;&lt;/span&gt;, &lt;span class=&quot;highlighted&quot;&gt;&quot;;&quot;&lt;/span&gt;, &lt;span class=&quot;highlighted&quot;&gt;space&lt;/span&gt;, &lt;span class=&quot;highlighted&quot;&gt;newline&lt;/span&gt;).
         /// </summary>
         public static string PartialSendDescription {
             get {

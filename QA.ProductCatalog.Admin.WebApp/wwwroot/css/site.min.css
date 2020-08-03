@@ -483,3 +483,6 @@ body,
 .alert__icon {
   margin-right: 10px;
 }
+.highlighted {
+  background-color: rgba(206, 217, 224, 0.6);
+}
