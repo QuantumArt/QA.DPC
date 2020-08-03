@@ -96,6 +96,7 @@ export default class SendForm extends Component<Props> {
             <input type="hidden" name="stageOnly" value="false" />
             <Button
               type="submit"
+              intent={Intent.PRIMARY}
               disabled={fetchStatus === FetchStatus.Failure}
               text={sendButton}
             />
