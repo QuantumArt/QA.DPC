@@ -1,8 +1,8 @@
 ﻿import { action, computed, observable, runInAction } from "mobx";
 import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
-import { apiService } from "Tasks/Api-services";
-import { FilterOptions, PaginationOptions, Task } from "Tasks/Api-services/DataContracts";
+import { apiService } from "Tasks/ApiServices";
+import { FilterOptions, PaginationOptions, Task } from "Tasks/ApiServices/DataContracts";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {

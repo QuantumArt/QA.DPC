@@ -1,5 +1,5 @@
 import { IGridResponse } from "../ApiInterfaces/GridResponse";
-import { GridResponse } from "Tasks/Api-services/DataContracts";
+import { GridResponse } from "Tasks/ApiServices/DataContracts";
 import { mapTask } from "./MapTask";
 
 export const mapGridResponse = (x: IGridResponse): GridResponse => {

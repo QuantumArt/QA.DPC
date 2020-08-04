@@ -1,6 +1,6 @@
 import React from "react";
 import { Callout, Icon, IProgressBarProps, Tooltip } from "@blueprintjs/core";
-import { Task } from "Tasks/Api-services/DataContracts";
+import { Task } from "Tasks/ApiServices/DataContracts";
 import { DateGridCell, StatusCell } from "Tasks/Components";
 import { getTaskIntentDependsOnStatus } from "Shared/Utils";
 import ProgressBar from "Shared/Components/ProgressBar";

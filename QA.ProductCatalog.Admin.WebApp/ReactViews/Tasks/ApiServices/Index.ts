@@ -2,7 +2,7 @@ import { GridResponse } from "./DataContracts/GridResponse";
 import { IGridResponse } from "./ApiInterfaces/GridResponse";
 import { mapGridResponse } from "./Mappers/MapGridResponse";
 import qs from "qs";
-import { FilterOptions, PaginationOptions } from "Tasks/Api-services/DataContracts";
+import { FilterOptions, PaginationOptions } from "Tasks/ApiServices/DataContracts";
 import BaseApiService from "Shared/BaseApiService";
 
 class ApiService extends BaseApiService {

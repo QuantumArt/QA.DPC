@@ -1,4 +1,4 @@
-import { Task } from "Tasks/Api-services/DataContracts/Task";
+import { Task } from "Tasks/ApiServices/DataContracts/Task";
 
 export class GridResponse {
   tasks: Task[];
