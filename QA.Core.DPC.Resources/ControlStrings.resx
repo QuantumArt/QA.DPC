@@ -233,7 +233,7 @@
   </data>
   <data name="Remove" xml:space="preserve">
     <value>remove</value>
-  </data>  
+  </data>
   <data name="SetNull" xml:space="preserve">
     <value>set null reference</value>
   </data>
@@ -253,10 +253,7 @@
     <value>Send Products to all fronts (live and stage)</value>
   </data>
   <data name="PartialSendDescription" xml:space="preserve">
-    <value>This utility allows publishing and sending product to fronts 
-      along with deleting archived, invisible or ocassionally deleted products&lt;br /&gt;
-      You should enter list of regional or marketing product Ids (possible separators: &quot;,&quot;, &quot;;&quot;, space, newline)
-    </value>
+    <value>This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &lt;span class="highlighted"&gt;,&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;space&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;newline&lt;/span&gt;)</value>
   </data>
   <data name="SendProducts" xml:space="preserve">
     <value>Send Products</value>
@@ -286,7 +283,7 @@
     <value>Some products are required to be published before send to fronts</value>
   </data>
   <data name="ClickPublishAndSendButton" xml:space="preserve">
-    <value>To publish these products please click &quot;Publish and Send&quot; button</value>
+    <value>To publish these products please click "Publish and Send" button</value>
   </data>
   <data name="JsonFieldName" xml:space="preserve">
     <value>JSON Field Name</value>
@@ -322,15 +319,18 @@
     <value>Cache</value>
   </data>
   <data name="DictionaryCachingSettings" xml:space="preserve">
-    <value>Dictionary caching settings</value>  
+    <value>Dictionary caching settings</value>
   </data>
   <data name="MissingInQp" xml:space="preserve">
-    <value>Field is missing in QP</value>  
+    <value>Field is missing in QP</value>
   </data>
   <data name="EditXml" xml:space="preserve">
-    <value>Edit XML</value>  
+    <value>Edit XML</value>
   </data>
   <data name="EndEditXml" xml:space="preserve">
-    <value>Finish XML Editing</value>  
+    <value>Finish XML Editing</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>s</value>
   </data>
 </root>

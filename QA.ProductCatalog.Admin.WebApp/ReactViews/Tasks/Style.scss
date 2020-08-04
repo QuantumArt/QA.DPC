@@ -1,0 +1,29 @@
+.task-wrapper {
+  font-family: SFProText, sans-serif;
+}
+
+.filter-cell {
+  color: #137cbd;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  &__icon {
+  }
+}
+
+.filter-options-wrap {
+  padding: 16px 12px 8px 12px;
+  min-width: 148px;
+  &__buttons-wrap {
+    display: flex;
+    flex-direction: row;
+    //если нужно растянуть кнопки
+    //justify-content: space-between;
+  }
+  &__button {
+    &:focus {
+      outline: none;
+    }
+    margin: 4px;
+  }
+}

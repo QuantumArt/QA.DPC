@@ -1,0 +1,8 @@
+.filter-options-select {
+  select,
+  &:focus {
+    outline: none;
+  }
+  padding: 4px;
+  width: 100%;
+}
