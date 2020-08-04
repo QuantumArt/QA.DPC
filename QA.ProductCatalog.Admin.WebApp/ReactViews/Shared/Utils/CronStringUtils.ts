@@ -1,6 +1,5 @@
 ﻿import _ from "lodash";
-import { CronUnitType } from "Shared/Enums";
-export type PeriodType = "year" | "month" | "week" | "day" | "hour" | "minute" | "reboot";
+import { CronPeriodType, CronUnitType } from "Shared/Enums";
 
 export type Unit = {
   type: CronUnitType;
@@ -139,59 +138,6 @@ function isFull(values: number[], unit: Unit) {
   return values.length === unit.max - unit.min + 1;
 }
 
-// /**
-//  * Returns the difference between first and second elements in the range
-//  */
-// function getStep(values: number[]): number {
-//   if (values.length > 2) {
-//     const step = values[1] - values[0];
-//
-//     if (step > 1) {
-//       return step;
-//     }
-//   }
-//   return null;
-// }
-//
-// /**
-//  * Returns true if the range can be represented as an interval
-//  */
-// function isInterval(values: number[], step: number) {
-//   for (let i = 1; i < values.length; i++) {
-//     const prev = values[i - 1];
-//     const value = values[i];
-//
-//     if (value - prev !== step) {
-//       return false;
-//     }
-//   }
-//
-//   return true;
-// }
-// /**
-//  * Returns the smallest value in the range
-//  */
-// function getMin(values: number[]) {
-//   return values[0];
-// }
-//
-// /**
-//  * Returns the largest value in the range
-//  */
-// function getMax(values: number[]) {
-//   return values[values.length - 1];
-// }
-// /**
-//  * Returns true if the range contains all the interval values
-//  */
-// function isFullInterval(values: number[], unit: Unit, step: number) {
-//   const min = getMin(values);
-//   const max = getMax(values);
-//   const haveAllValues = values.length === (max - min) / step + 1;
-//
-//   return min === unit.min && max + step > unit.max && haveAllValues;
-// }
-
 /**
  * Returns the range as an array of ranges
  * defined as arrays of positive integers
@@ -285,119 +231,37 @@ export function partToString(
   return retval;
 }
 
-export type ShortcutsType =
-  | "@yearly"
-  | "@annually"
-  | "@monthly"
-  | "@weekly"
-  | "@daily"
-  | "@midnight"
-  | "@hourly"
-  | "@reboot";
-export type Shortcuts = boolean | ShortcutsType[];
-export interface ShortcutsValues {
-  name: ShortcutsType;
-  value: string;
-}
-// const SUPPORTED_SHORTCUTS: ShortcutsValues[] = [
-//   {
-//     name: '@yearly',
-//     value: '0 0 1 1 *',
-//   },
-//   {
-//     name: '@annually',
-//     value: '0 0 1 1 *',
-//   },
-//   {
-//     name: '@monthly',
-//     value: '0 0 1 * *',
-//   },
-//   {
-//     name: '@weekly',
-//     value: '0 0 * * 0',
-//   },
-//   {
-//     name: '@daily',
-//     value: '0 0 * * *',
-//   },
-//   {
-//     name: '@midnight',
-//     value: '0 0 * * *',
-//   },
-//   {
-//     name: '@hourly',
-//     value: '0 * * * *',
-//   },
-// ]
 /**
  * Set values from cron string
  */
 export function getValuesFromCronString(
   cronString: string
-  // setMinutes: SetValueNumbersOrUndefined,
-  // setHours: SetValueNumbersOrUndefined,
-  // setMonthDays: SetValueNumbersOrUndefined,
-  // setMonths: SetValueNumbersOrUndefined,
-  // setWeekDays: SetValueNumbersOrUndefined,
-  // setPeriod: SetValuePeriod,
-  // shortcuts: Shortcuts = [
-  //   '@yearly',
-  //   '@annually',
-  //   '@monthly',
-  //   '@weekly',
-  //   '@daily',
-  //   '@midnight',
-  //   '@hourly',
-  // ],
-): { cronParts: number[][]; period: PeriodType } | null {
-  //
-  // // Shortcuts management
-  // if (
-  //   shortcuts &&
-  //   (shortcuts === true || shortcuts.includes(cronString as any))
-  // ) {
-  //   if (cronString === '@reboot') {
-  //     // setPeriod('reboot')
-  //
-  //     return null
-  //   }
-  //
-  //   // Convert a shortcut to a valid cron string
-  //   const shortcutObject = SUPPORTED_SHORTCUTS.find(
-  //     (supportedShortcut) => supportedShortcut.name === cronString
-  //   )
-  //
-  //   if (shortcutObject) {
-  //     cronString = shortcutObject.value
-  //   }
-  // }
-
+): { cronParts: number[][]; period: CronPeriodType } | null {
   try {
     const cronParts = parseCronString(cronString);
     const period = getPeriodFromCronparts(cronParts);
     return { cronParts, period };
   } catch (err) {
     return null;
-    // Specific errors are not handle (yet)
   }
 }
 
 /**
  * Find the period from cron parts
  */
-function getPeriodFromCronparts(cronParts: number[][]): PeriodType {
+function getPeriodFromCronparts(cronParts: number[][]): CronPeriodType {
   if (cronParts[3].length > 0) {
-    return "year";
+    return CronPeriodType.Year;
   } else if (cronParts[2].length > 0) {
-    return "month";
+    return CronPeriodType.Month;
   } else if (cronParts[4].length > 0) {
-    return "week";
+    return CronPeriodType.Week;
   } else if (cronParts[1].length > 0) {
-    return "day";
+    return CronPeriodType.Day;
   } else if (cronParts[0].length > 0) {
-    return "hour";
+    return CronPeriodType.Hour;
   }
-  return "minute";
+  return CronPeriodType.Minute;
 }
 
 /**

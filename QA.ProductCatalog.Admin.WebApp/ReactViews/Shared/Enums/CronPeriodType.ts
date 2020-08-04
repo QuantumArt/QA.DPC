@@ -1,9 +1,9 @@
 ﻿export enum CronPeriodType {
-  Year,
-  Month,
-  Week,
-  Day,
-  Hour,
-  Minute,
-  Reboot
+  Year = "year",
+  Month = "month",
+  Week = "week",
+  Day = "day",
+  Hour = "hour",
+  Minute = "minute",
+  Reboot = "reboot"
 }

@@ -9,14 +9,15 @@ import { CronUnitType } from "Shared/Enums";
 interface IProps {
   type: CronUnitType;
   setValue: (val: ICronsTagModel[]) => void;
-  values: ICronsTagModel[];
+  values: ICronsTagModel[] | undefined;
+  isShouldClear: boolean;
 }
 interface ISelectItem {
   label: string;
   value: number;
 }
 
-export const CronsMultiselect = ({ type, setValue, values }: IProps) => {
+export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IProps) => {
   const UNIT = UNITS.get(type);
 
   const items = React.useMemo((): ISelectItem[] => {
@@ -61,7 +62,15 @@ export const CronsMultiselect = ({ type, setValue, values }: IProps) => {
     }
   }, []);
 
-  const [multiSelectValues, setMultiSelectValues] = useState<ISelectItem[] | undefined>([]);
+  const getFromParenState = () => {
+    if (!values) return [];
+    const deep = _.flatten(values.map(val => val.values));
+    return deep.length ? items.filter(item => deep.includes(item.value)) : [];
+  };
+
+  const [multiSelectValues, setMultiSelectValues] = useState<ISelectItem[] | undefined>(
+    getFromParenState()
+  );
   const [parsedMultiSelectValues, setParsedMultiSelectValues] = useState<
     ICronsTagModel[] | undefined
   >(values);
@@ -124,6 +133,12 @@ export const CronsMultiselect = ({ type, setValue, values }: IProps) => {
       return `${item.label}. ${normalizedTitle}`.indexOf(normalizedQuery) >= 0;
     }
   };
+
+  if (isShouldClear) {
+    debugger;
+    setMultiSelectValues([]);
+    setParsedMultiSelectValues([]);
+  }
 
   return (
     <MultiSelect<ISelectItem | ICronsTagModel>

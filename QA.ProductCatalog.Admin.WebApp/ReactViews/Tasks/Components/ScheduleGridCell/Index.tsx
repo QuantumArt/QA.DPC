@@ -10,22 +10,15 @@ import {
   Switch
 } from "@blueprintjs/core";
 import { DateInput, TimePicker } from "@blueprintjs/datetime";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import cn from "classnames";
 import { Position } from "@blueprintjs/core/lib/esm/common/position";
-import { CronsMultiselect } from "Shared/Components";
-import { CronSelectRow, SelectRow } from "./Subcomponents";
-import {
-  ICronsTagModel,
-  partToString,
-  PeriodType,
-  getValuesFromCronString,
-  UNITS
-} from "Shared/Utils";
+import { IMultiSelectForm, MultiSelectFormGroup, SelectRow } from "./Subcomponents";
+import { ICronsTagModel, partToString, getValuesFromCronString, UNITS } from "Shared/Utils";
 import { useStore } from "Tasks/UseStore";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import "./Style.scss";
-import { CronUnitType } from "Shared/Enums";
+import { CronPeriodType, CronUnitType } from "Shared/Enums";
 
 interface IProps {
   taskId: number;
@@ -38,7 +31,8 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
   const [isOpen, setIsOpen] = useState(false);
   const [taskSetType, setTaskSetType] = useState("repeat");
   const [isEnable, setIsEnable] = useState(hasSchedule);
-  const [period, setPeriod] = useState("minute" as PeriodType);
+  const [period, setPeriod] = useState(CronPeriodType.Minute);
+  const [isShouldClear, setIsShouldClear] = useState(false);
 
   const [monthDays, setMonthDays] = useState<ICronsTagModel[] | undefined>();
   const [months, setMonths] = useState<ICronsTagModel[] | undefined>();
@@ -46,7 +40,10 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
   const [hours, setHours] = useState<ICronsTagModel[] | undefined>();
   const [minutes, setMinutes] = useState<ICronsTagModel[] | undefined>();
 
-  const parsedCronsModel = () => {
+  const [singleDate, setSingleDate] = useState<Date | undefined>(new Date());
+  const [singleTime, setSingleTime] = useState<Date | undefined>(new Date());
+
+  const parsedCronsMultiSelectsModel = () => {
     const models = [monthDays, months, weekDays, hours, minutes];
     const ModelParser = (model: ICronsTagModel[]): string => {
       if (!model || !model.length) return "*";
@@ -58,15 +55,121 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
     return models.map(ModelParser).join("+");
   };
 
-  const acceptSchedule = (): void => {
-    store.setSchedule(taskId, isEnable, parsedCronsModel(), "on");
+  const parseCronsSingleModel = () => {
+    return `${singleTime.getMinutes()}+${singleTime.getHours()}+${singleDate.getDate()}+${singleDate.getMonth() +
+      1}+?+${singleDate.getFullYear()}`;
   };
-  //
-  // const getMultiSelectProps = (): {
-  //
-  // } => {
-  //
-  // }
+
+  const acceptSchedule = (): void => {
+    if (taskSetType === "repeat") {
+      store.setSchedule(taskId, isEnable, parsedCronsMultiSelectsModel(), "on");
+    } else {
+      store.setSchedule(taskId, isEnable, parseCronsSingleModel(), "on");
+    }
+  };
+
+  const multiSelectPropsByUnit = useMemo(
+    () =>
+      new Map<CronUnitType, IMultiSelectForm>([
+        [
+          CronUnitType.MonthDays,
+          {
+            label: "День месяца",
+            selectProps: {
+              isShouldClear,
+              values: monthDays,
+              type: CronUnitType.MonthDays,
+              setValue: v => setMonthDays(v)
+            }
+          }
+        ],
+        [
+          CronUnitType.Months,
+          {
+            label: "Месяц",
+            selectProps: {
+              isShouldClear,
+              values: months,
+              type: CronUnitType.Months,
+              setValue: v => setMonths(v)
+            }
+          }
+        ],
+        [
+          CronUnitType.Hours,
+          {
+            label: "Часы",
+            selectProps: {
+              isShouldClear,
+              values: hours,
+              type: CronUnitType.Hours,
+              setValue: v => setHours(v)
+            }
+          }
+        ],
+        [
+          CronUnitType.Minutes,
+          {
+            label: "Минуты",
+            selectProps: {
+              isShouldClear,
+              values: minutes,
+              type: CronUnitType.Minutes,
+              setValue: v => setMinutes(v)
+            }
+          }
+        ],
+        [
+          CronUnitType.WeekDays,
+          {
+            label: "День недели",
+            selectProps: {
+              isShouldClear,
+              values: weekDays,
+              type: CronUnitType.WeekDays,
+              setValue: v => setWeekDays(v)
+            }
+          }
+        ]
+      ]),
+    [isShouldClear, weekDays, setHours, hours, months, minutes]
+  );
+
+  const getMultiSelectProps = useMemo(
+    (): IMultiSelectForm[] => {
+      switch (period) {
+        case CronPeriodType.Week:
+          return [
+            multiSelectPropsByUnit.get(CronUnitType.WeekDays),
+            multiSelectPropsByUnit.get(CronUnitType.Hours),
+            multiSelectPropsByUnit.get(CronUnitType.Minutes)
+          ];
+        case CronPeriodType.Year:
+          return [
+            multiSelectPropsByUnit.get(CronUnitType.MonthDays),
+            multiSelectPropsByUnit.get(CronUnitType.Months),
+            multiSelectPropsByUnit.get(CronUnitType.Hours),
+            multiSelectPropsByUnit.get(CronUnitType.Minutes)
+          ];
+        case CronPeriodType.Day:
+          return [
+            multiSelectPropsByUnit.get(CronUnitType.Hours),
+            multiSelectPropsByUnit.get(CronUnitType.Minutes)
+          ];
+        case CronPeriodType.Hour:
+          return [multiSelectPropsByUnit.get(CronUnitType.Minutes)];
+        case CronPeriodType.Month:
+          return [
+            multiSelectPropsByUnit.get(CronUnitType.MonthDays),
+            multiSelectPropsByUnit.get(CronUnitType.Hours),
+            multiSelectPropsByUnit.get(CronUnitType.Minutes)
+          ];
+        default:
+          return [];
+      }
+    },
+    [period]
+  );
 
   useEffect(
     () => {
@@ -74,8 +177,8 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
         if (hasSchedule && scheduleCronExpression) {
           const cronParts = getValuesFromCronString(scheduleCronExpression);
           setPeriod(cronParts.period);
-          setHours(partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Hours), true));
-          setMinutes(partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Minutes), true));
+          setMinutes(partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true));
+          setHours(partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true));
           setMonthDays(
             partToString(cronParts.cronParts[2], UNITS.get(CronUnitType.MonthDays), true)
           );
@@ -88,6 +191,18 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
     [hasSchedule, scheduleCronExpression]
   );
 
+  useEffect(
+    () => {
+      const clear = () => {
+        if (isShouldClear) {
+          setIsShouldClear(false);
+        }
+      };
+      clear();
+    },
+    [isShouldClear, setIsShouldClear]
+  );
+
   const clearValues = (): void => {
     setMonthDays(undefined);
     setMonths(undefined);
@@ -95,6 +210,15 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
     setHours(undefined);
     setMinutes(undefined);
   };
+
+  const periodItems = [
+    { label: "Минуту", value: CronPeriodType.Minute },
+    { label: "Час", value: CronPeriodType.Hour },
+    { label: "День", value: CronPeriodType.Day },
+    { label: "Неделю", value: CronPeriodType.Week },
+    { label: "Месяц", value: CronPeriodType.Month },
+    { label: "Год", value: CronPeriodType.Year }
+  ];
 
   return (
     <div>
@@ -116,7 +240,6 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
             <Switch
               alignIndicator={"left"}
               labelElement={"Расписание активно"}
-              defaultChecked={false}
               checked={isEnable}
               className="schedule-popup__switch"
               onChange={(): void => {
@@ -141,8 +264,8 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
             />
           </SelectRow>
 
-          <SelectRow label="Период повторения">
-            {taskSetType === "repeat" && (
+          {taskSetType === "repeat" && (
+            <SelectRow label="Период повторения">
               <>
                 <span className="just-label">Каждый(ую)</span>
                 {"   "}
@@ -151,179 +274,49 @@ export const ScheduleGridCell = ({ taskId, hasSchedule, scheduleCronExpression }
                   iconProps={{ icon: "caret-down" }}
                   value={period}
                   onChange={event => {
-                    setPeriod(event.target.value as PeriodType);
+                    clearValues();
+                    setPeriod((event.target.value as unknown) as CronPeriodType);
+                  }}
+                  options={periodItems}
+                />
+                <Button
+                  icon="cross"
+                  outlined
+                  onClick={() => {
+                    setIsShouldClear(true);
                     clearValues();
                   }}
-                  options={[
-                    { label: "Минуту", value: "minute" },
-                    { label: "Час", value: "hour" },
-                    { label: "День", value: "day" },
-                    { label: "Неделю", value: "week" },
-                    { label: "Месяц", value: "month" },
-                    { label: "Год", value: "year" }
-                  ]}
                 />
                 <div className="schedule-popup__selects">
-                  {period === "hour" && (
-                    <CronsMultiselect
-                      values={minutes}
-                      setValue={v => setMinutes(v)}
-                      type={CronUnitType.Minutes}
-                    />
-                  )}
-                  {period === "year" && (
-                    <>
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">День месяца</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={monthDays}
-                            type={CronUnitType.MonthDays}
-                            setValue={v => setMonthDays(v)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Месяц</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={months}
-                            type={CronUnitType.Months}
-                            setValue={v => setMonths(v)}
-                          />
-                        </div>
-                      </div>
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Часы</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={hours}
-                            type={CronUnitType.Hours}
-                            setValue={v => setHours(v)}
-                          />
-                        </div>
-                      </div>
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Минуты</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={minutes}
-                            type={CronUnitType.Minutes}
-                            setValue={v => setMinutes(v)}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {period === "month" && (
-                    <>
-                      <CronSelectRow label="День месяца">
-                        <CronsMultiselect
-                          values={monthDays}
-                          type={CronUnitType.MonthDays}
-                          setValue={v => setMonthDays(v)}
-                        />
-                      </CronSelectRow>
-
-                      <CronSelectRow label="Часы">
-                        <CronsMultiselect
-                          values={hours}
-                          type={CronUnitType.Hours}
-                          setValue={v => setHours(v)}
-                        />
-                      </CronSelectRow>
-
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Минуты</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={minutes}
-                            type={CronUnitType.Minutes}
-                            setValue={v => setMinutes(v)}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {period === "day" && (
-                    <>
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Часы</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={hours}
-                            type={CronUnitType.Hours}
-                            setValue={v => setHours(v)}
-                          />
-                        </div>
-                      </div>
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Минуты</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={minutes}
-                            type={CronUnitType.Minutes}
-                            setValue={v => setMinutes(v)}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {period === "week" && (
-                    <>
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">День недели</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={weekDays}
-                            type={CronUnitType.WeekDays}
-                            setValue={v => setWeekDays(v)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Часы</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={hours}
-                            type={CronUnitType.Hours}
-                            setValue={v => setHours(v)}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="schedule-popup__select-wrap">
-                        <div className="schedule-popup__label-row">Минута</div>
-                        <div className="schedule-popup__select-row">
-                          <CronsMultiselect
-                            values={minutes}
-                            type={CronUnitType.Minutes}
-                            setValue={v => setMinutes(v)}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  {!isShouldClear && <MultiSelectFormGroup selectProps={getMultiSelectProps} />}
                 </div>
               </>
-            )}
+            </SelectRow>
+          )}
 
-            {taskSetType === "onetime" && (
+          {taskSetType === "onetime" && (
+            <SelectRow label="Дата и время">
               <>
-                <div className="select-label">Дата и время</div>
                 <DateInput
                   className="schedule-popup__select--inline"
-                  defaultValue={new Date()} // onChange={this.handleDateChange}
                   formatDate={date => (date == null ? "" : date.toLocaleDateString())}
                   parseDate={str => new Date(Date.parse(str))}
                   popoverProps={{ position: Position.BOTTOM }}
+                  value={singleDate}
+                  onChange={(selectedDate: Date) => {
+                    setSingleDate(selectedDate);
+                  }}
                 />
-                <TimePicker className="schedule-popup__select--inline" />
+                <TimePicker
+                  value={singleTime}
+                  onChange={(newTime: Date) => {
+                    setSingleTime(newTime);
+                  }}
+                  className="schedule-popup__select--inline"
+                />
               </>
-            )}
-          </SelectRow>
+            </SelectRow>
+          )}
         </div>
 
         <div className={Classes.DIALOG_FOOTER}>
