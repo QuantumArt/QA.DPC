@@ -3,28 +3,9 @@ import { IGridResponse } from "./ApiInterfaces/GridResponse";
 import { mapGridResponse } from "./Mappers/MapGridResponse";
 import qs from "qs";
 import { FilterOptions, PaginationOptions } from "Tasks/Api-services/DataContracts";
+import BaseApiService from "Shared/BaseApiService";
 
-const mapResponse = async <TIn, TOut>(
-  response: Response,
-  mapper: (resp: TIn) => TOut
-): Promise<TOut> => {
-  const data: TIn = await tryGetResponse(response);
-  return mapper(data);
-};
-
-const tryGetResponse = async <TOut>(response: Response): Promise<TOut> => {
-  const { status } = response;
-  if (status !== 200) {
-    throw response;
-  }
-  return await response.json();
-};
-
-//copied from common.ts ClientApp
-const urlFromHead = document.head.getAttribute("root-url") || "";
-const rootUrl = urlFromHead.endsWith("/") ? urlFromHead.slice(0, -1) : urlFromHead;
-
-class ApiService {
+class ApiService extends BaseApiService {
   /**
    * GET /​Task/TasksData
    *
@@ -39,9 +20,9 @@ class ApiService {
       ? "&filterJson=" + encodeURIComponent(JSON.stringify(filtersOpts))
       : "";
     const queryStr: string = qs.stringify(paginationOpts) + filterString;
-    const response = await fetch(`${rootUrl}/Task/TasksData?${queryStr}`);
+    const response = await fetch(`${this.rootUrl}/Task/TasksData?${queryStr}`);
 
-    return mapResponse<IGridResponse, GridResponse>(response, mapGridResponse);
+    return await this.mapResponse<IGridResponse, GridResponse>(response, mapGridResponse);
   }
 
   /**
@@ -53,7 +34,7 @@ class ApiService {
     const queryStr: string = qs.stringify({
       taskId
     });
-    const requestUrl = `${rootUrl}/Task/Rerun?${queryStr}`;
+    const requestUrl = `${this.rootUrl}/Task/Rerun?${queryStr}`;
     await fetch(requestUrl, { method: "POST" });
   };
 
@@ -75,7 +56,7 @@ class ApiService {
     const queryStr: string = qs.stringify({
       taskId
     });
-    const requestUrl = `${rootUrl}/Task/SaveSchedule?${queryStr}`;
+    const requestUrl = `${this.rootUrl}/Task/SaveSchedule?${queryStr}`;
     const response = await fetch(requestUrl, {
       method: "POST",
       body: JSON.stringify({
