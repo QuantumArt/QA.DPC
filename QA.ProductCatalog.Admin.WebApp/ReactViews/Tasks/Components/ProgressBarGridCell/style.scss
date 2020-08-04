@@ -1,0 +1,10 @@
+.progress-bar-cell {
+  display: flex;
+  flex-direction: row;
+  width: 148px;
+  align-items: center;
+  &__label {
+    margin-left: 4px;
+    font-size: 12px;
+  }
+}

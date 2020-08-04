@@ -85,6 +85,8 @@
   },
   "dependencies": {
     "@blueprintjs/core": "^3.10.0",
+    "@blueprintjs/datetime": "^3.18.5",
+    "@blueprintjs/select": "^3.13.6",
     "ace-builds": "^1.4.12",
     "classnames": "^2.2.6",
     "core-js": "^3.6.5",
@@ -112,6 +114,7 @@
     "react-text-mask": "^5.4.3",
     "react-textarea-autosize": "^7.1.0",
     "react-transition-group": "^2.5.0",
+    "react-truncate": "^2.4.0",
     "tslib": "^1.13.0",
     "whatwg-fetch": "^3.2.0",
     "xml2js": "^0.4.23"

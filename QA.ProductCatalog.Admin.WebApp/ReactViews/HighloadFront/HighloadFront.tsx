@@ -4,7 +4,7 @@ import { locale } from "moment";
 
 import Store from "./store";
 
-import { ProgressBar } from "../Shared/Components";
+import { ProgressBar } from "Shared/Components";
 
 type Props = {
   store: Store;
@@ -73,7 +73,7 @@ export default class HighloadFront extends Component<Props> {
                   </td>
                   <td>{getTimePassed(task.TaskStart, task.TaskEnd)}</td>
                   <td>
-                    <ProgressBar barWidth="120px" progress={task.TaskProgress} />
+                    <ProgressBar barWidth="120px" defaultBarProps={{ value: task.TaskProgress }} />
                   </td>
                 </tr>
               ))}

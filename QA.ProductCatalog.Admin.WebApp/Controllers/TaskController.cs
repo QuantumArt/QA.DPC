@@ -95,7 +95,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     tasks = tasks.Select(x => new TaskModel(x)),
                     totalTasks = totalCount,
-                    myLastTaskHtml = myLastTask == null ? null : await this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask)
+                    myLastTaskHtml = myLastTask == null ? null : await this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask),
+                    myLastTask = myLastTask == null ? null : myLastTask
                 });
 
             return new ContentResult() { 
