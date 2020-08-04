@@ -1,5 +1,6 @@
 ﻿import { action, observable, when } from "mobx";
 import { parse } from "fast-xml-parser";
+import { ITreeNode } from "@blueprintjs/core";
 
 type ValidationError = {
   err: { code: string; msg: string; line: number };
@@ -8,6 +9,7 @@ type ValidationError = {
 export default class DefinitionEditorStore {
   @observable xml: string;
   @observable rootId: string;
+  @observable.ref tree: ITreeNode[];
 
   constructor(private settings: DefinitionEditorSettings) {
     window.pmrpc.register({
@@ -60,19 +62,20 @@ export default class DefinitionEditorStore {
   };
 
   private getDefinitionLevel = async (path: string) => {
+    const formData = new FormData();
+    formData.append("path", `/${path}`);
+    formData.append("xml", this.xml);
     const res = await fetch(this.settings.getDefinitionLevelUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      body: JSON.stringify({
-        path: `/${path}`,
-        xml: this.xml
-      })
+      body: formData
     });
-    console.log(res);
+    const tree = await res.json();
+    console.log(tree);
     return res;
   };
+
+  @action
+  private mapTree = () => {};
 
   @action
   private setXml = (xml: string) => {
