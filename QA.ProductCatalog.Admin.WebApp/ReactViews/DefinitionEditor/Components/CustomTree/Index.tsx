@@ -4,7 +4,7 @@ import { observer } from "mobx-react";
 
 import { CustomTreeNode } from "./CustomTreeNode";
 import { ITreeNode, TreeNode, ITreeProps, TreeEventHandler } from "@blueprintjs/core";
-import { isFunction } from "util";
+import isFunction from "lodash/isFunction";
 
 const DISPLAYNAME_PREFIX = "Blueprint3";
 class Classes {
@@ -16,8 +16,9 @@ class Classes {
 }
 
 interface Props<T> extends ITreeProps<T> {}
+
 @observer
-export class CustomTree<T = {}> extends React.Component<Props<T>, {}> {
+export default class CustomTree<T = {}> extends React.Component<Props<T>, {}> {
   public static displayName = `${DISPLAYNAME_PREFIX}.Tree`;
 
   public static ofType<T>() {

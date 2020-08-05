@@ -1,13 +1,14 @@
-﻿import { action, observable, when } from "mobx";
+﻿import { action, computed, observable, when } from "mobx";
 import { parse } from "fast-xml-parser";
 import { ITreeNode } from "@blueprintjs/core";
 import ApiService from "../ApiService";
 import { IDefinitionNode } from "../ApiService/ApiInterfaces";
+import { OperationState } from "Shared/Enums";
 
-export class DefinitionEditorStore {
+export default class DefinitionEditorStore {
   @observable xml: string;
   @observable rootId: string;
-  @observable tree: ITreeNode[];
+  @observable operationState: OperationState = OperationState.None;
 
   constructor(private settings: DefinitionEditorSettings) {
     window.pmrpc.register({
@@ -22,14 +23,7 @@ export class DefinitionEditorStore {
         }
       }
     });
-    when(
-      () => this.rootId != null,
-      async () => {
-        const initialTree = await this.getDefinitionLevel(this.rootId);
-        this.setTree(initialTree);
-      }
-    );
-
+    when(() => this.rootId != null, () => this.getDefinitionLevel(this.rootId));
     window.pmrpc.call({
       destination: parent,
       publicProcedureName: "DefinitionEditorLoaded",
@@ -40,47 +34,70 @@ export class DefinitionEditorStore {
     });
   }
 
-  @action
-  setTree = (newTree: ITreeNode[]) => {
-    this.tree = newTree;
-  };
+  @observable nodesMap: Map<string, ITreeNode> = new Map();
+
+  @computed get tree() {
+    return Array.from(this.nodesMap.values());
+  }
 
   @action
   onNodeExpand = async (node: ITreeNode<Partial<IDefinitionNode>>) => {
-    const treePart = await this.getDefinitionLevel(node.id.toString());
-    node.childNodes = treePart;
+    if (node.nodeData.hasChildren && node.childNodes.length === 0) {
+      node.childNodes = await this.getDefinitionLevel(node.id.toString());
+    }
     node.isExpanded = true;
-    for (const el of treePart) {
-      if (el.isExpanded) {
+    for (const el of node.childNodes) {
+      if (el.nodeData.expanded && el.nodeData.hasChildren) {
         await this.onNodeExpand(el);
       }
     }
-    // this.forEachNode(treePart, (node: ITreeNode<Partial<IDefinitionNode>>) => {
-    //   if (node.isExpanded && node.nodeData.hasChildren) {
-    //     this.onNodeExpand(node);
-    //   }
-    // });
   };
 
   @action
   onNodeCollapse = (node: ITreeNode) => {
-    console.log("close");
     node.isExpanded = false;
   };
 
-  private forEachNode(
-    nodes: ITreeNode<Partial<IDefinitionNode>>[],
-    callback: (node: ITreeNode) => void
-  ) {
-    if (nodes == null) {
-      return;
-    }
+  @action
+  private setRootId = (xml: string) => {
+    this.rootId = this.parseXml(xml).Content[`${this.attributeNamePrefix}ContentId`];
+  };
 
-    for (const node of nodes) {
-      callback(node);
-      this.forEachNode(node.childNodes, callback);
+  private getDefinitionLevel = async (
+    path: string
+  ): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
+    const formData = new FormData();
+    formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
+    formData.append("xml", this.xml);
+    try {
+      this.operationState = OperationState.Pending;
+      const res = await ApiService.getDefinitionLevel(formData);
+      this.operationState = OperationState.Success;
+      return this.mapTree(res);
+    } catch (e) {
+      this.operationState = OperationState.Error;
+      console.log("Error fetching Definition Level", e);
+      return [];
     }
-  }
+  };
+
+  private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
+    return rawTree.map(node => {
+      const mappedNode: ITreeNode<Partial<IDefinitionNode>> = {
+        id: node.Id,
+        label: node.text,
+        isExpanded: false,
+        hasCaret: node.hasChildren,
+        childNodes: [],
+        nodeData: {
+          expanded: node.expanded,
+          hasChildren: node.hasChildren
+        }
+      };
+      this.nodesMap.set(node.Id, mappedNode);
+      return mappedNode;
+    });
+  };
 
   private setInitialXml = () => {
     if (this.settings.xml) {
@@ -98,34 +115,6 @@ export class DefinitionEditorStore {
   };
 
   @action
-  private setRootId = (xml: string) => {
-    this.rootId = this.parseXml(xml).Content[`${this.attributeNamePrefix}ContentId`];
-  };
-
-  private getDefinitionLevel = async (
-    path: string
-  ): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
-    const formData = new FormData();
-    formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
-    formData.append("xml", this.xml);
-    const res = await ApiService.getDefinitionLevel(formData);
-    return this.mapTree(res);
-  };
-
-  @action
-  private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
-    return rawTree.map(node => ({
-      id: node.Id,
-      label: node.text,
-      isExpanded: node.expanded,
-      hasCaret: node.hasChildren,
-      nodeData: {
-        hasChildren: node.hasChildren
-      }
-    }));
-  };
-
-  @action
   private setXml = (xml: string) => {
     this.xml = xml;
   };
@@ -134,11 +123,7 @@ export class DefinitionEditorStore {
     try {
       return parse(
         xml,
-        {
-          ignoreAttributes: false,
-          arrayMode: mode,
-          attributeNamePrefix: this.attributeNamePrefix
-        },
+        { ignoreAttributes: false, arrayMode: mode, attributeNamePrefix: this.attributeNamePrefix },
         true
       );
     } catch (error) {

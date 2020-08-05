@@ -5,9 +5,8 @@ import SplitPane from "react-split-pane";
 import "ace-builds/src-noconflict/mode-xml";
 import "ace-builds/src-noconflict/theme-monokai";
 import { useStores } from "./Stores";
-import Header from "./Components/Header";
-import XmlTree from "./Components/XmlTree";
 import "./Root.scss";
+import { XmlTree, Header } from "DefinitionEditor/Components";
 
 const Root = observer(() => {
   const { editorStore } = useStores();

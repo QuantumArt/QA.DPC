@@ -1,24 +1,22 @@
 ﻿import React from "react";
 import { observer } from "mobx-react-lite";
-import { Classes, Tree } from "@blueprintjs/core";
+import { Classes } from "@blueprintjs/core";
 import cn from "classnames";
-import { CustomTree } from "DefinitionEditor/Components/CustomTree";
 import { useStores } from "DefinitionEditor";
+import { CustomTree } from "DefinitionEditor/Components";
 import "./Style.scss";
-import { toJS } from "mobx";
 
-interface Props {}
-
-const XmlTree = observer<Props>(() => {
+const XmlTree = observer(() => {
   const { editorStore } = useStores();
-  console.log(editorStore.tree);
   return (
-    <CustomTree
-      contents={editorStore.tree}
-      onNodeExpand={editorStore.onNodeExpand}
-      onNodeCollapse={editorStore.onNodeCollapse}
-      className={cn(Classes.ELEVATION_0, "xml-tree")}
-    />
+    <div className="xml-tree-wrap">
+      <CustomTree
+        contents={editorStore.tree}
+        onNodeExpand={editorStore.onNodeExpand}
+        onNodeCollapse={editorStore.onNodeCollapse}
+        className={cn(Classes.ELEVATION_0, "xml-tree")}
+      />
+    </div>
   );
 });
 

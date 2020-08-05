@@ -1,1 +1,1 @@
-export class TreeStore {}
+export default class TreeStore {}
