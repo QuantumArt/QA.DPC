@@ -7,13 +7,14 @@ import { CustomTree } from "DefinitionEditor/Components";
 import "./Style.scss";
 
 const XmlTree = observer(() => {
-  const { editorStore } = useStores();
+  const { treeStore } = useStores();
   return (
     <div className="xml-tree-wrap">
       <CustomTree
-        contents={editorStore.tree}
-        onNodeExpand={editorStore.onNodeExpand}
-        onNodeCollapse={editorStore.onNodeCollapse}
+        contents={treeStore.tree}
+        onNodeExpand={treeStore.onNodeExpand}
+        onNodeCollapse={treeStore.onNodeCollapse}
+        onNodeClick={treeStore.onNodeClick}
         className={cn(Classes.ELEVATION_0, "xml-tree")}
       />
     </div>

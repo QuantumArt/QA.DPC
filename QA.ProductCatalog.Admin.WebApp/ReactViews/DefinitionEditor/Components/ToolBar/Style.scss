@@ -1,0 +1,21 @@
+﻿.editor-toolbar {
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    position: relative;
+  }
+  &__xml-controls {
+    display: flex;
+  }
+  &__slider {
+    width: 150px;
+    margin: 0 30px;
+  }
+  &__loading.sk-circle {
+    width: 20px;
+    height: 20px;
+    margin-top: 10px;
+    margin-left: 20px;
+  }
+}

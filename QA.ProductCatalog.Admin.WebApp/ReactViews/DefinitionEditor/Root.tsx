@@ -1,33 +1,60 @@
-﻿import React from "react";
-import AceEditor from "react-ace";
-import { observer } from "mobx-react-lite";
+﻿import React, { useCallback, useLayoutEffect } from "react";
+import { observer, useLocalStore } from "mobx-react-lite";
 import SplitPane from "react-split-pane";
-import "ace-builds/src-noconflict/mode-xml";
-import "ace-builds/src-noconflict/theme-monokai";
-import { useStores } from "./Stores";
+import debounce from "lodash/debounce";
+import { ToolBar, XmlEditor, XmlTree } from "DefinitionEditor/Components";
 import "./Root.scss";
-import { XmlTree, Header } from "DefinitionEditor/Components";
 
 const Root = observer(() => {
-  const { editorStore } = useStores();
-  const height = `${document.body.clientHeight - 80}px`;
+  const topOffset = 60;
+  const state = useLocalStore(() => ({
+    height: `${window.innerHeight - topOffset}px`,
+    width: `${window.innerWidth - 400}`,
+    splitWidth: 0,
+    setHeight(height: string) {
+      this.height = height;
+    },
+    setWidth(width: string) {
+      this.width = width;
+    },
+    setSplitWidth(width: number) {
+      this.splitWidth = width;
+    }
+  }));
+  useLayoutEffect(() => {
+    const onResize = debounce(() => {
+      state.setHeight(`${window.innerHeight - topOffset}px`);
+      state.setWidth(`${window.innerWidth - (state.splitWidth === 0 ? 400 : state.splitWidth)}px`);
+    }, 100);
+    window.addEventListener("resize", onResize);
+    onResize();
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+  const onSplitPaneChange = useCallback(
+    debounce((size: number) => {
+      state.setSplitWidth(size);
+      state.setWidth(`${window.innerWidth - size}px`);
+      state.setHeight(`${window.innerHeight - topOffset}px`);
+    }, 100),
+    [state.width]
+  );
   return (
-    <>
-      <Header />
-      <SplitPane split="vertical" minSize={250} maxSize={700} defaultSize={400} style={{ height }}>
+    <div>
+      <ToolBar />
+      <SplitPane
+        split="vertical"
+        minSize={250}
+        maxSize={700}
+        defaultSize={400}
+        style={{ height: state.height }}
+        onChange={onSplitPaneChange}
+      >
         <XmlTree />
-        <AceEditor
-          mode="xml"
-          theme="monokai"
-          onChange={newValue => console.log("change", newValue)}
-          name="UNIQUE_ID_OF_DIV"
-          editorProps={{ $blockScrolling: true }}
-          value={editorStore.xml}
-          height={height}
-          width="100%"
-        />
+        <XmlEditor height={state.height} width={state.width} />
       </SplitPane>
-    </>
+    </div>
   );
 });
 

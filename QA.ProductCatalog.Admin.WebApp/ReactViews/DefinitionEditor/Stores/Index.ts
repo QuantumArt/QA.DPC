@@ -1,10 +1,13 @@
 import React from "react";
-import DefinitionEditorStore from "./DefinitionEditorStore";
+import XmlEditorStore from "./XmlEditorStore";
 import TreeStore from "./TreeStore";
 
+const xmlEditorStore = new XmlEditorStore(window.definitionEditor);
+const treeStore = new TreeStore(xmlEditorStore);
+
 export const storesCtx = React.createContext({
-  editorStore: new DefinitionEditorStore(window.definitionEditor),
-  treeStore: new TreeStore()
+  xmlEditorStore,
+  treeStore
 });
 
 export const useStores = () => React.useContext(storesCtx);
