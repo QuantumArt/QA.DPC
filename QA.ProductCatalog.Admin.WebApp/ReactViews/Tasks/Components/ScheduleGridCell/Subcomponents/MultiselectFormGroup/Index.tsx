@@ -1,18 +1,11 @@
 import React from "react";
 import { CronSelectRow } from "Tasks/Components/ScheduleGridCell/Subcomponents";
-import { CronsMultiselect } from "Shared/Components";
+import { CronsMultiselect, ICronsMultiSelectProps } from "Shared/Components";
 import "./Style.scss";
-import { CronUnitType } from "Shared/Enums";
-import { ICronsTagModel } from "Shared/Utils";
 
 export interface IMultiSelectForm {
   label: string;
-  selectProps: {
-    type: CronUnitType;
-    setValue: (val: ICronsTagModel[]) => void;
-    values: ICronsTagModel[];
-    isShouldClear: boolean;
-  };
+  selectProps: ICronsMultiSelectProps;
 }
 
 export const MultiSelectFormGroup = ({ selectProps }: { selectProps: IMultiSelectForm[] }) => {

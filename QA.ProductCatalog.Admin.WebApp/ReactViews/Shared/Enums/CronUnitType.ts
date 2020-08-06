@@ -1,8 +1,8 @@
 ﻿export enum CronUnitType {
-  Period,
-  Months,
-  MonthDays,
-  WeekDays,
-  Hours,
-  Minutes
+  Period = "period",
+  Months = "months",
+  MonthDays = "monthDays",
+  WeekDays = "weekDays",
+  Hours = "hours",
+  Minutes = "minutes"
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ItemPredicate, MultiSelect } from "@blueprintjs/select";
 import { MenuItem } from "@blueprintjs/core";
 import { ICronsTagModel, MONTH_UNITS, partToString, UNITS, WEEK_UNITS } from "Shared/Utils";
@@ -6,10 +6,10 @@ import _ from "lodash";
 import "./Style.scss";
 import { CronUnitType } from "Shared/Enums";
 
-interface IProps {
+export interface ICronsMultiSelectProps {
   type: CronUnitType;
-  setValue: (val: ICronsTagModel[]) => void;
-  values: ICronsTagModel[] | undefined;
+  setParsedCronsModel: (val: ICronsTagModel[]) => void;
+  parsedCronsModel: ICronsTagModel[] | undefined;
   isShouldClear: boolean;
 }
 interface ISelectItem {
@@ -17,7 +17,12 @@ interface ISelectItem {
   value: number;
 }
 
-export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IProps) => {
+export const CronsMultiselect = ({
+  type,
+  setParsedCronsModel,
+  parsedCronsModel,
+  isShouldClear
+}: ICronsMultiSelectProps) => {
   const UNIT = UNITS.get(type);
 
   const items = React.useMemo((): ISelectItem[] => {
@@ -63,8 +68,8 @@ export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IPro
   }, []);
 
   const getFromParenState = () => {
-    if (!values) return [];
-    const deep = _.flatten(values.map(val => val.values));
+    if (!parsedCronsModel) return [];
+    const deep = _.flatten(parsedCronsModel.map(val => val.values));
     return deep.length ? items.filter(item => deep.includes(item.value)) : [];
   };
 
@@ -73,7 +78,7 @@ export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IPro
   );
   const [parsedMultiSelectValues, setParsedMultiSelectValues] = useState<
     ICronsTagModel[] | undefined
-  >(values);
+  >(parsedCronsModel);
 
   const getSelectedItemIndex = (film: ISelectItem): number => {
     let foundIndex = -1;
@@ -95,7 +100,7 @@ export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IPro
     setParsedMultiSelectValues(
       partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true)
     );
-    setValue(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, false));
+    setParsedCronsModel(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, false));
   };
 
   const onRemoveTag = (_tag: string, index: number) => {
@@ -104,20 +109,14 @@ export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IPro
       x => !currentItem.values.includes(x.value)
     );
     setMultiSelectValues(newMultiSelectModel);
-    setParsedMultiSelectValues(
-      partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true)
-    );
-    setValue(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, false));
+    setParsedCronsModel(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true));
   };
 
   const onItemSelect = (x: ISelectItem) => {
     if (!isItemSelected(x)) {
       const newMultiSelectModel = [...multiSelectValues, x];
       setMultiSelectValues(newMultiSelectModel);
-      setParsedMultiSelectValues(
-        partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true)
-      );
-      setValue(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, false));
+      setParsedCronsModel(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true));
     } else {
       deselectItem(getSelectedItemIndex(x));
     }
@@ -134,11 +133,15 @@ export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IPro
     }
   };
 
-  if (isShouldClear) {
-    debugger;
-    setMultiSelectValues([]);
-    setParsedMultiSelectValues([]);
-  }
+  useEffect(
+    () => {
+      if (isShouldClear) {
+        setMultiSelectValues([]);
+        setParsedCronsModel([]);
+      }
+    },
+    [isShouldClear]
+  );
 
   return (
     <MultiSelect<ISelectItem | ICronsTagModel>
@@ -173,7 +176,7 @@ export const CronsMultiselect = ({ type, setValue, values, isShouldClear }: IPro
       tagRenderer={(x: ICronsTagModel) => {
         return x.label;
       }}
-      selectedItems={parsedMultiSelectValues}
+      selectedItems={parsedCronsModel}
     />
   );
 };
