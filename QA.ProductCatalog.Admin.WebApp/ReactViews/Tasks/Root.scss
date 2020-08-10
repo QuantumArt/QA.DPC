@@ -1,0 +1,22 @@
+@import "_reset.scss";
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.task-wrapper {
+  font-family: SFProText, sans-serif;
+}
+
+.color-primary {
+  color: $blue1;
+}
+.color-success {
+  color: $green1;
+}
+.color-warning {
+  color: $orange1;
+}
+.color-danger {
+  color: $red1;
+}
+.color-none {
+  color: $dark-gray1;
+}

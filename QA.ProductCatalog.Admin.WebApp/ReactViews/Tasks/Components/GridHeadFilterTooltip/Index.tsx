@@ -1,12 +1,12 @@
 import { Popover, Icon, Position } from "@blueprintjs/core";
 import React from "react";
-import "./Style.scss";
 import { Filter } from "../../TaskStore";
+import "./Style.scss";
 
 interface Props {
   filter: Filter;
   label: string | number;
-  children: React.ReactElement<any>;
+  children: React.ReactElement | string;
 }
 
 export const GridHeadFilterTooltip = ({ label, children, filter }: Props) => {
@@ -20,10 +20,9 @@ export const GridHeadFilterTooltip = ({ label, children, filter }: Props) => {
       <span className="filter-cell">
         {label} <Icon className="filter-cell__icon" iconSize={14} icon="filter" intent="primary" />
       </span>
-      {React.Children.map(children, child => {
-        return React.cloneElement(child, { filter });
-      })}
-      {children}
+      {React.Children.map(children, child =>
+        React.cloneElement(child as React.ReactElement, { filter })
+      )}
     </Popover>
   );
 };

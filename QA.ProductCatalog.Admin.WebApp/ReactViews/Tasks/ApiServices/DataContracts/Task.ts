@@ -14,4 +14,5 @@ export class Task {
   State: string;
   StateId: number;
   UserName: string;
+  ScheduleEnabled: boolean;
 }

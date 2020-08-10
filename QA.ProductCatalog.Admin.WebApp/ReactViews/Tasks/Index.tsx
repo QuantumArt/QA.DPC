@@ -5,9 +5,10 @@ import {
   StatusCell,
   Grid,
   MyLastTask,
-  ScheduleGridCell,
+  ScheduleGridCellCalendar,
   DateGridCell,
-  RerunGridCell
+  RerunGridCell,
+  ScheduleGridCellDescription
 } from "./Components";
 import {
   StatusFilterContent,
@@ -17,8 +18,7 @@ import {
 import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
-import "./_reset.scss";
-import "./Style.scss";
+import "./Root.scss";
 
 export const Task = observer(() => {
   const store = useStore();
@@ -33,8 +33,6 @@ export const Task = observer(() => {
     message,
     statusValues
   } = window.QP.Tasks.tableFields;
-
-  console.log(window.QP.Tasks);
 
   useEffect(() => {
     store.init();
@@ -88,20 +86,27 @@ export const Task = observer(() => {
           </GridHeadFilterTooltip>
         ),
         accessor: "HasSchedule",
-        // Cell: ScheduleCell,
         Cell: (cellProps: any) => {
-          const { Id } = cellProps.row.values;
           return (
-            <ScheduleGridCell
-              taskId={Id}
-              scheduleCronExpression={cellProps.data[cellProps.row.index].ScheduleCronExpression}
-              hasSchedule={cellProps.value}
+            <ScheduleGridCellDescription
+              cronExpression={cellProps.data[cellProps.row.index].ScheduleCronExpression}
             />
           );
+        },
+        truncate: {
+          onWidth: 120,
+          possibleRows: 2,
+          noTruncateElement: (taskId: number) => {
+            const element = store.getGridData.find(x => x.Id === taskId);
+            return (
+              <ScheduleGridCellCalendar
+                taskId={element.Id}
+                scheduleCronExpression={element.ScheduleCronExpression}
+                hasSchedule={true}
+              />
+            );
+          }
         }
-        //что-то сделать с этими параметрами
-        // ScheduleCronExpression: null
-        // ScheduledFromTaskId: null
       },
       {
         Header: progress,

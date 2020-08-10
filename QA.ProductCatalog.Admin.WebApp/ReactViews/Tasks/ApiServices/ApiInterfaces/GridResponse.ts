@@ -22,4 +22,5 @@ export interface IGridTask {
   State: string;
   StateId: number;
   UserName: string;
+  ScheduleEnabled: boolean;
 }

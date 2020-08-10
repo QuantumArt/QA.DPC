@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { useTable, usePagination } from "react-table";
 import cn from "classnames";
 import { PaginationActions } from "Shared/Enums";
-import { GridPagination, GridCellContent } from "../";
+import { GridPagination, GridTruncatedCellContent } from "../";
 import "./Style.scss";
 import { Pagination } from "Tasks/TaskStore";
 
@@ -17,15 +17,25 @@ interface IProps {
    * truncate: {
    * onWidth: схлопывать при указананой ширине
    * possibleRows: возможных строк
+   * noTruncateElement возвращает реакт элемент который не будет схлопываться
    * }
    */
   columns: {
     showOnHover?: boolean;
-    truncate?: { onWidth: number; possibleRows: 1 | 2 };
+    fixedWidth?: number;
+    truncate?: {
+      onWidth: number;
+      possibleRows: 1 | 2;
+      noTruncateElement?: (
+        taskId: number,
+        isLoading: boolean,
+        loadingCNs: string
+      ) => JSX.Element | String;
+    };
   };
 }
 
-export const Grid = React.memo(({ columns, data, customPagination, total, isLoading }: IProps) => {
+export const Grid = ({ columns, data, customPagination, total, isLoading }: IProps) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -45,11 +55,11 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
     },
     usePagination
   );
+  const gridBody = useRef(null);
   const { skip } = customPagination.getPaginationOptions;
   const canNextPage = () => data.length + skip !== total;
   const canPreviousPage = () => skip !== 0;
 
-  const gridBody = useRef(null);
   return (
     <>
       <table {...getTableProps()} className="grid">
@@ -71,12 +81,49 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
             return (
               <tr {...row.getRowProps()} className="grid-body__tr">
                 {row.cells.map(cell => {
+                  const renderCell = () => {
+                    if (!!cell.column.truncate) {
+                      const cellElement = cell.render("Cell");
+                      return (
+                        <GridTruncatedCellContent
+                          value={cellElement}
+                          truncateOnWidth={cell.column.truncate.onWidth}
+                          truncateRows={cell.column.truncate.possibleRows}
+                          untruncatedElement={
+                            cell.column.truncate.noTruncateElement
+                              ? cell.column.truncate.noTruncateElement(
+                                  cell.row.values.Id,
+                                  isLoading,
+                                  "bp3-skeleton truncate-cell"
+                                )
+                              : null
+                          }
+                          refBody={gridBody}
+                          isLoading={isLoading}
+                        />
+                      );
+                    }
+
+                    return (
+                      <div
+                        className={cn("inside-cell", {
+                          "inside-cell--hidden": cell.column.showOnHover,
+                          "bp3-skeleton truncate-cell": isLoading
+                        })}
+                      >
+                        {cell.render("Cell")}
+                      </div>
+                    );
+                  };
+
                   return (
                     <td
                       {...cell.getCellProps()}
                       className={cn("grid-body__td grid__cell", cell.column.className)}
                     >
-                      <GridCellContent cell={cell} refBody={gridBody} loading={isLoading} />
+                      <div style={cell.column.fixedWidth && { width: cell.column.fixedWidth }}>
+                        {renderCell()}
+                      </div>
                     </td>
                   );
                 })}
@@ -106,4 +153,4 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
       />
     </>
   );
-});
+};

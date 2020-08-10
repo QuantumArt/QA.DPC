@@ -1,3 +1,3 @@
 export * from "./FilterButtonsWrapper";
-export * from "./Status-filter-content";
+export * from "./StatusFilterContent";
 export * from "./ScheduleFilterContent";
