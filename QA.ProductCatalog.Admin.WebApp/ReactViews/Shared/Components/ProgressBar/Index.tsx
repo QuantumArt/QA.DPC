@@ -4,8 +4,8 @@ import cn from "classnames";
 import "./Style.scss";
 
 interface Props {
-  barWidth?: string;
   defaultBarProps: IProgressBarProps;
+  barWidth?: string;
   labelWidth?: string;
   barClassName?: string;
   labelClassName?: string;
@@ -26,11 +26,13 @@ export default function ProgressBar({
 }: Props) {
   const value = (defaultBarProps.value || 0) / 100;
   return (
-    <div className={cn("progress-bar", barClassName)} style={{ width: barWidth }}>
-      <BlueprintProgressBar {...defaultBarProps} value={value} />
+    <div className={cn("ProgressBar", barClassName)}>
+      <div style={{ width: barWidth || "100%" }}>
+        <BlueprintProgressBar {...defaultBarProps} value={value} />
+      </div>
       {withLabel && (
         <span
-          className={cn("progress-bar__label", labelClassName)}
+          className={cn("ProgressBar__label", labelClassName)}
           style={labelWidth && { width: labelWidth }}
         >
           {getFormattedProgress(defaultBarProps.value)}

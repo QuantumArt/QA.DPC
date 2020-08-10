@@ -5,14 +5,12 @@ using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Admin.WebApp.Core;
 using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
@@ -30,100 +28,75 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _viewEngine = viewEngine;
             _userProvider = userProvider;
         }
-        
+
         public ActionResult Index(string[] ignoredStatus, bool localize = false)
         {
             ViewBag.Localize = localize;
-            ViewBag.IgnoredStatus = ignoredStatus ?? Enumerable.Empty<string>().ToArray();  
-			return View();
+            ViewBag.IgnoredStatus = ignoredStatus ?? Enumerable.Empty<string>().ToArray();
+            return View();
         }
 
         [HttpGet]
         public ActionResult Active()
         {
-			var task = _taskService.GetLastTask(null, State.Running, typeof(SendProductAction).Name);
-
+            var task = _taskService.GetLastTask(null, State.Running, typeof(SendProductAction).Name);
             if (task != null)
-                return PartialView("ActionProps", new TaskModel(task));
-            else
-                return Content("");
+            {
+                return Json(new { taskId = task.ID });
+            }
+
+            return Json(new { taskId = (object) null });
         }
 
         [HttpGet]
-        public async Task<ActionResult> Task(int taskId)
+        public ActionResult Task(int taskId)
         {
             var task = _taskService.GetTask(taskId, true);
-
             bool taskProcessingFinished = task.StateID != (byte)State.Running && task.StateID != (byte)State.New;
-
-            return Json(new { taskProcessingFinished, taskHtml = await this.RenderRazorViewToString(_viewEngine, "ActionProps", new TaskModel(task)) });
+            return Json(new { taskProcessingFinished, taskModel = new TaskModel(task) });
         }
 
         [HttpPost]
         public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] ignoredStatus, bool stageOnly, bool localize = false)
         {
             int[] ids = null;
-			ignoredStatus = ignoredStatus ??  Enumerable.Empty<string>().ToArray();
+            ignoredStatus = ignoredStatus ?? Enumerable.Empty<string>().ToArray();
 
-            try
-            {
-                ids = idsStr
-                        .Split(new[] { ' ', ';', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
-                        .Select(int.Parse)
-                        .Distinct()
-                        .ToArray();
+            ids = idsStr
+                .Split(new[] { ' ', ';', ',', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(int.Parse)
+                .Distinct()
+                .ToArray();
 
-				if (ids.Length == 0)
-					ModelState.AddModelError("idsStr", "Ids list should not be empty");
-
-            }
-            catch
-            {
-                ModelState.AddModelError("idsStr", "Incorrect Ids list");
-            }
-
-			ViewBag.IgnoredStatus = ignoredStatus;
+            ViewBag.IgnoredStatus = ignoredStatus;
             ViewBag.Localize = localize;
 
+            int userId = _userProvider.GetUserId();
+            string userName = _userProvider.GetUserName();
 
-            if (ModelState.IsValid)
+            var parameters = new Dictionary<string, string>();
+            if (!proceedIgnoredStatus)
             {
-                int userId = _userProvider.GetUserId();
-				string userName = _userProvider.GetUserName();
-
-				var parameters = new Dictionary<string, string>();
-				if (!proceedIgnoredStatus)
-				{
-					parameters.Add("IgnoredStatus", string.Join(",", ignoredStatus));
-				}
-
-                if (stageOnly)
-                {
-                    parameters.Add("skipPublishing", true.ToString());
-                    parameters.Add("skipLive", true.ToString()); 
-                }
-
-                parameters.Add("Localize", localize.ToString());
-
-                string taskData =
-		            ActionData.Serialize(new ActionData
-		            {
-			            ActionContext =
-				            new A.ActionContext() {ContentItemIds = ids, ContentId = 288, Parameters = parameters, UserId = userId, UserName = userName}
-		            });
-
-				var taskKey = typeof(SendProductAction).Name;
-
-                int taskId = _taskService.AddTask(taskKey, taskData, userId, userName, TaskStrings.PartialSend);
-
-				return View("Result", taskId);
+                parameters.Add("IgnoredStatus", string.Join(",", ignoredStatus));
             }
-            else
+
+            if (stageOnly)
             {
-				return View("Index");
+                parameters.Add("skipPublishing", true.ToString());
+                parameters.Add("skipLive", true.ToString());
             }
+
+            parameters.Add("Localize", localize.ToString());
+
+            string taskData = ActionData.Serialize(new ActionData
+            {
+                ActionContext = new A.ActionContext() { ContentItemIds = ids, ContentId = 288, Parameters = parameters, UserId = userId, UserName = userName }
+            });
+
+            var taskKey = typeof(SendProductAction).Name;
+            int taskId = _taskService.AddTask(taskKey, taskData, userId, userName, TaskStrings.PartialSend);
+
+            return Json(new { taskId });
         }
-
-       
     }
 }

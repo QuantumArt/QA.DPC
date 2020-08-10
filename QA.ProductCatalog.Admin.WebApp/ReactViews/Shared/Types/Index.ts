@@ -1,1 +1,2 @@
-export { default as Task } from "./task";
+export { default as TaskItem } from "./TaskItem";
+export { default as TaskModel } from "./TaskModel";

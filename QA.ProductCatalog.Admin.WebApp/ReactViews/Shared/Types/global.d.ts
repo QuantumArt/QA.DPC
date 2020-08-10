@@ -31,6 +31,7 @@ declare interface Window {
       };
     };
   };
+
   highloadFront?: {
     legend: string;
     customerCode: string;
@@ -44,6 +45,40 @@ declare interface Window {
       processing: string;
       updating: string;
       progress: string;
+    };
+  };
+
+  partialSend?: {
+    getActiveTaskIdUrl: string;
+
+    sendForm: {
+      hidden: {
+        ignoredStatuses: string[];
+        localize: string;
+      };
+      legend: string;
+      description: string;
+      processSpecialStatusesCheckbox: string;
+      sendOnStageOnlyCheckbox: string;
+      sendUrl: string;
+      sendButton: string;
+    };
+
+    result: {
+      culture: string;
+      legend: string;
+      getTaskUrl: string;
+      labels: {
+        displayName: string;
+        id: string;
+        createdDate: string;
+        userName: string;
+        state: string;
+        progress: string;
+        lastStatusChangeTime: string;
+        message: string;
+      };
+      sendNewPackageButton: string;
     };
   };
 }

@@ -1,10 +1,9 @@
-.progress-bar {
+.ProgressBar {
   display: flex;
   flex-direction: row;
-  width: 100%;
   align-items: center;
-}
 
-.progress-bar__label {
-  margin-left: 5px;
+  &__label {
+    margin-left: 5px;
+  }
 }

@@ -1036,7 +1036,7 @@ Global
 		{CA968B53-92BE-4CCA-9147-D59EAEC35BD9} = {9E374573-BDFB-453D-B9A7-D098D2E295C5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Validation.6.0.1304.0\lib\NET45
 		SolutionGuid = {4E53AF99-AD67-41FE-A509-408818971ABB}
+		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45;packages\EnterpriseLibrary.Validation.6.0.1304.0\lib\NET45
 	EndGlobalSection
 EndGlobal
