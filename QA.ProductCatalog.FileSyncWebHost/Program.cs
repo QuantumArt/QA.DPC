@@ -2,6 +2,7 @@ using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
 
@@ -29,6 +30,9 @@ namespace QA.ProductCatalog.FileSyncWebHost
                         logging.AddConsole();
                         logging.AddDebug();
                     }
+                })
+                .ConfigureKestrel(serverOpts => {
+                    serverOpts.AllowSynchronousIO = true;
                 })
                 .UseStartup<Startup>()
                 .UseNLog()

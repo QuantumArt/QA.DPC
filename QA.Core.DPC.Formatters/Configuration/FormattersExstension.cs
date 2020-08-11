@@ -29,7 +29,7 @@ namespace QA.Core.DPC.Formatters.Configuration
 		}
 		
 		
-#if !NETSTANDARD
+#if NET_FRAMEWORK
 		public static void AddRouteMapping(this MediaTypeFormatter formatter, string parameterName, string parameterValue, string mediaType)
 		{
 			formatter.MediaTypeMappings.Add(new RouteDataMapping(parameterName, parameterValue, mediaType));

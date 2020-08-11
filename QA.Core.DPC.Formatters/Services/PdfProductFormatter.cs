@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD
+﻿#if NET_FRAMEWORK
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -26,19 +26,19 @@ namespace QA.Core.DPC.Formatters.Services
 
 		public async Task Write(Stream stream, Article product)
 		{
-			using (var xmlStream = new MemoryStream())
-			{
-				await _xmlFormatter.Write(xmlStream, product);
-				xmlStream.Position = 0;
-				
-				using (var xmlReader = new StreamReader(xmlStream))
-				using (var pdfStream = new MemoryStream())
-				{	
-					string xml = xmlReader.ReadToEnd();
-					_documentGenerator.SaveAsPdf(xml, null, pdfStream);
-					pdfStream.Position = 0;
-					await pdfStream.CopyToAsync(stream);
-				}
+			// using (var xmlStream = new MemoryStream())
+			// {
+			// 	await _xmlFormatter.Write(xmlStream, product);
+			// 	xmlStream.Position = 0;
+			// 	
+			// 	using (var xmlReader = new StreamReader(xmlStream))
+			// 	using (var pdfStream = new MemoryStream())
+			// 	{	
+			// 		string xml = xmlReader.ReadToEnd();
+			// 		_documentGenerator.SaveAsPdf(xml, null, pdfStream);
+			// 		pdfStream.Position = 0;
+			// 		await pdfStream.CopyToAsync(stream);
+			// 	}
 
 				/*
 				 //Does not work. Why?
@@ -47,7 +47,8 @@ namespace QA.Core.DPC.Formatters.Services
 					_documentGenerator.SaveAsPdf(xmlReader.ReadToEnd(), null, stream);
 				}*/
 				
-			}
+			//}
+			throw new NotImplementedException();
 		}
 
 		public string Serialize(Article product)

@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using System.Xaml;
+using Portable.Xaml;
 using Unity;
 using NUnit.Framework;
 using QA.Core.ProductCatalog.Actions.Exceptions;

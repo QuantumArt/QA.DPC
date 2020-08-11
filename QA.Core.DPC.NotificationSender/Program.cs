@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Unity.Microsoft.DependencyInjection;
 using QA.DPC.Core.Helpers;
+using Microsoft.Extensions.Hosting;
 
 namespace QA.Core.DPC
 {

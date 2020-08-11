@@ -7,7 +7,6 @@ using System.IO;
 using System.Net.Http;
 using NLog;
 using NLog.Fluent;
-using QA.Core.Data.Collections;
 using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Loader
@@ -28,18 +27,6 @@ namespace QA.Core.DPC.Loader
                 }
             }
         }
-
-	    public static SqlParameter GetIdsTvp(IEnumerable<int> ids, string paramName)
-	    {
-		    var idsParam = new SqlParameter(paramName, SqlDbType.Structured) {SqlValue = ids.CreateSqlDataRecords().Ensure()};
-
-			const string idsTypeName = "Ids";
-
-		    idsParam.TypeName = idsTypeName;
-
-		    return idsParam;
-	    }
-
 
 		public static string GetFileFromQpFieldPath(DBConnector dbConnector, int fieldId, string fieldValue)
 		{

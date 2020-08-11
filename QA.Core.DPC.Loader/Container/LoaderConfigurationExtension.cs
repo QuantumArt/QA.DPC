@@ -29,6 +29,7 @@ namespace QA.Core.DPC.Loader.Container
     {
         public const string AlwaysAdminUserProviderName = "AlwaysAdminUserProvider";
 
+        //TODO check needed
         public ITypeLifetimeManager GetHttpContextLifeTimeManager()
         {
             return new HttpContextCoreLifetimeManager(Container.Resolve<IHttpContextAccessor>());
@@ -42,18 +43,18 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IArticleService, ArticleServiceAdapter>();
             Container.RegisterFactory<FieldService>(c => c.Resolve<IServiceFactory>().GetFieldService());
             Container.RegisterFactory<ContentService>(c => c.Resolve<IServiceFactory>().GetContentService());
-            Container.RegisterType<IFieldService, FieldServiceAdapter>(GetHttpContextLifeTimeManager());
+            Container.RegisterType<IFieldService, FieldServiceAdapter>();
             Container.RegisterType<IContentService, ContentServiceAdapter>(GetHttpContextLifeTimeManager());
             Container.RegisterType<IProductContentResolver, ProductContentResolver>();
 
             Container.RegisterType<IFreezeService, FreezeService>();
             Container.RegisterType<IValidationService, ValidationService>();
 
-            Container.RegisterFactory(typeof(IFieldService), "FieldServiceAdapterAlwaysAdmin", c => new FieldServiceAdapter(
+            Container.RegisterFactory(typeof(IFieldService), "FieldServiceAdapterAlwaysAdmin", 
+                c => new FieldServiceAdapter(
                     new FieldService(c.Resolve<IConnectionProvider>().GetConnection(), 1),
                     c.Resolve<IConnectionProvider>()
-                ),
-            (IFactoryLifetimeManager)GetHttpContextLifeTimeManager());
+                ));
             
             Container.RegisterFactory(typeof(IContentService), "ContentServiceAdapterAlwaysAdmin",
                 c => new ContentServiceAdapter(
@@ -95,7 +96,7 @@ namespace QA.Core.DPC.Loader.Container
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
                             c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>()));
 
-            Container.RegisterType<IDBConnector, DBConnectorProxy>(GetHttpContextLifeTimeManager());
+            Container.RegisterType<IDBConnector, DBConnectorProxy>();
 
             Container.RegisterFactory<IRegionService>("RegionServiceFakeUser",
                     c => new RegionService(Container.Resolve<VersionedCacheProviderBase>(),

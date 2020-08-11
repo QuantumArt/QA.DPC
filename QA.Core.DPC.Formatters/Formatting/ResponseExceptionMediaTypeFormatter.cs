@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD
+﻿#if NET_FRAMEWORK
 using System;
 using System.IO;
 using System.Net;

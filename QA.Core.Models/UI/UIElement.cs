@@ -1,9 +1,5 @@
 ﻿using System;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
 using QA.Configuration;
 
 namespace QA.Core.Models.UI

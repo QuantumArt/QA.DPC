@@ -63,7 +63,10 @@ namespace QA.Core.ProductCatalog.ActionsService
                     options.UseSqlServer(props.DesignConnectionString));
             }
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });;
             
 
         }

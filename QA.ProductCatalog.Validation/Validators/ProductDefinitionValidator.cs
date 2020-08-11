@@ -2,11 +2,7 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-#if NETSTANDARD
 using Portable.Xaml;
-#else
-using System.Xaml;
-#endif
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;

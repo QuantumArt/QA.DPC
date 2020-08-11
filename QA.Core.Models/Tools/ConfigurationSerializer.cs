@@ -1,8 +1,5 @@
-﻿#if NETSTANDARD
-using Portable.Xaml;
-#else
-using System.Xaml;
-#endif
+﻿using Portable.Xaml;
+
 using QA.Core.Models.Configuration;
 
 namespace QA.Core.Models.Tools

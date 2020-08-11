@@ -1,9 +1,6 @@
 ﻿using System;
-#if NETSTANDARD
 using Portable.Xaml;
-#else
-using System.Xaml;
-#endif
+
 
 
 namespace QA.Core.Models.Configuration

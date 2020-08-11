@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -13,8 +14,6 @@ using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Binders;
-using QA.ProductCatalog.Integration;
-using Swashbuckle.AspNetCore.Swagger;
 using Unity;
 
 namespace QA.ProductCatalog.Admin.WebApp
@@ -78,13 +77,11 @@ namespace QA.ProductCatalog.Admin.WebApp
                         options.EnableEndpointRouting = false;
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
-                .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2); 
-           
+                .AddXmlSerializerFormatters().AddControllersAsServices();
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {

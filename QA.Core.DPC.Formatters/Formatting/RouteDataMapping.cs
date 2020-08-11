@@ -1,4 +1,4 @@
-﻿#if !NETSTANDARD
+﻿#if NET_FRAMEWORK
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Net.Http.Headers;

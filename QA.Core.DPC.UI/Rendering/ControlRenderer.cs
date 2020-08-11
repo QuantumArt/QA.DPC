@@ -1,6 +1,6 @@
 ﻿#if !NETSTANDARD
-using System.Web.Mvc;
-using System.Web.Routing;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.AspNetCore.Routing;
 using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI

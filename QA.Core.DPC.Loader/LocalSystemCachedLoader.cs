@@ -7,16 +7,10 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
-#if !NETSTANDARD
-using System.Xaml;
-#else
 using Portable.Xaml;
-#endif
-
 using System.IO;
 using System.IO.Compression;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader

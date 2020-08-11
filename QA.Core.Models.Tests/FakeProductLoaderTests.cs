@@ -7,6 +7,8 @@ namespace QA.Core.Models.Tests
     public class FakeProductLoaderTests
     {
         [Test]
+        //TODO fix portable.xaml
+      //  [Ignore("Manual")]
         public void Test_That_Fake_Service_Works()
         {
             var service = ObjectFactoryBase.Resolve<IProductService>();

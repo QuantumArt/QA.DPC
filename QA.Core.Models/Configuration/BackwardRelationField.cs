@@ -2,11 +2,8 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using QA.Core.DPC.Resources;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
+
 
 
 namespace QA.Core.Models.Configuration

@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging.Internal;
 
 namespace QA.DPC.Core.Helpers
 {
@@ -11,15 +11,35 @@ namespace QA.DPC.Core.Helpers
         readonly string _format;
         readonly object[] _parameters;
 
-        FormattedLogValues _logValues;
-        FormattedLogValues LogValues => _logValues ?? (_logValues = new FormattedLogValues(_format, _parameters));
+        CustomLogEvent _logValues;
+        private static string defaultValue = "[null]";
+
+        CustomLogEvent LogValues => _logValues ?? (_logValues = new CustomLogEvent(_format, _parameters));
+
+        private static ConcurrentDictionary<string, LogValuesFormatter> _formatters = new ConcurrentDictionary<string, LogValuesFormatter>();
+        private readonly LogValuesFormatter _formatter;
+        private readonly object[] _values;
+        private readonly string _originalMessage;
+
 
         List<KeyValuePair<string, object>> _extraProperties;
 
         public CustomLogEvent(string format, params object[] values)
         {
-            _format = format;
-            _parameters = values;
+            if (values != null && values.Length != 0 && format != null)
+            {
+                _formatter = _formatters.GetOrAdd(format, f =>
+                {
+                    return new LogValuesFormatter(f);
+                });
+            }
+            else
+            {
+                _formatter = null;
+            }
+
+            _originalMessage = format ?? defaultValue;
+            _values = values;
         }
 
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
@@ -84,7 +104,16 @@ namespace QA.DPC.Core.Helpers
             return this;
         }
 
-        public static Func<CustomLogEvent, Exception, string> Formatter { get; } = (l, e) => l.LogValues.ToString();
+        public override string ToString()
+        {
+            if (_formatter == null)
+            {
+                return _originalMessage;
+            }
 
-    }
+            return _formatter.Format(_values);
+        }
+
+        public static Func<CustomLogEvent, Exception, string> Formatter { get; } = (l, e) => l.LogValues.ToString();
+    };
 }

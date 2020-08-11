@@ -18,6 +18,8 @@ using QA.DPC.Core.Helpers;
  using QP.ConfigurationService.Models;
  using ILogger = QA.Core.Logger.ILogger;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace QA.ProductCatalog.Front.Core.API
 {
@@ -36,9 +38,10 @@ namespace QA.ProductCatalog.Front.Core.API
             // Add framework services.
             services.AddMvc(opts =>
             {
-                opts.InputFormatters.RemoveType<JsonInputFormatter>();
+                opts.EnableEndpointRouting = false;
+                opts.InputFormatters.RemoveType<SystemTextJsonInputFormatter>();
                 opts.InputFormatters.Add(new TextUniversalInputFormatter());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);;
+            });
             
             var dataOptions = new DataOptions();
             Configuration.Bind("Data", dataOptions);
@@ -71,7 +74,7 @@ namespace QA.ProductCatalog.Front.Core.API
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "DPC Front API", 
                     Version = "v1",
@@ -96,7 +99,7 @@ namespace QA.ProductCatalog.Front.Core.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
                 

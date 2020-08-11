@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
-using System.Xaml;
+using Portable.Xaml;
 
 namespace QA.Core.DPC.QP.API.Tests.Providers
 {
@@ -17,7 +17,7 @@ namespace QA.Core.DPC.QP.API.Tests.Providers
 
         public static void SaveXaml(string path, object data)
         {
-            XamlServices.Save(path, data);
+            XamlServices.Save(data);
         }
 
         public static T GetJson<T>(string path)
