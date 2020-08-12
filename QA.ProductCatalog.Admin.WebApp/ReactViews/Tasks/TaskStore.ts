@@ -1,4 +1,4 @@
-﻿import { action, computed, observable, runInAction } from "mobx";
+import { action, computed, observable, runInAction } from "mobx";
 import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { apiService } from "Tasks/ApiServices";
@@ -82,11 +82,12 @@ export class Filter {
 
 export class TaskStore {
   readonly FETCH_TIMEOUT = 5000;
+  private isUpdateRateRequestsPending: boolean = false;
   @observable private gridData: Task[] = [];
   @observable private myLastTask: Task;
   @observable private total: number = 0;
   @observable isLoading: boolean = true;
-  @observable.ref pagination: Pagination = new Pagination((operation: PaginationActions) => {
+  @observable pagination: Pagination = new Pagination((operation: PaginationActions) => {
     this.withLoader(() => this.fetchGridData(operation));
   });
   filterValueMapper = function() {
@@ -120,6 +121,12 @@ export class TaskStore {
       const filtersOptions = this.getFiltersOptions();
 
       const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
+      if (
+        this.isUpdateRateRequestsPending ||
+        paginationOptions.skip !== this.pagination.getPaginationOptions.skip
+      ) {
+        throw "the request already have sent and new response from cyclic fetch will not accept in grid";
+      }
       this.setGridData(response.tasks);
       this.setTotal(response.totalTasks);
     } catch (e) {
@@ -184,39 +191,54 @@ export class TaskStore {
     }
   };
 
-  fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> => {
+  withIsPendingRequest = async (cb: () => Promise<void>): Promise<void> => {
     try {
-      const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(operation);
-      const filtersOptions = this.getFiltersOptions();
-      const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
-      this.setGridData(response.tasks);
-      this.setTotal(response.totalTasks);
-      this.setMyLastTask(response.myLastTask);
-      this.pagination.setPagination(paginationOptions);
+      this.isUpdateRateRequestsPending = true;
+      await cb();
     } catch (e) {
       console.error(e);
+      throw e;
+    } finally {
+      this.isUpdateRateRequestsPending = false;
     }
   };
 
-  fetchRerunTask = async (taskId: number): Promise<void> => {
-    try {
-      await apiService.fetchRerunTask(taskId);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> =>
+    this.withIsPendingRequest(async () => {
+      try {
+        const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(operation);
+        const filtersOptions = this.getFiltersOptions();
+        const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
+        this.setGridData(response.tasks);
+        this.setTotal(response.totalTasks);
+        this.setMyLastTask(response.myLastTask);
+        this.pagination.setPagination(paginationOptions);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+  fetchRerunTask = async (taskId: number): Promise<void> =>
+    this.withIsPendingRequest(async () => {
+      try {
+        await apiService.fetchRerunTask(taskId);
+      } catch (e) {
+        console.error(e);
+      }
+    });
 
   setSchedule = async (
     taskId: number,
     isEnabled: boolean,
     cronExpression: string,
     repeatType = "on"
-  ): Promise<void> => {
-    try {
-      await apiService.fetchSchedule(taskId, isEnabled, cronExpression, repeatType);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  ): Promise<void> =>
+    this.withIsPendingRequest(async () => {
+      try {
+        await apiService.fetchSchedule(taskId, isEnabled, cronExpression, repeatType);
+      } catch (e) {
+        console.error(e);
+      }
+    });
 }
 export const TaskStoreContext = createContext(new TaskStore());
