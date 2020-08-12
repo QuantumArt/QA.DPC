@@ -5,12 +5,13 @@ import { PaginationActions } from "Shared/Enums";
 import { GridPagination, GridTruncatedCellContent } from "../";
 import "./Style.scss";
 import { Pagination } from "Tasks/TaskStore";
+import { Task } from "Tasks/ApiServices/DataContracts";
 
 interface IProps {
   isLoading: boolean;
   total: number;
   customPagination: Pagination;
-  data: any[];
+  data: Task[];
   /**
    * custom columns props
    * showOnHover: показывать поле только при наведении
@@ -36,6 +37,7 @@ interface IProps {
 }
 
 export const Grid = ({ columns, data, customPagination, total, isLoading }: IProps) => {
+  const gridBody = useRef(null);
   const {
     getTableProps,
     getTableBodyProps,
@@ -55,7 +57,6 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
     },
     usePagination
   );
-  const gridBody = useRef(null);
   const { skip } = customPagination.getPaginationOptions;
   const canNextPage = () => data.length + skip !== total;
   const canPreviousPage = () => skip !== 0;
@@ -91,11 +92,7 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
                           truncateRows={cell.column.truncate.possibleRows}
                           untruncatedElement={
                             cell.column.truncate.noTruncateElement
-                              ? cell.column.truncate.noTruncateElement(
-                                  cell.row.values.Id,
-                                  isLoading,
-                                  "bp3-skeleton truncate-cell"
-                                )
+                              ? cell.column.truncate.noTruncateElement(cell.row.values.Id)
                               : null
                           }
                           refBody={gridBody}

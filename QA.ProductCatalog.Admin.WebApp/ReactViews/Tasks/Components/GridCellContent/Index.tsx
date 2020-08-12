@@ -1,11 +1,12 @@
-import React, { RefObject, useEffect, useRef, useState } from "react";
+import React, { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { Tooltip } from "@blueprintjs/core";
 import Truncate from "react-truncate";
 import { IUntruncatedElementProps, UntruncatedElementWrap } from "./Subcomponents";
 
 interface IProps extends IUntruncatedElementProps {
   value: JSX.Element | string;
-  refBody: RefObject<HTMLDivElement>;
+  refBody: RefObject<any>;
+  // refBody: ((instance: unknown) => void) | MutableRefObject<unknown>
   isLoading: boolean;
   truncateOnWidth: number;
   truncateRows: number;
@@ -21,7 +22,7 @@ export const GridTruncatedCellContent = React.memo(
     const fontSizeTwoRows = 34;
 
     //проверяет ширину и высоту строки и схлопывает ее добавляя тултип если это нужно
-    useEffect(
+    useLayoutEffect(
       () => {
         if (!cellRef.current) return;
         if (
@@ -41,7 +42,7 @@ export const GridTruncatedCellContent = React.memo(
           setIsTooltip(false);
         }
       },
-      [isLoading, cellRef.current, isTooltip, truncateOnWidth, truncateRows]
+      [isLoading, cellRef, isTooltip, truncateOnWidth, truncateRows]
     );
 
     const setTooltip = (isTruncated: boolean) => isTruncated && setIsTooltip(true);

@@ -22,6 +22,7 @@ import "./Root.scss";
 
 export const Task = observer(() => {
   const store = useStore();
+
   const {
     userName,
     status,
@@ -93,6 +94,7 @@ export const Task = observer(() => {
             />
           );
         },
+        fixedWidth: 150,
         truncate: {
           onWidth: 120,
           possibleRows: 2,
@@ -156,7 +158,7 @@ export const Task = observer(() => {
 
   return (
     <div className="task-wrapper">
-      <MyLastTask task={store.lastTask} />
+      <MyLastTask task={store.lastTask} width={1240} />
 
       <Grid
         columns={gridColumns}

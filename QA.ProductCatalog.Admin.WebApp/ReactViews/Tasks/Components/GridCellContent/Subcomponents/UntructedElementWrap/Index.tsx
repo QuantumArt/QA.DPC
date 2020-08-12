@@ -15,7 +15,7 @@ export const UntruncatedElementWrap = ({
 }: IUntruncatedElementProps) => {
   const renderChild = (childs: ReactNode) =>
     React.Children.map(childs, child =>
-      React.cloneElement(child as React.ReactElement<any>, {
+      React.cloneElement(child as React.ReactElement, {
         className: cn({ "bp3-skeleton truncate-cell ": isLoading })
       })
     );

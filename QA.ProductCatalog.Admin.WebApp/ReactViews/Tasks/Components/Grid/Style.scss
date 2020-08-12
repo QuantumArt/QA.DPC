@@ -65,6 +65,7 @@ $text-color: rgb(24, 32, 38);
 .truncate-cell {
   white-space: nowrap;
   overflow: hidden;
+  max-width: 100%;
 }
 
 .bp3-tooltip {
