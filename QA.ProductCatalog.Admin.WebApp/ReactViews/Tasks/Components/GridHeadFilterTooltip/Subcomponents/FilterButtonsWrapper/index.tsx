@@ -23,7 +23,7 @@ export const FilterButtonsWrapper = observer(
         <div className="filter-options-wrap__buttons-wrap">
           <Button
             intent={Intent.PRIMARY}
-            outlined
+            outlined="true"
             className="filter-options-wrap__button"
             onClick={() => {
               filter.setValue(value);
@@ -34,7 +34,7 @@ export const FilterButtonsWrapper = observer(
           </Button>
 
           <Button
-            outlined
+            outlined="true"
             disabled={!filter.isActive}
             className="filter-options-wrap__button"
             onClick={() => {

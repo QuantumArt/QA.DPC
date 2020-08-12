@@ -9,12 +9,12 @@ import { getClassnameByIntent } from "Shared/Utils";
 import cn from "classnames";
 import "./Style.scss";
 
-interface Iprops {
+interface IProps {
   task: Task;
   width?: number;
 }
 
-export const MyLastTask = ({ task, width }: Iprops) => {
+export const MyLastTask = ({ task, width }: IProps) => {
   if (!task) return null;
   const intent = getTaskIntentDependsOnStatus(task.StateId);
 

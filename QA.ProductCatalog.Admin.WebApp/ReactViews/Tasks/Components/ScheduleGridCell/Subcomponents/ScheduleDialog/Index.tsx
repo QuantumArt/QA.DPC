@@ -25,18 +25,19 @@ interface IProps {
   scheduleCronExpression: string;
   isOpen: boolean;
   closeDialogCb: () => void;
+  scheduleEnabled: boolean;
 }
 
 export const ScheduleDialog = ({
   taskId,
-  hasSchedule,
   scheduleCronExpression,
   isOpen,
-  closeDialogCb
+  closeDialogCb,
+  scheduleEnabled
 }: IProps) => {
   const store = useStore();
   const [taskSetType, setTaskSetType] = useState(ScheduleType.Repeat);
-  const [isEnable, setIsEnable] = useState(hasSchedule);
+  const [isEnable, setIsEnable] = useState(scheduleEnabled);
   const [period, setPeriod] = useState(CronPeriodType.Minute);
   const [isShouldClear, setIsShouldClear] = useState(false);
 
@@ -51,9 +52,10 @@ export const ScheduleDialog = ({
 
   useEffect(
     () => {
-      const initSchedule = () => {
-        if (scheduleCronExpression && isOpen) {
-          const cronParts = getValuesFromCronString(scheduleCronExpression);
+      if (scheduleCronExpression && isOpen) {
+        console.log(1);
+        const cronParts = getValuesFromCronString(scheduleCronExpression);
+        if (cronParts.cronParts.length === 5) {
           setPeriod(cronParts.period);
           setMinutes(partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true));
           setHours(partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true));
@@ -63,8 +65,10 @@ export const ScheduleDialog = ({
           setMonths(partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true));
           setWeekDays(partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true));
         }
-      };
-      initSchedule();
+        if (cronParts.cronParts.length === 6) {
+          setTaskSetType(ScheduleType.Single);
+        }
+      }
     },
     [scheduleCronExpression, isOpen]
   );
@@ -79,6 +83,13 @@ export const ScheduleDialog = ({
       clear();
     },
     [isShouldClear]
+  );
+
+  useEffect(
+    () => {
+      if (isOpen) setIsEnable(scheduleEnabled);
+    },
+    [scheduleEnabled, isOpen]
   );
 
   const multiSelectPropsByUnit = useMemo(
@@ -285,7 +296,7 @@ export const ScheduleDialog = ({
                 />
                 <Button
                   icon="cross"
-                  outlined
+                  outlined="true"
                   onClick={() => {
                     setIsShouldClear(true);
                     clearValues();

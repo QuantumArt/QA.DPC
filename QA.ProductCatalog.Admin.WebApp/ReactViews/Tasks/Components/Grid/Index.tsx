@@ -15,25 +15,27 @@ interface IProps {
   /**
    * custom columns props
    * showOnHover: показывать поле только при наведении
+   * getClassNameByEnableSchedule параметр для EnableSchedule
    * truncate: {
    * onWidth: схлопывать при указананой ширине
    * possibleRows: возможных строк
    * noTruncateElement возвращает реакт элемент который не будет схлопываться
    * }
    */
-  columns: {
-    showOnHover?: boolean;
-    fixedWidth?: number;
-    truncate?: {
-      onWidth: number;
-      possibleRows: 1 | 2;
-      noTruncateElement?: (
-        taskId: number,
-        isLoading: boolean,
-        loadingCNs: string
-      ) => JSX.Element | String;
-    };
-  };
+  // columns: {
+  //   Header: any;
+  //   accessor: any;
+  //   Cell?: any;
+  //   showOnHover?: boolean;
+  //   fixedWidth?: number;
+  //   getClassNameByEnableSchedule?: (taskId: number) => string;
+  //   truncate?: {
+  //     onWidth?: number;
+  //     possibleRows?: 1 | 2;
+  //     noTruncateElement?: (taskId: number) => Element | String;
+  //   };
+  // }[];
+  columns: any[];
 }
 
 export const Grid = ({ columns, data, customPagination, total, isLoading }: IProps) => {
@@ -82,6 +84,9 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
             return (
               <tr {...row.getRowProps()} className="grid-body__tr">
                 {row.cells.map(cell => {
+                  const classNameByEnableSchedule = !!cell.column.getClassNameByEnableSchedule
+                    ? cell.column.getClassNameByEnableSchedule(cell.row.values.Id)
+                    : "";
                   const renderCell = () => {
                     if (!!cell.column.truncate) {
                       const cellElement = cell.render("Cell");
@@ -116,7 +121,11 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
                   return (
                     <td
                       {...cell.getCellProps()}
-                      className={cn("grid-body__td grid__cell", cell.column.className)}
+                      className={cn(
+                        "grid-body__td grid__cell",
+                        cell.column.className,
+                        classNameByEnableSchedule
+                      )}
                     >
                       <div style={cell.column.fixedWidth && { width: cell.column.fixedWidth }}>
                         {renderCell()}

@@ -46,3 +46,10 @@ export const getTaskIconDependsOnState = (stateId: TaskState): IconName => {
       return IconNames.DISABLE;
   }
 };
+
+export const getDateValueWithZeroAhead = (num: number): number | string => {
+  if (num < 10) {
+    return `0${num}`;
+  }
+  return num;
+};

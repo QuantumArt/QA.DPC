@@ -6,6 +6,7 @@ import "./Style.scss";
 interface IProps {
   taskId: number;
   hasSchedule: boolean;
+  scheduleEnabled: boolean;
   scheduleCronExpression: string;
   className?: string;
 }

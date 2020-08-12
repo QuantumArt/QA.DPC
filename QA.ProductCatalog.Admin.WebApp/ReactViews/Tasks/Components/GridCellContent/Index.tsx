@@ -2,14 +2,14 @@ import React, { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { Tooltip } from "@blueprintjs/core";
 import Truncate from "react-truncate";
 import { IUntruncatedElementProps, UntruncatedElementWrap } from "./Subcomponents";
+import "./Style.scss";
 
 interface IProps extends IUntruncatedElementProps {
   value: JSX.Element | string;
   refBody: RefObject<any>;
-  // refBody: ((instance: unknown) => void) | MutableRefObject<unknown>
   isLoading: boolean;
   truncateOnWidth: number;
-  truncateRows: number;
+  truncateRows: 1 | 2;
 }
 
 export const GridTruncatedCellContent = React.memo(

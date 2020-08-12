@@ -18,6 +18,8 @@ import {
 import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
+import { getClassnameByIntent } from "Shared/Utils";
+import { Intent } from "@blueprintjs/core";
 import "./Root.scss";
 
 export const Task = observer(() => {
@@ -94,7 +96,14 @@ export const Task = observer(() => {
             />
           );
         },
-        fixedWidth: 150,
+        fixedWidth: 156,
+        getClassNameByEnableSchedule: (taskId: number) => {
+          const element = store.getGridData.find(x => x.Id === taskId);
+          if (element.ScheduleEnabled) {
+            return getClassnameByIntent("color", Intent.SUCCESS, "-");
+          }
+          return getClassnameByIntent("color", Intent.NONE, "-");
+        },
         truncate: {
           onWidth: 120,
           possibleRows: 2,
@@ -104,7 +113,8 @@ export const Task = observer(() => {
               <ScheduleGridCellCalendar
                 taskId={element.Id}
                 scheduleCronExpression={element.ScheduleCronExpression}
-                hasSchedule={true}
+                hasSchedule={element.HasSchedule}
+                scheduleEnabled={element.ScheduleEnabled}
               />
             );
           }
