@@ -48,6 +48,8 @@ export interface ColumnModel {
 }
 export const Task = observer(() => {
   const store = useStore();
+  const gridWrap = React.useRef(null);
+  const [gridWidth, setGridWidth] = React.useState(1000);
 
   const {
     userName,
@@ -64,6 +66,13 @@ export const Task = observer(() => {
   useEffect(() => {
     store.init();
   }, []);
+
+  useEffect(
+    () => {
+      if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
+    },
+    [gridWrap, store.isLoading]
+  );
 
   const gridColumns = React.useMemo<Column<ColumnModel>[]>(
     () => [
@@ -189,16 +198,18 @@ export const Task = observer(() => {
   return (
     <div className="task-wrapper">
       <ErrorBoundary>
-        <MyLastTask task={store.lastTask} width={1240} />
+        <MyLastTask task={store.lastTask} width={gridWidth} />
       </ErrorBoundary>
 
-      <Grid
-        columns={gridColumns}
-        data={store.getGridData}
-        customPagination={store.pagination}
-        total={store.getTotal}
-        isLoading={store.isLoading}
-      />
+      <div ref={gridWrap}>
+        <Grid
+          columns={gridColumns}
+          data={store.getGridData}
+          customPagination={store.pagination}
+          total={store.getTotal}
+          isLoading={store.isLoading}
+        />
+      </div>
     </div>
   );
 });
