@@ -1,7 +1,7 @@
 import React from "react";
 import { Callout, Icon, IProgressBarProps, Tooltip } from "@blueprintjs/core";
 import { Task } from "Tasks/ApiServices/DataContracts";
-import { DateGridCell, StatusCell } from "Tasks/Components";
+import { DateGridCell, StatusTag } from "Tasks/Components";
 import { getTaskIntentDependsOnStatus } from "Shared/Utils";
 import ProgressBar from "Shared/Components/ProgressBar";
 import { TaskStatuses } from "Shared/Enums";
@@ -71,14 +71,14 @@ export const MyLastTask = ({ task, width }: IProps) => {
           >
             {task.Name}
           </span>
-          <StatusCell className="my-last-task__header-item" value={task.StateId} />
+          <StatusTag className="my-last-task__header-item" value={task.StateId} />
           <Tooltip
             className="last-task-tooltip my-last-task__header-item"
             popoverClassName="last-task-tooltip__wrap"
             position={"bottom"}
             content={TooltipContent}
           >
-            <Icon icon="info-sign" intent={intent} iconSize={24} className="my-last-task__icon" />
+            <Icon icon="info-sign" intent={intent} iconSize={23} className="my-last-task__icon" />
           </Tooltip>
         </div>
         <div className="my-last-task__message">{task.Message}</div>

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import {
   GridHeadFilterTooltip,
   ProgressBarGridCell,
-  StatusCell,
+  StatusTag,
   Grid,
   MyLastTask,
   ScheduleGridCellCalendar,
@@ -90,7 +90,7 @@ export const Task = observer(() => {
           </GridHeadFilterTooltip>
         ),
         accessor: "StateId",
-        Cell: StatusCell
+        Cell: StatusTag
       },
       {
         Header: (

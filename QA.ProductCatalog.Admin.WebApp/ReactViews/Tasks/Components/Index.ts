@@ -4,7 +4,7 @@ export * from "./GridHeadFilterTooltip";
 export * from "./Grid";
 export * from "./ProgressBarGridCell";
 export * from "./RerunGridCell";
-export * from "./StatusGridCell";
+export * from "./StatusTag";
 export * from "./GridCellContent";
 export * from "./MyLastTask";
 export * from "./ScheduleGridCell";

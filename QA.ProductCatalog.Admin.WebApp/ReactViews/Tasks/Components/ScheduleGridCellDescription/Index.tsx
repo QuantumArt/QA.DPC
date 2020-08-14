@@ -54,7 +54,7 @@ export const ScheduleGridCellDescription = ({ cronExpression }: IProps) => {
     (): string => {
       if (cronExpression) {
         const cronParts = getValuesFromCronString(cronExpression);
-        if (!cronParts) return "";
+        if (!cronParts) return "Ошибка обработки";
 
         if (cronParts.cronParts.length === 5) {
           const monthDays = cronParts.cronParts[2].length

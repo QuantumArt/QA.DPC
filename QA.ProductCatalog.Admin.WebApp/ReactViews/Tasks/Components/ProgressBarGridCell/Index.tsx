@@ -33,8 +33,8 @@ export const ProgressBarGridCell = ({ value, stateId }: { value: number; stateId
     <div className="progress-bar-cell">
       <ProgressBar
         defaultBarProps={progressBarProps}
-        barWidth="140px"
-        labelWidth="40px"
+        barWidth="110px"
+        labelWidth="30px"
         labelClassName="progress-bar-cell__label"
       />
     </div>

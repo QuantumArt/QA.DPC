@@ -10,7 +10,7 @@ interface StatusCell {
   props: ITagProps;
 }
 
-export const StatusCell = ({ value, className }) => {
+export const StatusTag = ({ value, className }) => {
   const statusValues = window.QP.Tasks.tableFields.statusValues;
   const statusObj = statusValues.find(status => {
     return status.value === value;

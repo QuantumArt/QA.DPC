@@ -236,6 +236,7 @@ export class TaskStore {
     this.withIsPendingRequest(async () => {
       try {
         await apiService.fetchSchedule(taskId, isEnabled, cronExpression, repeatType);
+        await this.fetchGridData();
       } catch (e) {
         console.error(e);
       }

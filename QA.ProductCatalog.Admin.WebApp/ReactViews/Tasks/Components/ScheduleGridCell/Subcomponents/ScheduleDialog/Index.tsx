@@ -175,7 +175,7 @@ export const ScheduleDialog = ({
           }
         ]
       ]),
-    [isShouldClear, weekDays, setHours, hours, months, minutes]
+    [isShouldClear, weekDays, setHours, hours, months, minutes, monthDays]
   );
 
   const getMultiSelectProps = useMemo(
@@ -215,7 +215,15 @@ export const ScheduleDialog = ({
   );
 
   const parsedCronsMultiSelectsModel = () => {
-    const models: ICronsTagModel[][] = [minutes, hours, monthDays, months, []];
+    /** don't change the order of array*/
+    const apiRequestModel: ReadonlyArray<ICronsTagModel[]> = [
+      minutes,
+      hours,
+      monthDays,
+      months,
+      []
+    ];
+
     const ModelParser = (model: ICronsTagModel[]): string => {
       if (!model || !model.length) return "*";
       return model
@@ -231,12 +239,12 @@ export const ScheduleDialog = ({
         .join(",")
         .trim();
     };
-    return models.map(ModelParser).join(" ");
+    return apiRequestModel.map(ModelParser).join(" ");
   };
 
   const parseCronsSingleModel = () => {
-    return `${singleTime.getMinutes()}+${singleTime.getHours()}+${singleDate.getDate()}+${singleDate.getMonth() +
-      1}+?+${singleDate.getFullYear()}`;
+    return `${singleTime.getMinutes()} ${singleTime.getHours()} ${singleDate.getDate()} ${singleDate.getMonth() +
+      1} ? ${singleDate.getFullYear()}`;
   };
 
   const acceptSchedule = (): void => {
