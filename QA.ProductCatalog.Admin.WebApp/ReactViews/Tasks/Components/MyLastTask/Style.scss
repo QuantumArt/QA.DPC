@@ -11,10 +11,11 @@
   &__header {
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
   }
   &__header-item {
     margin-right: 6px;
+    max-height: 24px;
   }
   &__id {
     color: rgba(92, 112, 128, 0.5);

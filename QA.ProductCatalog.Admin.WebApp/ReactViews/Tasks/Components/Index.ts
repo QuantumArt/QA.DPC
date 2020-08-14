@@ -9,3 +9,4 @@ export * from "./GridCellContent";
 export * from "./MyLastTask";
 export * from "./ScheduleGridCell";
 export * from "./ScheduleGridCellDescription";
+export * from "./ErrorBoundary";

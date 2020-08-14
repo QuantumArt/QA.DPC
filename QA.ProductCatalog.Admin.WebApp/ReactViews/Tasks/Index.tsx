@@ -8,7 +8,8 @@ import {
   ScheduleGridCellCalendar,
   DateGridCell,
   RerunGridCell,
-  ScheduleGridCellDescription
+  ScheduleGridCellDescription,
+  ErrorBoundary
 } from "./Components";
 import {
   StatusFilterContent,
@@ -127,7 +128,6 @@ export const Task = observer(() => {
         },
         truncate: {
           onWidth: 120,
-
           noTruncateElement: (gridElement: GridTask) => {
             return (
               <ScheduleGridCellCalendar
@@ -188,7 +188,9 @@ export const Task = observer(() => {
 
   return (
     <div className="task-wrapper">
-      <MyLastTask task={store.lastTask} width={1240} />
+      <ErrorBoundary>
+        <MyLastTask task={store.lastTask} width={1240} />
+      </ErrorBoundary>
 
       <Grid
         columns={gridColumns}

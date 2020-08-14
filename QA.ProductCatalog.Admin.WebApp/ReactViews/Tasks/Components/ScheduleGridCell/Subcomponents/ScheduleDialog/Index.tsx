@@ -47,6 +47,7 @@ export const ScheduleDialog = ({
   const [isEnable, setIsEnable] = useState(scheduleEnabled);
   const [period, setPeriod] = useState(CronPeriodType.Minute);
   const [isShouldClear, setIsShouldClear] = useState(false);
+  const [isCronsParseError, setIsCronsParseError] = useState(false);
 
   const [monthDays, setMonthDays] = useState<ICronsTagModel[] | undefined>();
   const [months, setMonths] = useState<ICronsTagModel[] | undefined>();
@@ -60,32 +61,39 @@ export const ScheduleDialog = ({
   useEffect(
     () => {
       if (scheduleCronExpression && isOpen) {
-        const cronParts = getValuesFromCronString(scheduleCronExpression);
-        if (cronParts.cronParts.length === 5) {
-          setPeriod(cronParts.period);
-          setMinutes(partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true));
-          setHours(partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true));
-          setMonthDays(
-            partToString(cronParts.cronParts[2], UNITS.get(CronUnitType.MonthDays), true)
-          );
-          setMonths(partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true));
-          setWeekDays(partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true));
-        }
-        if (cronParts.cronParts.length === 6) {
-          setTaskSetType(ScheduleType.Single);
-          const date = cronParts.cronParts[2][0];
-          const month = cronParts.cronParts[3][0];
-          const year = cronParts.cronParts[5][0];
-          const hours = cronParts.cronParts[1][0];
-          const mins = cronParts.cronParts[0][0];
-          const dd = new Date();
-          dd.setDate(date);
-          dd.setMonth(month - 1);
-          dd.setFullYear(year);
-          dd.setHours(hours);
-          dd.setMinutes(mins);
-          setSingleDate(dd);
-          setSingleTime(dd);
+        try {
+          setIsCronsParseError(false);
+          const cronParts = getValuesFromCronString(scheduleCronExpression);
+          if (cronParts.cronParts.length === 5) {
+            setPeriod(cronParts.period);
+            setMinutes(partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true));
+            setHours(partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true));
+            setMonthDays(
+              partToString(cronParts.cronParts[2], UNITS.get(CronUnitType.MonthDays), true)
+            );
+            setMonths(partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true));
+            setWeekDays(
+              partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true)
+            );
+          }
+          if (cronParts.cronParts.length === 6) {
+            setTaskSetType(ScheduleType.Single);
+            const date = cronParts.cronParts[2][0];
+            const month = cronParts.cronParts[3][0];
+            const year = cronParts.cronParts[5][0];
+            const hours = cronParts.cronParts[1][0];
+            const mins = cronParts.cronParts[0][0];
+            const dd = new Date();
+            dd.setDate(date);
+            dd.setMonth(month - 1);
+            dd.setFullYear(year);
+            dd.setHours(hours);
+            dd.setMinutes(mins);
+            setSingleDate(dd);
+            setSingleTime(dd);
+          }
+        } catch (e) {
+          setIsCronsParseError(true);
         }
       }
     },
@@ -273,6 +281,108 @@ export const ScheduleDialog = ({
     { label: "Год", value: CronPeriodType.Year }
   ];
 
+  const renderSelectsUiPart = () => {
+    if (isCronsParseError) return "Ошибка обработки cronExpression";
+    return (
+      <>
+        <SelectRow>
+          <Switch
+            alignIndicator={"left"}
+            labelElement={"Расписание активно"}
+            checked={isEnable}
+            className="schedule-popup__switch"
+            onChange={(): void => {
+              setIsEnable(prevState => !prevState);
+            }}
+          />
+        </SelectRow>
+
+        <SelectRow label="Режим повторения">
+          <HTMLSelect
+            className="schedule-popup__select"
+            iconProps={{ icon: "caret-down" }}
+            value={taskSetType}
+            onChange={event => {
+              setTaskSetType(event.target.value as ScheduleType);
+              clearValues();
+            }}
+            options={[
+              { label: "Повторять", value: ScheduleType.Repeat },
+              { label: "Одноразовое", value: ScheduleType.Single }
+            ]}
+          />
+        </SelectRow>
+
+        {taskSetType === ScheduleType.Repeat && (
+          <SelectRow label="Период повторения">
+            <>
+              <span className="just-label">Каждый(ую)</span>
+              {"   "}
+              <HTMLSelect
+                className="schedule-popup__select schedule-popup__select--inline"
+                iconProps={{ icon: "caret-down" }}
+                value={period}
+                onChange={event => {
+                  clearValues();
+                  setPeriod(event.target.value as CronPeriodType);
+                }}
+                options={periodItems}
+              />
+              <Button
+                icon="cross"
+                outlined="true"
+                onClick={() => {
+                  setIsShouldClear(true);
+                  clearValues();
+                }}
+              />
+              <div className="schedule-popup__selects">
+                <MultiSelectFormGroup selectProps={getMultiSelectProps} />
+              </div>
+            </>
+          </SelectRow>
+        )}
+
+        {taskSetType === ScheduleType.Single && (
+          <SelectRow label="Дата и время">
+            <>
+              <DateInput
+                className="schedule-popup__select--inline"
+                formatDate={date => (date == null ? "" : date.toLocaleDateString())}
+                parseDate={str => new Date(Date.parse(str))}
+                popoverProps={{ position: Position.BOTTOM }}
+                value={singleDate}
+                onChange={(selectedDate: Date) => {
+                  setSingleDate(selectedDate);
+                }}
+              />
+              <TimePicker
+                value={singleTime}
+                onChange={(newTime: Date) => {
+                  setSingleTime(newTime);
+                }}
+                className="schedule-popup__select--inline"
+              />
+            </>
+          </SelectRow>
+        )}
+      </>
+    );
+  };
+
+  const renderDialogButtons = () => {
+    return (
+      <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+        <Button onClick={closeDialogCb}>Закрыть</Button>
+        {!isCronsParseError && (
+          <AnchorButton intent={Intent.PRIMARY} onClick={acceptSchedule}>
+            Принять
+          </AnchorButton>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div>
       <Dialog
@@ -287,97 +397,10 @@ export const ScheduleDialog = ({
             <InputGroup disabled={true} value={String(taskId)} />
           </SelectRow>
 
-          <SelectRow>
-            <Switch
-              alignIndicator={"left"}
-              labelElement={"Расписание активно"}
-              checked={isEnable}
-              className="schedule-popup__switch"
-              onChange={(): void => {
-                setIsEnable(prevState => !prevState);
-              }}
-            />
-          </SelectRow>
-
-          <SelectRow label="Режим повторения">
-            <HTMLSelect
-              className="schedule-popup__select"
-              iconProps={{ icon: "caret-down" }}
-              value={taskSetType}
-              onChange={event => {
-                setTaskSetType(event.target.value as ScheduleType);
-                clearValues();
-              }}
-              options={[
-                { label: "Повторять", value: ScheduleType.Repeat },
-                { label: "Одноразовое", value: ScheduleType.Single }
-              ]}
-            />
-          </SelectRow>
-
-          {taskSetType === ScheduleType.Repeat && (
-            <SelectRow label="Период повторения">
-              <>
-                <span className="just-label">Каждый(ую)</span>
-                {"   "}
-                <HTMLSelect
-                  className="schedule-popup__select schedule-popup__select--inline"
-                  iconProps={{ icon: "caret-down" }}
-                  value={period}
-                  onChange={event => {
-                    clearValues();
-                    setPeriod(event.target.value as CronPeriodType);
-                  }}
-                  options={periodItems}
-                />
-                <Button
-                  icon="cross"
-                  outlined="true"
-                  onClick={() => {
-                    setIsShouldClear(true);
-                    clearValues();
-                  }}
-                />
-                <div className="schedule-popup__selects">
-                  <MultiSelectFormGroup selectProps={getMultiSelectProps} />
-                </div>
-              </>
-            </SelectRow>
-          )}
-
-          {taskSetType === ScheduleType.Single && (
-            <SelectRow label="Дата и время">
-              <>
-                <DateInput
-                  className="schedule-popup__select--inline"
-                  formatDate={date => (date == null ? "" : date.toLocaleDateString())}
-                  parseDate={str => new Date(Date.parse(str))}
-                  popoverProps={{ position: Position.BOTTOM }}
-                  value={singleDate}
-                  onChange={(selectedDate: Date) => {
-                    setSingleDate(selectedDate);
-                  }}
-                />
-                <TimePicker
-                  value={singleTime}
-                  onChange={(newTime: Date) => {
-                    setSingleTime(newTime);
-                  }}
-                  className="schedule-popup__select--inline"
-                />
-              </>
-            </SelectRow>
-          )}
+          {renderSelectsUiPart()}
         </div>
 
-        <div className={Classes.DIALOG_FOOTER}>
-          <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-            <Button onClick={closeDialogCb}>Закрыть</Button>
-            <AnchorButton intent={Intent.PRIMARY} onClick={acceptSchedule}>
-              Принять
-            </AnchorButton>
-          </div>
-        </div>
+        <div className={Classes.DIALOG_FOOTER}>{renderDialogButtons()}</div>
       </Dialog>
     </div>
   );
