@@ -68,7 +68,7 @@ export const ScheduleGridCellDescription = ({ cronExpression }: IProps) => {
               )}`
             : " каждый месяц";
           const weekDays = cronParts.cronParts[4].length
-            ? ` каждый ${parseTagModelToString(
+            ? ` ${parseTagModelToString(
                 partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true)
               )}`
             : " каждый день недели";
@@ -100,5 +100,5 @@ export const ScheduleGridCellDescription = ({ cronExpression }: IProps) => {
     [cronExpression]
   );
 
-  return <span>{parseExpressionToString}</span>;
+  return <>{parseExpressionToString}</>;
 };

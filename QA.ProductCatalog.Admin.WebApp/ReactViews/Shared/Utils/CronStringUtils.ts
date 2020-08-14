@@ -62,8 +62,8 @@ export const UNITS: Map<CronUnitType, Unit> = new Map([
     CronUnitType.Months,
     {
       type: CronUnitType.Months,
-      min: 0,
-      max: 11,
+      min: 1,
+      max: 12,
       total: 12,
       alt: MONTH_UNITS
     }
@@ -271,7 +271,7 @@ function parseCronString(str: string): number[][] {
   throw new Error("Invalid cron string format");
 }
 
-const getUnitByIndex = (id: number) => {
+export const getUnitByIndex = (id: number) => {
   if (id === 0) return CronUnitType.Minutes;
   if (id === 1) return CronUnitType.Hours;
   if (id === 2) return CronUnitType.MonthDays;

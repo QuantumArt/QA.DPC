@@ -1,9 +1,9 @@
 import { Intent } from "@blueprintjs/core";
 import React from "react";
-import "./Style.scss";
 import ProgressBar from "Shared/Components/ProgressBar";
 import { TaskStatuses } from "Shared/Enums";
 import { getTaskIntentDependsOnStatus } from "Shared/Utils";
+import "./Style.scss";
 
 interface IProgressBarProps {
   value: number;

@@ -6,25 +6,29 @@ export interface IUntruncatedElementProps {
   untruncatedElement?: JSX.Element | string;
   children?: ReactNode;
   isLoading: boolean;
+  width?: number;
 }
+
+const renderChild = (node: ReactNode, isLoading: boolean, width: number) =>
+  React.Children.map(node, child =>
+    React.cloneElement(child as React.ReactElement, {
+      style: width && isLoading ? { width: width } : null,
+      className: cn("truncate-cell", { "bp3-skeleton": isLoading })
+    })
+  );
 
 export const UntruncatedElementWrap = ({
   children,
   untruncatedElement,
-  isLoading
+  isLoading,
+  width
 }: IUntruncatedElementProps) => {
-  const renderChild = (childs: ReactNode) =>
-    React.Children.map(childs, child =>
-      React.cloneElement(child as React.ReactElement, {
-        className: cn({ "bp3-skeleton truncate-cell ": isLoading })
-      })
-    );
+  if (!untruncatedElement) return <>{renderChild(children, isLoading, width)}</>;
 
-  if (!untruncatedElement) return <>{renderChild(children)}</>;
   return (
     <div className="with-untruncated-element">
-      {renderChild(children)}
-      {untruncatedElement && renderChild(untruncatedElement)}
+      {renderChild(children, isLoading, width)}
+      {untruncatedElement && renderChild(untruncatedElement, isLoading, width)}
     </div>
   );
 };

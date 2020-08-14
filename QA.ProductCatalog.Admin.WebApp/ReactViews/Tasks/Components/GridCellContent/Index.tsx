@@ -1,6 +1,5 @@
 import React, { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { Tooltip } from "@blueprintjs/core";
-import Truncate from "react-truncate";
 import { IUntruncatedElementProps, UntruncatedElementWrap } from "./Subcomponents";
 import "./Style.scss";
 
@@ -9,84 +8,58 @@ interface IProps extends IUntruncatedElementProps {
   refBody: RefObject<any>;
   isLoading: boolean;
   truncateOnWidth: number;
-  truncateRows: 1 | 2;
 }
 
 export const GridTruncatedCellContent = React.memo(
-  ({ refBody, isLoading, truncateOnWidth, truncateRows, untruncatedElement, value }: IProps) => {
+  ({ refBody, isLoading, truncateOnWidth, untruncatedElement, value }: IProps) => {
     const cellRef = useRef(null);
+    const cellRefTruncated = useRef(null);
     const [isTruncate, setIsTruncate] = useState(false);
-    const [isTooltip, setIsTooltip] = useState(false);
-    //размер шрифта ~ 14 px
-    const fontSizeOneRow = 16;
-    const fontSizeTwoRows = 34;
 
     //проверяет ширину и высоту строки и схлопывает ее добавляя тултип если это нужно
     useLayoutEffect(
       () => {
-        if (!cellRef.current) return;
-        if (
-          !isTooltip &&
-          (cellRef.current.offsetWidth > truncateOnWidth ||
-            (truncateRows === 1 && cellRef.current.offsetHeight > fontSizeOneRow) ||
-            (truncateRows === 2 && cellRef.current.offsetHeight > fontSizeTwoRows))
-        ) {
+        if (!isTruncate && cellRef.current.offsetWidth > truncateOnWidth) {
           setIsTruncate(true);
+          return;
         }
         if (
-          isTooltip &&
-          (cellRef.current.offsetWidth < truncateOnWidth ||
-            (truncateRows === 1 && cellRef.current.offsetHeight < fontSizeOneRow) ||
-            (truncateRows === 2 && cellRef.current.offsetHeight < fontSizeTwoRows))
+          isTruncate &&
+          cellRefTruncated.current &&
+          cellRefTruncated.current.offsetWidth < truncateOnWidth
         ) {
-          setIsTooltip(false);
+          setIsTruncate(false);
         }
       },
-      [isLoading, cellRef, isTooltip, truncateOnWidth, truncateRows]
+      [isLoading, cellRef, truncateOnWidth, isTruncate, cellRefTruncated]
     );
 
-    const setTooltip = (isTruncated: boolean) => isTruncated && setIsTooltip(true);
-
-    const TruncateString = props => {
+    if (isTruncate && !isLoading) {
       return (
-        <>
-          <Truncate
-            {...props}
-            lines={truncateRows || 1}
-            className="truncate-cell"
-            width={truncateOnWidth}
-          >
-            {value}
-          </Truncate>
-        </>
-      );
-    };
-
-    if (isTooltip && !isLoading) {
-      return (
-        <UntruncatedElementWrap untruncatedElement={untruncatedElement} isLoading={isLoading}>
+        <UntruncatedElementWrap
+          untruncatedElement={untruncatedElement}
+          isLoading={isLoading}
+          width={truncateOnWidth}
+        >
           <Tooltip position={"left"} usePortal content={value} portalContainer={refBody.current}>
-            <TruncateString />
+            <div
+              style={truncateOnWidth && { width: truncateOnWidth }}
+              className="truncate-cell truncate-string"
+            >
+              <span ref={cellRefTruncated}> {value && value}</span>
+            </div>
           </Tooltip>
         </UntruncatedElementWrap>
       );
     }
 
-    if (isTruncate && !isLoading) {
-      return (
-        <UntruncatedElementWrap untruncatedElement={untruncatedElement} isLoading={isLoading}>
-          <TruncateString
-            onTruncate={param => {
-              setTooltip(param);
-            }}
-          />
-        </UntruncatedElementWrap>
-      );
-    }
-
     return (
-      <UntruncatedElementWrap untruncatedElement={untruncatedElement} isLoading={isLoading}>
-        <div ref={cellRef}>{value}</div>
+      <UntruncatedElementWrap
+        untruncatedElement={untruncatedElement}
+        isLoading={isLoading}
+        width={truncateOnWidth}
+      >
+        <span ref={cellRef}>{value}</span>
       </UntruncatedElementWrap>
     );
   }

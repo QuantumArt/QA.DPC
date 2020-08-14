@@ -19,9 +19,32 @@ import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { getClassnameByIntent } from "Shared/Utils";
+import { Column, Accessor } from "react-table";
+import { Task as GridTask } from "Tasks/ApiServices/DataContracts";
 import { Intent } from "@blueprintjs/core";
 import "./Root.scss";
 
+/**
+ * ColumnModel
+ * showOnHover: показывать поле только при наведении
+ * getClassNameByEnableSchedule: параметр для EnableSchedule
+ * truncate: {
+ * onWidth: схлопывать при указананой ширине
+ * noTruncateElement возвращает реакт элемент который не будет схлопываться
+ * }
+ */
+export interface ColumnModel {
+  Header: any;
+  accessor: Accessor;
+  Cell?: any;
+  showOnHover?: boolean;
+  fixedWidth?: number;
+  getClassNameByEnableSchedule?: (taskId: number) => string;
+  truncate?: {
+    onWidth?: number;
+    noTruncateElement?: (taskId: number) => Element | String;
+  };
+}
 export const Task = observer(() => {
   const store = useStore();
 
@@ -41,7 +64,7 @@ export const Task = observer(() => {
     store.init();
   }, []);
 
-  const gridColumns = React.useMemo(
+  const gridColumns = React.useMemo<Column<ColumnModel>[]>(
     () => [
       {
         Header: "Id",
@@ -50,7 +73,7 @@ export const Task = observer(() => {
       {
         Header: userName,
         accessor: "UserName",
-        truncate: { onWidth: 120, possibleRows: 1 }
+        truncate: { onWidth: 120 }
       },
       {
         Header: (
@@ -96,25 +119,22 @@ export const Task = observer(() => {
             />
           );
         },
-        fixedWidth: 156,
-        getClassNameByEnableSchedule: (taskId: number) => {
-          const element = store.getGridData.find(x => x.Id === taskId);
-          if (element.ScheduleEnabled) {
+        getClassNameByEnableSchedule: (gridElement: GridTask) => {
+          if (gridElement.ScheduleEnabled) {
             return getClassnameByIntent("color", Intent.SUCCESS, "-");
           }
           return getClassnameByIntent("color", Intent.NONE, "-");
         },
         truncate: {
           onWidth: 120,
-          possibleRows: 2,
-          noTruncateElement: (taskId: number) => {
-            const element = store.getGridData.find(x => x.Id === taskId);
+
+          noTruncateElement: (gridElement: GridTask) => {
             return (
               <ScheduleGridCellCalendar
-                taskId={element.Id}
-                scheduleCronExpression={element.ScheduleCronExpression}
-                hasSchedule={element.HasSchedule}
-                scheduleEnabled={element.ScheduleEnabled}
+                taskId={gridElement.Id}
+                scheduleCronExpression={gridElement.ScheduleCronExpression}
+                hasSchedule={gridElement.HasSchedule}
+                scheduleEnabled={gridElement.ScheduleEnabled}
               />
             );
           }
@@ -131,26 +151,26 @@ export const Task = observer(() => {
       {
         Header: name,
         accessor: "DisplayName",
-        truncate: { onWidth: 120, possibleRows: 1 }
+        truncate: { onWidth: 120 }
       },
       {
         Header: created,
         accessor: "CreatedTime",
         Cell: DateGridCell,
         className: "grid__date-cell",
-        truncate: { onWidth: 110, possibleRows: 1 }
+        truncate: { onWidth: 110 }
       },
       {
         Header: lastStatusChange,
         accessor: "LastStatusChangeTime",
         Cell: DateGridCell,
         className: "grid__date-cell",
-        truncate: { onWidth: 110, possibleRows: 1 }
+        truncate: { onWidth: 110 }
       },
       {
         Header: message,
         accessor: "Message",
-        truncate: { onWidth: 140, possibleRows: 2 }
+        truncate: { onWidth: 140 }
       },
       {
         Header: "",

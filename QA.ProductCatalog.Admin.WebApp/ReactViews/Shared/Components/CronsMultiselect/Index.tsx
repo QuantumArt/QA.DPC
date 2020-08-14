@@ -59,7 +59,7 @@ export const CronsMultiselect = ({
         return MONTH_UNITS.map((month: string, index) => {
           return {
             label: month,
-            value: index
+            value: index + 1
           };
         });
       default:
@@ -100,7 +100,7 @@ export const CronsMultiselect = ({
     setParsedMultiSelectValues(
       partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true)
     );
-    setParsedCronsModel(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, false));
+    setParsedCronsModel(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true));
   };
 
   const onRemoveTag = (_tag: string, index: number) => {

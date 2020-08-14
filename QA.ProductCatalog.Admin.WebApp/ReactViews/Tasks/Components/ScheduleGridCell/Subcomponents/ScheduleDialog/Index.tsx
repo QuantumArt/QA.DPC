@@ -13,10 +13,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import cn from "classnames";
 import { Position } from "@blueprintjs/core/lib/esm/common/position";
 import { IMultiSelectForm, MultiSelectFormGroup, SelectRow } from "../";
-import { ICronsTagModel, partToString, getValuesFromCronString, UNITS } from "Shared/Utils";
+import {
+  ICronsTagModel,
+  partToString,
+  getValuesFromCronString,
+  UNITS,
+  getUnitByIndex
+} from "Shared/Utils";
 import { useStore } from "Tasks/UseStore";
 import { CronPeriodType, CronUnitType, ScheduleType } from "Shared/Enums";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
+import _ from "lodash";
 import "./Style.scss";
 
 interface IProps {
@@ -53,7 +60,6 @@ export const ScheduleDialog = ({
   useEffect(
     () => {
       if (scheduleCronExpression && isOpen) {
-        console.log(1);
         const cronParts = getValuesFromCronString(scheduleCronExpression);
         if (cronParts.cronParts.length === 5) {
           setPeriod(cronParts.period);
@@ -67,6 +73,19 @@ export const ScheduleDialog = ({
         }
         if (cronParts.cronParts.length === 6) {
           setTaskSetType(ScheduleType.Single);
+          const date = cronParts.cronParts[2][0];
+          const month = cronParts.cronParts[3][0];
+          const year = cronParts.cronParts[5][0];
+          const hours = cronParts.cronParts[1][0];
+          const mins = cronParts.cronParts[0][0];
+          const dd = new Date();
+          dd.setDate(date);
+          dd.setMonth(month - 1);
+          dd.setFullYear(year);
+          dd.setHours(hours);
+          dd.setMinutes(mins);
+          setSingleDate(dd);
+          setSingleTime(dd);
         }
       }
     },
@@ -196,15 +215,23 @@ export const ScheduleDialog = ({
   );
 
   const parsedCronsMultiSelectsModel = () => {
-    const models = [monthDays, months, weekDays, hours, minutes];
+    const models: ICronsTagModel[][] = [minutes, hours, monthDays, months, []];
     const ModelParser = (model: ICronsTagModel[]): string => {
       if (!model || !model.length) return "*";
       return model
-        .map(val => (val.label === "Все" ? "*" : val.label))
+        .map((val, index) =>
+          val.label === "Все"
+            ? "*"
+            : partToString(
+                _.flatten(model.map(x => x.values)).sort(),
+                UNITS.get(getUnitByIndex(index)),
+                false
+              ).map(x => x.label)
+        )
         .join(",")
         .trim();
     };
-    return models.map(ModelParser).join("+");
+    return models.map(ModelParser).join(" ");
   };
 
   const parseCronsSingleModel = () => {
@@ -218,6 +245,7 @@ export const ScheduleDialog = ({
     } else {
       store.setSchedule(taskId, isEnable, parseCronsSingleModel(), "on");
     }
+    closeDialogCb();
   };
 
   const clearValues = (): void => {

@@ -53,21 +53,26 @@ class ApiService extends BaseApiService {
     cronExpression: string,
     repeatType = "on"
   ): Promise<void> => {
-    const queryStr: string = qs.stringify({
-      taskId
-    });
-    const requestUrl = `${this.rootUrl}/Task/SaveSchedule?${queryStr}`;
+    // const queryStr: string = qs.stringify({
+    //   taskId
+    // });
+    const formData = new FormData();
+    formData.append("Enabled", isEnabled === true ? "[true, false]" : "false");
+    formData.append("CronExpression", cronExpression);
+    formData.append("repeatType", repeatType);
+    formData.append("TaskId", String(taskId));
+
+    const requestUrl = `${this.rootUrl}/Task/SaveSchedule`;
     const response = await fetch(requestUrl, {
+      // const response = await fetch('https://qp8.dev.qsupport.ru/Dpc.Admin/Task/SaveSchedule', {
       method: "POST",
-      body: JSON.stringify({
-        Enabled: isEnabled === true ? [true, false] : false,
-        TaskId: taskId,
-        CronExpression: cronExpression,
-        repeatType
-      }),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      }
+      body: formData
+      // headers: {
+      //   "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      //   // "Content-Type": "text/plain; charset=utf-8"
+      //   // "Content-Type": "multipart/form-data ; charset=utf-8"
+      //   "Content-Disposition": "form-data"
+      // }
     });
     console.log(response);
   };

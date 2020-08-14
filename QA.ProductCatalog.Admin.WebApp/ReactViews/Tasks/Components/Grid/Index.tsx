@@ -6,39 +6,17 @@ import { GridPagination, GridTruncatedCellContent } from "../";
 import "./Style.scss";
 import { Pagination } from "Tasks/TaskStore";
 import { Task } from "Tasks/ApiServices/DataContracts";
+import { ColumnModel } from "Tasks";
 
 interface IProps {
   isLoading: boolean;
   total: number;
   customPagination: Pagination;
   data: Task[];
-  /**
-   * custom columns props
-   * showOnHover: показывать поле только при наведении
-   * getClassNameByEnableSchedule параметр для EnableSchedule
-   * truncate: {
-   * onWidth: схлопывать при указананой ширине
-   * possibleRows: возможных строк
-   * noTruncateElement возвращает реакт элемент который не будет схлопываться
-   * }
-   */
-  // columns: {
-  //   Header: any;
-  //   accessor: any;
-  //   Cell?: any;
-  //   showOnHover?: boolean;
-  //   fixedWidth?: number;
-  //   getClassNameByEnableSchedule?: (taskId: number) => string;
-  //   truncate?: {
-  //     onWidth?: number;
-  //     possibleRows?: 1 | 2;
-  //     noTruncateElement?: (taskId: number) => Element | String;
-  //   };
-  // }[];
-  columns: any[];
+  columns: ColumnModel[];
 }
 
-export const Grid = ({ columns, data, customPagination, total, isLoading }: IProps) => {
+export const Grid = React.memo(({ columns, data, customPagination, total, isLoading }: IProps) => {
   const gridBody = useRef(null);
   const {
     getTableProps,
@@ -48,7 +26,7 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
     page, // Instead of using 'rows', we'll use page,
     nextPage,
     previousPage
-  } = useTable(
+  } = useTable<ColumnModel>(
     {
       columns,
       data,
@@ -84,9 +62,12 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
             return (
               <tr {...row.getRowProps()} className="grid-body__tr">
                 {row.cells.map(cell => {
+                  const gridElement = data.find(x => x.Id === cell.row.values.Id);
+
                   const classNameByEnableSchedule = !!cell.column.getClassNameByEnableSchedule
-                    ? cell.column.getClassNameByEnableSchedule(cell.row.values.Id)
+                    ? cell.column.getClassNameByEnableSchedule(gridElement)
                     : "";
+
                   const renderCell = () => {
                     if (!!cell.column.truncate) {
                       const cellElement = cell.render("Cell");
@@ -94,10 +75,9 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
                         <GridTruncatedCellContent
                           value={cellElement}
                           truncateOnWidth={cell.column.truncate.onWidth}
-                          truncateRows={cell.column.truncate.possibleRows}
                           untruncatedElement={
                             cell.column.truncate.noTruncateElement
-                              ? cell.column.truncate.noTruncateElement(cell.row.values.Id)
+                              ? cell.column.truncate.noTruncateElement(gridElement)
                               : null
                           }
                           refBody={gridBody}
@@ -159,4 +139,4 @@ export const Grid = ({ columns, data, customPagination, total, isLoading }: IPro
       />
     </>
   );
-};
+});
