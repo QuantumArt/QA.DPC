@@ -1,5 +1,5 @@
 # Build temp image
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build-env
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
 RUN apt-get install -y \
     && curl -sL https://deb.nodesource.com/setup_11.x | bash \
@@ -12,10 +12,10 @@ WORKDIR /app/QA.ProductCatalog.Admin.WebApp
 RUN npm ci
 #RUN npm run-script build-prod
 
-RUN dotnet publish /app/QA.ProductCatalog.Admin.WebApp/QA.ProductCatalog.Admin.WebApp.csproj -c Release -o out -f netcoreapp2.2
+RUN dotnet publish /app/QA.ProductCatalog.Admin.WebApp/QA.ProductCatalog.Admin.WebApp.csproj -c Release -o out -f netcoreapp3.1
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 
 ARG SERVICE_NAME
 ENV SERVICE_NAME=${SERVICE_NAME:-Admin}
