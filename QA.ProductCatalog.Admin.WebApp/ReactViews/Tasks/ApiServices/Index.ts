@@ -4,9 +4,10 @@ import { mapGridResponse } from "./Mappers/MapGridResponse";
 import qs from "qs";
 import { FilterOptions, PaginationOptions } from "Tasks/ApiServices/DataContracts";
 import BaseApiService from "Shared/BaseApiService";
-import { throwOnExpiredSession } from "Shared/Utils";
+import { throwOnExpiredSession, throwOnSameHashCode } from "Shared/Utils";
 
 class ApiService extends BaseApiService {
+  private lastUpdateHashCode: number;
   /**
    * GET /​Task/TasksData
    *
@@ -23,7 +24,12 @@ class ApiService extends BaseApiService {
     const queryStr: string = qs.stringify(paginationOpts) + filterString;
     const response = await fetch(`${this.rootUrl}/Task/TasksData?${queryStr}`);
     throwOnExpiredSession(response.status);
-    return await this.mapResponse<IGridResponse, GridResponse>(response, mapGridResponse);
+    const mappedResponse = await this.mapResponse<IGridResponse, GridResponse>(
+      response,
+      mapGridResponse
+    );
+    throwOnSameHashCode(mappedResponse.hashCode, this.lastUpdateHashCode);
+    return mappedResponse;
   }
 
   /**

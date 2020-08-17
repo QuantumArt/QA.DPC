@@ -4,4 +4,5 @@ export class GridResponse {
   tasks: Task[];
   totalTasks: number;
   myLastTask?: Task;
+  hashCode: number;
 }

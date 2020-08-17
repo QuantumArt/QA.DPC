@@ -1,4 +1,5 @@
 export interface IGridResponse {
+  hashCode: number;
   data: {
     tasks: IGridTask[];
     totalTasks: number;

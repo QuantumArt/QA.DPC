@@ -50,7 +50,6 @@ export const Task = observer(() => {
   const store = useStore();
   const gridWrap = React.useRef(null);
   const [gridWidth, setGridWidth] = React.useState(1000);
-
   const {
     userName,
     status,
@@ -59,13 +58,14 @@ export const Task = observer(() => {
     name,
     created,
     lastStatusChange,
-    message,
-    statusValues
-  } = window.QP.Tasks.tableFields;
-
+    message
+  } = window.task.tableFields;
+  const { statusValues } = window.task.other;
+  const { filter, clear, isFalse, isTrue } = window.task.gridFiltersDefinitions;
   useEffect(() => {
     store.init();
   }, []);
+  console.log(window.task);
 
   useEffect(
     () => {
@@ -91,10 +91,7 @@ export const Task = observer(() => {
             label={status}
             filter={store.filters.get(TaskGridFilterType.StatusFilter)}
           >
-            <FilterButtonsWrapper
-              acceptLabel={window.QP.Tasks.tableFilters.messages.filter}
-              revokeLabel={window.QP.Tasks.tableFilters.messages.clear}
-            >
+            <FilterButtonsWrapper acceptLabel={filter} revokeLabel={clear}>
               <StatusFilterContent options={statusValues} />
             </FilterButtonsWrapper>
           </GridHeadFilterTooltip>
@@ -108,14 +105,11 @@ export const Task = observer(() => {
             label={schedule}
             filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
           >
-            <FilterButtonsWrapper
-              acceptLabel={window.QP.Tasks.tableFilters.messages.filter}
-              revokeLabel={window.QP.Tasks.tableFilters.messages.clear}
-            >
+            <FilterButtonsWrapper acceptLabel={filter} revokeLabel={clear}>
               <ScheduleFilterContent
                 options={[
-                  { label: "Да", value: ScheduleFilterValues.YES },
-                  { label: "Нет", value: ScheduleFilterValues.NO }
+                  { label: isTrue, value: ScheduleFilterValues.YES },
+                  { label: isFalse, value: ScheduleFilterValues.NO }
                 ]}
               />
             </FilterButtonsWrapper>

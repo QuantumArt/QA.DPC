@@ -55,9 +55,13 @@ export const getDateValueWithZeroAhead = (num: number): number | string => {
   return num;
 };
 
-export const throwOnExpiredSession = (status: number) => {
+export const throwOnExpiredSession = (status: number): void => {
   if (status === 401) {
     document.body.innerHTML = "<h1>Сессия устарела. Переоткройте или обновите вкладку.</h1>";
     throw SESSION_EXPIRED;
   }
+};
+
+export const throwOnSameHashCode = (newHashCode: number, oldHashCode: number): void => {
+  if (oldHashCode && newHashCode && newHashCode === oldHashCode) throw "hash code was repeated";
 };
