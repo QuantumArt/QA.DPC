@@ -1,6 +1,7 @@
 ﻿import { TaskState, TaskStatuses } from "Shared/Enums";
 import { Intent } from "@blueprintjs/core";
 import { IconNames, IconName } from "@blueprintjs/icons";
+import { SESSION_EXPIRED } from "Tasks/Constants";
 
 export const getTaskIntentDependsOnStatus = (status: TaskStatuses) => {
   switch (status) {
@@ -52,4 +53,11 @@ export const getDateValueWithZeroAhead = (num: number): number | string => {
     return `0${num}`;
   }
   return num;
+};
+
+export const throwOnExpiredSession = (status: number) => {
+  if (status === 401) {
+    document.body.innerHTML = "<h1>Сессия устарела. Переоткройте или обновите вкладку.</h1>";
+    throw SESSION_EXPIRED;
+  }
 };

@@ -3,6 +3,7 @@ import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { apiService } from "Tasks/ApiServices";
 import { FilterOptions, PaginationOptions, Task } from "Tasks/ApiServices/DataContracts";
+import { FETCH_ON_ERROR_TIMEOUT, FETCH_TIMEOUT, SESSION_EXPIRED } from "Tasks/Constants";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
@@ -81,7 +82,6 @@ export class Filter {
 }
 
 export class TaskStore {
-  readonly FETCH_TIMEOUT = 5000;
   private isUpdateRateRequestsPending: boolean = false;
   @observable private gridData: Task[] = [];
   @observable private myLastTask: Task;
@@ -110,7 +110,7 @@ export class TaskStore {
 
   init = async () => {
     await this.withLoader(() => this.fetchGridData());
-    setTimeout(this.cyclicFetchGrid, this.FETCH_TIMEOUT);
+    setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
   };
 
   cyclicFetchGrid = async (): Promise<void> => {
@@ -129,10 +129,12 @@ export class TaskStore {
       }
       this.setGridData(response.tasks);
       this.setTotal(response.totalTasks);
+      setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
     } catch (e) {
-      console.error(e, "err on cyclic fetch");
-    } finally {
-      setTimeout(this.cyclicFetchGrid, this.FETCH_TIMEOUT);
+      if (typeof e === "string" && e === SESSION_EXPIRED) {
+        return;
+      }
+      setTimeout(this.cyclicFetchGrid, FETCH_ON_ERROR_TIMEOUT);
     }
   };
 

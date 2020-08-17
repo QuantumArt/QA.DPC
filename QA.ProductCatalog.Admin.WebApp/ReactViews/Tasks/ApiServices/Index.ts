@@ -4,6 +4,7 @@ import { mapGridResponse } from "./Mappers/MapGridResponse";
 import qs from "qs";
 import { FilterOptions, PaginationOptions } from "Tasks/ApiServices/DataContracts";
 import BaseApiService from "Shared/BaseApiService";
+import { throwOnExpiredSession } from "Shared/Utils";
 
 class ApiService extends BaseApiService {
   /**
@@ -21,7 +22,7 @@ class ApiService extends BaseApiService {
       : "";
     const queryStr: string = qs.stringify(paginationOpts) + filterString;
     const response = await fetch(`${this.rootUrl}/Task/TasksData?${queryStr}`);
-
+    throwOnExpiredSession(response.status);
     return await this.mapResponse<IGridResponse, GridResponse>(response, mapGridResponse);
   }
 
@@ -35,16 +36,17 @@ class ApiService extends BaseApiService {
       taskId
     });
     const requestUrl = `${this.rootUrl}/Task/Rerun?${queryStr}`;
-    await fetch(requestUrl, { method: "POST" });
+    const response = await fetch(requestUrl, { method: "POST" });
+    throwOnExpiredSession(response.status);
   };
 
   /**
    * POST /​Task/SaveSchedule
    *
    * @param taskId id задачи
-   * @param cronExpression
-   * @param repeatType on/
-   * @param isEnabled boolean | [boolean]
+   * @param cronExpression выражение для
+   * @param repeatType 'on'
+   * @param isEnabled boolean
    *
    */
   fetchSchedule = async (
@@ -53,28 +55,18 @@ class ApiService extends BaseApiService {
     cronExpression: string,
     repeatType = "on"
   ): Promise<void> => {
-    // const queryStr: string = qs.stringify({
-    //   taskId
-    // });
     const formData = new FormData();
-    formData.append("Enabled", isEnabled === true ? "[true, false]" : "false");
+    formData.append("Enabled", isEnabled ? "true" : "false");
     formData.append("CronExpression", cronExpression);
     formData.append("repeatType", repeatType);
     formData.append("TaskId", String(taskId));
 
     const requestUrl = `${this.rootUrl}/Task/SaveSchedule`;
     const response = await fetch(requestUrl, {
-      // const response = await fetch('https://qp8.dev.qsupport.ru/Dpc.Admin/Task/SaveSchedule', {
       method: "POST",
       body: formData
-      // headers: {
-      //   "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      //   // "Content-Type": "text/plain; charset=utf-8"
-      //   // "Content-Type": "multipart/form-data ; charset=utf-8"
-      //   "Content-Disposition": "form-data"
-      // }
     });
-    console.log(response);
+    throwOnExpiredSession(response.status);
   };
 }
 
