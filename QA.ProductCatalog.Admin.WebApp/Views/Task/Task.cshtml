@@ -7,13 +7,10 @@
 
 @section scripts{
   <script type="text/javascript" defer>
-    window.QP.Tasks = {
+    window.task = {
       tableFields: {
         userName: '@TaskStrings.UserName',
         status: '@TaskStrings.Status',
-        statusValues: [
-        @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
-        ],
         schedule: '@TaskStrings.Schedule',
         progress: '@TaskStrings.Progress',
         name: '@TaskStrings.Name',
@@ -21,13 +18,16 @@
         lastStatusChange: '@TaskStrings.LastStatusChange',
         message: '@TaskStrings.Message',
       },
-      tableFilters: {
-        messages: {
-          isFalse: '@TaskStrings.No',
-          isTrue: '@TaskStrings.Yes',
-          filter: '@TaskStrings.Apply',
-          clear: '@TaskStrings.Clear'
-        }
+      gridFiltersDefinitions: {
+        isFalse: '@TaskStrings.No',
+        isTrue: '@TaskStrings.Yes',
+        filter: '@TaskStrings.Apply',
+        clear: '@TaskStrings.Clear'
+      },
+      other: {
+        statusValues: [
+        @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
+        ],
       }
     }
   </script>

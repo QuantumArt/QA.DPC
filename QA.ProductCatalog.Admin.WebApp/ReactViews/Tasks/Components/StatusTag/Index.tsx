@@ -11,7 +11,7 @@ interface StatusCell {
 }
 
 export const StatusTag = ({ value, className }) => {
-  const statusValues = window.QP.Tasks.tableFields.statusValues;
+  const statusValues = window.task.other.statusValues;
   const statusObj = statusValues.find(status => {
     return status.value === value;
   });
