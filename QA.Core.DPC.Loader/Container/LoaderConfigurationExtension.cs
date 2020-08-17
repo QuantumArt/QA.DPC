@@ -29,7 +29,7 @@ namespace QA.Core.DPC.Loader.Container
     {
         public const string AlwaysAdminUserProviderName = "AlwaysAdminUserProvider";
 
-        //TODO check needed
+        //TODO affect to null-service in some cases
         public ITypeLifetimeManager GetHttpContextLifeTimeManager()
         {
             return new HttpContextCoreLifetimeManager(Container.Resolve<IHttpContextAccessor>());

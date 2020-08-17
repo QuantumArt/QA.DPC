@@ -29,7 +29,7 @@
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.30.0-beta37" />
+    <PackageReference Include="Portable.Xaml" Version="0.30.0-beta39" />
   </ItemGroup>
 </Project>
 

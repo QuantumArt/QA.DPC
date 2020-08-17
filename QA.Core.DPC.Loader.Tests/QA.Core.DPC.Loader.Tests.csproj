@@ -20,7 +20,7 @@
     <ProjectReference Include="..\QA.ProductCatalog.Integration\QA.ProductCatalog.Integration.csproj" />
    </ItemGroup>
   <ItemGroup>
-        <PackageReference Include="Portable.Xaml" Version="0.30.0-beta37" />
+        <PackageReference Include="Portable.Xaml" Version="0.30.0-beta39" />
     <PackageReference Include="FluentAssertions" Version="5.5.3" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
     <PackageReference Include="Moq" Version="4.13.1" />

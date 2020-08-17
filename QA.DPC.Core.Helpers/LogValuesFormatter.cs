@@ -7,7 +7,8 @@ using System.Text;
 
 namespace QA.DPC.Core.Helpers
 {
-    ///copy paste dotnet repository
+    //TODO copy paste dotnet repository
+
     /// <summary>
     /// Formatter to convert the named format items like {NamedformatItem} to <see cref="M:string.Format"/> format.
     /// </summary>

@@ -22,6 +22,7 @@ namespace QA.Core.DPC.API.Container
 {
     public class APIContainerConfiguration : UnityContainerExtension
 	{
+		//TODO affect to null-service in some cases
 		public ITypeLifetimeManager GetHttpContextLifeTimeManager()
 		{
             return new HttpContextCoreLifetimeManager(Container.Resolve<IHttpContextAccessor>());

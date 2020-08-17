@@ -13,8 +13,6 @@ namespace QA.Core.Models.Tests
     public class ProductControlsTests
     {
         [Test]  
-        //TODO fix portable.xaml
-      //  [Ignore("Manual")]
         public void Test_Entity_Editor()
         {
             Run(() =>
@@ -26,8 +24,6 @@ namespace QA.Core.Models.Tests
         }
 
         [Test]
-        //TODO fix portable.xaml
-      //  [Ignore("Manual")]
         public void Test_Entity_Editor_items()
         {
             Run(() =>
@@ -47,8 +43,6 @@ namespace QA.Core.Models.Tests
         }
 
         [Test]
-        //TODO fix portable.xaml
-       // [Ignore("Manual")]
         public void Test_Entity_Editor_gridview()
         {
             Run(() =>

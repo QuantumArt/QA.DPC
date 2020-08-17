@@ -42,7 +42,9 @@ namespace QA.Core.Models.Tests
             container.RegisterType<VersionedCacheProviderBase>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
 			container.RegisterType<IUserProvider, ProductCatalog.Actions.Services.AlwaysAdminUserProvider>();
-            container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>(), container.Resolve<ILogger>()));
+           //TODO trew exception access to connectionString
+            //container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>(), container.Resolve<ILogger>()));
+
 
 			// логируем в консоль
 			container.RegisterInstance<ILogger>(new TextWriterLogger(Console.Out));
