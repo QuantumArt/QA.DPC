@@ -9,20 +9,55 @@
   <script type="text/javascript" defer>
     window.task = {
       tableFields: {
-        userName: '@TaskStrings.UserName',
-        status: '@TaskStrings.Status',
-        schedule: '@TaskStrings.Schedule',
-        progress: '@TaskStrings.Progress',
-        name: '@TaskStrings.Name',
-        created: '@TaskStrings.Created',
-        lastStatusChange: '@TaskStrings.LastStatusChange',
-        message: '@TaskStrings.Message',
+        userName: '@Html.Raw(TaskStrings.UserName)',
+        status: '@Html.Raw(TaskStrings.Status)',
+        schedule: '@Html.Raw(TaskStrings.Schedule)',
+        progress: '@Html.Raw(TaskStrings.Progress)',
+        name: '@Html.Raw(TaskStrings.Name)',
+        created: '@Html.Raw(TaskStrings.Created)',
+        lastStatusChange: '@Html.Raw(TaskStrings.LastStatusChange)',
+        message: '@Html.Raw(TaskStrings.Message)',
       },
       gridFiltersDefinitions: {
-        isFalse: '@TaskStrings.No',
-        isTrue: '@TaskStrings.Yes',
-        filter: '@TaskStrings.Apply',
-        clear: '@TaskStrings.Clear'
+        isFalse: '@Html.Raw(TaskStrings.No)',
+        isTrue: '@Html.Raw(TaskStrings.Yes)',
+        filter: '@Html.Raw(TaskStrings.Apply)',
+        clear: '@Html.Raw(TaskStrings.Clear)'
+      },
+      schedule: {
+        every: '@Html.Raw(TaskStrings.Every)',
+        year: '@Html.Raw(TaskStrings.Year)',
+        hour: '@Html.Raw(TaskStrings.Hour)',
+        day: '@Html.Raw(TaskStrings.Day)',
+        month: '@Html.Raw(TaskStrings.Month)',
+        minute: '@Html.Raw(TaskStrings.Minute)',
+        on: '@Html.Raw(TaskStrings.on)',
+        off: '@Html.Raw(TaskStrings.off)',
+        dayOfMonth: '@Html.Raw(TaskStrings.DayOfMonth)',
+        at: '@Html.Raw(TaskStrings.At)',
+        everyDayOfMonth: '@Html.Raw(TaskStrings.EveryDayOfMonth)',
+        everyDayOfWeek: '@Html.Raw(TaskStrings.EveryDayOfWeek)',
+        minutesPastHour: '@Html.Raw(TaskStrings.MinutesPastHour)',
+        taskRecurrenceSchedule: '@Html.Raw(TaskStrings.TaskRecurrenceSchedule)',
+        taskId: '@Html.Raw(TaskStrings.TaskId)',
+        scheduleEnabled: '@Html.Raw(TaskStrings.ScheduleEnabled)',
+        recurrenceMode: '@Html.Raw(TaskStrings.RecurrenceMode)',
+        modeRepeat: '@Html.Raw(TaskStrings.ModeRepeat)',     
+        modeOneTime: '@Html.Raw(TaskStrings.ModeOneTime)',     
+        recurrencePeriod: '@Html.Raw(TaskStrings.RecurrencePeriod)',     
+        periodMinute: '@Html.Raw(TaskStrings.PeriodMinute)',
+        periodHour: '@Html.Raw(TaskStrings.PeriodHour)',
+        periodDay: '@Html.Raw(TaskStrings.PeriodDay)',
+        periodWeek: '@Html.Raw(TaskStrings.PeriodWeek)',
+        periodMonth: '@Html.Raw(TaskStrings.PeriodMonth)',
+        periodYear: '@Html.Raw(TaskStrings.PeriodYear)',     
+        monthDays: '@Html.Raw(TaskStrings.MonthDays)',     
+        months: '@Html.Raw(TaskStrings.Months)',     
+        hours: '@Html.Raw(TaskStrings.Hours)',
+        minutes: '@Html.Raw(TaskStrings.Minutes)',
+        weekDays: '@Html.Raw(TaskStrings.WeekDays)',
+        close: '@Html.Raw(TaskStrings.Close)', 
+        apply: '@Html.Raw(TaskStrings.Apply)'                                                                                               
       },
       other: {
         statusValues: [
@@ -31,6 +66,5 @@
       }
     }
   </script>
-
   <script src="~/js/bundles/Task/Task.js" defer></script>
 }
