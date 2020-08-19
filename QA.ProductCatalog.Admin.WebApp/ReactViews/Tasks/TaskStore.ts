@@ -149,7 +149,6 @@ export class TaskStore {
 
   tasksNotificationsSender = (tasks, runningStateId) => {
     const gridRenderServerTime = new Date(window.task.notify.formRenderedServerTime);
-
     const tasksShouldNotify = tasks.filter(task => {
       const lastStatusChangeTime = task.LastStatusChangeTime
         ? new Date(task.LastStatusChangeTime)
@@ -157,7 +156,7 @@ export class TaskStore {
       return (
         lastStatusChangeTime &&
         task.StateId > runningStateId &&
-        this.alreadyNotifiedTaskIds[task.Id] &&
+        !this.alreadyNotifiedTaskIds[task.Id] &&
         lastStatusChangeTime.getTime() > gridRenderServerTime.getTime()
       );
     });
@@ -165,13 +164,13 @@ export class TaskStore {
     if (tasksShouldNotify.length) {
       tasksShouldNotify.forEach(task => {
         this.alreadyNotifiedTaskIds[task.Id] = true;
-        let body = window.task.notify.state + task.State;
+        let body = `${window.task.notify.state}: ${task.State}`;
         if (task.Message) body += "\r\n" + task.Message;
         new Notification(
           `${window.task.notify.task}${task.DisplayName} ${window.task.notify.proceed}`,
           {
             body: body,
-            icon: `${window.task.notify.proceed}${task.IconName}48.png`
+            icon: `${window.task.notify.img}${task.IconName}48.png`
           }
         );
       });
