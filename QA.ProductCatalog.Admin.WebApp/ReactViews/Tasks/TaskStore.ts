@@ -4,6 +4,7 @@ import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Sha
 import { apiService } from "Tasks/ApiServices";
 import { FilterOptions, PaginationOptions, Task } from "Tasks/ApiServices/DataContracts";
 import { FETCH_ON_ERROR_TIMEOUT, FETCH_TIMEOUT, SESSION_EXPIRED } from "Tasks/Constants";
+import { setBrowserNotifications } from "Shared/Utils";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
@@ -83,6 +84,7 @@ export class Filter {
 
 export class TaskStore {
   private isUpdateRateRequestsPending: boolean = false;
+  private alreadyNotifiedTaskIds: { [x: number]: boolean } = {};
   @observable private gridData: Task[] = [];
   @observable private myLastTask: Task;
   @observable private total: number = 0;
@@ -129,12 +131,50 @@ export class TaskStore {
       }
       this.setGridData(response.tasks);
       this.setTotal(response.totalTasks);
+
+      if (window.task.notify.isNotifyActive) {
+        setBrowserNotifications(() =>
+          this.tasksNotificationsSender(response.tasks, window.task.notify.runningStateId)
+        );
+      }
+
       setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
     } catch (e) {
       if (typeof e === "string" && e === SESSION_EXPIRED) {
         return;
       }
       setTimeout(this.cyclicFetchGrid, FETCH_ON_ERROR_TIMEOUT);
+    }
+  };
+
+  tasksNotificationsSender = (tasks, runningStateId) => {
+    const gridRenderServerTime = new Date(window.task.notify.formRenderedServerTime);
+
+    const tasksShouldNotify = tasks.filter(task => {
+      const lastStatusChangeTime = task.LastStatusChangeTime
+        ? new Date(task.LastStatusChangeTime)
+        : null;
+      return (
+        lastStatusChangeTime &&
+        task.StateId > runningStateId &&
+        this.alreadyNotifiedTaskIds[task.Id] &&
+        lastStatusChangeTime.getTime() > gridRenderServerTime.getTime()
+      );
+    });
+
+    if (tasksShouldNotify.length) {
+      tasksShouldNotify.forEach(task => {
+        this.alreadyNotifiedTaskIds[task.Id] = true;
+        let body = window.task.notify.state + task.State;
+        if (task.Message) body += "\r\n" + task.Message;
+        new Notification(
+          `${window.task.notify.task}${task.DisplayName} ${window.task.notify.proceed}`,
+          {
+            body: body,
+            icon: `${window.task.notify.proceed}${task.IconName}48.png`
+          }
+        );
+      });
     }
   };
 

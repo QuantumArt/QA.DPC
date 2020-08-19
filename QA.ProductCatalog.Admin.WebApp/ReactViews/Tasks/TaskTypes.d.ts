@@ -22,4 +22,13 @@ declare interface TaskWindowTypes {
   other: {
     statusValues: { label: string; value: number }[];
   };
+  notify: {
+    isNotifyActive: boolean;
+    runningStateId: number;
+    state: string;
+    task: string;
+    proceed: string;
+    img: string;
+    formRenderedServerTime: string;
+  };
 }

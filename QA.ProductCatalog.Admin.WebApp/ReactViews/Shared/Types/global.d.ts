@@ -5,6 +5,7 @@
 
 declare interface Window {
   task: TaskWindowTypes;
+  notificationPermissionRequested: boolean;
 
   highloadFront?: {
     legend: string;
