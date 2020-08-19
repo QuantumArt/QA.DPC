@@ -240,19 +240,19 @@
   <data name="ProductsNotProcessed">
     <value>Some products have not been processed</value>
   </data>
-  <data name="Новая">
+  <data name="New">
     <value>New</value>
   </data>
-  <data name="Выполняется">
+  <data name="Running">
     <value>Running</value>
   </data>
-  <data name="Завершена">
+  <data name="Completed">
     <value>Completed</value>
   </data>
-  <data name="Ошибка">
+  <data name="Error">
     <value>Error</value>
   </data>
-  <data name="Отменена">
+  <data name="Cancelled">
     <value>Cancelled</value>
   </data>
   <data name="ProductsNotFound">
@@ -276,6 +276,103 @@
   <data name="NotificationSenderError">
     <value>An error occurs while appending messages into NotificationSender queue: {0}</value>  
   </data>
-  
+  <data name="Every">
+    <value>every</value>
+  </data>
+  <data name="Year">
+    <value>year</value>
+  </data>
+  <data name="Hour">
+    <value>hour</value>
+  </data>
+  <data name="Day">
+    <value>day</value>
+  </data>
+  <data name="Month">
+    <value>month</value>
+  </data>
+  <data name="Minute">
+    <value>minute</value>
+  </data>
+  <data name="on">
+    <value>on</value>
+  </data>
+  <data name="off">
+    <value>off</value>
+  </data>
+  <data name="DayOfMonth">
+    <value></value>
+  </data>
+  <data name="At">
+    <value>at</value>
+  </data>
+  <data name="EveryDayOfMonth">
+    <value>every day of the month</value>
+  </data>
+  <data name="EveryDayOfWeek">
+    <value>every day of the week</value>
+  </data>
+  <data name="MinutesPastHour">
+    <value>minute(s) past the hour</value>
+  </data>
+  <data name="TaskRecurrenceSchedule">
+    <value>Task Recurrence Schedule</value>
+  </data>
+  <data name="TaskId">
+    <value>Task ID</value>
+  </data>
+  <data name="ScheduleEnabled">
+    <value>Schedule Enabled</value>
+  </data>
+  <data name="RecurrenceMode">
+    <value>Recurrence Mode</value>
+  </data>
+  <data name="ModeRepeat">
+    <value>Repeat</value>
+  </data>
+  <data name="ModeOneTime">
+    <value>One Time</value>
+  </data>
+  <data name="RecurrencePeriod">
+    <value>Recurrence Period</value>
+  </data>
+  <data name="PeriodMinute">
+    <value>Minutes</value>
+  </data>
+  <data name="PeriodHour">
+    <value>Hours</value>
+  </data>
+  <data name="PeriodDay">
+    <value>Days</value>
+  </data>
+  <data name="PeriodWeek">
+    <value>Weeks</value>
+  </data>
+  <data name="PeriodMonth">
+    <value>Months</value>
+  </data>
+  <data name="PeriodYear">
+    <value>Years</value>
+  </data>
+  <data name="MonthDays">
+    <value>Days of the month</value>
+  </data>
+  <data name="Months">
+    <value>Months</value>
+  </data>
+  <data name="Hours">
+    <value>Hours</value>
+  </data>
+  <data name="Minutes">
+    <value>Minutes</value>
+  </data>
+  <data name="WeekDays">
+    <value>Days of the week</value>
+  </data>
+  <data name="Close">
+    <value>Close</value>
+  </data>
+ 
+
 </root>
 
