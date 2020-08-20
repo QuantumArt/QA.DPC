@@ -1,4 +1,4 @@
-﻿export const setBrowserNotifications = (sendNotifyCb: () => void) => {
+export const setBrowserNotifications = (sendNotifyCb: () => void) => {
   // Let's check if the browser supports notifications
   if (!("Notification" in window)) {
     if (

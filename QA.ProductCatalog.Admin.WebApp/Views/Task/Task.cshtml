@@ -42,27 +42,36 @@
         taskId: '@Html.Raw(TaskStrings.TaskId)',
         scheduleEnabled: '@Html.Raw(TaskStrings.ScheduleEnabled)',
         recurrenceMode: '@Html.Raw(TaskStrings.RecurrenceMode)',
-        modeRepeat: '@Html.Raw(TaskStrings.ModeRepeat)',     
-        modeOneTime: '@Html.Raw(TaskStrings.ModeOneTime)',     
-        recurrencePeriod: '@Html.Raw(TaskStrings.RecurrencePeriod)',     
+        modeRepeat: '@Html.Raw(TaskStrings.ModeRepeat)',
+        modeOneTime: '@Html.Raw(TaskStrings.ModeOneTime)',
+        recurrencePeriod: '@Html.Raw(TaskStrings.RecurrencePeriod)',
         periodMinute: '@Html.Raw(TaskStrings.PeriodMinute)',
         periodHour: '@Html.Raw(TaskStrings.PeriodHour)',
         periodDay: '@Html.Raw(TaskStrings.PeriodDay)',
         periodWeek: '@Html.Raw(TaskStrings.PeriodWeek)',
         periodMonth: '@Html.Raw(TaskStrings.PeriodMonth)',
-        periodYear: '@Html.Raw(TaskStrings.PeriodYear)',     
-        monthDays: '@Html.Raw(TaskStrings.MonthDays)',     
-        months: '@Html.Raw(TaskStrings.Months)',     
+        periodYear: '@Html.Raw(TaskStrings.PeriodYear)',
+        monthDays: '@Html.Raw(TaskStrings.MonthDays)',
+        months: '@Html.Raw(TaskStrings.Months)',
         hours: '@Html.Raw(TaskStrings.Hours)',
         minutes: '@Html.Raw(TaskStrings.Minutes)',
         weekDays: '@Html.Raw(TaskStrings.WeekDays)',
-        close: '@Html.Raw(TaskStrings.Close)', 
-        apply: '@Html.Raw(TaskStrings.Apply)'                                                                                               
+        close: '@Html.Raw(TaskStrings.Close)',
+        apply: '@Html.Raw(TaskStrings.Apply)'
       },
       other: {
         statusValues: [
         @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
         ],
+      },
+      notify: {
+        isNotifyActive: "@Model.Notify",
+        runningStateId: "@((byte) QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)",
+        state: "@(TaskStrings.State)",
+        task: "@(TaskStrings.Task) ",
+        proceed: "@(TaskStrings.Processed)",
+        img: '@Url.Content("~/images/TaskStates/")',
+        formRenderedServerTime: '@(DateTime.Now)'
       }
     }
   </script>

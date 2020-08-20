@@ -3,23 +3,23 @@ import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { apiService } from "Tasks/ApiServices";
 import { FilterOptions, PaginationOptions, Task } from "Tasks/ApiServices/DataContracts";
-import { FETCH_ON_ERROR_TIMEOUT, FETCH_TIMEOUT, SESSION_EXPIRED } from "Tasks/Constants";
+import {
+  FETCH_ON_ERROR_TIMEOUT,
+  FETCH_TIMEOUT,
+  INIT_PAGINATION_OPTIONS,
+  SESSION_EXPIRED
+} from "Tasks/Constants";
 import { setBrowserNotifications } from "Shared/Utils";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
-    this.setPagination(this.initPaginationOptions);
+    this.setPagination(INIT_PAGINATION_OPTIONS);
     this.changePage = onChangePage;
   }
   @observable private skip: number = 0;
   private readonly take: number = 10;
   @observable private showOnlyMine: boolean = true;
   readonly changePage: (operation: PaginationActions) => void;
-  readonly initPaginationOptions: PaginationOptions = {
-    skip: 0,
-    take: 10,
-    showOnlyMine: true
-  };
 
   @computed
   get getPaginationOptions(): PaginationOptions {
@@ -43,8 +43,8 @@ export class Pagination {
     return Object.assign(this.getPaginationOptions, {
       skip:
         operation === PaginationActions.IncrementPage
-          ? (paginationOptions.skip += this.initPaginationOptions.take)
-          : (paginationOptions.skip -= this.initPaginationOptions.take)
+          ? (paginationOptions.skip += INIT_PAGINATION_OPTIONS.take)
+          : (paginationOptions.skip -= INIT_PAGINATION_OPTIONS.take)
     });
   };
 }

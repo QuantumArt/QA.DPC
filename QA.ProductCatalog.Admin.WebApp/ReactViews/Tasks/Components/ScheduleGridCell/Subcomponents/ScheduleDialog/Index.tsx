@@ -27,33 +27,55 @@ import _ from "lodash";
 import "./Style.scss";
 
 interface IProps {
-  taskId: number;
+  taskIdNumber: number;
   hasSchedule: boolean;
   scheduleCronExpression: string;
   isOpen: boolean;
   closeDialogCb: () => void;
-  scheduleEnabled: boolean;
+  isScheduleEnabled: boolean;
 }
 
 export const ScheduleDialog = ({
-  taskId,
+  taskIdNumber,
   scheduleCronExpression,
   isOpen,
   closeDialogCb,
-  scheduleEnabled
+  isScheduleEnabled
 }: IProps) => {
   const store = useStore();
+  const {
+    taskRecurrenceSchedule,
+    weekDays,
+    monthDays,
+    hours,
+    minutes,
+    minute,
+    hour,
+    day,
+    year,
+    recurrenceMode,
+    modeRepeat,
+    modeOneTime,
+    recurrencePeriod,
+    every,
+    taskId,
+    months,
+    month,
+    scheduleEnabled,
+    close,
+    apply
+  } = window.task.schedule;
   const [taskSetType, setTaskSetType] = useState(ScheduleType.Repeat);
-  const [isEnable, setIsEnable] = useState(scheduleEnabled);
+  const [isEnable, setIsEnable] = useState(isScheduleEnabled);
   const [period, setPeriod] = useState(CronPeriodType.Minute);
   const [isShouldClear, setIsShouldClear] = useState(false);
   const [isCronsParseError, setIsCronsParseError] = useState(false);
 
-  const [monthDays, setMonthDays] = useState<ICronsTagModel[] | undefined>();
-  const [months, setMonths] = useState<ICronsTagModel[] | undefined>();
-  const [weekDays, setWeekDays] = useState<ICronsTagModel[] | undefined>();
-  const [hours, setHours] = useState<ICronsTagModel[] | undefined>();
-  const [minutes, setMinutes] = useState<ICronsTagModel[] | undefined>();
+  const [monthDaysValues, setMonthDaysValues] = useState<ICronsTagModel[] | undefined>();
+  const [monthValues, setMonthValues] = useState<ICronsTagModel[] | undefined>();
+  const [weekDaysValues, setWeekDaysValues] = useState<ICronsTagModel[] | undefined>();
+  const [hourValues, setHourValues] = useState<ICronsTagModel[] | undefined>();
+  const [minuteValues, setMinuteValues] = useState<ICronsTagModel[] | undefined>();
 
   const [singleDate, setSingleDate] = useState<Date | undefined>(new Date());
   const [singleTime, setSingleTime] = useState<Date | undefined>(new Date());
@@ -66,13 +88,19 @@ export const ScheduleDialog = ({
           const cronParts = getValuesFromCronString(scheduleCronExpression);
           if (cronParts.cronParts.length === 5) {
             setPeriod(cronParts.period);
-            setMinutes(partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true));
-            setHours(partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true));
-            setMonthDays(
+            setMinuteValues(
+              partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true)
+            );
+            setHourValues(
+              partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true)
+            );
+            setMonthDaysValues(
               partToString(cronParts.cronParts[2], UNITS.get(CronUnitType.MonthDays), true)
             );
-            setMonths(partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true));
-            setWeekDays(
+            setMonthValues(
+              partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true)
+            );
+            setWeekDaysValues(
               partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true)
             );
           }
@@ -114,9 +142,9 @@ export const ScheduleDialog = ({
 
   useEffect(
     () => {
-      if (isOpen) setIsEnable(scheduleEnabled);
+      if (isOpen) setIsEnable(isScheduleEnabled);
     },
-    [scheduleEnabled, isOpen]
+    [isScheduleEnabled, isOpen]
   );
 
   const multiSelectPropsByUnit = useMemo(
@@ -125,65 +153,73 @@ export const ScheduleDialog = ({
         [
           CronUnitType.MonthDays,
           {
-            label: "День месяца",
+            label: monthDays,
             selectProps: {
               isShouldClear,
-              parsedCronsModel: monthDays,
+              parsedCronsModel: monthDaysValues,
               type: CronUnitType.MonthDays,
-              setParsedCronsModel: v => setMonthDays(v)
+              setParsedCronsModel: v => setMonthDaysValues(v)
             }
           }
         ],
         [
           CronUnitType.Months,
           {
-            label: "Месяц",
+            label: months,
             selectProps: {
               isShouldClear,
-              parsedCronsModel: months,
+              parsedCronsModel: monthValues,
               type: CronUnitType.Months,
-              setParsedCronsModel: v => setMonths(v)
+              setParsedCronsModel: v => setMonthValues(v)
             }
           }
         ],
         [
           CronUnitType.Hours,
           {
-            label: "Часы",
+            label: hours,
             selectProps: {
               isShouldClear,
-              parsedCronsModel: hours,
+              parsedCronsModel: hourValues,
               type: CronUnitType.Hours,
-              setParsedCronsModel: v => setHours(v)
+              setParsedCronsModel: v => setHourValues(v)
             }
           }
         ],
         [
           CronUnitType.Minutes,
           {
-            label: "Минуты",
+            label: minutes,
             selectProps: {
               isShouldClear,
-              parsedCronsModel: minutes,
+              parsedCronsModel: minuteValues,
               type: CronUnitType.Minutes,
-              setParsedCronsModel: v => setMinutes(v)
+              setParsedCronsModel: v => setMinuteValues(v)
             }
           }
         ],
         [
           CronUnitType.WeekDays,
           {
-            label: "День недели",
+            label: weekDays,
             selectProps: {
               isShouldClear,
-              parsedCronsModel: weekDays,
+              parsedCronsModel: weekDaysValues,
               type: CronUnitType.WeekDays,
-              setParsedCronsModel: v => setWeekDays(v)
+              setParsedCronsModel: v => setWeekDaysValues(v)
             }
           }
         ]
       ]),
-    [isShouldClear, weekDays, setHours, hours, months, minutes, monthDays]
+    [
+      isShouldClear,
+      weekDaysValues,
+      setHourValues,
+      hourValues,
+      monthValues,
+      minuteValues,
+      monthDaysValues
+    ]
   );
 
   const getMultiSelectProps = useMemo(
@@ -225,10 +261,10 @@ export const ScheduleDialog = ({
   const parsedCronsMultiSelectsModel = () => {
     /** don't change the order of array*/
     const apiRequestModel: ReadonlyArray<ICronsTagModel[]> = [
-      minutes,
-      hours,
-      monthDays,
-      months,
+      minuteValues,
+      hourValues,
+      monthDaysValues,
+      monthValues,
       []
     ];
 
@@ -257,28 +293,28 @@ export const ScheduleDialog = ({
 
   const acceptSchedule = (): void => {
     if (taskSetType === "repeat") {
-      store.setSchedule(taskId, isEnable, parsedCronsMultiSelectsModel(), "on");
+      store.setSchedule(taskIdNumber, isEnable, parsedCronsMultiSelectsModel(), "on");
     } else {
-      store.setSchedule(taskId, isEnable, parseCronsSingleModel(), "on");
+      store.setSchedule(taskIdNumber, isEnable, parseCronsSingleModel(), "on");
     }
     closeDialogCb();
   };
 
   const clearValues = (): void => {
-    setMonthDays(undefined);
-    setMonths(undefined);
-    setWeekDays(undefined);
-    setHours(undefined);
-    setMinutes(undefined);
+    setMonthDaysValues(undefined);
+    setMonthValues(undefined);
+    setWeekDaysValues(undefined);
+    setHourValues(undefined);
+    setMinuteValues(undefined);
   };
 
   const periodItems = [
-    { label: "Минуту", value: CronPeriodType.Minute },
-    { label: "Час", value: CronPeriodType.Hour },
-    { label: "День", value: CronPeriodType.Day },
+    { label: minute, value: CronPeriodType.Minute },
+    { label: hour, value: CronPeriodType.Hour },
+    { label: day, value: CronPeriodType.Day },
     { label: "Неделю", value: CronPeriodType.Week },
-    { label: "Месяц", value: CronPeriodType.Month },
-    { label: "Год", value: CronPeriodType.Year }
+    { label: month, value: CronPeriodType.Month },
+    { label: year, value: CronPeriodType.Year }
   ];
 
   const renderSelectsUiPart = () => {
@@ -288,7 +324,7 @@ export const ScheduleDialog = ({
         <SelectRow>
           <Switch
             alignIndicator={"left"}
-            labelElement={"Расписание активно"}
+            labelElement={scheduleEnabled}
             checked={isEnable}
             className="schedule-popup__switch"
             onChange={(): void => {
@@ -297,7 +333,7 @@ export const ScheduleDialog = ({
           />
         </SelectRow>
 
-        <SelectRow label="Режим повторения">
+        <SelectRow label={recurrenceMode}>
           <HTMLSelect
             className="schedule-popup__select"
             iconProps={{ icon: "caret-down" }}
@@ -307,16 +343,16 @@ export const ScheduleDialog = ({
               clearValues();
             }}
             options={[
-              { label: "Повторять", value: ScheduleType.Repeat },
-              { label: "Одноразовое", value: ScheduleType.Single }
+              { label: modeRepeat, value: ScheduleType.Repeat },
+              { label: modeOneTime, value: ScheduleType.Single }
             ]}
           />
         </SelectRow>
 
         {taskSetType === ScheduleType.Repeat && (
-          <SelectRow label="Период повторения">
+          <SelectRow label={recurrencePeriod}>
             <>
-              <span className="just-label">Каждый(ую)</span>
+              <span className="just-label">{every}</span>
               {"   "}
               <HTMLSelect
                 className="schedule-popup__select schedule-popup__select--inline"
@@ -373,10 +409,10 @@ export const ScheduleDialog = ({
   const renderDialogButtons = () => {
     return (
       <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-        <Button onClick={closeDialogCb}>Закрыть</Button>
+        <Button onClick={closeDialogCb}>{close}</Button>
         {!isCronsParseError && (
           <AnchorButton intent={Intent.PRIMARY} onClick={acceptSchedule}>
-            Принять
+            {apply}
           </AnchorButton>
         )}
       </div>
@@ -389,12 +425,12 @@ export const ScheduleDialog = ({
         className="schedule-popup"
         icon="calendar"
         onClose={closeDialogCb}
-        title="Расписание повторения задачи"
+        title={taskRecurrenceSchedule}
         isOpen={isOpen}
       >
         <div className={cn(Classes.DIALOG_BODY, "schedule-popup__body")}>
-          <SelectRow label="ID задачи">
-            <InputGroup disabled={true} value={String(taskId)} />
+          <SelectRow label={taskId}>
+            <InputGroup disabled={true} value={String(taskIdNumber)} />
           </SelectRow>
 
           {renderSelectsUiPart()}

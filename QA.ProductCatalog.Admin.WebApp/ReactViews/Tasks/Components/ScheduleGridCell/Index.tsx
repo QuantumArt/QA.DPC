@@ -4,9 +4,9 @@ import { ScheduleDialog } from "./Subcomponents";
 import "./Style.scss";
 
 interface IProps {
-  taskId: number;
+  taskIdNumber: number;
   hasSchedule: boolean;
-  scheduleEnabled: boolean;
+  isScheduleEnabled: boolean;
   scheduleCronExpression: string;
   className?: string;
 }

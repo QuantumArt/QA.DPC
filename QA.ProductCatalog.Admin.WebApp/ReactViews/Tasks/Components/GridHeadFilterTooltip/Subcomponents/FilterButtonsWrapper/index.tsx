@@ -1,11 +1,11 @@
 import { Button, Intent } from "@blueprintjs/core";
 import React, { useState } from "react";
-import { Filter } from "../../../../TaskStore";
+import { Filter } from "Tasks/TaskStore";
 import { observer } from "mobx-react-lite";
 import "./style.scss";
 
 interface Props {
-  filter?: Filter;
+  filter: Filter;
   children: React.ReactElement<any>;
   acceptLabel?: string;
   revokeLabel?: string;

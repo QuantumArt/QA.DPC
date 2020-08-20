@@ -7,6 +7,7 @@ import "./Style.scss";
 import { Pagination } from "Tasks/TaskStore";
 import { Task } from "Tasks/ApiServices/DataContracts";
 import { ColumnModel } from "Tasks";
+import { INIT_PAGINATION_OPTIONS } from "Tasks/Constants";
 
 interface IProps {
   isLoading: boolean;
@@ -32,7 +33,7 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
       data,
       initialState: {
         pageIndex: 0,
-        pageSize: customPagination.initPaginationOptions.take
+        pageSize: INIT_PAGINATION_OPTIONS.take
       }
     },
     usePagination

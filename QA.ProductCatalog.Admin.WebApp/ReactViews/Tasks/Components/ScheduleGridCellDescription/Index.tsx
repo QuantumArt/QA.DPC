@@ -21,28 +21,30 @@ const getStringByPeriod = (
   hours: string,
   minutes: string
 ): string => {
-  let every = "Каждую ";
+  const { every, year, day, minute, hour, at, month, on, minutesPastHour } = window.task.schedule;
+
+  let label = "";
   switch (preiodType) {
     case CronPeriodType.Week:
-      every += `неделю${weekDays}${hours}:${minutes}`;
+      label += `${every} неделю${weekDays}${hours}:${minutes}`;
       break;
     case CronPeriodType.Month:
-      every = `Каждый месяц${monthDays}${hours}:${minutes}`;
+      label = `${every} ${month}${monthDays}${hours}:${minutes}`;
       break;
     case CronPeriodType.Minute:
-      every += "минуту";
+      label += `${every} ${minute}`;
       break;
     case CronPeriodType.Hour:
-      every = `Каждый час в ${minutes} минут`;
+      label = `${every} ${hour} ${at} ${minutes} ${minutesPastHour}`;
       break;
     case CronPeriodType.Day:
-      every = `Каждый день${hours}:${minutes}`;
+      label = `${every} ${day}${hours}:${minutes}`;
       break;
     case CronPeriodType.Year:
-      every = `Каждый год${monthDays}${months}${hours}:${minutes}`;
+      label = `${every} ${year} ${on} ${monthDays}${months}${hours}:${minutes}`;
       break;
   }
-  return every;
+  return label[0].toUpperCase() + label.slice(1);
 };
 
 const parseTagModelToString = (tagModel: ICronsTagModel[]): string => {
@@ -52,36 +54,47 @@ const parseTagModelToString = (tagModel: ICronsTagModel[]): string => {
 export const ScheduleGridCellDescription = ({ cronExpression }: IProps) => {
   const parseExpressionToString = React.useMemo(
     (): string => {
+      const {
+        dayOfMonth,
+        everyDayOfMonth,
+        every,
+        month,
+        everyDayOfWeek,
+        at,
+        hour,
+        minute
+      } = window.task.schedule;
+
       if (cronExpression) {
         const cronParts = getValuesFromCronString(cronExpression);
-        if (!cronParts) return "Ошибка обработки";
+        if (!cronParts) return "cronExpression error";
 
         if (cronParts.cronParts.length === 5) {
           const monthDays = cronParts.cronParts[2].length
             ? ` ${parseTagModelToString(
                 partToString(cronParts.cronParts[2], UNITS.get(CronUnitType.MonthDays), true)
-              )} числа,`
-            : " каждый день месяца";
+              )} ${dayOfMonth},`
+            : `${everyDayOfMonth}`;
           const months = cronParts.cronParts[3].length
             ? ` ${parseTagModelToString(
                 partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true)
               )}`
-            : " каждый месяц";
+            : ` ${every} ${month}`;
           const weekDays = cronParts.cronParts[4].length
             ? ` ${parseTagModelToString(
                 partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true)
               )}`
-            : " каждый день недели";
+            : ` ${everyDayOfWeek}`;
           const hours = cronParts.cronParts[1].length
-            ? ` в ${parseTagModelToString(
+            ? ` ${at} ${parseTagModelToString(
                 partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true)
               )}`
-            : " каждый час";
+            : ` ${every} ${hour}`;
           const minutes = cronParts.cronParts[0].length
             ? `${parseTagModelToString(
                 partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true)
               )}`
-            : "каждую минуту";
+            : `${every} ${minute}`;
 
           return getStringByPeriod(cronParts.period, monthDays, months, weekDays, hours, minutes);
         }

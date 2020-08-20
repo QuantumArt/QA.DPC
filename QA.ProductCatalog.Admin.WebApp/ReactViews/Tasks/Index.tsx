@@ -62,10 +62,10 @@ export const Task = observer(() => {
   } = window.task.tableFields;
   const { statusValues } = window.task.other;
   const { filter, clear, isFalse, isTrue } = window.task.gridFiltersDefinitions;
+
   useEffect(() => {
     store.init();
   }, []);
-  console.log(window.task);
 
   useEffect(
     () => {
@@ -87,11 +87,12 @@ export const Task = observer(() => {
       },
       {
         Header: (
-          <GridHeadFilterTooltip
-            label={status}
-            filter={store.filters.get(TaskGridFilterType.StatusFilter)}
-          >
-            <FilterButtonsWrapper acceptLabel={filter} revokeLabel={clear}>
+          <GridHeadFilterTooltip label={status}>
+            <FilterButtonsWrapper
+              acceptLabel={filter}
+              revokeLabel={clear}
+              filter={store.filters.get(TaskGridFilterType.StatusFilter)}
+            >
               <StatusFilterContent options={statusValues} />
             </FilterButtonsWrapper>
           </GridHeadFilterTooltip>
@@ -101,11 +102,12 @@ export const Task = observer(() => {
       },
       {
         Header: (
-          <GridHeadFilterTooltip
-            label={schedule}
-            filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
-          >
-            <FilterButtonsWrapper acceptLabel={filter} revokeLabel={clear}>
+          <GridHeadFilterTooltip label={schedule}>
+            <FilterButtonsWrapper
+              acceptLabel={filter}
+              revokeLabel={clear}
+              filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
+            >
               <ScheduleFilterContent
                 options={[
                   { label: isTrue, value: ScheduleFilterValues.YES },
@@ -134,10 +136,10 @@ export const Task = observer(() => {
           noTruncateElement: (gridElement: GridTask) => {
             return (
               <ScheduleGridCellCalendar
-                taskId={gridElement.Id}
+                taskIdNumber={gridElement.Id}
                 scheduleCronExpression={gridElement.ScheduleCronExpression}
                 hasSchedule={gridElement.HasSchedule}
-                scheduleEnabled={gridElement.ScheduleEnabled}
+                isScheduleEnabled={gridElement.ScheduleEnabled}
               />
             );
           }

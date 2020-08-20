@@ -1,4 +1,4 @@
-﻿@using System.Globalization
+@using System.Globalization
 @using Newtonsoft.Json
 @using QA.Core.DPC.Resources
 @using QA.ProductCatalog.Admin.WebApp.Core
@@ -391,7 +391,6 @@
 
 					if (task.Message)
 						body += "\r\n" + task.Message;
-
 					new Notification("@(TaskStrings.Task) " + task.DisplayName + " @(TaskStrings.Processed)",
 					{
 						body: body,

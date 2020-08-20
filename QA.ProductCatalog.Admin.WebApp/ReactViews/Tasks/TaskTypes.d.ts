@@ -9,10 +9,6 @@ declare interface TaskWindowTypes {
     lastStatusChange: string;
     message: string;
   };
-  utils: {
-    cronExpression: string;
-  };
-  //отображение названий в  фильтрах грида
   gridFiltersDefinitions: {
     isFalse: string;
     isTrue: string;
@@ -21,6 +17,41 @@ declare interface TaskWindowTypes {
   };
   other: {
     statusValues: { label: string; value: number }[];
+  };
+  schedule: {
+    every: string;
+    year: string;
+    hour: string;
+    day: string;
+    month: string;
+    minute: string;
+    on: string;
+    off: string;
+    dayOfMonth: string;
+    at: string;
+    everyDayOfMonth: string;
+    everyDayOfWeek: string;
+    minutesPastHour: string;
+    taskRecurrenceSchedule: string;
+    taskId: string;
+    scheduleEnabled: string;
+    recurrenceMode: string;
+    modeRepeat: string;
+    modeOneTime: string;
+    recurrencePeriod: string;
+    periodMinute: string;
+    periodHour: string;
+    periodDay: string;
+    periodWeek: string;
+    periodMonth: string;
+    periodYear: string;
+    monthDays: string;
+    months: string;
+    hours: string;
+    minutes: string;
+    weekDays: string;
+    close: string;
+    apply: string;
   };
   notify: {
     isNotifyActive: boolean;
