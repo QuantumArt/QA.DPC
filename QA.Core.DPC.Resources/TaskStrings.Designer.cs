@@ -88,6 +88,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string All {
+            get {
+                return ResourceManager.GetString("All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply.
         /// </summary>
         public static string Apply {
@@ -786,6 +795,15 @@ namespace QA.Core.DPC.Resources {
         public static string VersionsCleaned {
             get {
                 return ResourceManager.GetString("VersionsCleaned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to week.
+        /// </summary>
+        public static string Week {
+            get {
+                return ResourceManager.GetString("Week", resourceCulture);
             }
         }
         

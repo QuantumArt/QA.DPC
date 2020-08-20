@@ -373,5 +373,11 @@
   <data name="Close">
     <value>Закрыть</value>
   </data>
+  <data name="Week">
+    <value>неделя</value>
+  </data>
+  <data name="All">
+    <value>все</value>
+  </data>
 </root>
 
