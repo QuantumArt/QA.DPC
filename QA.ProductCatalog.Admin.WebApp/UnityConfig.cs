@@ -65,7 +65,11 @@ namespace QA.ProductCatalog.Admin.WebApp
             IntegrationProperties integrationProperties,             
             Properties properties)
         {
-            //container.AddExtension(new Diagnostic());
+            //fix Diagnostic extension
+            container.RegisterType<ILoggerFactory, LoggerFactory>(
+                new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>())
+            );
+            container.AddExtension(new Diagnostic());
             container.RegisterType<DynamicResourceDictionaryContainer>();
             container.RegisterType<ProcessRemoteValidationIf>();
 

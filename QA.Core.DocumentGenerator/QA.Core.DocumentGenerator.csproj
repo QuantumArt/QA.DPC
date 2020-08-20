@@ -20,9 +20,10 @@
   </PropertyGroup>
  
   <ItemGroup>
-    <PackageReference Include="GemBox.Document" Version="25.3.30.1365" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="RazorEngine" Version="3.4.2" />
+    <PackageReference Include="GemBox.Document" Version="31.0.1239" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.7" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="RazorEngine.NetCore" Version="3.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />

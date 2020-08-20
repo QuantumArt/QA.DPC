@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Moq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Container;
@@ -15,6 +17,7 @@ using QA.ProductCatalog.Integration;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
+using ILogger = QA.Core.Logger.ILogger;
 
 namespace QA.Core.DPC.Loader.Tests
 {
@@ -29,6 +32,9 @@ namespace QA.Core.DPC.Loader.Tests
 
         public static UnityContainer RegisterTypes(UnityContainer container, string connStr)
         {
+            container.RegisterType<ILoggerFactory, LoggerFactory>(
+                new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>())
+            );
             container.AddExtension(new Diagnostic());
             // логируем в консоль
             container.RegisterInstance<ILogger>(new TextWriterLogger(Console.Out));

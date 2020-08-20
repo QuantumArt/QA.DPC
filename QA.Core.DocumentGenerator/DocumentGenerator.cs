@@ -9,6 +9,7 @@ using GemBox.Document;
 using GemBox.Document.MailMerging;
 using QA.ProductCatalog.Infrastructure;
 using RazorEngine;
+using RazorEngine.Templating;
 using LoadOptions = GemBox.Document.LoadOptions;
 
 namespace QA.Core.DocumentGenerator
@@ -72,7 +73,9 @@ namespace QA.Core.DocumentGenerator
 
 				var productXElement = XDocument.Parse(xmlData).Descendants("Product").First();
 
-				string renderedText = Razor.Parse(elementText, productXElement, elementText.GetHashCode().ToString());
+
+				var renderedText = Engine.Razor.RunCompile(elementText, elementText.GetHashCode().ToString(),
+					null, productXElement);
 
 				var parentCollection = textBoxElem.ParentCollection;
 

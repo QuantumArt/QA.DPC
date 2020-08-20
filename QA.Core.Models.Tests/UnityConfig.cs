@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Moq;
 using QA.Core.DPC.Loader;
 using QA.Core.Logger;
@@ -13,6 +15,7 @@ using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
+using ILogger = QA.Core.Logger.ILogger;
 
 namespace QA.Core.Models.Tests
 {
@@ -30,6 +33,9 @@ namespace QA.Core.Models.Tests
             var mock = new Mock<IHttpContextAccessor>();
             container.RegisterInstance(mock.Object);
 
+            container.RegisterType<ILoggerFactory, LoggerFactory>(
+                new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>())
+            );
             container.AddExtension(new Diagnostic());
             container.AddNewExtension<LoaderConfigurationExtension>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();

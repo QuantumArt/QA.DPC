@@ -63,9 +63,8 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<Properties>(Configuration.GetSection("Properties"));                 
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));            
             
-            var sp = services.BuildServiceProvider();
             services
-                .AddMvc(options => { SetupMvcOptions(options, sp); })
+                .AddMvc(SetupMvcOptions)
                 .AddXmlSerializerFormatters().AddControllersAsServices();
             
             services.AddSwaggerGen(c =>
@@ -104,7 +103,12 @@ namespace QA.ProductCatalog.WebApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Web API");
             });
 
-            app.UseMvcWithDefaultRoute();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
+            });
             
             LogStart(app, loggerFactory);
         }
@@ -117,7 +121,7 @@ namespace QA.ProductCatalog.WebApi
             logger.LogInformation("{appName} started", name);         
         }
         
-        private static void SetupMvcOptions(MvcOptions options, ServiceProvider sp)
+        private static void SetupMvcOptions(MvcOptions options)
         {
             options.Filters.Add(typeof(GlobalExceptionFilterAttribute));
             options.EnableEndpointRouting = false;

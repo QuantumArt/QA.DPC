@@ -19,18 +19,9 @@
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
-      <Project>{d894f71e-c027-4b58-8930-1d44a65727cb}</Project>
-      <Name>QA.Core.DPC.QP</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj">
-      <Project>{56e7fb60-0511-4bc7-9091-99c91d4ca5f7}</Project>
-      <Name>QA.Core.ProductCatalog.ActionsRunnerModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj">
-      <Project>{5AF860A1-97A7-4C36-9496-21054975E226}</Project>
-      <Name>QA.ProductCatalog.Infrastructure</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
+    <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="QA.Core.Cache" Version="3.5.2-beta6" />
