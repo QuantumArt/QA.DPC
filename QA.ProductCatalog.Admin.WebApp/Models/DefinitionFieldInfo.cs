@@ -74,9 +74,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
             {
                 FillAssociationField(association);
             }
-            else if (result is Dictionaries dict ) 
+            else if (result is Dictionaries dict )
             {
-                dict.DefaultCachePeriod = DefaultCachePeriod;          
+                dict.DefaultCachePeriod = (TimeSpan)DefaultCachePeriod;
             }
             else if (result is VirtualField virt)
             {
@@ -173,10 +173,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
                 FieldType = assoc is BackwardRelationField
                     ? FieldDefinitionType.BackwardRelationField
                     : FieldDefinitionType.EntityField;
+
+                RelateTo = assoc is BackwardRelationField ? ControlStrings.RelateToThis : ControlStrings.RelateToAnother;
+
             }
             else
             {
                 FieldType = FieldDefinitionType.ExtensionField;
+                IsClassifier = ControlStrings.IsClassifier;
             }
 
         }
@@ -198,9 +202,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         [Display(Name="DeletingMode", ResourceType = typeof(ControlStrings))]
         public DeletingMode DeletingMode { get; set; }
-        
-        [Display(Name="DefaultCachePeriod", ResourceType = typeof(ControlStrings))]
-        public TimeSpan DefaultCachePeriod { get; set; }
+
+        [Display(Name = "DefaultCachePeriod", ResourceType = typeof(ControlStrings))]
+        public TimeSpan? DefaultCachePeriod { get; set; } = null;
         
         [Display(Name="FieldName", ResourceType = typeof(ControlStrings))]
         public string FieldName { get; set; }
@@ -216,8 +220,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         [Display(Name="ClonePrototypeCondition", ResourceType = typeof(ControlStrings))]
         public string ClonePrototypeCondition { get; set; }
-        
-        
+        public string RelateTo { get; set; }
+        public string IsClassifier { get; set; }
+
         public string VirtualPath { get; set; }
         public string ObjectToRemovePath { get; set; }
         
