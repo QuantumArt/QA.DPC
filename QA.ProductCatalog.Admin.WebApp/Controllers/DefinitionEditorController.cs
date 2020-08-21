@@ -113,6 +113,44 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
+        public ActionResult EditBeta(DefinitionPathInfo defInfo)
+        {
+            var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
+
+            var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
+
+            if (objectToEdit is Field edit)
+                return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(new DefinitionFieldInfo(edit)
+                {
+                    InDefinition = !notFoundInDef,
+                    Path = defInfo.Path,
+                    Xml = defInfo.Xml
+                }
+               )};
+
+            var isFromDictionaries = false;
+
+            if (!Equals(rootContent, objectToEdit))
+                isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path) is Dictionaries;
+
+            var contentToEdit = (Content)objectToEdit;
+            return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(new DefinitionContentInfo
+            {
+                ContentName = contentToEdit.ContentName,
+                IsReadOnly = contentToEdit.IsReadOnly,
+                PublishingMode = contentToEdit.PublishingMode,
+                ContentId = contentToEdit.ContentId,
+                LoadAllPlainFields = contentToEdit.LoadAllPlainFields,
+                CacheEnabled = contentToEdit.CachePeriod.HasValue,
+                CachePeriod = contentToEdit.CachePeriod ?? new TimeSpan(1, 45, 0),
+                Path = defInfo.Path,
+                Xml = defInfo.Xml,
+                InDefinition = !notFoundInDef,
+                IsFromDictionaries = isFromDictionaries,
+            }) };  
+        }
+
+        [RequireCustomAction]
         public ActionResult Edit(DefinitionPathInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
