@@ -7,9 +7,10 @@ import "./Root.scss";
 
 const Root = observer(() => {
   const topOffset = 60;
+  const defaultSplitSize = 400;
   const state = useLocalStore(() => ({
     height: `${window.innerHeight - topOffset}px`,
-    width: `${window.innerWidth - 400}`,
+    width: `${window.innerWidth - defaultSplitSize}`,
     splitWidth: 0,
     setHeight(height: string) {
       this.height = height;
@@ -24,7 +25,11 @@ const Root = observer(() => {
   useLayoutEffect(() => {
     const onResize = debounce(() => {
       state.setHeight(`${window.innerHeight - topOffset}px`);
-      state.setWidth(`${window.innerWidth - (state.splitWidth === 0 ? 400 : state.splitWidth)}px`);
+      state.setWidth(
+        `${window.innerWidth -
+          (state.splitWidth === 0 ? defaultSplitSize : state.splitWidth) -
+          1}px`
+      );
     }, 100);
     window.addEventListener("resize", onResize);
     onResize();
@@ -35,7 +40,7 @@ const Root = observer(() => {
   const onSplitPaneChange = useCallback(
     debounce((size: number) => {
       state.setSplitWidth(size);
-      state.setWidth(`${window.innerWidth - size}px`);
+      state.setWidth(`${window.innerWidth - size - 1}px`);
       state.setHeight(`${window.innerHeight - topOffset}px`);
     }, 100),
     [state.width]
@@ -47,7 +52,7 @@ const Root = observer(() => {
         split="vertical"
         minSize={250}
         maxSize={700}
-        defaultSize={400}
+        defaultSize={defaultSplitSize}
         style={{ height: state.height }}
         onChange={onSplitPaneChange}
       >
