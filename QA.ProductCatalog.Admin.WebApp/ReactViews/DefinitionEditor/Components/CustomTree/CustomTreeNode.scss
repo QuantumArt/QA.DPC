@@ -1,3 +1,13 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.xml-tree-node-gray {
+  color: $turquoise1;
+}
+
+.xml-tree-node-red {
+  color: $red1;
+}
+
 .xml-tree-node-content-0 {
   margin-left: 0;
 }

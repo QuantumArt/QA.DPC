@@ -30,6 +30,7 @@ export default class XmlEditorStore {
   @observable rootId: string;
   @observable fontSize: number = 14;
   @observable wrapLines: boolean = true;
+  @observable searchOnClick: boolean = true;
   @observable mode: EditorMode = EditorMode.Xml;
 
   @action
@@ -47,6 +48,11 @@ export default class XmlEditorStore {
   @action
   toggleWrapLines = () => {
     this.wrapLines = !this.wrapLines;
+  };
+
+  @action
+  toggleSearchOnClick = () => {
+    this.searchOnClick = !this.searchOnClick;
   };
 
   @action

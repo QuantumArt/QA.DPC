@@ -1,5 +1,6 @@
 import React, { Context } from "react";
 import { observer } from "mobx-react";
+import { IReactionDisposer, reaction } from "mobx";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-xml";
 import "ace-builds/src-noconflict/theme-textmate";
@@ -18,10 +19,26 @@ interface Props {
 export default class XmlEditor extends React.Component<Props> {
   context: React.ContextType<typeof storesCtx>;
   static contextType: Context<StoresCtx> = storesCtx;
+  private disposer: IReactionDisposer;
 
   // componentDidMount() {
   //   const reactAceComponent = this.refs.aceEditor as AceEditor;
   //   const editor = reactAceComponent.editor;
+  //   const { treeStore, xmlEditorStore } = this.context;
+  //   this.disposer = reaction(() => treeStore.selectedNodeId, id => {
+  //     if (xmlEditorStore.searchOnClick && id !== null) {
+  //       const arr = id.split("/");
+  //       let lastPart = arr.pop();
+  //       if (lastPart === "0") {
+  //         lastPart = arr.pop();
+  //       }
+  //       const nodeLabel = treeStore.nodesMap.get(id).label.toString().split(" ")[0];
+  //       const pattern = `(.*${lastPart})(.*${nodeLabel}).*`;
+  //       console.log(pattern, id);
+  //       // @ts-ignore
+  //       editor.find(new RegExp(pattern), { regExp: true, wrap: true });
+  //     }
+  //   })
   // }
 
   render() {

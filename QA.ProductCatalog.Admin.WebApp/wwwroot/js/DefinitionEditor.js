@@ -216,6 +216,7 @@
   },
 
   BindNode: function(nodeData) {
+    console.log(nodeData);
     var treeView = $("#treeView").data("kendoTreeView");
 
     var nodeId = nodeData.Id;

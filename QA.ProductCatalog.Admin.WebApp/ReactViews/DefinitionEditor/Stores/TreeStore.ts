@@ -1,6 +1,7 @@
 import React from "react";
-import XmlEditorStore from "./XmlEditorStore";
+import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
 import { action, computed, observable, when } from "mobx";
+import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
@@ -80,18 +81,46 @@ export default class TreeStore {
     }
   };
 
+  private getNodeStatus = (node: IDefinitionNode): { icon: IconName, className: string, label: string } => {
+    const label = node.text ?? 'Dictionary caching settings';
+    if (node.MissingInQp) {
+      return {
+        label: `${label} (Missing in QP)`,
+        icon: "warning-sign",
+        className: "",
+      };
+    }
+    if (node.NotInDefinition) {
+      return {
+        label,
+        icon: "exclude-row",
+        className: "xml-tree-node-gray",
+      };
+    }
+
+    return {
+      label,
+      icon: "document",
+      className: "",
+    };
+  }
+
   private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
+      const nodeStatus = this.getNodeStatus(node);
       this.nodesMap.set(node.Id, {
         id: node.Id,
-        label: node.text ?? 'Dictionary caching settings',
+        label: nodeStatus.label,
         isExpanded: false,
         hasCaret: node.hasChildren,
         childNodes: [],
         isSelected: false,
+        className: nodeStatus.className,
+        icon: nodeStatus.icon,
         nodeData: {
           expanded: node.expanded,
-          hasChildren: node.hasChildren
+          hasChildren: node.hasChildren,
+          missingInQp: node.MissingInQp,
         }
       });
       return this.nodesMap.get(node.Id);

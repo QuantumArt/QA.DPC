@@ -30,6 +30,12 @@ const ToolBar = observer(() => {
           style={{ visibility: xmlEditorStore.mode === EditorMode.Xml ? "visible" : "hidden" }}
         >
           <Switch
+            label="Search on click"
+            checked={xmlEditorStore.searchOnClick}
+            onChange={xmlEditorStore.toggleSearchOnClick}
+            large
+          />
+          <Switch
             label="Wrap lines"
             checked={xmlEditorStore.wrapLines}
             onChange={xmlEditorStore.toggleWrapLines}
