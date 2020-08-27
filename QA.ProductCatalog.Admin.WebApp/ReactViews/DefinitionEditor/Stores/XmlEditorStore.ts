@@ -1,4 +1,4 @@
-﻿import { action, computed, observable, when } from "mobx";
+﻿import { action, observable } from "mobx";
 import { parse } from "fast-xml-parser";
 import { EditorMode } from "DefinitionEditor/Enums";
 

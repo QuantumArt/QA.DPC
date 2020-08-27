@@ -1,6 +1,6 @@
 import React from "react";
 import XmlEditorStore from "./XmlEditorStore";
-import { action, computed, observable, toJS, when } from "mobx";
+import { action, computed, observable, when } from "mobx";
 import { OperationState } from "Shared/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
