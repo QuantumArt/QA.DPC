@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -174,6 +174,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
                     ? FieldDefinitionType.BackwardRelationField
                     : FieldDefinitionType.EntityField;
 
+                RelationConditionDescription = ControlStrings.RelationConditionDescription;
+                ClonePrototypeConditionDescription = ControlStrings.ClonePrototypeConditionDescription;
                 RelateTo = assoc is BackwardRelationField ? ControlStrings.RelateToThis : ControlStrings.RelateToAnother;
 
             }
@@ -221,6 +223,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         [Display(Name="ClonePrototypeCondition", ResourceType = typeof(ControlStrings))]
         public string ClonePrototypeCondition { get; set; }
         public string RelateTo { get; set; }
+        public string RelationConditionDescription { get; set; }
+        public string ClonePrototypeConditionDescription { get; set; }
         public string IsClassifier { get; set; }
 
         public string VirtualPath { get; set; }
