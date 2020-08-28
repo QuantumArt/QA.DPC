@@ -403,14 +403,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                 if (hasSchedule.HasValue)
                 {
-                    if (hasSchedule.Value)
-                    {
-                        tasksFiltered = tasksFiltered.Where(x => x.Schedule.Enabled == true);
-                    }
-                    else
-                    {
-                        tasksFiltered = tasksFiltered.Where(x => x.Schedule == null || x.Schedule.Enabled == false);
-                    }
+                    tasksFiltered = hasSchedule.Value ? tasksFiltered.Where(x => x.Schedule != null) : tasksFiltered.Where(x => x.Schedule == null);
                 }
 
                 totalCount = tasksFiltered.Count();

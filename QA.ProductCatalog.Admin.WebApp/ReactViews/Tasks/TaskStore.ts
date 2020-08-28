@@ -1,23 +1,25 @@
-﻿import { action, computed, observable, runInAction } from "mobx";
+import { action, computed, observable, runInAction } from "mobx";
 import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
-import { apiService } from "Tasks/Api-services";
-import { FilterOptions, PaginationOptions, Task } from "Tasks/Api-services/DataContracts";
+import { apiService } from "Tasks/ApiServices";
+import { FilterOptions, PaginationOptions, Task } from "Tasks/ApiServices/DataContracts";
+import {
+  FETCH_ON_ERROR_TIMEOUT,
+  FETCH_TIMEOUT,
+  INIT_PAGINATION_OPTIONS,
+  SESSION_EXPIRED
+} from "Tasks/Constants";
+import { setBrowserNotifications } from "Shared/Utils";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
-    this.setPagination(this.initPaginationOptions);
+    this.setPagination(INIT_PAGINATION_OPTIONS);
     this.changePage = onChangePage;
   }
   @observable private skip: number = 0;
   private readonly take: number = 10;
   @observable private showOnlyMine: boolean = true;
   readonly changePage: (operation: PaginationActions) => void;
-  readonly initPaginationOptions: PaginationOptions = {
-    skip: 0,
-    take: 10,
-    showOnlyMine: true
-  };
 
   @computed
   get getPaginationOptions(): PaginationOptions {
@@ -41,8 +43,8 @@ export class Pagination {
     return Object.assign(this.getPaginationOptions, {
       skip:
         operation === PaginationActions.IncrementPage
-          ? (paginationOptions.skip += this.initPaginationOptions.take)
-          : (paginationOptions.skip -= this.initPaginationOptions.take)
+          ? (paginationOptions.skip += INIT_PAGINATION_OPTIONS.take)
+          : (paginationOptions.skip -= INIT_PAGINATION_OPTIONS.take)
     });
   };
 }
@@ -81,12 +83,13 @@ export class Filter {
 }
 
 export class TaskStore {
-  readonly FETCH_TIMEOUT = 5000;
+  private isUpdateRateRequestsPending: boolean = false;
+  private alreadyNotifiedTaskIds: { [x: number]: boolean } = {};
   @observable private gridData: Task[] = [];
   @observable private myLastTask: Task;
   @observable private total: number = 0;
   @observable isLoading: boolean = true;
-  @observable.ref pagination: Pagination = new Pagination((operation: PaginationActions) => {
+  @observable pagination: Pagination = new Pagination((operation: PaginationActions) => {
     this.withLoader(() => this.fetchGridData(operation));
   });
   filterValueMapper = function() {
@@ -109,7 +112,7 @@ export class TaskStore {
 
   init = async () => {
     await this.withLoader(() => this.fetchGridData());
-    setTimeout(this.cyclicFetchGrid, this.FETCH_TIMEOUT);
+    setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
   };
 
   cyclicFetchGrid = async (): Promise<void> => {
@@ -120,12 +123,57 @@ export class TaskStore {
       const filtersOptions = this.getFiltersOptions();
 
       const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
+      if (
+        this.isUpdateRateRequestsPending ||
+        paginationOptions.skip !== this.pagination.getPaginationOptions.skip
+      ) {
+        throw "the request already have sent and new response from cyclic fetch will not accept in grid";
+      }
       this.setGridData(response.tasks);
       this.setTotal(response.totalTasks);
+
+      if (window.task.notify.isNotifyActive) {
+        setBrowserNotifications(() =>
+          this.tasksNotificationsSender(response.tasks, window.task.notify.runningStateId)
+        );
+      }
+
+      setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
     } catch (e) {
-      console.error(e, "err on cyclic fetch");
-    } finally {
-      setTimeout(this.cyclicFetchGrid, this.FETCH_TIMEOUT);
+      if (typeof e === "string" && e === SESSION_EXPIRED) {
+        return;
+      }
+      setTimeout(this.cyclicFetchGrid, FETCH_ON_ERROR_TIMEOUT);
+    }
+  };
+
+  tasksNotificationsSender = (tasks, runningStateId) => {
+    const gridRenderServerTime = new Date(window.task.notify.formRenderedServerTime);
+    const tasksShouldNotify = tasks.filter(task => {
+      const lastStatusChangeTime = task.LastStatusChangeTime
+        ? new Date(task.LastStatusChangeTime)
+        : null;
+      return (
+        lastStatusChangeTime &&
+        task.StateId > runningStateId &&
+        !this.alreadyNotifiedTaskIds[task.Id] &&
+        lastStatusChangeTime.getTime() > gridRenderServerTime.getTime()
+      );
+    });
+
+    if (tasksShouldNotify.length) {
+      tasksShouldNotify.forEach(task => {
+        this.alreadyNotifiedTaskIds[task.Id] = true;
+        let body = `${window.task.notify.state}: ${task.State}`;
+        if (task.Message) body += "\r\n" + task.Message;
+        new Notification(
+          `${window.task.notify.task}${task.DisplayName} ${window.task.notify.proceed}`,
+          {
+            body: body,
+            icon: `${window.task.notify.img}${task.IconName}48.png`
+          }
+        );
+      });
     }
   };
 
@@ -184,26 +232,55 @@ export class TaskStore {
     }
   };
 
-  fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> => {
+  withIsPendingRequest = async (cb: () => Promise<void>): Promise<void> => {
     try {
-      const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(operation);
-      const filtersOptions = this.getFiltersOptions();
-      const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
-      this.setGridData(response.tasks);
-      this.setTotal(response.totalTasks);
-      this.setMyLastTask(response.myLastTask);
-      this.pagination.setPagination(paginationOptions);
+      this.isUpdateRateRequestsPending = true;
+      await cb();
     } catch (e) {
       console.error(e);
+      throw e;
+    } finally {
+      this.isUpdateRateRequestsPending = false;
     }
   };
 
-  fetchRerunTask = async (taskId: number) => {
-    try {
-      await apiService.fetchRerunTask(taskId);
-    } catch (e) {
-      console.error(e);
-    }
-  };
+  fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> =>
+    this.withIsPendingRequest(async () => {
+      try {
+        const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(operation);
+        const filtersOptions = this.getFiltersOptions();
+        const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
+        this.setGridData(response.tasks);
+        this.setTotal(response.totalTasks);
+        this.setMyLastTask(response.myLastTask);
+        this.pagination.setPagination(paginationOptions);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+  fetchRerunTask = async (taskId: number): Promise<void> =>
+    this.withIsPendingRequest(async () => {
+      try {
+        await apiService.fetchRerunTask(taskId);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+  setSchedule = async (
+    taskId: number,
+    isEnabled: boolean,
+    cronExpression: string,
+    repeatType = "on"
+  ): Promise<void> =>
+    this.withIsPendingRequest(async () => {
+      try {
+        await apiService.fetchSchedule(taskId, isEnabled, cronExpression, repeatType);
+        await this.fetchGridData();
+      } catch (e) {
+        console.error(e);
+      }
+    });
 }
 export const TaskStoreContext = createContext(new TaskStore());

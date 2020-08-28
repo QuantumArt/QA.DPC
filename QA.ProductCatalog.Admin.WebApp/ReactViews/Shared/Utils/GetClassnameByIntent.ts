@@ -1,6 +1,6 @@
 ﻿import { Intent } from "@blueprintjs/core";
 
-export const getClassNameByIntent = (
+export const getClassnameByIntent = (
   className: string,
   intent: Intent,
   delimeter: string = "-"

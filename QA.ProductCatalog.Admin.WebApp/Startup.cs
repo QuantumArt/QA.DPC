@@ -48,7 +48,10 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            services.Configure<QPOptions>(Configuration.GetSection("QP"));        
+            services.Configure<QPOptions>(Configuration.GetSection("QP"));    
+            
+            var props = new IntegrationProperties();
+            Configuration.Bind("Integration", props);
             
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
@@ -56,14 +59,14 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.Secure = CookieSecurePolicy.SameAsRequest;
-                options.MinimumSameSitePolicy = SameSiteMode.None; 
+                options.MinimumSameSitePolicy = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax; 
             }); 
             
             services.AddSession(options =>
             {
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SameSite = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax;
             });
             
             services.AddResponseCaching();

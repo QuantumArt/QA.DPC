@@ -1,7 +1,7 @@
-﻿import { Intent } from "@blueprintjs/core";
+﻿import { TaskState, TaskStatuses } from "Shared/Enums";
+import { Intent } from "@blueprintjs/core";
 import { IconNames, IconName } from "@blueprintjs/icons";
-
-import { TaskStatuses, TaskState } from "Shared/Enums";
+import { SESSION_EXPIRED } from "Tasks/Constants";
 
 export const getTaskIntentDependsOnStatus = (status: TaskStatuses) => {
   switch (status) {
@@ -46,4 +46,22 @@ export const getTaskIconDependsOnState = (stateId: TaskState): IconName => {
     case TaskState.Cancelled:
       return IconNames.DISABLE;
   }
+};
+
+export const getDateValueWithZeroAhead = (num: number): number | string => {
+  if (num < 10) {
+    return `0${num}`;
+  }
+  return num;
+};
+
+export const throwOnExpiredSession = (status: number): void => {
+  if (status === 401) {
+    document.body.innerHTML = "<h1>Сессия устарела. Переоткройте или обновите вкладку.</h1>";
+    throw SESSION_EXPIRED;
+  }
+};
+
+export const throwOnSameHashCode = (newHashCode: number, oldHashCode: number): void => {
+  if (oldHashCode && newHashCode && newHashCode === oldHashCode) throw "hash code was repeated";
 };

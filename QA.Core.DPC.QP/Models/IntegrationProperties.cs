@@ -17,5 +17,7 @@ namespace QA.Core.DPC.QP.Models
         public string[] ExtraValidationLibraries { get; set; }
         public string ConfigurationServiceUrl { get; set; }
         public string ConfigurationServiceToken { get; set; }
+        
+        public bool UseSameSiteNone { get; set; }
     }
 }

@@ -4,30 +4,8 @@
  */
 
 declare interface Window {
-  QP: {
-    Tasks: {
-      tableFields: {
-        userName: string;
-        status: number;
-        statusValues: { label: string; value: number }[];
-        schedule: string;
-        progress: number;
-        name: string;
-        created: string;
-        lastStatusChange: string;
-        message: string;
-      };
-      tableFilters: {
-        //отображение названий в селекте фильтров
-        messages: {
-          isFalse: string;
-          isTrue: string;
-          filter: string;
-          clear: string;
-        };
-      };
-    };
-  };
+  task: TaskWindowTypes;
+  notificationPermissionRequested: boolean;
 
   highloadFront?: {
     legend: string;

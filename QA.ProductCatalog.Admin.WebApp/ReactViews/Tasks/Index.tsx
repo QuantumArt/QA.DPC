@@ -1,24 +1,55 @@
 import React, { useEffect } from "react";
 import {
-  FilterTooltip,
-  RerunCell,
-  DateCell,
-  ProgressBarCell,
-  StatusCell,
+  GridHeadFilterTooltip,
+  ProgressBarGridCell,
+  StatusTag,
   Grid,
+  MyLastTask,
+  ScheduleGridCellCalendar,
+  DateGridCell,
+  RerunGridCell,
+  ScheduleGridCellDescription,
+  ErrorBoundary
+} from "./Components";
+import {
   StatusFilterContent,
   ScheduleFilterContent,
-  FilterButtonsWrapper,
-  MyLastTask
-} from "./Components";
+  FilterButtonsWrapper
+} from "./Components/GridHeadFilterTooltip/Subcomponents";
 import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
-import "./_reset.scss";
-import "./Style.scss";
+import { getClassnameByIntent } from "Shared/Utils";
+import { Column, Accessor } from "react-table";
+import { Task as GridTask } from "Tasks/ApiServices/DataContracts";
+import { Intent } from "@blueprintjs/core";
+import "./Root.scss";
 
+/**
+ * ColumnModel
+ * showOnHover: показывать поле только при наведении
+ * getClassNameByEnableSchedule: параметр для EnableSchedule
+ * truncate: {
+ * onWidth: схлопывать при указананой ширине
+ * noTruncateElement возвращает реакт элемент который не будет схлопываться
+ * }
+ */
+export interface ColumnModel {
+  Header: any;
+  accessor: Accessor;
+  Cell?: any;
+  showOnHover?: boolean;
+  fixedWidth?: number;
+  getClassNameByEnableSchedule?: (taskId: number) => string;
+  truncate?: {
+    onWidth?: number;
+    noTruncateElement?: (taskId: number) => Element | String;
+  };
+}
 export const Task = observer(() => {
   const store = useStore();
+  const gridWrap = React.useRef(null);
+  const [gridWidth, setGridWidth] = React.useState(1000);
   const {
     userName,
     status,
@@ -27,17 +58,23 @@ export const Task = observer(() => {
     name,
     created,
     lastStatusChange,
-    message,
-    statusValues
-  } = window.QP.Tasks.tableFields;
-
-  console.log(statusValues);
+    message
+  } = window.task.tableFields;
+  const { statusValues } = window.task.other;
+  const { filter, clear, isFalse, isTrue } = window.task.gridFiltersDefinitions;
 
   useEffect(() => {
     store.init();
   }, []);
 
-  const gridColumns = React.useMemo(
+  useEffect(
+    () => {
+      if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
+    },
+    [gridWrap, store.isLoading]
+  );
+
+  const gridColumns = React.useMemo<Column<ColumnModel>[]>(
     () => [
       {
         Header: "Id",
@@ -46,77 +83,99 @@ export const Task = observer(() => {
       {
         Header: userName,
         accessor: "UserName",
-        truncate: { onWidth: 120, possibleRows: 1 }
+        truncate: { onWidth: 120 }
       },
       {
         Header: (
-          <FilterTooltip label={status} filter={store.filters.get(TaskGridFilterType.StatusFilter)}>
+          <GridHeadFilterTooltip label={status}>
             <FilterButtonsWrapper
-              acceptLabel={window.QP.Tasks.tableFilters.messages.filter}
-              revokeLabel={window.QP.Tasks.tableFilters.messages.clear}
+              acceptLabel={filter}
+              revokeLabel={clear}
+              filter={store.filters.get(TaskGridFilterType.StatusFilter)}
             >
               <StatusFilterContent options={statusValues} />
             </FilterButtonsWrapper>
-          </FilterTooltip>
+          </GridHeadFilterTooltip>
         ),
         accessor: "StateId",
-        Cell: StatusCell
+        Cell: StatusTag
       },
       {
         Header: (
-          <FilterTooltip
-            label={schedule}
-            filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
-          >
+          <GridHeadFilterTooltip label={schedule}>
             <FilterButtonsWrapper
-              acceptLabel={window.QP.Tasks.tableFilters.messages.filter}
-              revokeLabel={window.QP.Tasks.tableFilters.messages.clear}
+              acceptLabel={filter}
+              revokeLabel={clear}
+              filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
             >
               <ScheduleFilterContent
                 options={[
-                  { label: "Да", value: ScheduleFilterValues.YES },
-                  { label: "Нет", value: ScheduleFilterValues.NO }
+                  { label: isTrue, value: ScheduleFilterValues.YES },
+                  { label: isFalse, value: ScheduleFilterValues.NO }
                 ]}
               />
             </FilterButtonsWrapper>
-          </FilterTooltip>
+          </GridHeadFilterTooltip>
         ),
-        accessor: "HasSchedule"
-        //что-то сделать с этими параметрами
-        // ScheduleCronExpression: null
-        // ScheduledFromTaskId: null
+        accessor: "HasSchedule",
+        Cell: (cellProps: any) => {
+          return (
+            <ScheduleGridCellDescription
+              cronExpression={cellProps.data[cellProps.row.index].ScheduleCronExpression}
+            />
+          );
+        },
+        getClassNameByEnableSchedule: (gridElement: GridTask) => {
+          if (gridElement.ScheduleEnabled) {
+            return getClassnameByIntent("color", Intent.SUCCESS, "-");
+          }
+          return getClassnameByIntent("color", Intent.NONE, "-");
+        },
+        truncate: {
+          onWidth: 120,
+          noTruncateElement: (gridElement: GridTask) => {
+            return (
+              <ScheduleGridCellCalendar
+                taskIdNumber={gridElement.Id}
+                scheduleCronExpression={gridElement.ScheduleCronExpression}
+                hasSchedule={gridElement.HasSchedule}
+                isScheduleEnabled={gridElement.ScheduleEnabled}
+              />
+            );
+          }
+        }
       },
       {
         Header: progress,
         accessor: "Progress",
         Cell: (cellProps: any) => {
           const stateId = cellProps.cell.row.values.StateId;
-          return <ProgressBarCell value={cellProps.value} stateId={stateId} />;
+          return <ProgressBarGridCell value={cellProps.value} stateId={stateId} />;
         }
       },
       {
         Header: name,
         accessor: "DisplayName",
-        truncate: { onWidth: 120, possibleRows: 1 }
+        truncate: { onWidth: 120 }
       },
       {
         Header: created,
         accessor: "CreatedTime",
-        Cell: DateCell,
+        Cell: DateGridCell,
         className: "grid__date-cell",
-        truncate: { onWidth: 110, possibleRows: 1 }
+        truncate: { onWidth: 110 }
       },
       {
         Header: lastStatusChange,
         accessor: "LastStatusChangeTime",
-        Cell: DateCell,
+        Cell: DateGridCell,
         className: "grid__date-cell",
-        truncate: { onWidth: 110, possibleRows: 1 }
+        truncate: { onWidth: 110 }
       },
       {
         Header: message,
         accessor: "Message",
-        truncate: { onWidth: 140, possibleRows: 2 }
+        truncate: { onWidth: 140 }
       },
       {
         Header: "",
@@ -125,7 +184,7 @@ export const Task = observer(() => {
         className: "grid__rerun-cell",
         Cell: (cellProps: any) => {
           const Id = cellProps.row.values.Id;
-          return <RerunCell id={Id} method={store.fetchRerunTask} />;
+          return <RerunGridCell id={Id} method={store.fetchRerunTask} />;
         }
       }
     ],
@@ -134,15 +193,19 @@ export const Task = observer(() => {
 
   return (
     <div className="task-wrapper">
-      <MyLastTask task={store.lastTask} />
+      <ErrorBoundary>
+        <MyLastTask task={store.lastTask} width={gridWidth} />
+      </ErrorBoundary>
 
-      <Grid
-        columns={gridColumns}
-        data={store.getGridData}
-        customPagination={store.pagination}
-        total={store.getTotal}
-        isLoading={store.isLoading}
-      />
+      <div ref={gridWrap}>
+        <Grid
+          columns={gridColumns}
+          data={store.getGridData}
+          customPagination={store.pagination}
+          total={store.getTotal}
+          isLoading={store.isLoading}
+        />
+      </div>
     </div>
   );
 });

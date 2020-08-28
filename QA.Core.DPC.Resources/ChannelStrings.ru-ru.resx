@@ -210,7 +210,9 @@
   <data name="SystemSettings" xml:space="preserve">
     <value>Системные настройки</value>
   </data>
-
+  <data name="YourLastTask" xml:space="preserve">
+    <value>Задача</value>
+  </data>
 </root>
 
         
