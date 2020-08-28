@@ -1,96 +1,66 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { RefObject, useLayoutEffect, useRef, useState } from "react";
 import { Tooltip } from "@blueprintjs/core";
-import cn from "classnames";
-import Truncate from "react-truncate";
+import { IUntruncatedElementProps, UntruncatedElementWrap } from "./Subcomponents";
+import "./Style.scss";
 
-export const GridCellContent = React.memo(
-  ({ cell, refBody, loading }: { cell: any; refBody: any; loading: boolean }) => {
+interface IProps extends IUntruncatedElementProps {
+  value: JSX.Element | string;
+  refBody: RefObject<any>;
+  isLoading: boolean;
+  truncateOnWidth: number;
+}
+
+export const GridTruncatedCellContent = React.memo(
+  ({ refBody, isLoading, truncateOnWidth, untruncatedElement, value }: IProps) => {
     const cellRef = useRef(null);
+    const cellRefTruncated = useRef(null);
     const [isTruncate, setIsTruncate] = useState(false);
-    const [isTooltip, setIsTooltip] = useState(false);
-    const isWithTruncate = !!cell.column.truncate;
-    //размер шрифта ~ 14 px
-    const fontSizeOneRow = 16;
-    const fontSizeTwoRows = 34;
 
-    //эффект который при рендере проверяет ширину и высоту строки и схлопывает ее добавляя тултип если это нужно
-    useEffect(
+    //проверяет ширину и высоту строки и схлопывает ее добавляя тултип если это нужно
+    useLayoutEffect(
       () => {
-        if (!cell.value || !isWithTruncate || !cellRef.current) return;
-        if (
-          !isTooltip &&
-          (cellRef.current.offsetWidth > cell.column.truncate.onWidth ||
-            (cell.column.truncate.possibleRows === 1 &&
-              cellRef.current.offsetHeight > fontSizeOneRow) ||
-            (cell.column.truncate.possibleRows === 2 &&
-              cellRef.current.offsetHeight > fontSizeTwoRows))
-        ) {
+        if (!isTruncate && cellRef.current.offsetWidth > truncateOnWidth) {
           setIsTruncate(true);
           return;
         }
         if (
-          isTooltip &&
-          cellRef.current &&
-          (cellRef.current.offsetWidth < cell.column.truncate.onWidth ||
-            (cell.column.truncate.possibleRows === 1 &&
-              cellRef.current.offsetHeight < fontSizeOneRow) ||
-            (cell.column.truncate.possibleRows === 2 &&
-              cellRef.current.offsetHeight < fontSizeTwoRows))
+          isTruncate &&
+          cellRefTruncated.current &&
+          cellRefTruncated.current.offsetWidth < truncateOnWidth
         ) {
-          setIsTooltip(false);
+          setIsTruncate(false);
         }
       },
-      [cell, loading, cellRef]
+      [isLoading, cellRef, truncateOnWidth, isTruncate, cellRefTruncated]
     );
 
-    const setTooltip = (isTruncated: boolean) => isTruncated && setIsTooltip(true);
-
-    const TruncateString = props => {
-      const { possibleRows, onWidth } = cell.column.truncate;
-
+    if (isTruncate && !isLoading) {
       return (
-        <Truncate {...props} lines={possibleRows || 1} className="truncate-cell" width={onWidth}>
-          {cell.render("Cell")}
-        </Truncate>
-      );
-    };
-
-    if (isTooltip && !loading) {
-      return (
-        <Tooltip
-          position={"left"}
-          usePortal
-          content={cell.render("Cell")}
-          portalContainer={refBody.current}
+        <UntruncatedElementWrap
+          untruncatedElement={untruncatedElement}
+          isLoading={isLoading}
+          width={truncateOnWidth}
         >
-          <TruncateString />
-        </Tooltip>
+          <Tooltip position={"left"} usePortal content={value} portalContainer={refBody.current}>
+            <div
+              style={truncateOnWidth && { width: truncateOnWidth }}
+              className="truncate-cell truncate-string"
+            >
+              <span ref={cellRefTruncated}> {value && value}</span>
+            </div>
+          </Tooltip>
+        </UntruncatedElementWrap>
       );
     }
 
-    if (isTruncate && !loading) {
-      return (
-        <TruncateString
-          onTruncate={param => {
-            setTooltip(param);
-          }}
-        />
-      );
-    }
-
-    //TODO  cell.render("Cell") вызывает ререндер!!!!!!!!!
     return (
-      <span
-        className={cn("inside-cell", {
-          "inside-cell--hidden": cell.column.showOnHover,
-          "bp3-skeleton truncate-cell": loading
-        })}
-        ref={cellRef}
+      <UntruncatedElementWrap
+        untruncatedElement={untruncatedElement}
+        isLoading={isLoading}
+        width={truncateOnWidth}
       >
-        {/*{cell.value === false ? <cell.column.Cell/> : cell.render("Cell")}*/}
-        {/*{!!cell.column.Cell ? <cell.column.Cell/> : cell.render("Cell")}*/}
-        {cell.render("Cell")}
-      </span>
+        <span ref={cellRef}>{value}</span>
+      </UntruncatedElementWrap>
     );
   }
 );

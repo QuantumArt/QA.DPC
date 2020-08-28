@@ -3,18 +3,18 @@
 
 <script>
   window.highloadFront = {
-    legend: "@HfStrings.HighloadFront",
-    customerCode: "@ViewBag.CustomerCode",
-    processingIndex: "@HfStrings.ProceedIndexing",
-    culture: "@CultureInfo.CurrentCulture.Parent.EnglishName",
+    legend: "@Html.Raw(HfStrings.HighloadFront)",
+    customerCode: "@Html.Raw(@ViewBag.CustomerCode)",
+    processingIndex: "@Html.Raw(@HfStrings.ProceedIndexing)",
+    culture: "@Html.Raw(@CultureInfo.CurrentCulture.Parent.EnglishName)",
     columnHeaders: {
-      default: "@HfStrings.Default",
-      language: "@HfStrings.Language",
-      type: "@HfStrings.Type",
-      date: "@HfStrings.Date",
-      processing: "@HfStrings.Processing",
-      updating: "@HfStrings.Updating",
-      progress: "@HfStrings.Progress",
+      default: "@Html.Raw(@HfStrings.Default)",
+      language: "@Html.Raw(@HfStrings.Language)",
+      type: "@Html.Raw(@HfStrings.Type)",
+      date: "@Html.Raw(@HfStrings.Date)",
+      processing: "@Html.Raw(@HfStrings.Processing)",
+      updating: "@Html.Raw(@HfStrings.Updating)",
+      progress: "@Html.Raw(@HfStrings.Progress)",
     }
   }
 </script>

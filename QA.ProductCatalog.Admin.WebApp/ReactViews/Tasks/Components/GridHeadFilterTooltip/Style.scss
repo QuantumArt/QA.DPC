@@ -1,7 +1,8 @@
 .filter-cell {
   color: #137cbd;
   cursor: pointer;
-
+  white-space: nowrap;
+  overflow: hidden;
   &__icon {
   }
 }

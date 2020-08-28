@@ -3,6 +3,7 @@
 .my-last-task {
   padding: 10px 20px;
   font-family: SFProText, sans-serif;
+  display: flex;
   .bp3-callout.bp3-callout-icon > .bp3-icon:first-child {
     top: 12px;
   }
@@ -14,6 +15,7 @@
   }
   &__header-item {
     margin-right: 6px;
+    max-height: 24px;
   }
   &__id {
     color: rgba(92, 112, 128, 0.5);

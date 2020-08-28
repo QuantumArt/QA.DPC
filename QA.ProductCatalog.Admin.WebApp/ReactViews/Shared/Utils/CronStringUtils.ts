@@ -62,8 +62,8 @@ export const UNITS: Map<CronUnitType, Unit> = new Map([
     CronUnitType.Months,
     {
       type: CronUnitType.Months,
-      min: 0,
-      max: 11,
+      min: 1,
+      max: 12,
       total: 12,
       alt: MONTH_UNITS
     }
@@ -186,25 +186,6 @@ export function partToString(
       }
     ];
   } else {
-    // const step = getStep(cronPart);
-    //
-    // if (step && isInterval(cronPart, step)) {
-    //   // if (isFullInterval(cronPart, unit, step)) {
-    //   //   retval.push(`*/${step}`);
-    //   // } else {
-    //
-    //   retval.push({
-    //     label: `${formatValue(
-    //       getMin(cronPart),
-    //       unit,
-    //       humanize,
-    //       leadingZero,
-    //       clockFormat
-    //     )}-${formatValue(getMax(cronPart), unit, humanize, leadingZero, clockFormat)}/${step}`,
-    //     values: fillNumbersBetweenGaps(getMin(cronPart), getMax(cronPart))
-    //   });
-    //   // }
-    // } else {
     retval.push(
       ...toRanges(cronPart).map((range: number | number[]) => {
         if (Array.isArray(range)) {
@@ -227,7 +208,6 @@ export function partToString(
       })
     );
   }
-  // }
   return retval;
 }
 
@@ -242,6 +222,7 @@ export function getValuesFromCronString(
     const period = getPeriodFromCronparts(cronParts);
     return { cronParts, period };
   } catch (err) {
+    console.error(err);
     return null;
   }
 }
@@ -267,7 +248,7 @@ function getPeriodFromCronparts(cronParts: number[][]): CronPeriodType {
 /**
  * Parses a cron string to an array of parts
  */
-function parseCronString(str: string) {
+function parseCronString(str: string): number[][] {
   if (typeof str !== "string") {
     throw new Error("Invalid cron string");
   }
@@ -276,16 +257,21 @@ function parseCronString(str: string) {
     .replace(/\s+/g, " ")
     .trim()
     .split(" ");
-
   if (parts.length === 5) {
     return parts.map((partStr, idx) => {
-      return parsePartString(partStr, UNITS.get(getidx(idx)));
+      return parsePartString(partStr, UNITS.get(getUnitByIndex(idx)));
+    });
+  }
+  if (parts.length === 6) {
+    return parts.map(partStr => {
+      return [Number(partStr)];
     });
   }
 
   throw new Error("Invalid cron string format");
 }
-const getidx = (id: number) => {
+
+export const getUnitByIndex = (id: number) => {
   if (id === 0) return CronUnitType.Minutes;
   if (id === 1) return CronUnitType.Hours;
   if (id === 2) return CronUnitType.MonthDays;
@@ -445,7 +431,7 @@ function parseRange(rangeStr: string, context: string, unit: Unit) {
 /**
  * Finds an element from values that is outside of the range of unit
  */
-function outOfRange(values: number[], unit: Unit) {
+function outOfRange(values: number[], unit: Unit): number {
   const first = values[0];
   const last = values[values.length - 1];
 
@@ -454,17 +440,14 @@ function outOfRange(values: number[], unit: Unit) {
   } else if (last > unit.max) {
     return last;
   }
-
-  // @ts-ignore
-  return;
+  return undefined;
 }
 
 /**
  * Parses the step from a part string
  */
-// @ts-ignore
-function parseStep(step: string, unit: Unit) {
-  if (typeof step !== "undefined") {
+function parseStep(step: string, unit: Unit): number {
+  if (step) {
     const parsedStep = parseInt(step, 10);
 
     if (isNaN(parsedStep) || parsedStep < 1) {
@@ -473,6 +456,7 @@ function parseStep(step: string, unit: Unit) {
 
     return parsedStep;
   }
+  return undefined;
 }
 
 /**
@@ -486,6 +470,5 @@ function applyInterval(values: number[], step?: number) {
       return value % step === minVal % step || value === minVal;
     });
   }
-
   return values;
 }

@@ -2,30 +2,23 @@ import React, { useRef } from "react";
 import { useTable, usePagination } from "react-table";
 import cn from "classnames";
 import { PaginationActions } from "Shared/Enums";
-import { GridPagination, GridCellContent } from "../";
+import { ErrorBoundary, GridPagination, GridTruncatedCellContent } from "../";
 import "./Style.scss";
 import { Pagination } from "Tasks/TaskStore";
+import { Task } from "Tasks/ApiServices/DataContracts";
+import { ColumnModel } from "Tasks";
+import { INIT_PAGINATION_OPTIONS } from "Tasks/Constants";
 
 interface IProps {
   isLoading: boolean;
   total: number;
   customPagination: Pagination;
-  data: any[];
-  /**
-   * custom columns props
-   * showOnHover: показывать поле только при наведении
-   * truncate: {
-   * onWidth: схлопывать при указананой ширине
-   * possibleRows: возможных строк
-   * }
-   */
-  columns: {
-    showOnHover?: boolean;
-    truncate?: { onWidth: number; possibleRows: 1 | 2 };
-  };
+  data: Task[];
+  columns: ColumnModel[];
 }
 
 export const Grid = React.memo(({ columns, data, customPagination, total, isLoading }: IProps) => {
+  const gridBody = useRef(null);
   const {
     getTableProps,
     getTableBodyProps,
@@ -34,13 +27,13 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
     page, // Instead of using 'rows', we'll use page,
     nextPage,
     previousPage
-  } = useTable(
+  } = useTable<ColumnModel>(
     {
       columns,
       data,
       initialState: {
         pageIndex: 0,
-        pageSize: customPagination.initPaginationOptions.take
+        pageSize: INIT_PAGINATION_OPTIONS.take
       }
     },
     usePagination
@@ -48,8 +41,6 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
   const { skip } = customPagination.getPaginationOptions;
   const canNextPage = () => data.length + skip !== total;
   const canPreviousPage = () => skip !== 0;
-
-  const gridBody = useRef(null);
   return (
     <>
       <table {...getTableProps()} className="grid">
@@ -64,46 +55,91 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
             </tr>
           ))}
         </thead>
+        <ErrorBoundary>
+          <tbody {...getTableBodyProps()} className="grid-body" ref={gridBody}>
+            {page.map(row => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()} className="grid-body__tr">
+                  {row.cells.map(cell => {
+                    const gridElement = data.find(x => x.Id === cell.row.values.Id);
 
-        <tbody {...getTableBodyProps()} className="grid-body" ref={gridBody}>
-          {page.map(row => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} className="grid-body__tr">
-                {row.cells.map(cell => {
-                  return (
-                    <td
-                      {...cell.getCellProps()}
-                      className={cn("grid-body__td grid__cell", cell.column.className)}
-                    >
-                      <GridCellContent cell={cell} refBody={gridBody} loading={isLoading} />
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
+                    const classNameByEnableSchedule = !!cell.column.getClassNameByEnableSchedule
+                      ? cell.column.getClassNameByEnableSchedule(gridElement)
+                      : "";
+
+                    const renderCell = () => {
+                      if (!!cell.column.truncate) {
+                        const cellElement = cell.render("Cell");
+                        return (
+                          <GridTruncatedCellContent
+                            value={cellElement}
+                            truncateOnWidth={cell.column.truncate.onWidth}
+                            untruncatedElement={
+                              cell.column.truncate.noTruncateElement
+                                ? cell.column.truncate.noTruncateElement(gridElement)
+                                : null
+                            }
+                            refBody={gridBody}
+                            isLoading={isLoading}
+                          />
+                        );
+                      }
+
+                      return (
+                        <div
+                          className={cn("inside-cell", {
+                            "inside-cell--hidden": cell.column.showOnHover,
+                            "bp3-skeleton truncate-cell": isLoading
+                          })}
+                        >
+                          {cell.render("Cell")}
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <td
+                        {...cell.getCellProps()}
+                        className={cn(
+                          "grid-body__td grid__cell",
+                          cell.column.className,
+                          classNameByEnableSchedule
+                        )}
+                      >
+                        <div style={cell.column.fixedWidth && { width: cell.column.fixedWidth }}>
+                          {renderCell()}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </ErrorBoundary>
       </table>
 
-      <GridPagination
-        paginationOptions={{
-          previousPage: () => {
-            customPagination.changePage(PaginationActions.DecrementPage);
-            previousPage();
-          },
-          nextPage: () => {
-            nextPage();
-            customPagination.changePage(PaginationActions.IncrementPage);
-          },
-          canNextPage: canNextPage(),
-          canPreviousPage: canPreviousPage(),
-          total: total,
-          showFrom: skip,
-          showTo: data.length + skip
-        }}
-        isLoading={isLoading}
-      />
+      <ErrorBoundary>
+        <GridPagination
+          paginationOptions={{
+            previousPage: () => {
+              customPagination.changePage(PaginationActions.DecrementPage);
+              previousPage();
+            },
+            nextPage: () => {
+              nextPage();
+              customPagination.changePage(PaginationActions.IncrementPage);
+            },
+            canNextPage: canNextPage(),
+            canPreviousPage: canPreviousPage(),
+            total: total,
+            showFrom: skip,
+            showTo: data.length + skip
+          }}
+          isLoading={isLoading}
+        />
+      </ErrorBoundary>
     </>
   );
 });

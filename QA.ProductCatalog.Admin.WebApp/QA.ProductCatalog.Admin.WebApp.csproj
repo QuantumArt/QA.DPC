@@ -34,10 +34,10 @@
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.CookiePolicy" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.CookiePolicy" Version="2.2.8" />
     <PackageReference Include="Microsoft.AspNetCore.ResponseCaching" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.8" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NLog" Version="4.6.8" />
     <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.2" />
@@ -84,20 +84,34 @@
   <ItemGroup>
     <None Remove="ReactViews\DefinitionEditor\index.tsx" />
     <None Remove="ReactViews\file.tsx" />
+    <None Remove="ReactViews\Shared\Components\Chip\Index.tsx" />
     <None Remove="ReactViews\Shared\Components\index.ts" />
+    <None Remove="ReactViews\Shared\Components\Toaster\Index.tsx" />
+    <None Remove="ReactViews\Shared\Enums\FetchStatus.ts" />
     <None Remove="ReactViews\Shared\index.ts" />
     <None Remove="ReactViews\Shared\Types\global.d.ts" />
     <None Remove="Views\DefinitionEditor\DefinitionEditor.tsx" />
+    <None Remove="ReactViews\PartialSend\Containers\index.ts" />
+    <None Remove="ReactViews\PartialSend\Containers\Result.tsx" />
+    <None Remove="ReactViews\PartialSend\Containers\SendForm.tsx" />
     <None Remove="Views\HighloadFront\HighloadFront.tsx" />
+    <None Remove="Views\PartialSend\Index.tsx" />
     <None Remove="Views\Task\Task.tsx" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="ReactViews\DefinitionEditor\index.tsx" />
+    <TypeScriptCompile Include="ReactViews\Shared\Components\Chip\Index.tsx" />
     <TypeScriptCompile Include="ReactViews\Shared\Components\index.ts" />
+    <TypeScriptCompile Include="ReactViews\Shared\Components\Toaster\Index.tsx" />
+    <TypeScriptCompile Include="ReactViews\Shared\Enums\FetchStatus.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Types\global.d.ts" />
     <TypeScriptCompile Include="ReactViews\Shared\Utils\index.ts" />
     <TypeScriptCompile Include="Views\DefinitionEditor\DefinitionEditor.tsx" />
+    <TypeScriptCompile Include="ReactViews\PartialSend\Containers\index.ts" />
+    <TypeScriptCompile Include="ReactViews\PartialSend\Containers\Result.tsx" />
+    <TypeScriptCompile Include="ReactViews\PartialSend\Containers\SendForm.tsx" />
     <TypeScriptCompile Include="Views\HighloadFront\Index.tsx" />
+    <TypeScriptCompile Include="Views\PartialSend\Index.tsx" />
     <TypeScriptCompile Include="Views\Task\Task.tsx" />
   </ItemGroup>
 </Project>
