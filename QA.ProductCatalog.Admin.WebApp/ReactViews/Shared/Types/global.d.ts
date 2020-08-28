@@ -7,6 +7,7 @@ declare interface Window {
   definitionEditor: DefinitionEditorSettings;
   task: TaskWindowTypes;
   notificationPermissionRequested: boolean;
+  pmrpc: any;
 
   highloadFront?: {
     legend: string;
