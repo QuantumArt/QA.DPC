@@ -55,7 +55,7 @@ export default class XmlEditor extends React.Component<Props> {
           ref="aceEditor"
           mode="xml"
           theme="textmate"
-          onChange={newValue => console.log("change", newValue)}
+          onChange={data => xmlEditorStore.setXml(data)}
           name="definitionXml"
           editorProps={{ $blockScrolling: true }}
           value={xmlEditorStore.xml}

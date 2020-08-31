@@ -1,24 +1,47 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Button, ButtonGroup, Intent, Slider, Switch } from "@blueprintjs/core";
+import { Alert, Button, ButtonGroup, Intent, Slider, Switch } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
 import { Loading } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
-import { EditorMode } from "DefinitionEditor/Enums";
+import { EditorMode, SavingMode } from "DefinitionEditor/Enums";
 import "./Style.scss";
 
 const ToolBar = observer(() => {
   const { xmlEditorStore, treeStore } = useStores();
+  const saveAndExit = (saveOnly: boolean = false) => async () => {
+    treeStore.setSavingMode(saveOnly ? SavingMode.Apply : SavingMode.Finish);
+    await treeStore.getDefinitionLevel();
+    if (!saveOnly && treeStore.operationState === OperationState.Success) {
+      treeStore.finishEditing();
+    }
+  };
   return (
     <div className="editor-toolbar">
+      <Alert
+        isOpen={treeStore.operationState === OperationState.Error}
+        intent={Intent.DANGER}
+        icon={"warning-sign"}
+        confirmButtonText={treeStore.savingMode === SavingMode.Apply ? "Close" : "Exit anyway"}
+        onConfirm={
+          treeStore.savingMode === SavingMode.Apply ? treeStore.resetState : treeStore.finishEditing
+        }
+        cancelButtonText={treeStore.savingMode === SavingMode.Apply ? null : "Back to editing"}
+        onCancel={treeStore.resetState}
+      >
+        {treeStore.errorText}
+      </Alert>
       <div className="editor-toolbar__buttons">
         <ButtonGroup>
           <Button icon={IconNames.REFRESH} intent={Intent.WARNING}>
             Refresh
           </Button>
-          <Button icon={IconNames.FLOPPY_DISK} intent={Intent.DANGER}>
+          <Button icon={IconNames.FLOPPY_DISK} intent={Intent.DANGER} onClick={saveAndExit(true)}>
             Save
+          </Button>
+          <Button icon={IconNames.FLOPPY_DISK} intent={Intent.DANGER} onClick={saveAndExit()}>
+            Save and Exit
           </Button>
           <Loading
             className="editor-toolbar__loading"

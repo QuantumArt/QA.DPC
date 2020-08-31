@@ -46,7 +46,7 @@ const Root = observer(() => {
     [state.width]
   );
   return (
-    <div>
+    <>
       <ToolBar />
       <SplitPane
         split="vertical"
@@ -59,7 +59,7 @@ const Root = observer(() => {
         <XmlTree />
         <XmlEditor height={state.height} width={state.width} />
       </SplitPane>
-    </div>
+    </>
   );
 });
 

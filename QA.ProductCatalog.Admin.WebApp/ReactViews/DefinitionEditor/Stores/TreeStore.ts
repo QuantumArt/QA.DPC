@@ -3,6 +3,7 @@ import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
 import { action, computed, observable, when } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
+import { SavingMode } from "DefinitionEditor/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
 import ApiService from "DefinitionEditor/ApiService";
@@ -19,6 +20,8 @@ export default class TreeStore {
   };
 
   @observable operationState: OperationState = OperationState.None;
+  @observable savingMode: SavingMode = SavingMode.Apply;
+  @observable errorText: string = null;
   @observable nodesMap: Map<string, ITreeNode> = new Map();
   @observable selectedNodeId: string = null;
 
@@ -61,25 +64,47 @@ export default class TreeStore {
   };
 
   @action
+  setSavingMode = (mode: SavingMode) => this.savingMode = mode;
+
+  @action
   getDefinitionLevel = async (
     path?: string
   ): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
-    const formData = new FormData();
-    if (path) {
-      formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
-    }
-    formData.append("xml", this.xmlEditorStore.xml);
     try {
+      const formData = new FormData();
+      if (path) {
+        formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
+      }
+      if (!this.xmlEditorStore.validateXml()) {
+        throw new Error('XML is not valid');
+      }
+      formData.append("xml", this.xmlEditorStore.xml);
       this.operationState = OperationState.Pending;
       const res = await ApiService.getDefinitionLevel(formData);
+      // this.xmlEditorStore.setXml(this.xmlEditorStore.xml, true);
       this.operationState = OperationState.Success;
       return this.mapTree(res);
     } catch (e) {
+      console.log(e);
       this.operationState = OperationState.Error;
-      console.log("Error fetching Definition Level", e);
+      this.errorText = e.message ?? e.statusMessage ?? e.statusText;
       return [];
     }
   };
+
+  finishEditing = () => {
+    window.pmrpc.call({
+      destination: parent,
+      publicProcedureName: "SaveXmlToDefinitionField",
+      params: [this.operationState === OperationState.Error ? this.xmlEditorStore.origXml : this.xmlEditorStore.xml]
+    });
+  };
+
+  @action
+  resetState = () => {
+    this.operationState = OperationState.None;
+    this.errorText = null;
+  }
 
   private getNodeStatus = (node: IDefinitionNode): { icon: IconName, className: string, label: string } => {
     const label = node.text ?? 'Dictionary caching settings';

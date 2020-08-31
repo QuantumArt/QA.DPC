@@ -1,5 +1,5 @@
 ﻿import { action, observable } from "mobx";
-import { parse } from "fast-xml-parser";
+import { parse, validate } from "fast-xml-parser";
 import { EditorMode } from "DefinitionEditor/Enums";
 
 export default class XmlEditorStore {
@@ -9,10 +9,10 @@ export default class XmlEditorStore {
       procedure: xml => {
         const xmlEmpty = xml.match(/ contentid="\d+"/i) == null;
         if (!xmlEmpty) {
-          this.setXml(xml);
+          this.setXml(xml, true);
           this.setRootId(xml);
         } else {
-          this.setInitialXml();
+          this.setDefaultXml();
         }
       }
     });
@@ -27,6 +27,7 @@ export default class XmlEditorStore {
   }
 
   @observable xml: string;
+  origXml: string;
   @observable rootId: string;
   @observable fontSize: number = 14;
   @observable wrapLines: boolean = true;
@@ -56,11 +57,22 @@ export default class XmlEditorStore {
   };
 
   @action
+  setXml = (xml: string, firstTime: boolean = false) => {
+    if (firstTime) {
+      this.origXml = xml;
+    }
+    this.xml = xml;
+    console.log(this.origXml);
+  };
+
+  validateXml = () => validate(this.xml) === true;
+
+  @action
   private setRootId = (xml: string) => {
     this.rootId = this.parseXml(xml).Content[`${this.attributeNamePrefix}ContentId`];
   };
 
-  private setInitialXml = () => {
+  private setDefaultXml = () => {
     if (this.settings.xml) {
       const xml = this.settings.xml
         .replace(/&amp;/g, "&")
@@ -68,16 +80,11 @@ export default class XmlEditorStore {
         .replace(/&gt;/g, ">")
         .replace(/&apos;/g, '"')
         .replace(/&quot;/g, "'");
-      this.setXml(xml);
+      this.setXml(xml, true);
       this.setRootId(xml);
     } else {
-      this.setXml("");
+      this.setXml("", true);
     }
-  };
-
-  @action
-  private setXml = (xml: string) => {
-    this.xml = xml;
   };
 
   private parseXml = (xml: string, mode: boolean | "strict" = false) => {

@@ -8,8 +8,12 @@ export default abstract class BaseApiService {
     response: Response,
     mapper: (resp: TIn) => TOut
   ): Promise<TOut> => {
-    const data: TIn = await this.tryGetResponse(response);
-    return mapper(data);
+    try {
+      const data: TIn = await this.tryGetResponse(response);
+      return mapper(data);
+    } catch (e) {
+      throw e;
+    }
   };
 
   protected tryGetResponse = async <TOut>(response: Response): Promise<TOut> => {
