@@ -22,6 +22,7 @@ export default class TreeStore {
   @observable operationState: OperationState = OperationState.None;
   @observable savingMode: SavingMode = SavingMode.Apply;
   @observable errorText: string = null;
+  @observable errorLog: string = null;
   @observable nodesMap: Map<string, ITreeNode> = new Map();
   @observable selectedNodeId: string = null;
 
@@ -81,12 +82,12 @@ export default class TreeStore {
       formData.append("xml", this.xmlEditorStore.xml);
       this.operationState = OperationState.Pending;
       const res = await ApiService.getDefinitionLevel(formData);
-      // this.xmlEditorStore.setXml(this.xmlEditorStore.xml, true);
       this.operationState = OperationState.Success;
       return this.mapTree(res);
     } catch (e) {
       console.log(e);
       this.operationState = OperationState.Error;
+      this.errorLog = await e.text() ?? null;
       this.errorText = e.message ?? e.statusMessage ?? e.statusText;
       return [];
     }
@@ -96,7 +97,14 @@ export default class TreeStore {
     window.pmrpc.call({
       destination: parent,
       publicProcedureName: "SaveXmlToDefinitionField",
-      params: [this.operationState === OperationState.Error ? this.xmlEditorStore.origXml : this.xmlEditorStore.xml]
+      params: [this.xmlEditorStore.xml]
+    });
+  };
+
+  exit = () => {
+    window.pmrpc.call({
+      destination: parent,
+      publicProcedureName: "CloseEditor",
     });
   };
 

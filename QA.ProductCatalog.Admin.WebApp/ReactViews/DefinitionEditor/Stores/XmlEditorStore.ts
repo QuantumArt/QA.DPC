@@ -1,6 +1,5 @@
 ﻿import { action, observable } from "mobx";
 import { parse, validate } from "fast-xml-parser";
-import { EditorMode } from "DefinitionEditor/Enums";
 
 export default class XmlEditorStore {
   constructor(private settings: DefinitionEditorSettings) {
@@ -32,14 +31,10 @@ export default class XmlEditorStore {
   @observable fontSize: number = 14;
   @observable wrapLines: boolean = true;
   @observable searchOnClick: boolean = true;
-  @observable mode: EditorMode = EditorMode.Xml;
+  @observable formMode: boolean = false;
 
   @action
-  setMode = (mode: EditorMode) => {
-    if (this.mode !== mode) {
-      this.mode = mode;
-    }
-  };
+  toggleFormMode = () => this.formMode = !this.formMode;
 
   @action
   changeFontSize = (size: number) => {

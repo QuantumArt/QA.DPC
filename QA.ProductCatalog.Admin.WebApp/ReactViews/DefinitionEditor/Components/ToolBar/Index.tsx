@@ -1,47 +1,43 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Alert, Button, ButtonGroup, Intent, Slider, Switch } from "@blueprintjs/core";
+import { Button, ButtonGroup, Intent, Slider, Switch } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
-import { Loading } from "DefinitionEditor/Components";
+import { ErrorDialog, Loading } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
-import { EditorMode, SavingMode } from "DefinitionEditor/Enums";
+import { SavingMode } from "DefinitionEditor/Enums";
 import "./Style.scss";
 
 const ToolBar = observer(() => {
   const { xmlEditorStore, treeStore } = useStores();
-  const saveAndExit = (saveOnly: boolean = false) => async () => {
-    treeStore.setSavingMode(saveOnly ? SavingMode.Apply : SavingMode.Finish);
+  const saveAndExit = async () => {
+    treeStore.setSavingMode(SavingMode.Finish);
     await treeStore.getDefinitionLevel();
-    if (!saveOnly && treeStore.operationState === OperationState.Success) {
+    if (treeStore.operationState === OperationState.Success) {
       treeStore.finishEditing();
     }
   };
+  const apply = async () => {
+    treeStore.setSavingMode(SavingMode.Apply);
+    await treeStore.getDefinitionLevel();
+  };
   return (
     <div className="editor-toolbar">
-      <Alert
-        isOpen={treeStore.operationState === OperationState.Error}
-        intent={Intent.DANGER}
-        icon={"warning-sign"}
-        confirmButtonText={treeStore.savingMode === SavingMode.Apply ? "Close" : "Exit anyway"}
-        onConfirm={
-          treeStore.savingMode === SavingMode.Apply ? treeStore.resetState : treeStore.finishEditing
-        }
-        cancelButtonText={treeStore.savingMode === SavingMode.Apply ? null : "Back to editing"}
-        onCancel={treeStore.resetState}
-      >
-        {treeStore.errorText}
-      </Alert>
+      <ErrorDialog />
       <div className="editor-toolbar__buttons">
         <ButtonGroup>
-          <Button icon={IconNames.REFRESH} intent={Intent.WARNING}>
+          <Button icon={IconNames.REFRESH}>
             Refresh
           </Button>
-          <Button icon={IconNames.FLOPPY_DISK} intent={Intent.DANGER} onClick={saveAndExit(true)}>
-            Save
+          <Button icon={IconNames.CONFIRM} onClick={apply}>
+            Apply
           </Button>
-          <Button icon={IconNames.FLOPPY_DISK} intent={Intent.DANGER} onClick={saveAndExit()}>
+          <Button icon={IconNames.FLOPPY_DISK} onClick={saveAndExit}>
             Save and Exit
+          </Button>
+          <div className="editor-toolbar__divider" />
+          <Button icon={IconNames.CROSS} onClick={treeStore.exit}>
+            Exit
           </Button>
           <Loading
             className="editor-toolbar__loading"
@@ -50,19 +46,17 @@ const ToolBar = observer(() => {
         </ButtonGroup>
         <div
           className="editor-toolbar__xml-controls"
-          style={{ visibility: xmlEditorStore.mode === EditorMode.Xml ? "visible" : "hidden" }}
+          style={{ visibility: xmlEditorStore.formMode ? "hidden" : "visible" }}
         >
           <Switch
             label="Search on click"
             checked={xmlEditorStore.searchOnClick}
             onChange={xmlEditorStore.toggleSearchOnClick}
-            large
           />
           <Switch
             label="Wrap lines"
             checked={xmlEditorStore.wrapLines}
             onChange={xmlEditorStore.toggleWrapLines}
-            large
           />
           <div className="editor-toolbar__slider">
             <Slider
@@ -77,25 +71,16 @@ const ToolBar = observer(() => {
             />
           </div>
         </div>
-        <ButtonGroup>
+        {treeStore.selectedNodeId !== null &&
           <Button
-            icon={IconNames.APPLICATION}
+            icon={xmlEditorStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}
-            disabled={treeStore.selectedNodeId === null}
-            onClick={() =>
-              treeStore.selectedNodeId !== null && xmlEditorStore.setMode(EditorMode.Form)
-            }
+            onClick={xmlEditorStore.toggleFormMode}
+            className="editor-toolbar__form-btn"
           >
-            Форма
+            {xmlEditorStore.formMode ? <span>Редактор кода</span> : <span>Форма</span>}
           </Button>
-          <Button
-            icon={IconNames.CODE_BLOCK}
-            intent={Intent.PRIMARY}
-            onClick={() => xmlEditorStore.setMode(EditorMode.Xml)}
-          >
-            Редактор кода
-          </Button>
-        </ButtonGroup>
+        }
       </div>
     </div>
   );

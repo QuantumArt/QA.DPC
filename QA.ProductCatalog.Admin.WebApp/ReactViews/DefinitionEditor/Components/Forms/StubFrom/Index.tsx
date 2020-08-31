@@ -12,7 +12,6 @@ const StubFrom = observer<Props>(({ nodeId }) => {
       <FormGroup inline label="Some field">
         <InputGroup placeholder={nodeId} fill />
       </FormGroup>
-      <Button intent={Intent.PRIMARY}>Apply</Button>
     </form>
   );
 });
