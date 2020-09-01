@@ -1,6 +1,6 @@
 import React from "react";
 import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
-import { action, computed, observable, when } from "mobx";
+import { action, computed, observable, toJS, when } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
 import { SavingMode } from "DefinitionEditor/Enums";
@@ -23,7 +23,8 @@ export default class TreeStore {
   @observable savingMode: SavingMode = SavingMode.Apply;
   @observable errorText: string = null;
   @observable errorLog: string = null;
-  @observable nodesMap: Map<string, ITreeNode> = new Map();
+  @observable nodesMap: Map<ITreeNode["id"], ITreeNode<Partial<IDefinitionNode>>> = new Map();
+  @observable openedNodes: ITreeNode["id"][] = [];
   @observable selectedNodeId: string = null;
 
   @computed get tree() {
@@ -40,6 +41,7 @@ export default class TreeStore {
       node.childNodes = await this.getDefinitionLevel(node.id.toString());
     }
     node.isExpanded = true;
+    this.setOpenedNodes(node.id);
     for (const el of node.childNodes) {
       if (el.nodeData.expanded && el.nodeData.hasChildren) {
         await this.onNodeExpand(el);
@@ -50,6 +52,17 @@ export default class TreeStore {
   @action
   onNodeCollapse = (node: ITreeNode) => {
     node.isExpanded = false;
+    this.setOpenedNodes(node.id, true);
+  };
+
+  @action
+  setOpenedNodes = (nodeId: ITreeNode["id"], remove: boolean = false) => {
+    const node = this.nodesMap.get(nodeId);
+    if (node.isExpanded && this.openedNodes.indexOf(nodeId) === -1) {
+      this.openedNodes.push(node.id);
+    } else if (remove) {
+      this.openedNodes.splice(this.openedNodes.indexOf(nodeId), 1);
+    }
   };
 
   @action
@@ -63,9 +76,6 @@ export default class TreeStore {
     node.isSelected = originallySelected == null ? true : !originallySelected;
     this.selectedNodeId = node.isSelected ? node.id.toString() : null;
   };
-
-  @action
-  setSavingMode = (mode: SavingMode) => this.savingMode = mode;
 
   @action
   getDefinitionLevel = async (
@@ -93,12 +103,29 @@ export default class TreeStore {
     }
   };
 
-  finishEditing = () => {
-    window.pmrpc.call({
-      destination: parent,
-      publicProcedureName: "SaveXmlToDefinitionField",
-      params: [this.xmlEditorStore.xml]
-    });
+  @action
+  setSavingMode = (mode: SavingMode) => this.savingMode = mode;
+
+  @action
+  apply = async () => {
+    this.setSavingMode(SavingMode.Apply);
+    await this.getDefinitionLevel();
+    for (const nodeId of this.openedNodes) {
+      await this.onNodeExpand(this.nodesMap.get(nodeId));
+    }
+  };
+
+  @action
+  saveAndExit = async () => {
+    this.setSavingMode(SavingMode.Finish);
+    await this.getDefinitionLevel();
+    if (this.operationState === OperationState.Success) {
+      window.pmrpc.call({
+        destination: parent,
+        publicProcedureName: "SaveXmlToDefinitionField",
+        params: [this.xmlEditorStore.xml]
+      });
+    }
   };
 
   exit = () => {

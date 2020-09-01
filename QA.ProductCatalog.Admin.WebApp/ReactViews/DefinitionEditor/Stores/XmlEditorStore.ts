@@ -57,7 +57,6 @@ export default class XmlEditorStore {
       this.origXml = xml;
     }
     this.xml = xml;
-    console.log(this.origXml);
   };
 
   validateXml = () => validate(this.xml) === true;
