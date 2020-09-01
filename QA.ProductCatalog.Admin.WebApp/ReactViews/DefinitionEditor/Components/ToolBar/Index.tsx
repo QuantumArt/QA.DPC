@@ -10,17 +10,7 @@ import "./Style.scss";
 
 const ToolBar = observer(() => {
   const { xmlEditorStore, treeStore } = useStores();
-  const saveAndExit = async () => {
-    treeStore.setSavingMode(SavingMode.Finish);
-    await treeStore.getDefinitionLevel();
-    if (treeStore.operationState === OperationState.Success) {
-      treeStore.finishEditing();
-    }
-  };
-  const apply = async () => {
-    treeStore.setSavingMode(SavingMode.Apply);
-    await treeStore.getDefinitionLevel();
-  };
+
   return (
     <div className="editor-toolbar">
       <ErrorDialog />
@@ -29,10 +19,10 @@ const ToolBar = observer(() => {
           <Button icon={IconNames.REFRESH}>
             Refresh
           </Button>
-          <Button icon={IconNames.CONFIRM} onClick={apply}>
+          <Button icon={IconNames.CONFIRM} onClick={treeStore.apply}>
             Apply
           </Button>
-          <Button icon={IconNames.FLOPPY_DISK} onClick={saveAndExit}>
+          <Button icon={IconNames.FLOPPY_DISK} onClick={treeStore.saveAndExit}>
             Save and Exit
           </Button>
           <div className="editor-toolbar__divider" />
