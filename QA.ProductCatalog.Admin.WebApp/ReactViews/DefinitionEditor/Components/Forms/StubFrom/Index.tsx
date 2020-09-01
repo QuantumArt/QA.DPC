@@ -12,26 +12,23 @@ interface Props {
 
 const StubFrom = observer<Props>(({ nodeId }) => {
   const { formStore } = useStores();
-  console.log(window.definitionEditor);
   formStore.setNodeId(nodeId);
 
   const renderFieldDependsOnType = model => {
-    console.log(model);
     switch (model.type) {
       case FormFieldType.Text:
         return (
-          <div className="field">
+          <div className="field" key={model.label}>
             <label className="label">{model.label}</label>
             <InputGroup disabled={true} value={model.value} className="input" />
           </div>
         );
       case FormFieldType.Input:
         return (
-          <div className="field">
+          <div className="field" key={model.label}>
             <label className="label">{model.label}</label>
             <Field name={model.label} defaultValue={model.value}>
               {({ input }) => {
-                console.log(input);
                 return (
                   <>
                     <InputGroup
@@ -47,7 +44,7 @@ const StubFrom = observer<Props>(({ nodeId }) => {
         );
       case FormFieldType.Textarea:
         return (
-          <div className="field">
+          <div className="field" key={model.label}>
             <label className="label">{model.label}</label>
             <Field name={model.label} initialValue={model.value}>
               {({ input }) => {
@@ -58,7 +55,7 @@ const StubFrom = observer<Props>(({ nodeId }) => {
         );
       case FormFieldType.Checkbox:
         return (
-          <div className="field">
+          <div className="field" key={model.label}>
             <label className="label">{model.label}</label>
             <Field name={model.label} initialValue={model.value}>
               {({ input }) => {
@@ -78,26 +75,29 @@ const StubFrom = observer<Props>(({ nodeId }) => {
   };
 
   return (
-    <form>
-      <FormGroup inline label="Some field">
-        <InputGroup placeholder={nodeId} fill />
-      </FormGroup>
+    <>
+      <form>
+        <FormGroup inline label="Some field">
+          <InputGroup placeholder={nodeId} fill />
+        </FormGroup>
+      </form>
 
-      <Form
-        onSubmit={formObj => console.log(formObj)}
-        render={({ handleSubmit }) => (
-          <form onSubmit={handleSubmit}>
-            {formStore.UIEditModel &&
-              formStore.UIEditModel.map(x => {
+      {formStore.UIEditModel && (
+        <Form
+          onSubmit={formObj => console.log(formObj)}
+          render={({ handleSubmit }) => (
+            <form onSubmit={handleSubmit}>
+              {formStore.UIEditModel.map(x => {
                 return x && renderFieldDependsOnType(x);
               })}
-            <Button intent={Intent.PRIMARY} type="submit">
-              Apply
-            </Button>
-          </form>
-        )}
-      />
-    </form>
+              <Button intent={Intent.PRIMARY} type="submit">
+                Apply
+              </Button>
+            </form>
+          )}
+        />
+      )}
+    </>
   );
 });
 
