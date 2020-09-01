@@ -25,10 +25,10 @@ const ErrorDialog = observer<Props>(() => {
       icon="warning-sign"
       confirmButtonText={treeStore.savingMode === SavingMode.Apply ? "Close" : "Exit anyway"}
       onConfirm={
-        treeStore.savingMode === SavingMode.Apply ? treeStore.resetState : treeStore.exit
+        treeStore.savingMode === SavingMode.Apply ? treeStore.resetErrorState : treeStore.exit
       }
       cancelButtonText={treeStore.savingMode === SavingMode.Apply ? null : "Back to editing"}
-      onCancel={treeStore.resetState}
+      onCancel={treeStore.resetErrorState}
       className="error-dialog"
     >
       {treeStore.errorText}

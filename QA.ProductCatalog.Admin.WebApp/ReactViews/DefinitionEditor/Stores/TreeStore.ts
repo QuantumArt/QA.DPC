@@ -1,6 +1,6 @@
 import React from "react";
 import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
-import { action, computed, observable, toJS, when } from "mobx";
+import { action, computed, observable, when } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
 import { SavingMode } from "DefinitionEditor/Enums";
@@ -75,6 +75,7 @@ export default class TreeStore {
     }
     node.isSelected = originallySelected == null ? true : !originallySelected;
     this.selectedNodeId = node.isSelected ? node.id.toString() : null;
+    this.gatherSearchString();
   };
 
   @action
@@ -107,6 +108,15 @@ export default class TreeStore {
   setSavingMode = (mode: SavingMode) => this.savingMode = mode;
 
   @action
+  refresh = async () => {
+    this.xmlEditorStore.setXml(this.xmlEditorStore.origXml);
+    this.resetErrorState();
+    this.openedNodes = [];
+    await this.getDefinitionLevel();
+    await this.onNodeExpand(this.tree[0]);
+  };
+
+  @action
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
     await this.getDefinitionLevel();
@@ -136,7 +146,7 @@ export default class TreeStore {
   };
 
   @action
-  resetState = () => {
+  resetErrorState = () => {
     this.operationState = OperationState.None;
     this.errorText = null;
   }
@@ -186,4 +196,21 @@ export default class TreeStore {
       return this.nodesMap.get(node.Id);
     });
   };
+
+  private gatherSearchString = () => {
+    if (this.xmlEditorStore.searchOnClick && this.selectedNodeId !== null) {
+      const arr = this.selectedNodeId.split("/");
+      let lastPart = arr.pop();
+      if (lastPart === "0") {
+        lastPart = arr.pop();
+      }
+      const nodeLabel = this.nodesMap.get(this.selectedNodeId).label.toString().split(" ")[0];
+      const dummy = document.createElement("input");
+      document.body.appendChild(dummy);
+      dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;
+      dummy.select();
+      document.execCommand("copy");
+      document.body.removeChild(dummy);
+    }
+  }
 }

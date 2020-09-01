@@ -16,7 +16,7 @@ const ToolBar = observer(() => {
       <ErrorDialog />
       <div className="editor-toolbar__buttons">
         <ButtonGroup>
-          <Button icon={IconNames.REFRESH}>
+          <Button icon={IconNames.REFRESH} onClick={treeStore.refresh}>
             Refresh
           </Button>
           <Button icon={IconNames.CONFIRM} onClick={treeStore.apply}>
@@ -39,7 +39,7 @@ const ToolBar = observer(() => {
           style={{ visibility: xmlEditorStore.formMode ? "hidden" : "visible" }}
         >
           <Switch
-            label="Search on click"
+            label="Query on click"
             checked={xmlEditorStore.searchOnClick}
             onChange={xmlEditorStore.toggleSearchOnClick}
           />
