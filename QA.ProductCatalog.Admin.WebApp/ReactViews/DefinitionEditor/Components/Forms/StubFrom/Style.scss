@@ -1,0 +1,14 @@
+.field {
+  width: calc(100% - 400px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px 5px 0;
+}
+
+.label {
+  width: 20%;
+}
+.input {
+  width: 70%;
+}

@@ -4,6 +4,7 @@
   saveDefinitionUrl: string;
   getSingleNodeUrl: string;
   getDefinitionLevelUrl: string;
+  editBetaUrl: string;
   editUrl: string;
   saveText: string;
   editText: string;

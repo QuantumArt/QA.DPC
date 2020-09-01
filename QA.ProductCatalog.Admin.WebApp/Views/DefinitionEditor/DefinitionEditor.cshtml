@@ -1,20 +1,36 @@
 ﻿@using System.Globalization
 @using QA.Core.DPC.Resources
+@using QA.Core.Models.Configuration
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
-  <script>
+<script>
     window.definitionEditor = {
       xml: "@Model.Xml",
-      saveToDb: @(Model.ContentItemId.HasValue ? "true" : "false"),
+      saveToDb: '@(Model.ContentItemId.HasValue ? "true" : "false")',
       saveDefinitionUrl: '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
       getSingleNodeUrl: '@Url.Action("GetSingleNode")',
       getDefinitionLevelUrl: '@Url.Action("GetDefinitionLevel")',
+      editBetaUrl: '@Url.Action("EditBeta")',
       editUrl: '@Url.Action("Edit")',
       saveText: '@ControlStrings.Save',
       editText: '@ControlStrings.EditXml',
       endEditText: '@ControlStrings.EndEditXml',
+      //new
+      controlStrings: {
+        saveText: '@ControlStrings.Save',
+        editText: '@ControlStrings.EditXml',
+        endEditText: '@ControlStrings.EndEditXml',
+        jsonFieldName: '@ControlStrings.JsonFieldName',
+        labelText: '@ControlStrings.LabelText',
+        relationConditionDescription: '@ControlStrings.RelationConditionDescription',
+        path:'@ControlStrings.Path',
+        removePath: '@ControlStrings.RemovePath',
+        converter: '@ControlStrings.Converter',
+        dontWrapInCData: '@ControlStrings.DontWrapInCData',
+        loadAsImage: '@ControlStrings.LoadAsImage',
+      }
     };
-  </script>
+</script>
 @*@Html.TextArea("code", Model.Xml, new { disabled = "disabled", cols = 100, rows = 10 })*@
 <div id="definitionEditor"></div>
 <script src="~/js/pmrpc.js"></script>

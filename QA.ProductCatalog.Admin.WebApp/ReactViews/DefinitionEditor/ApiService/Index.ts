@@ -1,5 +1,5 @@
 import BaseApiService from "Shared/BaseApiService";
-import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
+import { IDefinitionNode, IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
 
 class ApiService extends BaseApiService {
   constructor(private settings: DefinitionEditorSettings) {
@@ -17,6 +17,19 @@ class ApiService extends BaseApiService {
       body
     });
     return this.mapResponse(res, (x: IDefinitionNode[]) => x);
+  };
+
+  /**
+   * POST
+   *
+   * @param body
+   */
+  public getEditForm = async (body: FormData): Promise<IEditFormModel> => {
+    const res = await fetch(this.settings.editBetaUrl, {
+      method: "POST",
+      body
+    });
+    return this.mapResponse(res, (x: IEditFormModel) => x);
   };
 }
 
