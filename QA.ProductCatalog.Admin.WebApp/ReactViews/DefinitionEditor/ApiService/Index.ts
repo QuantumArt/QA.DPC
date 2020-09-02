@@ -1,5 +1,10 @@
 import BaseApiService from "Shared/BaseApiService";
-import { IDefinitionNode, IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
+import {
+  EnumBackendModel,
+  IDefinitionNode,
+  IEditFormModel
+} from "DefinitionEditor/ApiService/ApiInterfaces";
+import { BackendEnumType } from "DefinitionEditor/Enums";
 
 class ApiService extends BaseApiService {
   constructor(private settings: DefinitionEditorSettings) {
@@ -12,11 +17,32 @@ class ApiService extends BaseApiService {
    * @param body
    */
   public getDefinitionLevel = async (body: FormData): Promise<IDefinitionNode[]> => {
+    console.log(this.settings.getDefinitionLevelUrl);
     const res = await fetch(this.settings.getDefinitionLevelUrl, {
       method: "POST",
       body
     });
     return this.mapResponse(res, (x: IDefinitionNode[]) => x);
+  };
+  /**
+   * GET
+   *
+   */
+  public getSelectEnums = async (): Promise<{ [key in BackendEnumType]: EnumBackendModel[] }> => {
+    const [updateEnum, publishEnum, preloadEnum, deleteEnum] = await Promise.all(
+      Object.keys(this.settings.backendEnums).map(async enumMethod => {
+        const result = await fetch(this.settings.backendEnums[enumMethod], {
+          method: "GET"
+        });
+        return await this.tryGetResponse<EnumBackendModel[]>(result);
+      })
+    );
+    return {
+      [BackendEnumType.Update]: updateEnum,
+      [BackendEnumType.Publish]: publishEnum,
+      [BackendEnumType.Preload]: preloadEnum,
+      [BackendEnumType.Delete]: deleteEnum
+    };
   };
 
   /**

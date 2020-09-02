@@ -17,8 +17,9 @@ export default class TreeStore {
         await this.onNodeExpand(this.tree[0]);
       }
     );
-  };
+  }
 
+  submitFormSyntheticEvent;
   @observable operationState: OperationState = OperationState.None;
   @observable savingMode: SavingMode = SavingMode.Apply;
   @observable errorText: string = null;
@@ -29,11 +30,11 @@ export default class TreeStore {
 
   @computed get tree() {
     if (this.xmlEditorStore.rootId && this.nodesMap.has(`/${this.xmlEditorStore.rootId}`)) {
-      return [this.nodesMap.get(`/${this.xmlEditorStore.rootId}`)]
+      return [this.nodesMap.get(`/${this.xmlEditorStore.rootId}`)];
     } else {
       return [];
     }
-  };
+  }
 
   @action
   onNodeExpand = async (node: ITreeNode<Partial<IDefinitionNode>>) => {
@@ -79,16 +80,14 @@ export default class TreeStore {
   };
 
   @action
-  getDefinitionLevel = async (
-    path?: string
-  ): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
+  getDefinitionLevel = async (path?: string): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
     try {
       const formData = new FormData();
       if (path) {
         formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
       }
       if (!this.xmlEditorStore.validateXml()) {
-        throw new Error('XML is not valid');
+        throw new Error("XML is not valid");
       }
       formData.append("xml", this.xmlEditorStore.xml);
       this.operationState = OperationState.Pending;
@@ -98,14 +97,14 @@ export default class TreeStore {
     } catch (e) {
       console.log(e);
       this.operationState = OperationState.Error;
-      this.errorLog = await e.text() ?? null;
+      this.errorLog = (await e.text()) ?? null;
       this.errorText = e.message ?? e.statusMessage ?? e.statusText;
       return [];
     }
   };
 
   @action
-  setSavingMode = (mode: SavingMode) => this.savingMode = mode;
+  setSavingMode = (mode: SavingMode) => (this.savingMode = mode);
 
   @action
   refresh = async () => {
@@ -141,7 +140,7 @@ export default class TreeStore {
   exit = () => {
     window.pmrpc.call({
       destination: parent,
-      publicProcedureName: "CloseEditor",
+      publicProcedureName: "CloseEditor"
     });
   };
 
@@ -149,31 +148,33 @@ export default class TreeStore {
   resetErrorState = () => {
     this.operationState = OperationState.None;
     this.errorText = null;
-  }
+  };
 
-  private getNodeStatus = (node: IDefinitionNode): { icon: IconName, className: string, label: string } => {
-    const label = node.text ?? 'Dictionary caching settings';
+  private getNodeStatus = (
+    node: IDefinitionNode
+  ): { icon: IconName; className: string; label: string } => {
+    const label = node.text ?? "Dictionary caching settings";
     if (node.MissingInQp) {
       return {
         label: `${label} (Missing in QP)`,
         icon: "warning-sign",
-        className: "",
+        className: ""
       };
     }
     if (node.NotInDefinition) {
       return {
         label,
         icon: "exclude-row",
-        className: "xml-tree-node-gray",
+        className: "xml-tree-node-gray"
       };
     }
 
     return {
       label,
       icon: "document",
-      className: "",
+      className: ""
     };
-  }
+  };
 
   private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
@@ -190,7 +191,7 @@ export default class TreeStore {
         nodeData: {
           expanded: node.expanded,
           hasChildren: node.hasChildren,
-          missingInQp: node.MissingInQp,
+          missingInQp: node.MissingInQp
         }
       });
       return this.nodesMap.get(node.Id);
@@ -204,7 +205,10 @@ export default class TreeStore {
       if (lastPart === "0") {
         lastPart = arr.pop();
       }
-      const nodeLabel = this.nodesMap.get(this.selectedNodeId).label.toString().split(" ")[0];
+      const nodeLabel = this.nodesMap
+        .get(this.selectedNodeId)
+        .label.toString()
+        .split(" ")[0];
       const dummy = document.createElement("input");
       document.body.appendChild(dummy);
       dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;
@@ -212,5 +216,5 @@ export default class TreeStore {
       document.execCommand("copy");
       document.body.removeChild(dummy);
     }
-  }
+  };
 }
