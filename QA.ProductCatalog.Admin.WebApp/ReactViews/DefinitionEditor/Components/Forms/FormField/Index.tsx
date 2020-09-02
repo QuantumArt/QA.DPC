@@ -17,16 +17,11 @@ const FormField = observer<Props>(({ model }) => {
         return (
           <div className="form-field" key={model.label}>
             <label className="form-field__label">{model.label}</label>
-            {({ input }) => {
-              return (
-                <InputGroup
-                  {...input}
-                  disabled={true}
-                  value={model.value}
-                  className="form-field__element"
-                />
-              );
-            }}
+            <Field name={model.label} defaultValue={model.value}>
+              {({ input }) => {
+                return <InputGroup {...input} disabled={true} className="form-field__element" />;
+              }}
+            </Field>
           </div>
         );
       case FormFieldType.Input:
