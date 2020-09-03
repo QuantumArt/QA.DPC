@@ -45,7 +45,7 @@ const FormField = observer<Props>(({ model }) => {
         return (
           <div className="form-field">
             <label className="form-field__label">{model.label}</label>
-            <Field name={model.label} initialValue={model.value}>
+            <Field name={model.label} defaultValue={model.value}>
               {({ input }) => {
                 return <TextArea {...input} {...model.extraOptions} className="field-element" />;
               }}
@@ -79,18 +79,15 @@ const FormField = observer<Props>(({ model }) => {
         return (
           <div className="form-field">
             <label className="form-field__label">{model.label}</label>
-            <Field name={model.label} value={model.value} type={model.type}>
+            <Field name={model.label} defaultValue={model.value} type={model.type}>
               {props => {
                 return (
                   <HTMLSelect
                     name={props.input.name}
                     className="form-field__element"
                     iconProps={{ icon: "caret-down" }}
+                    onChange={props.input.onChange}
                     value={props.input.value}
-                    onChange={event => {
-                      // model.setValueByTitle(event.currentTarget.value);
-                      props.input.onChange(event);
-                    }}
                     options={model.getParsedOptions()}
                   />
                 );

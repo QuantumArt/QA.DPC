@@ -62,7 +62,9 @@ export default class FormStore {
       case "RelateTo":
         return new TextParsedModel(
           this.apiEditModel[field],
-          `${this.apiEditModel["RelatedContentName"]} ${this.apiEditModel["RelatedContentId"]}`
+          `${this.apiEditModel["RelatedContentName"] || ""} ${this.apiEditModel[
+            "RelatedContentId"
+          ] || ""}`
         );
       case "FieldId":
         return new TextParsedModel(field, this.apiEditModel[field]);
@@ -96,7 +98,12 @@ export default class FormStore {
         return new SelectParsedModel(
           field,
           this.apiEditModel[field],
-          this.enumsModel[getBackendEnumTypeByFieldName(field)]
+          this.enumsModel[getBackendEnumTypeByFieldName(field)].map(option => {
+            return {
+              label: option.title,
+              value: option.value
+            };
+          })
         );
       default:
         return undefined;

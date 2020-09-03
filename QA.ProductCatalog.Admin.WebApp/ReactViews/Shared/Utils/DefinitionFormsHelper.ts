@@ -35,9 +35,6 @@ interface ISelectParsedModel extends IBaseParsedModel {
   type: FormFieldType.Select;
   options: EnumBackendModel[];
   value: number;
-  getParsedOptions: () => IOptionProps[];
-  getParsedValue: (optValue: number) => string;
-  setValueByTitle: (valueTitle: string) => void;
 }
 interface ITextParsedModel extends IBaseParsedModel {
   type: FormFieldType.Text;
@@ -73,24 +70,7 @@ export class SelectParsedModel extends BaseAbstractParsedModel implements ISelec
     this.options = options;
   }
   readonly type = FormFieldType.Select;
-  @observable value;
-  getParsedValue = (optValue: number): string => {
-    return this.options.find(option => option.value === optValue)?.title;
-  };
-  getParsedOptions = (): IOptionProps[] => {
-    return this.options.map(option => {
-      return {
-        label: option.title,
-        value: option.value
-      };
-    });
-  };
-  @action
-  setValueByTitle = (title: string) => {
-    if (typeof title === "string") {
-      this.value = this.options.find(option => option.title === title)?.value;
-    }
-  };
+  value;
   readonly options;
 }
 
