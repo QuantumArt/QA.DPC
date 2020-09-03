@@ -23,7 +23,7 @@ const StubFrom = observer<Props>(({ nodeId }) => {
             return (
               <form onSubmit={handleSubmit}>
                 {formStore.UIEditModel.map(fieldModel => (
-                  <FormField model={fieldModel} />
+                  <FormField key={fieldModel.label} model={fieldModel} />
                 ))}
               </form>
             );

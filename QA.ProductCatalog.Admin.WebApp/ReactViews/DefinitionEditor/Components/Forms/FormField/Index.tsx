@@ -15,7 +15,7 @@ const FormField = observer<Props>(({ model }) => {
     switch (model.type) {
       case FormFieldType.Text:
         return (
-          <div className="form-field" key={model.label}>
+          <div className="form-field">
             <label className="form-field__label">{model.label}</label>
             <Field name={model.label} defaultValue={model.value}>
               {({ input }) => {
@@ -26,7 +26,7 @@ const FormField = observer<Props>(({ model }) => {
         );
       case FormFieldType.Input:
         return (
-          <div className="form-field" key={model.label}>
+          <div className="form-field">
             <label className="form-field__label">{model.label}</label>
             <Field name={model.label} defaultValue={model.value}>
               {({ input }) => {
@@ -43,7 +43,7 @@ const FormField = observer<Props>(({ model }) => {
         );
       case FormFieldType.Textarea:
         return (
-          <div className="form-field" key={model.label}>
+          <div className="form-field">
             <label className="form-field__label">{model.label}</label>
             <Field name={model.label} initialValue={model.value}>
               {({ input }) => {
@@ -54,17 +54,20 @@ const FormField = observer<Props>(({ model }) => {
         );
       case FormFieldType.Checkbox:
         return (
-          <div className="form-field" key={model.label}>
+          <div className="form-field">
             <label className="form-field__label">{model.label}</label>
-            <Field name={model.label} value={[model.value]} type={model.type}>
+            <Field name={model.label} initialValue={model.value} type={model.type}>
               {props => {
                 return (
                   <div className="form-field__element">
                     <Switch
                       label={model.subString ?? ""}
-                      checked={props.input.value[0]}
                       inline={true}
+                      checked={props.input.checked}
                       name={props.input.name}
+                      onChange={event => {
+                        props.input.onChange(event);
+                      }}
                     />
                   </div>
                 );
@@ -74,7 +77,7 @@ const FormField = observer<Props>(({ model }) => {
         );
       case FormFieldType.Select:
         return (
-          <div className="form-field" key={model.label}>
+          <div className="form-field">
             <label className="form-field__label">{model.label}</label>
             <Field name={model.label} value={model.value} type={model.type}>
               {props => {

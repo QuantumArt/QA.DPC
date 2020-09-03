@@ -5,7 +5,6 @@ import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
 import { ErrorDialog, Loading } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
-import { SavingMode } from "DefinitionEditor/Enums";
 import "./Style.scss";
 
 const ToolBar = observer(() => {

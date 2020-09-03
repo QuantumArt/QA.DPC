@@ -46,7 +46,6 @@ interface ITextParsedModel extends IBaseParsedModel {
 interface ICheckboxParsedModel extends IBaseParsedModel {
   type: FormFieldType.Checkbox;
   value: boolean;
-  toggleValue: () => void;
   subString?: string;
 }
 
@@ -101,12 +100,7 @@ export class CheckboxParsedModel extends BaseAbstractParsedModel implements IChe
     this.subString = subString;
   }
   readonly type = FormFieldType.Checkbox;
-  @observable value;
-  @action
-  toggleValue = (): void => {
-    this.value = !this.value;
-    console.log(this.value);
-  };
+  value;
   readonly subString;
 }
 
