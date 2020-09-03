@@ -1,8 +1,6 @@
 ﻿import { BackendEnumType, FormFieldType } from "DefinitionEditor/Enums";
 import React from "react";
 import { EnumBackendModel } from "DefinitionEditor/ApiService/ApiInterfaces";
-import { action, observable } from "mobx";
-import { IOptionProps } from "@blueprintjs/core";
 
 export declare type ParsedModelType =
   | ICheckboxParsedModel
@@ -105,7 +103,7 @@ export class InputParsedModel extends BaseAbstractParsedModel implements IInputP
 }
 
 export const getBackendEnumTypeByFieldName = (
-  field: "DeletingMode" | "UpdatingMode" | "CloningMode"
+  field: "DeletingMode" | "UpdatingMode" | "CloningMode" | "PreloadingMode"
 ): BackendEnumType => {
   switch (field) {
     case "DeletingMode":
@@ -114,5 +112,7 @@ export const getBackendEnumTypeByFieldName = (
       return BackendEnumType.Clone;
     case "UpdatingMode":
       return BackendEnumType.Update;
+    case "PreloadingMode":
+      return BackendEnumType.Preload;
   }
 };

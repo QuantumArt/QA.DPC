@@ -60,7 +60,11 @@ export default class FormStore {
         if (!this.apiEditModel[field]) return undefined;
         return new InputParsedModel(field, this.apiEditModel[field]);
       case "FieldTitle":
-        return new InputParsedModel(field, this.apiEditModel[field], "ControlStrings.LabelText");
+        return new InputParsedModel(
+          this.settings.formControlStrings.fieldNameForCard,
+          this.apiEditModel[field],
+          this.settings.formControlStrings.labelText
+        );
       case "RelateTo":
         if (!this.apiEditModel["RelatedContentName"] && !this.apiEditModel["RelatedContentId"])
           return undefined;
@@ -101,6 +105,7 @@ export default class FormStore {
       case "DeletingMode":
       case "UpdatingMode":
       case "CloningMode":
+      case "PreloadingMode":
         return new SelectParsedModel(
           field,
           this.apiEditModel[field],
