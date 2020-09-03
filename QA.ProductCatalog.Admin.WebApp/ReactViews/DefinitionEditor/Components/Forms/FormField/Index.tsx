@@ -88,7 +88,7 @@ const FormField = observer<Props>(({ model }) => {
                     iconProps={{ icon: "caret-down" }}
                     onChange={props.input.onChange}
                     value={props.input.value}
-                    options={model.getParsedOptions()}
+                    options={model.options}
                   />
                 );
               }}
