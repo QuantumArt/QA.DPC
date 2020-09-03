@@ -29,7 +29,7 @@ class ApiService extends BaseApiService {
    *
    */
   public getSelectEnums = async (): Promise<{ [key in BackendEnumType]: EnumBackendModel[] }> => {
-    const [updateEnum, publishEnum, preloadEnum, deleteEnum] = await Promise.all(
+    const [updateEnum, publishEnum, preloadEnum, deleteEnum, cloneEnum] = await Promise.all(
       Object.keys(this.settings.backendEnums).map(async enumMethod => {
         const result = await fetch(this.settings.backendEnums[enumMethod], {
           method: "GET"
@@ -41,7 +41,8 @@ class ApiService extends BaseApiService {
       [BackendEnumType.Update]: updateEnum,
       [BackendEnumType.Publish]: publishEnum,
       [BackendEnumType.Preload]: preloadEnum,
-      [BackendEnumType.Delete]: deleteEnum
+      [BackendEnumType.Delete]: deleteEnum,
+      [BackendEnumType.Clone]: cloneEnum
     };
   };
 

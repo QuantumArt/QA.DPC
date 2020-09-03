@@ -111,7 +111,7 @@ export const getBackendEnumTypeByFieldName = (
     case "DeletingMode":
       return BackendEnumType.Delete;
     case "CloningMode":
-      return BackendEnumType.Preload;
+      return BackendEnumType.Clone;
     case "UpdatingMode":
       return BackendEnumType.Update;
   }

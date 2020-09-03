@@ -45,6 +45,7 @@ export default class FormStore {
   initEnumsModel = async () => {
     try {
       this.enumsModel = await this.singleRequestedEnums.getData();
+      console.log(this.enumsModel);
     } catch (e) {
       //TODO прикрутить попап ошибок
       this.formError = "Ошибка загрузки формы";
@@ -56,10 +57,13 @@ export default class FormStore {
   getModelByFieldName = (field: string): ParsedModelType => {
     switch (field) {
       case "FieldName":
+        if (!this.apiEditModel[field]) return undefined;
         return new InputParsedModel(field, this.apiEditModel[field]);
       case "FieldTitle":
         return new InputParsedModel(field, this.apiEditModel[field], "ControlStrings.LabelText");
       case "RelateTo":
+        if (!this.apiEditModel["RelatedContentName"] && !this.apiEditModel["RelatedContentId"])
+          return undefined;
         return new TextParsedModel(
           this.apiEditModel[field],
           `${this.apiEditModel["RelatedContentName"] || ""} ${this.apiEditModel[
@@ -67,6 +71,8 @@ export default class FormStore {
           ] || ""}`
         );
       case "FieldId":
+      case "IsClassifier":
+        if (!this.apiEditModel[field]) return undefined;
         return new TextParsedModel(field, this.apiEditModel[field]);
       case "InDefinition":
         return new CheckboxParsedModel(field, this.apiEditModel[field]);
@@ -112,7 +118,7 @@ export default class FormStore {
 
   parseEditFormDataToViewDataModel = (model: IEditFormModel): ParsedModelType[] => {
     return Object.keys(model).map(
-      (fieldName): ParsedModelType => {
+      (fieldName, ind): ParsedModelType => {
         return this.getModelByFieldName(fieldName);
       }
     );
