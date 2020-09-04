@@ -87,8 +87,9 @@ export default class TreeStore {
       if (path) {
         formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
       }
-      if (!this.xmlEditorStore.validateXml()) {
-        throw new Error('XML is not valid');
+      const validation = this.xmlEditorStore.validateXml();
+      if (validation !== true) {
+        throw validation;
       }
       formData.append("xml", this.xmlEditorStore.xml);
       this.operationState = OperationState.Pending;
@@ -98,8 +99,16 @@ export default class TreeStore {
     } catch (e) {
       console.log(e);
       this.operationState = OperationState.Error;
-      this.errorLog = await e.text() ?? null;
-      this.errorText = e.message ?? e.statusMessage ?? e.statusText;
+      try {
+        if (e.err) {
+          this.errorLog = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
+        } else {
+          this.errorLog = await e.text() ?? null;
+        }
+      } catch {}
+      finally {
+        this.errorText = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
+      }
       return [];
     }
   };
@@ -119,6 +128,9 @@ export default class TreeStore {
   @action
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
+    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
+      return;
+    }
     await this.getDefinitionLevel();
     for (const nodeId of this.openedNodes) {
       await this.onNodeExpand(this.nodesMap.get(nodeId));
@@ -198,7 +210,7 @@ export default class TreeStore {
   };
 
   private gatherSearchString = () => {
-    if (this.xmlEditorStore.searchOnClick && this.selectedNodeId !== null) {
+    if (this.xmlEditorStore.queryOnClick && this.selectedNodeId !== null) {
       const arr = this.selectedNodeId.split("/");
       let lastPart = arr.pop();
       if (lastPart === "0") {

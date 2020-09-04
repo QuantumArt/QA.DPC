@@ -5,7 +5,6 @@ import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
 import { ErrorDialog, Loading } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
-import { SavingMode } from "DefinitionEditor/Enums";
 import "./Style.scss";
 
 const ToolBar = observer(() => {
@@ -40,8 +39,8 @@ const ToolBar = observer(() => {
         >
           <Switch
             label="Query on click"
-            checked={xmlEditorStore.searchOnClick}
-            onChange={xmlEditorStore.toggleSearchOnClick}
+            checked={xmlEditorStore.queryOnClick}
+            onChange={xmlEditorStore.toggleQueryOnClick}
           />
           <Switch
             label="Wrap lines"

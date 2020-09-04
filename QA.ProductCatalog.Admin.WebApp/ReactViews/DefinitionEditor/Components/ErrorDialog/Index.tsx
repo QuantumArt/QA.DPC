@@ -34,7 +34,7 @@ const ErrorDialog = observer<Props>(() => {
       {treeStore.errorText}
       {treeStore.errorLog && (
         <div className="error-dialog__error-log">
-          <Button onClick={state.toggle}>Show log</Button>
+          <Button onClick={state.toggle}>{state.opened ? "Hide log" : "Show log"}</Button>
           <Collapse isOpen={state.opened}>
             <Pre className="error-dialog__pre">{treeStore.errorLog}</Pre>
           </Collapse>
