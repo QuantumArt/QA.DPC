@@ -18,7 +18,14 @@ const ToolBar = observer(() => {
           <Button icon={IconNames.REFRESH} onClick={treeStore.refresh}>
             Refresh
           </Button>
-          <Button icon={IconNames.CONFIRM} onClick={treeStore.apply}>
+          <Button
+            icon={IconNames.CONFIRM}
+            type="submit"
+            onClick={event => {
+              treeStore.submitFormSyntheticEvent(event);
+              treeStore.apply();
+            }}
+          >
             Apply
           </Button>
           <Button icon={IconNames.FLOPPY_DISK} onClick={treeStore.saveAndExit}>
@@ -60,7 +67,7 @@ const ToolBar = observer(() => {
             />
           </div>
         </div>
-        {treeStore.selectedNodeId !== null &&
+        {treeStore.selectedNodeId !== null && (
           <Button
             icon={xmlEditorStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}
@@ -69,7 +76,7 @@ const ToolBar = observer(() => {
           >
             {xmlEditorStore.formMode ? <span>Редактор кода</span> : <span>Форма</span>}
           </Button>
-        }
+        )}
       </div>
     </div>
   );

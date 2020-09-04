@@ -9,4 +9,15 @@
   saveText: string;
   editText: string;
   endEditText: string;
+  backendEnums: {
+    update: string;
+    publish: string;
+    preload: string;
+    delete: string;
+    clone: string;
+  };
+  formControlStrings: {
+    fieldNameForCard: string;
+    labelText: string;
+  };
 }

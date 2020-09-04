@@ -1,103 +1,36 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { Button, FormGroup, InputGroup, Intent, Switch, TextArea } from "@blueprintjs/core";
 import { useStores } from "DefinitionEditor";
-import { Form, Field } from "react-final-form";
+import { Form } from "react-final-form";
+import FormField from "../FormField";
 import "./Style.scss";
-import { FormFieldType } from "DefinitionEditor/Enums";
 
 interface Props {
   nodeId: string;
 }
 
 const StubFrom = observer<Props>(({ nodeId }) => {
-  const { formStore } = useStores();
+  const { formStore, treeStore } = useStores();
   formStore.setNodeId(nodeId);
 
-  const renderFieldDependsOnType = model => {
-    switch (model.type) {
-      case FormFieldType.Text:
-        return (
-          <div className="field" key={model.label}>
-            <label className="label">{model.label}</label>
-            <InputGroup disabled={true} value={model.value} className="input" />
-          </div>
-        );
-      case FormFieldType.Input:
-        return (
-          <div className="field" key={model.label}>
-            <label className="label">{model.label}</label>
-            <Field name={model.label} defaultValue={model.value}>
-              {({ input }) => {
-                return (
-                  <>
-                    <InputGroup
-                      {...input}
-                      className="input"
-                      placeholder={model.placeholder || ""}
-                    />
-                  </>
-                );
-              }}
-            </Field>
-          </div>
-        );
-      case FormFieldType.Textarea:
-        return (
-          <div className="field" key={model.label}>
-            <label className="label">{model.label}</label>
-            <Field name={model.label} initialValue={model.value}>
-              {({ input }) => {
-                return <TextArea {...input} {...model.extraOptions} className="input" />;
-              }}
-            </Field>
-          </div>
-        );
-      case FormFieldType.Checkbox:
-        return (
-          <div className="field" key={model.label}>
-            <label className="label">{model.label}</label>
-            <Field name={model.label} initialValue={model.value}>
-              {({ input }) => {
-                return (
-                  <div className="input">
-                    <Switch label={model.subString || ""} checked={input.value} inline={true} />
-                  </div>
-                );
-              }}
-            </Field>
-          </div>
-        );
-
-      default:
-        return "";
-    }
-  };
-
   return (
-    <>
-      <form>
-        <FormGroup inline label="Some field">
-          <InputGroup placeholder={nodeId} fill />
-        </FormGroup>
-      </form>
-
+    <div className="forms-wrapper">
       {formStore.UIEditModel && (
         <Form
           onSubmit={formObj => console.log(formObj)}
-          render={({ handleSubmit }) => (
-            <form onSubmit={handleSubmit}>
-              {formStore.UIEditModel.map(x => {
-                return x && renderFieldDependsOnType(x);
-              })}
-              <Button intent={Intent.PRIMARY} type="submit">
-                Apply
-              </Button>
-            </form>
-          )}
+          render={({ handleSubmit }) => {
+            treeStore.submitFormSyntheticEvent = handleSubmit;
+            return (
+              <form onSubmit={handleSubmit}>
+                {formStore.UIEditModel.map(fieldModel => (
+                  <FormField key={fieldModel.label} model={fieldModel} />
+                ))}
+              </form>
+            );
+          }}
         />
       )}
-    </>
+    </div>
   );
 });
 

@@ -16,18 +16,26 @@
       editText: '@ControlStrings.EditXml',
       endEditText: '@ControlStrings.EndEditXml',
       //new
-      controlStrings: {
+      backendEnums: {
+        update: '/Resource/GetUpdateEnum',
+        publish: '/Resource/GetPublishEnum',
+        preload: '/Resource/GetPreloadEnum',
+        delete: '/Resource/GetDeleteEnum',
+        clone: '/Resource/GetCloneEnum',
+      },
+      formControlStrings: {
         saveText: '@ControlStrings.Save',
         editText: '@ControlStrings.EditXml',
         endEditText: '@ControlStrings.EndEditXml',
         jsonFieldName: '@ControlStrings.JsonFieldName',
-        labelText: '@ControlStrings.LabelText',
         relationConditionDescription: '@ControlStrings.RelationConditionDescription',
         path:'@ControlStrings.Path',
         removePath: '@ControlStrings.RemovePath',
         converter: '@ControlStrings.Converter',
         dontWrapInCData: '@ControlStrings.DontWrapInCData',
         loadAsImage: '@ControlStrings.LoadAsImage',
+        fieldNameForCard: '@Html.Raw(ControlStrings.FieldNameForCard)',
+        labelText: '@Html.Raw(ControlStrings.LabelText)',
       }
     };
 </script>

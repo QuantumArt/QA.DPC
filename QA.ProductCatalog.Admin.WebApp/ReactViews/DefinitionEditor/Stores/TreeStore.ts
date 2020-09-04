@@ -17,8 +17,9 @@ export default class TreeStore {
         await this.onNodeExpand(this.tree[0]);
       }
     );
-  };
+  }
 
+  submitFormSyntheticEvent;
   @observable operationState: OperationState = OperationState.None;
   @observable savingMode: SavingMode = SavingMode.Apply;
   @observable errorText: string = null;
@@ -29,7 +30,7 @@ export default class TreeStore {
 
   @computed get tree() {
     if (this.xmlEditorStore.rootId && this.nodesMap.has(`/${this.xmlEditorStore.rootId}`)) {
-      return [this.nodesMap.get(`/${this.xmlEditorStore.rootId}`)]
+      return [this.nodesMap.get(`/${this.xmlEditorStore.rootId}`)];
     } else {
       return [];
     }
@@ -161,7 +162,7 @@ export default class TreeStore {
   resetErrorState = () => {
     this.operationState = OperationState.None;
     this.errorText = null;
-  }
+  };
 
   private getNodeStatus = (node: IDefinitionNode): { icon: IconName, className: string, label: string } => {
     const label = node.text ?? 'Dictionary caching settings';
@@ -185,7 +186,7 @@ export default class TreeStore {
       icon: "document",
       className: "",
     };
-  }
+  };
 
   private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
@@ -224,5 +225,5 @@ export default class TreeStore {
       document.execCommand("copy");
       document.body.removeChild(dummy);
     }
-  }
+  };
 }
