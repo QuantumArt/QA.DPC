@@ -7,10 +7,12 @@ import { SavingMode } from "DefinitionEditor/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
 import ApiService from "DefinitionEditor/ApiService";
-import ControlsStore from "DefinitionEditor/Stores/ControlsStore";
 
 export default class TreeStore {
-  constructor(private controlsStore: ControlsStore, private xmlEditorStore: XmlEditorStore) {
+  constructor(private xmlEditorStore: XmlEditorStore) {};
+
+  init = (setSelectedNodeId: (id: string) => void) => {
+    this.setSelectedNodeId = setSelectedNodeId;
     when(
       () => this.xmlEditorStore.rootId != null,
       async () => {
@@ -22,13 +24,14 @@ export default class TreeStore {
 
   submitFormSyntheticEvent;
   @observable operationState: OperationState = OperationState.None;
-  @observable savingMode: SavingMode = SavingMode.Apply;
+
   @observable errorText: string = null;
   @observable errorLog: string = null;
   @observable nodesMap: Map<ITreeNode["id"], ITreeNode<Partial<IDefinitionNode>>> = new Map();
   @observable openedNodes: ITreeNode["id"][] = [];
+  @observable private selectedNodeId: string = null;
 
-  setSelectedNodeId: (id: string) => void = null
+  setSelectedNodeId: (id: string) => void = null;
 
   @computed get tree() {
     if (this.xmlEditorStore.rootId && this.nodesMap.has(`/${this.xmlEditorStore.rootId}`)) {
@@ -77,8 +80,11 @@ export default class TreeStore {
       });
     }
     node.isSelected = originallySelected == null ? true : !originallySelected;
-    this.controlsStore.selectedNodeId = node.isSelected ? node.id.toString() : null;
-    this.gatherSearchString();
+    this.selectedNodeId = node.isSelected ? node.id.toString() : null;
+    this.setSelectedNodeId(this.selectedNodeId);
+    if (this.xmlEditorStore.queryOnClick && this.selectedNodeId !== null) {
+      this.gatherSearchString();
+    }
   };
 
   @action
@@ -117,53 +123,19 @@ export default class TreeStore {
   };
 
   @action
-  setSavingMode = (mode: SavingMode) => this.savingMode = mode;
-
-  @action
-  refresh = async () => {
-    this.xmlEditorStore.setXml(this.xmlEditorStore.origXml);
-    this.resetErrorState();
-    this.openedNodes = [];
-    await this.getDefinitionLevel();
-    await this.onNodeExpand(this.tree[0]);
-  };
-
-  @action
-  apply = async () => {
-    this.setSavingMode(SavingMode.Apply);
-    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-      return;
+  setError = (text?: string, log?: string) => {
+    this.operationState = OperationState.Error;
+    this.errorText = text ?? "Error";
+    if (log) {
+      this.errorLog = log;
     }
-    await this.getDefinitionLevel();
-    for (const nodeId of this.openedNodes) {
-      await this.onNodeExpand(this.nodesMap.get(nodeId));
-    }
-  };
-
-  @action
-  saveAndExit = async () => {
-    this.setSavingMode(SavingMode.Finish);
-    await this.getDefinitionLevel();
-    if (this.operationState === OperationState.Success) {
-      window.pmrpc.call({
-        destination: parent,
-        publicProcedureName: "SaveXmlToDefinitionField",
-        params: [this.xmlEditorStore.xml]
-      });
-    }
-  };
-
-  exit = () => {
-    window.pmrpc.call({
-      destination: parent,
-      publicProcedureName: "CloseEditor",
-    });
   };
 
   @action
   resetErrorState = () => {
     this.operationState = OperationState.None;
     this.errorText = null;
+    this.errorLog = null;
   };
 
   private getNodeStatus = (node: IDefinitionNode): { icon: IconName, className: string, label: string } => {
@@ -213,19 +185,17 @@ export default class TreeStore {
   };
 
   private gatherSearchString = () => {
-    if (this.xmlEditorStore.queryOnClick && this.controlsStore.selectedNodeId !== null) {
-      const arr = this.controlsStore.selectedNodeId.split("/");
-      let lastPart = arr.pop();
-      if (lastPart === "0") {
-        lastPart = arr.pop();
-      }
-      const nodeLabel = this.nodesMap.get(this.controlsStore.selectedNodeId).label.toString().split(" ")[0];
-      const dummy = document.createElement("input");
-      document.body.appendChild(dummy);
-      dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;
-      dummy.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummy);
+    const arr = this.selectedNodeId.split("/");
+    let lastPart = arr.pop();
+    if (lastPart === "0") {
+      lastPart = arr.pop();
     }
+    const nodeLabel = this.nodesMap.get(this.selectedNodeId).label.toString().split(" ")[0];
+    const dummy = document.createElement("input");
+    document.body.appendChild(dummy);
+    dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
   };
 }

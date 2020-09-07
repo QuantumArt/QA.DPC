@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Button, ButtonGroup, Intent, Slider, Switch } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
-import { ErrorDialog, Loading } from "DefinitionEditor/Components";
+import { TreeErrorDialog, Loading } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
 import "./Style.scss";
 
@@ -12,27 +12,27 @@ const ToolBar = observer(() => {
 
   return (
     <div className="editor-toolbar">
-      <ErrorDialog />
+      <TreeErrorDialog />
       <div className="editor-toolbar__buttons">
         <ButtonGroup>
-          <Button icon={IconNames.REFRESH} onClick={treeStore.refresh}>
+          <Button icon={IconNames.REFRESH} onClick={controlsStore.refresh}>
             Refresh
           </Button>
           <Button
             icon={IconNames.CONFIRM}
             type="submit"
             onClick={event => {
-              treeStore.submitFormSyntheticEvent(event);
-              treeStore.apply();
+              treeStore.submitFormSyntheticEvent && treeStore.submitFormSyntheticEvent(event);
+              controlsStore.apply();
             }}
           >
             Apply
           </Button>
-          <Button icon={IconNames.FLOPPY_DISK} onClick={treeStore.saveAndExit}>
+          <Button icon={IconNames.FLOPPY_DISK} onClick={controlsStore.saveAndExit}>
             Save and Exit
           </Button>
           <div className="editor-toolbar__divider" />
-          <Button icon={IconNames.CROSS} onClick={treeStore.exit}>
+          <Button icon={IconNames.CROSS} onClick={controlsStore.exit}>
             Exit
           </Button>
           <Loading

@@ -11,10 +11,10 @@ export interface StoresCtx {
   formStore: FormStore;
 }
 
-const controlsStore = new ControlsStore();
-const xmlEditorStore = new XmlEditorStore(controlsStore, window.definitionEditor);
-const treeStore = new TreeStore(controlsStore, xmlEditorStore);
+const xmlEditorStore = new XmlEditorStore(window.definitionEditor);
+const treeStore = new TreeStore(xmlEditorStore);
 const formStore = new FormStore(window.definitionEditor, xmlEditorStore);
+const controlsStore = new ControlsStore(xmlEditorStore, treeStore, formStore);
 
 export const storesCtx = React.createContext<StoresCtx>({
   controlsStore,

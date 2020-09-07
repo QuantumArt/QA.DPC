@@ -4,4 +4,4 @@ export { default as XmlTree } from "./XmlTree";
 export { default as XmlEditor } from "./XmlEditor";
 export { default as Loading } from "./Loading";
 export { StubForm } from "./Forms";
-export { default as ErrorDialog } from "./ErrorDialog";
+export { default as TreeErrorDialog } from "./TreeErrorDialog";

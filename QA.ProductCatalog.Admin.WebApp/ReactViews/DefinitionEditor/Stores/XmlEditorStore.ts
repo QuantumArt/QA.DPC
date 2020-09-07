@@ -3,7 +3,7 @@ import { parse, validate, ValidationError } from "fast-xml-parser";
 import ControlsStore from "./ControlsStore";
 
 export default class XmlEditorStore {
-  constructor(private controlsStore: ControlsStore, private settings: DefinitionEditorSettings) {
+  constructor(private settings: DefinitionEditorSettings) {
     window.pmrpc.register({
       publicProcedureName: "DefinitionEditor.SetXml",
       procedure: xml => {

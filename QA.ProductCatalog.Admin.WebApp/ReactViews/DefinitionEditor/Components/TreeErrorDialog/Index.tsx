@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ErrorDialog = observer<Props>(() => {
-  const { treeStore } = useStores();
+  const { treeStore, controlsStore } = useStores();
   const state = useLocalStore(() => ({
     opened: false,
     toggle() {
@@ -23,11 +23,11 @@ const ErrorDialog = observer<Props>(() => {
       isOpen={treeStore.operationState === OperationState.Error}
       intent={Intent.DANGER}
       icon="warning-sign"
-      confirmButtonText={treeStore.savingMode === SavingMode.Apply ? "Close" : "Exit anyway"}
+      confirmButtonText={controlsStore.savingMode === SavingMode.Apply ? "Close" : "Exit anyway"}
       onConfirm={
-        treeStore.savingMode === SavingMode.Apply ? treeStore.resetErrorState : treeStore.exit
+        controlsStore.savingMode === SavingMode.Apply ? treeStore.resetErrorState : controlsStore.exit
       }
-      cancelButtonText={treeStore.savingMode === SavingMode.Apply ? null : "Back to editing"}
+      cancelButtonText={controlsStore.savingMode === SavingMode.Apply ? null : "Back to editing"}
       onCancel={treeStore.resetErrorState}
       className="error-dialog"
     >
