@@ -8,7 +8,7 @@ import { OperationState } from "Shared/Enums";
 import "./Style.scss";
 
 const ToolBar = observer(() => {
-  const { xmlEditorStore, treeStore } = useStores();
+  const { xmlEditorStore, treeStore, controlsStore } = useStores();
 
   return (
     <div className="editor-toolbar">
@@ -67,7 +67,7 @@ const ToolBar = observer(() => {
             />
           </div>
         </div>
-        {treeStore.selectedNodeId !== null && (
+        {controlsStore.selectedNodeId !== null && (
           <Button
             icon={xmlEditorStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}

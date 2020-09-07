@@ -7,9 +7,10 @@ import { SavingMode } from "DefinitionEditor/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
 import ApiService from "DefinitionEditor/ApiService";
+import ControlsStore from "DefinitionEditor/Stores/ControlsStore";
 
 export default class TreeStore {
-  constructor(private xmlEditorStore: XmlEditorStore) {
+  constructor(private controlsStore: ControlsStore, private xmlEditorStore: XmlEditorStore) {
     when(
       () => this.xmlEditorStore.rootId != null,
       async () => {
@@ -26,7 +27,8 @@ export default class TreeStore {
   @observable errorLog: string = null;
   @observable nodesMap: Map<ITreeNode["id"], ITreeNode<Partial<IDefinitionNode>>> = new Map();
   @observable openedNodes: ITreeNode["id"][] = [];
-  @observable selectedNodeId: string = null;
+
+  setSelectedNodeId: (id: string) => void = null
 
   @computed get tree() {
     if (this.xmlEditorStore.rootId && this.nodesMap.has(`/${this.xmlEditorStore.rootId}`)) {
@@ -75,7 +77,7 @@ export default class TreeStore {
       });
     }
     node.isSelected = originallySelected == null ? true : !originallySelected;
-    this.selectedNodeId = node.isSelected ? node.id.toString() : null;
+    this.controlsStore.selectedNodeId = node.isSelected ? node.id.toString() : null;
     this.gatherSearchString();
   };
 
@@ -211,13 +213,13 @@ export default class TreeStore {
   };
 
   private gatherSearchString = () => {
-    if (this.xmlEditorStore.queryOnClick && this.selectedNodeId !== null) {
-      const arr = this.selectedNodeId.split("/");
+    if (this.xmlEditorStore.queryOnClick && this.controlsStore.selectedNodeId !== null) {
+      const arr = this.controlsStore.selectedNodeId.split("/");
       let lastPart = arr.pop();
       if (lastPart === "0") {
         lastPart = arr.pop();
       }
-      const nodeLabel = this.nodesMap.get(this.selectedNodeId).label.toString().split(" ")[0];
+      const nodeLabel = this.nodesMap.get(this.controlsStore.selectedNodeId).label.toString().split(" ")[0];
       const dummy = document.createElement("input");
       document.body.appendChild(dummy);
       dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;

@@ -1,8 +1,9 @@
 ﻿import { action, observable } from "mobx";
 import { parse, validate, ValidationError } from "fast-xml-parser";
+import ControlsStore from "./ControlsStore";
 
 export default class XmlEditorStore {
-  constructor(private settings: DefinitionEditorSettings) {
+  constructor(private controlsStore: ControlsStore, private settings: DefinitionEditorSettings) {
     window.pmrpc.register({
       publicProcedureName: "DefinitionEditor.SetXml",
       procedure: xml => {
