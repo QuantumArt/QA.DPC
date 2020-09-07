@@ -1,6 +1,8 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using System.Xml;
 using Portable.Xaml;
+using QA.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 
@@ -11,21 +13,17 @@ namespace QA.Core.DPC.Formatters.Services
 		#region IArticleFormatter implementation
 		public Task<Article> Read(Stream stream)
 		{
-			return Task.Run<Article>(() => (Article)XamlServices.Load(stream));
+			return Task.Run<Article>(() => (Article)XamlConfigurationParser.LoadFrom(stream));
 		}
 
 		public Task Write(Stream stream, Article product)
 		{
-			return Task.Run(() => XamlServices.Save(stream, product));
+			return Task.Run(() => XamlConfigurationParser.SaveTo(stream, product));
 		}
 
 		public string Serialize(Article product)
 		{
-			using (var writer = new StringWriter())
-			{
-				XamlServices.Save(writer, product);
-				return writer.ToString();
-			}
+			return XamlConfigurationParser.Save(product);
 		}
 
 		public string Serialize(Article product, IArticleFilter filter, bool includeRegionTags)

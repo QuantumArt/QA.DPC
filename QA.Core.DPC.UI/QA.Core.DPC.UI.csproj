@@ -30,7 +30,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.7" />
-    <PackageReference Include="Portable.Xaml" Version="0.30.0-beta39" />
   </ItemGroup>
 </Project>
 

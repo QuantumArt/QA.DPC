@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 using Portable.Xaml;
+using QA.Configuration;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
@@ -44,7 +45,7 @@ namespace QA.ProductCatalog.Validation.Validators
                 Content definition;
                 try
                 {
-                    definition = (Content)XamlServices.Parse(xaml);
+                    definition = (Content)XamlConfigurationParser.CreateFrom(xaml);
                 }
                 catch (Exception ex)
                 {
