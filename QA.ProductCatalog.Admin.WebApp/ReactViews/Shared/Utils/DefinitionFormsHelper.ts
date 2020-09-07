@@ -1,6 +1,7 @@
 ﻿import { BackendEnumType, FormFieldType } from "DefinitionEditor/Enums";
 import React from "react";
 import { EnumBackendModel } from "DefinitionEditor/ApiService/ApiInterfaces";
+import { action, observable } from "mobx";
 
 export declare type ParsedModelType =
   | ICheckboxParsedModel
@@ -11,8 +12,10 @@ export declare type ParsedModelType =
 
 export interface IBaseParsedModel {
   type: FormFieldType;
-  label: string;
+  label: string | null;
   value: string | boolean | number;
+  isHide: boolean;
+  isInline: boolean;
 }
 interface IInputParsedModel extends IBaseParsedModel {
   type: FormFieldType.Input;
@@ -42,29 +45,35 @@ interface ICheckboxParsedModel extends IBaseParsedModel {
   type: FormFieldType.Checkbox;
   value: boolean;
   subString?: string;
+  subComponentOnCheck?: ParsedModelType;
+  toggleValue?: () => void;
 }
 
 export abstract class BaseAbstractParsedModel implements IBaseParsedModel {
-  protected constructor(label, value) {
+  protected constructor(label, value, isHide = false, isInline = false) {
     this.label = label;
     this.value = value;
+    this.isHide = isHide;
+    this.isInline = isInline;
   }
   readonly type: FormFieldType;
   readonly label: string;
+  isHide: boolean;
+  readonly isInline: boolean;
   value: string | boolean | number;
 }
 
 export class TextParsedModel extends BaseAbstractParsedModel implements ITextParsedModel {
-  constructor(label, value) {
-    super(label, value);
+  constructor(label, value, isHide?, isInline?) {
+    super(label, value, isHide, isInline);
   }
   readonly type = FormFieldType.Text;
   readonly value;
 }
 
 export class SelectParsedModel extends BaseAbstractParsedModel implements ISelectParsedModel {
-  constructor(label, value, options) {
-    super(label, value);
+  constructor(label, value, options, isHide?, isInline?) {
+    super(label, value, isHide, isInline);
     this.options = options;
   }
   readonly type = FormFieldType.Select;
@@ -73,18 +82,24 @@ export class SelectParsedModel extends BaseAbstractParsedModel implements ISelec
 }
 
 export class CheckboxParsedModel extends BaseAbstractParsedModel implements ICheckboxParsedModel {
-  constructor(label, value, subString = "") {
-    super(label, value);
+  constructor(label, value, subString = "", subComponentOnCheck = null, isHide?, isInline?) {
+    super(label, value, isHide, isInline);
     this.subString = subString;
+    this.subComponentOnCheck = subComponentOnCheck;
   }
   readonly type = FormFieldType.Checkbox;
-  value;
+  @observable value;
+  subComponentOnCheck;
+  @action
+  toggleValue = () => {
+    this.value = !this.value;
+  };
   readonly subString;
 }
 
 export class TextAreaParsedModel extends BaseAbstractParsedModel implements ITextAreaParsedModel {
-  constructor(label, value, extraOptions) {
-    super(label, value);
+  constructor(label, value, extraOptions, isHide?, isInline?) {
+    super(label, value, isHide, isInline);
     this.extraOptions = extraOptions;
   }
   readonly type = FormFieldType.Textarea;
@@ -93,17 +108,18 @@ export class TextAreaParsedModel extends BaseAbstractParsedModel implements ITex
 }
 
 export class InputParsedModel extends BaseAbstractParsedModel implements IInputParsedModel {
-  constructor(label, value, placeholder = "") {
-    super(label, value);
+  constructor(label, value, placeholder = "", isHide?, isInline?) {
+    super(label, value, isHide, isInline);
     this.placeholder = placeholder;
   }
+  @observable isHide: boolean;
   readonly type = FormFieldType.Input;
   readonly value;
   readonly placeholder;
 }
 
 export const getBackendEnumTypeByFieldName = (
-  field: "DeletingMode" | "UpdatingMode" | "CloningMode" | "PreloadingMode"
+  field: "DeletingMode" | "UpdatingMode" | "CloningMode" | "PreloadingMode" | "PublishingMode"
 ): BackendEnumType => {
   switch (field) {
     case "DeletingMode":
@@ -114,5 +130,7 @@ export const getBackendEnumTypeByFieldName = (
       return BackendEnumType.Update;
     case "PreloadingMode":
       return BackendEnumType.Preload;
+    case "PublishingMode":
+      return BackendEnumType.Publish;
   }
 };

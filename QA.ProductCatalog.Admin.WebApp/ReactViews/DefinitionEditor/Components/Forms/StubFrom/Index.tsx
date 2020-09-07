@@ -1,9 +1,10 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { observer } from "mobx-react-lite";
 import { useStores } from "DefinitionEditor";
-import { Form } from "react-final-form";
+import { Field, Form } from "react-final-form";
 import FormField from "../FormField";
 import "./Style.scss";
+import FormFieldWrapper from "../FormFieldWrap";
 
 interface Props {
   nodeId: string;
@@ -23,7 +24,9 @@ const StubFrom = observer<Props>(({ nodeId }) => {
             return (
               <form onSubmit={handleSubmit}>
                 {formStore.UIEditModel.map(fieldModel => (
-                  <FormField key={fieldModel.label} model={fieldModel} />
+                  <FormFieldWrapper model={fieldModel} key={fieldModel.label}>
+                    <FormField />
+                  </FormFieldWrapper>
                 ))}
               </form>
             );

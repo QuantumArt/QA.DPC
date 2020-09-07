@@ -1,20 +1,14 @@
-.form-field {
+.form-field-element {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 5px 10px 5px 0;
-  &__label {
-    width: 20%;
-  }
-  &__element {
-    width: 70%;
-  }
-}
 
-.label {
-  width: 20%;
-}
-.field-element {
-  width: 70%;
+  &--inline {
+    display: inline;
+    .bp3-input {
+      width: auto;
+    }
+  }
+
+  &--hide {
+    visibility: hidden;
+  }
 }
