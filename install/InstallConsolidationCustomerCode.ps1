@@ -1,99 +1,126 @@
 ﻿<#
-.SYNOPSIS
-Регистрация кастомер кода
+    .SYNOPSIS
+    Registers Customer code in QP
 
-.DESCRIPTION
-Регистрирует в QP кастомер код для нового каталога:
-- Развертывается база данных каталога из бэкапа
-- База каталога обновляется до актуального состояния
-- Регистрируется в QP кастомер код каталога
+    .DESCRIPTION
+    Registers new customer code for catalog in QP:
+    - Restores catalog database from backup
+    - Brings catalog database up-to-date
+    - Registers customer code in QP confirutation file
 
-.EXAMPLE
-  .\InstallConsolidationCustomerCode.ps1 -databaseServer 'dbhost' -targetBackupPath 'c:\temp\catalog_consolidation.bak' -customerCode 'catalog_consolidation' -customerLogin 'login' -customerPassword 'pass' -currentSqlPath '\\storage\current.sql' -siteSyncHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin'
+    .EXAMPLE
+    .\InstallConsolidationCustomerCode.ps1 -databaseServer 'dbhost' -targetBackupPath 'c:\temp\catalog_consolidation.bak' -customerCode 'catalog_consolidation' -customerLogin 'login' -customerPassword '1q2w#E$R' 
+    -currentSqlPath '\\storage\Developers_share\QP\current.sql' -frontHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin'
 #>
 param(
-    ## Сервер баз данных
+    ## Database Server
     [Parameter(Mandatory = $true)]
     [string] $databaseServer,
-    ## Путь к бэкапу базы каталога
+    ## Backup file for copying onto database Server
     [Parameter()]
-    [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
+    [ValidateScript({ if ($_) { Test-Path $_} })]
     [string] $sourceBackupPath,
-    ## Локальный путь к бэкапу базы каталога на сервере баз данных
+    ## Backup file for restoring (server local - for SQL Server)
     [Parameter(Mandatory = $true)]
     [string] $targetBackupPath,
-    ## Кастомер код каталога
+    ## Catalog customer code
     [Parameter(Mandatory = $true)]
     [string] $customerCode,
-    ## Хост Dpc.SiteSync
+    ## Dpc.Front host
     [Parameter(Mandatory = $true)]
-    [string] $siteSyncHost,
-    ## Хост Dpc.SyncApi
+    [string] $frontHost,
+    ## Dpc.SyncApi host
     [Parameter(Mandatory = $true)]
     [string] $syncApiHost,
-    ## Хост Dpc.Admin
+    ## Dpc.Admin host
     [Parameter(Mandatory = $true)]
     [string] $adminHost,
-    ## Хост кластера Elasticsearch
+    ## Elasticsearch cluster search
     [Parameter(Mandatory = $true)]
     [string] $elasticsearchHost,
-    ## Путь к скрипту актуализации базы данных каталога
+    ## Sql script for bringing DB up-to-date
     [Parameter(Mandatory = $true)]
     [string] $currentSqlPath,
-    ## Пользователь для коннекта к базе данных каталога
+    ## Customer user name
     [Parameter()]
     [String] $customerLogin,
-    ## Пароль для коннекта к базе данных каталога
+    ## Customer user password
     [Parameter()]
     [String] $customerPassword,
+    ## Admin user name
     [Parameter()]
-    ## Пользователь для сервера баз данных
     [String] $login,
-    ## Пароль для сервера баз данных
+    ## Admin user password
     [Parameter()]
-    [String] $password
+    [String] $password,
+    ## Database type: 0 - SQL Server, 1 - Postgres
+    [Parameter()]
+    [int] $dbType
 )
+
+function PSqlToPsObject
+{
+    param(
+        $lines
+    )
+
+    $result = New-Object PsObject
+    foreach ($line in $lines) {
+        $values = $line.Split('|')
+        if ($values.Length -lt 2) {
+            continue
+        }
+        $result | Add-Member NoteProperty $values[0] $values[1]
+    }
+    return $result
+
+}
+
 
 function GetFieldId
 {
-  param(
-     [string] $connectionString,
-     [string] $key,
-     [string] $field
-  )
+    param(
+        [hashtable] $connectionParams,
+        [string] $key,
+        [string] $field
+    )
+    
+    $isPg = $connectionParams.dbType -eq 1
+    $keyField = if ($isPg) { "Key" } else { "[Key]" }
+    $query = "select value from APP_SETTINGS where $keyField = '$key'"
+    $result = Execute-Sql @connectionParams -Query $query  
+    $contentId = if ($isPg) { (PSqlToPsObject -lines $result).Value } else { $result.Value }
+    
+    if (!$contentId) { throw "setting '$key' is not exists"}
+    $query = "select ATTRIBUTE_ID from CONTENT_ATTRIBUTE where CONTENT_ID = $contentId and ATTRIBUTE_NAME = '$field'"
+    $result = Execute-Sql @connectionParams -Query $query  
+    $fieldId = if ($isPg) { (PSqlToPsObject -lines $result).ATTRIBUTE_ID } else { $result.ATTRIBUTE_ID } 
 
-  $query = "select * from [APP_SETTINGS] where [Key] = '$key'"  
-  $result = Invoke-Sqlcmd -Query $query  -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop
-  $contentId = $result.Value
-
-  if (!$contentId) { throw "setting '$key' is not exists"}
-
-  $query = "select ATTRIBUTE_ID from CONTENT_ATTRIBUTE where CONTENT_ID = $contentId and ATTRIBUTE_NAME = '$field'"
-  $result = Invoke-Sqlcmd -Query $query  -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop
-  $fieldId = $result.ATTRIBUTE_ID
-
-  if (!$fieldId) { throw "field '$field' is not found for content $contentId"}
-  return $fieldId
+    if (!$fieldId) { throw "field '$field' is not found for content $contentId"}
+    return $fieldId
 }
 
 function ReplaceFieldValues
 {
-  param(
-     [string] $connectionString,
-     [int] $fieldId,
-     [string] $placeholder,
-     [string] $value
-  )  
-  $query = "update content_data set [data] = replace([data], '$placeholder', '$value') where ATTRIBUTE_ID = $fieldId and [data] like '%$placeholder%'"
-  Invoke-Sqlcmd -Query $query  -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop  
-  Write-Host $query
+    param(
+        [hashtable] $connectionParams,
+        [int] $fieldId,
+        [string] $placeholder,
+        [string] $value
+    )  
+
+    $query = "update content_data set data = replace(data, '$placeholder', '$value') where ATTRIBUTE_ID = $fieldId and data like '%$placeholder%'"
+    Execute-Sql @connectionParams -Query $query   
 }
 
-Import-Module -Name SqlServer
+$currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
 
-if(Get-CustomerCode -CustomerCode $customerCode)
+. (Join-Path $currentPath "Modules\Database.ps1")
+. (Join-Path $currentPath "Modules\CustomerCode.ps1")
+
+if (Get-CustomerCode -CustomerCode $customerCode)
 {
-    Write-Verbose "Customer code $customerCode already exists"
+    Write-Host "Customer code $customerCode already exists"
     return
 }
 
@@ -110,8 +137,12 @@ if (-not $customerPassword){
 
 if (-not [string]::IsNullOrEmpty($sourceBackupPath))
 {
-    $sharedTargetBackupPath =  "\\" + $databaseServer.Trim() + "\" + $targetBackupPath.Replace(":", "$")
-    Write-Verbose "Copy backup from $sourceBackupPath to $sharedTargetBackupPath"  -Verbose
+    if ($dbType -eq 0) {
+        $sharedTargetBackupPath =  "\\" + $databaseServer.Trim() + "\" + $targetBackupPath.Replace(":", "$")
+    } else {
+        $sharedTargetBackupPath = $targetBackupPath
+    }
+    Write-Host "Copy backup from $sourceBackupPath to $sharedTargetBackupPath"
     
     try
     {
@@ -122,36 +153,64 @@ if (-not [string]::IsNullOrEmpty($sourceBackupPath))
         throw $_.Exception
     }
 
-    Write-Verbose "Backup copied" -Verbose
+    Write-Host "Backup copied" 
 }
 
+$dbParams = @{
+    DatabaseServer = $databaseServer;
+    DatabaseName = $customerCode;
+    Login = $login;
+    Password = $password;
+    DbType = $dbType
+}
 
-Restore-Database -DatabaseServer $databaseServer -DatabaseName $customerCode -BackupPath $targetBackupPath -Login $login -Password $password
-Add-DatabaseUser -DatabaseServer $databaseServer -DatabaseName $customerCode -UserName $customerLogin -UserPassword $customerPassword -ResetUserPassword $resetUserPassword -Login $login -Password $password
+Restore-Database @dbParams -BackupPath $targetBackupPath  
+Add-DatabaseUser @dbParams -UserName $customerLogin -UserPassword $customerPassword -ResetUserPassword $resetUserPassword 
 
-$connectionString = Get-ConnectionString -ServerInstance $databaseServer -DatabaseName $customerCode -Username $login -Password $password
+$cnnParams = @{
+    Server = $databaseServer;
+    Database = $customerCode;
+    Name = $login;
+    Pass = $password;
+    DbType = $dbType;
+}
 
-Write-Verbose "Run Current.sql on $currentSqlPath"  -Verbose
-Invoke-Sqlcmd -InputFile $currentSqlPath  -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop
-Write-Verbose "Current.sql updated"  -Verbose
+Write-Host "Run Current.sql on $currentSqlPath"  
+Execute-File @cnnParams -path $currentSqlPath 
+Write-Host "Current.sql updated"  
 
-Write-Verbose "Update database"  -Verbose
+Write-Host "Update database"  
 
-$fieldId = GetFieldId -connectionString $connectionString -key "NOTIFICATION_SENDER_CHANNELS_CONTENT_ID" -field "url"
-ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeholder "{site_sync}" -value $siteSyncHost
-ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeholder "{elastic_sync}" -value $syncApiHost
+$fieldId = GetFieldId -connectionParams $cnnParams -key "NOTIFICATION_SENDER_CHANNELS_CONTENT_ID" -field "Url"
+ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{site_sync}" -value $frontHost
+ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{elastic_sync}" -value $syncApiHost
 
-$fieldId = GetFieldId -connectionString $connectionString -key "ELASTIC_INDEXES_CONTENT_ID" -field "name"
-ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeholder "{code}" -value $customerCode
+$fieldId = GetFieldId -connectionParams $cnnParams -key "ELASTIC_INDEXES_CONTENT_ID" -field "Name"
+ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{code}" -value $customerCode
 
-$fieldId = GetFieldId -connectionString $connectionString -key "ELASTIC_INDEXES_CONTENT_ID" -field "address"
-ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeholder "{elasticsearch}" -value $elasticsearchHost
+$fieldId = GetFieldId -connectionParams $cnnParams -key "ELASTIC_INDEXES_CONTENT_ID" -field "Address"
+ReplaceFieldValues -connectionParams $cnnParams -fieldId $fieldId -placeholder "{elasticsearch}" -value $elasticsearchHost
 
 $validationPlaceholder = "adminhost"
-$validationQuery = "update [site] set XAML_DICTIONARIES = cast(replace(cast(XAML_DICTIONARIES as nvarchar(max)), '$validationPlaceholder', '$adminHost') as ntext) where XAML_DICTIONARIES like '%$validationPlaceholder%'"
-Invoke-Sqlcmd -Query $validationQuery -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop  
- 
-Write-Verbose "updated"  -Verbose
+if ($dbType -eq 0) {
+    $replace = "cast(replace(cast(XAML_DICTIONARIES as nvarchar(max)), '$validationPlaceholder', '$adminHost') as ntext)"
+} else {
+    $replace = "replace(XAML_DICTIONARIES, '$validationPlaceholder', '$adminHost')"
+}
+$validationQuery = "update site set XAML_DICTIONARIES = $replace where XAML_DICTIONARIES like '%$validationPlaceholder%'"
 
-$connectionString = "Provider=SQLOLEDB;Initial Catalog=$customerCode;Data Source=$databaseServer;User ID=$customerLogin;Password=$customerPassword"
-Add-CustomerCode -CustomerCode $customerCode -ConnectionString $connectionString
+Execute-Sql @cnnParams -query $validationQuery  
+ 
+Write-Host "Database updated"  
+$savedParams = @{
+    Server = $databaseServer;
+    Database = $customerCode;
+    Name = $customerLogin;
+    Pass = $customerPassword;
+    DbType = $dbType;
+}
+
+$connectionString = Get-ConnectionString @savedParams -forConfig $true
+Add-CustomerCode -CustomerCode $customerCode -ConnectionString $connectionString -dbType $dbType
+
+Apply-QPConfigurationPathx64

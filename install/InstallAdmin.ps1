@@ -28,7 +28,9 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-Import-Module WebAdministration
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}
 
 $siteName = Read-Or-Default $siteName "Please enter site name for DPC Admin" "DPC.Admin"
 $port = Read-Or-Default $port "Please enter port for DPC Admin binding" "92"
@@ -46,7 +48,7 @@ if (!$def) { throw "Default Web Site doesn't exist"}
 
 $root = $def.PhysicalPath -replace "%SystemDrive%",$env:SystemDrive
 $sitePath = Join-Path $root $siteName
-Write-Output $sitePath
+Write-Verbose $sitePath
 New-Item -Path $sitePath -ItemType Directory -Force
 
 $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition

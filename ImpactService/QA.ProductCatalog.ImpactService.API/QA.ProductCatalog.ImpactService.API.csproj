@@ -11,6 +11,7 @@
   
   <ItemGroup>
     <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <None Include="appsettings*.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
   
   <ItemGroup>

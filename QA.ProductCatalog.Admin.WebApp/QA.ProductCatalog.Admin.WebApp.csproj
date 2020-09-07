@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
+    <TypeScriptBuildMode>true</TypeScriptBuildMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DocumentationFile>bin\Debug\QA.ProductCatalog.WebApi.xml</DocumentationFile>

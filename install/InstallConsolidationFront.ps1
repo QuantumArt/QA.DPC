@@ -1,41 +1,33 @@
 ﻿<#
 .SYNOPSIS
-Installs HighloadFront
+Installs reference front
 
 .DESCRIPTION
-HighloadFront is a web application for working with Elasticsearch indices.
-Used in two possible options:
-- Dpc.SyncApi: For updating Elasticsearch indicies
-- Dpc.SearchApi: For searching into Elasticsearch indices
+Dpc.Front is a reference front created as web application. It contains published products which is used for QP8.Catalog internal purposes, 
+such as reindexing ElasticSearch, tracking of publication history.
 
 .EXAMPLE
-  .\InstallConsolidationHighloadFront.ps1 -port 8015 -siteName 'Dpc.SyncApi' -canUpdate $true -logPath 'C:\Logs' -timeout 45 
+  .\InstallConsolidationFront.ps1 -port 8013 -logPath 'C:\Logs'
 
 .EXAMPLE
-   .\InstallConsolidationHighloadFront.ps1 -port 8014 -siteName 'Dpc.SearchApi' -canUpdate $false -logPath 'C:\Logs' -sonicElasticStore "{""ValueSeparator"":""{or}"";""WildcardStarMark"":""{any}""} -Verbose
+  .\InstallConsolidationFront.ps1 -port 8012 -siteName 'DPC.Front' -logPath 'C:\Logs' -useProductVersions $true 
 #>
 param(
-    ## HighloadFront site name
-    [Parameter(Mandatory = $true)]
-    [String] $siteName,
-    ## HighloadFront port
+    ## Dpc.Front site name
+    [Parameter()]
+    [String] $siteName ='Dpc.Front',
+    ## Dpc.Front port
     [Parameter(Mandatory = $true)]
     [int] $port,
-    ## Flag which allows updating ElasticSearch indices
-    [Parameter(Mandatory = $true)]
-    [bool] $canUpdate,
-    ## Elasticsearch conneciton timeout (sec)
-    [Parameter()]
-    [int] $timeout = 60,
     ## Logs folder
     [Parameter(Mandatory = $true)]
     [String] $logPath,
     ## DPC instance name
     [Parameter()]
     [string] $instanceId = 'Dev',
-    ## Elasticsearch storage options JSON
+    ## Use versions (publication history) or not
     [Parameter()]
-    [string] $elasticStoreOptions = ''
+    [bool] $useProductVersions = $false
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -63,8 +55,9 @@ $sitePath = Join-Path $root $siteName
 Write-Verbose $sitePath
 New-Item -Path $sitePath -ItemType Directory -Force | Out-Null
 
+$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
-$sourcePath = Join-Path $parentPath "HighloadFront"
+$sourcePath = Join-Path $parentPath "Front"
 
 Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
 
@@ -82,32 +75,16 @@ $node.writeTo = "fileException"
 $node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Info'}
 $node.writeTo = "fileInfo"
 
-$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Trace'}
-$node.removeAttribute("writeTo")
-
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
+$appsettingsPath = Join-Path $sitePath "appsettings.json"
 
-$appSettingsPath = Join-Path $sitePath "appsettings.json"
-$json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
-
-$json.Data | Add-Member NoteProperty "ElasticTimeout" $timeout -Force
-$json.Data | Add-Member NoteProperty "InstanceId" $instanceId -Force
-$json.Data.CanUpdate = $canUpdate
-
-if ($elasticStoreOptions) {
-    $elasticStoreJson = $elasticStoreOptions | ConvertFrom-Json
-    if ($elasticStoreJson) {
-        $elasticStoreJson.psobject.Properties | % {
-            $json.SonicElasticStore | Add-Member -MemberType $_.MemberType -Name $_.Name -Value $_.Value -Force
-        }
-    } else {
-        Write-Verbose "Invalid `$elasticStoreOptions json, merge skipped"
-    }
-}
+$appsettings = Get-Content -Path $appsettingsPath  | ConvertFrom-Json
+$appsettings.Data | Add-Member NoteProperty "UseProductVersions" $useProductVersions -Force
+$appsettings.Data | Add-Member NoteProperty "InstanceId" $instanceId -Force
 
 Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
-$json | ConvertTo-Json -Depth 5 | Set-Content -Path $appsettingsPath
+$appsettings | ConvertTo-Json | Set-Content -Path $appsettingsPath
 
 $p = Get-Item "IIS:\AppPools\$siteName" -ErrorAction SilentlyContinue
 

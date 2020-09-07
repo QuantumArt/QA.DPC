@@ -1,24 +1,27 @@
 ﻿<#
 .SYNOPSIS
-Установка API каталога
+Installs DPC.WebAPI
 
 .DESCRIPTION
-API каталога Dpc.WebApi предоставляет программный интерфейс для функционала бэкэнда каталога Dpc.Admin
+DPC.WebAPI provides program interface for executing CRUD-operations with products and calling DPC custom actions
 
 .EXAMPLE
-  .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -siteName 'Dpc.WebApi'
+  .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -siteName 'Dpc.WebApi' -logPath 'C:\Logs'
 
 .EXAMPLE
-   .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012
+   .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -logPath 'C:\Logs'
 #>
 param(
-    ## Название Dpc.WebApi
+    ## Dpc.WebApi site name
     [Parameter()]
     [String] $siteName ='Dpc.WebApi',
-    ## Порт Dpc.WebApi
+    ## Dpc.WebApi port
     [Parameter(Mandatory = $true)]
     [int] $port,
-    ## Порт DPC.NotificationSender
+    ## Logs folder
+    [Parameter(Mandatory = $true)]
+    [String] $logPath,    
+    ## DPC.NotificationSender port
     [Parameter(Mandatory = $true)]
     [int] $notifyPort
 )
@@ -30,68 +33,63 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-Import-Module WebAdministration
+$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
+
+. (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
 
 $b = Get-WebBinding -Port $port
 if ($b) { throw "Binding for port $port already exists"}
 
-$s = Get-Item "IIS:\sites\$siteName" -ErrorAction SilentlyContinue
+$s = Get-SiteOrApplication $siteName
 if ($s) { throw "Site $siteName already exists"}
 
-$def = Get-Item "IIS:\sites\Default Web Site" -ErrorAction SilentlyContinue
+$def = Get-SiteOrApplication "Default Web Site"
 if (!$def) { throw "Default Web Site doesn't exist"}
 
 $root = $def.PhysicalPath -replace "%SystemDrive%",$env:SystemDrive
 $sitePath = Join-Path $root $siteName
-Write-Output $sitePath
-New-Item -Path $sitePath -ItemType Directory -Force
+Write-Verbose $sitePath
+New-Item -Path $sitePath -ItemType Directory -Force | Out-Null
 
-$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
-$adminPath = Join-Path $parentPath "WebApi"
+$sourcePath = Join-Path $parentPath "WebApi"
 
-Copy-Item "$adminPath\*" -Destination $sitePath -Force -Recurse
+Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
 
-$projectName = "QA.ProductCatalog.WebApi"
 $nLogPath = Join-Path $sitePath "NLogClient.config"
-$webConfigPath = Join-Path $sitePath "web.config"
 
 [xml]$nlog = Get-Content -Path $nLogPath
-$var = $nlog.nlog.targets.target | where {$_.name -eq 'fileinfo'}
-$var2 = $nlog.nlog.targets.target | where {$_.name -eq 'fileexception'}
-$var.fileName = $var.fileName -Replace $projectName, $siteName
-$var.archiveFileName = $var.archiveFileName -Replace $projectName, $siteName
-$var2.fileName = $var2.fileName -Replace $projectName, $siteName
-$var2.archiveFileName = $var2.archiveFileName -Replace $projectName, $siteName
+
+$nlog.nlog.internalLogFile = [string](Join-Path $logPath "internal-log.txt")
+
+$node = $nlog.nlog.variable | Where-Object {$_.name -eq 'logDirectory'}
+$node.value = [string](Join-Path $logPath $siteName)
+
+$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Warn,Error,Fatal'}
+$node.writeTo = "fileException"
+
+$node = $nlog.nlog.rules.logger | Where-Object {$_.levels -eq 'Info'}
+$node.writeTo = "fileInfo"
+
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
-[xml]$web = Get-Content -Path $webConfigPath
+$appSettingsPath = Join-Path $sitePath "appsettings.json"
+$json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 
-$web.configuration.RemoveChild($web.configuration.connectionStrings)
+$loader = $json.Loader
+$loader.UseFileSizeService = $false
 
-$endpoint = $web.configuration.'system.serviceModel'.client.endpoint
-$endpoint.address = "http://${env:COMPUTERNAME}:$notifyPort/DpcNotificationService"
+$integration = ($json | Get-Member "Integration")
+if (!$integration) {
+    $integration = New-Object PSObject
+    $json | Add-Member NoteProperty "Integration" $integration
+}
 
-$qpMode = $web.CreateElement('add')
-$qpMode.SetAttribute('key', 'QPMode')
-$qpMode.SetAttribute('value', 'true')
-$web.configuration.appSettings.AppendChild($qpMode)
+$integration | Add-Member NoteProperty "RestNotificationUrl" "http://${env:COMPUTERNAME}:$notifyPort" -Force
 
-$container = $web.configuration.unity.container
-$settingsService = $container.register | Where-Object {$_.type -eq 'ISettingsService'}
-$settingsService.mapTo = "SettingsFromQpService";
-$articleFormatter = $container.register | Where-Object {$_.type -eq 'IArticleFormatter'}
-$articleFormatter.mapTo = "JsonProductFormatter";
-
-Set-ItemProperty $webConfigPath -name IsReadOnly -value $false
-$web.Save($webConfigPath)
-
-
-Copy-Item $webConfigPath ($webConfigPath -replace ".config", ".config2")
-Copy-Item $nLogPath ($nLogPath -replace ".config", ".config2")
-Remove-Item -Path (Join-Path $sitePath "*.config") -Force
-Get-ChildItem (Join-Path $sitePath "*.config2") | Rename-Item -newname { $_.name -replace '\.config2','.config' }
+Set-ItemProperty $appSettingsPath -name IsReadOnly -value $false
+$json | ConvertTo-Json | Out-File $appSettingsPath
 
 $p = Get-Item "IIS:\AppPools\$siteName" -ErrorAction SilentlyContinue
 

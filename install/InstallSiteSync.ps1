@@ -26,10 +26,13 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-Import-Module WebAdministration
 
-$siteName = Read-Or-Default $siteName "Please enter site name for DPC SiteSync" "DPC.SiteSync"
-$port = Read-Or-Default $port "Please enter port for DPC SiteSync binding" "95"
+if (-not(Get-Module -Name WebAdministration)) {
+    Import-Module WebAdministration
+}
+
+$siteName = Read-Or-Default $siteName "Please enter site name for DPC Front" "DPC.Front"
+$port = Read-Or-Default $port "Please enter port for DPC Front binding" "95"
 
 $intPort = 0
 if (-not([int32]::TryParse($port, [ref] $intPort))) { throw "Incorrect port: $port" }
@@ -44,7 +47,7 @@ if (!$def) { throw "Default Web Site doesn't exist"}
 
 $root = $def.PhysicalPath -replace "%SystemDrive%",$env:SystemDrive
 $sitePath = Join-Path $root $siteName
-Write-Output $sitePath
+Write-Verbose $sitePath
 New-Item -Path $sitePath -ItemType Directory -Force
 
 $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
@@ -65,7 +68,7 @@ $sqlAdminPassword = Read-Or-Default $sqlAdminPassword "Please enter admin passwo
 $dbServerName = Read-Or-Default $dbServerName "Please enter db server name to connect"
 $dbLogin = Read-Or-Default $dbLogin "Please enter login name to connect databases"
 $dbPassword = Read-Or-Default $dbPassword "Please enter password to connect databases"
-$siteDbName = Read-Or-Default $siteDbName "Please enter SiteSync db name to reference" "SiteSync"
+$siteDbName = Read-Or-Default $siteDbName "Please enter Front db name to reference" "Front"
 $productSerializer = Read-Or-Default $productSerializer "Please enter product serializer: XmlProductSerializer or JsonProductSerializer" "XmlProductSerializer"
 
 $webConfigPath = Join-Path $sitePath "Web.config"
