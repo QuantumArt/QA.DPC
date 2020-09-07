@@ -17,5 +17,5 @@ ARG SERVICE_VERSION
 ENV SERVICE_VERSION=${SERVICE_VERSION:-0.0.0.0}
 
 WORKDIR /app
-COPY --from=build-env /app/ImpactService/QA.ProductCatalog.ImpactService.API/out .
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "QA.ProductCatalog.ImpactService.API.dll"]

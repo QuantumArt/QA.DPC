@@ -16,6 +16,6 @@ ARG SERVICE_VERSION
 ENV SERVICE_VERSION=${SERVICE_VERSION:-0.0.0.0}
 
 WORKDIR /app
-COPY --from=build-env /app/QA.Core.ProductCatalog.ActionsService/out .
+COPY --from=build-env /app/out .
 RUN rm -rf /app/hosting.json
 ENTRYPOINT ["dotnet", "QA.Core.ProductCatalog.ActionsService.dll"]
