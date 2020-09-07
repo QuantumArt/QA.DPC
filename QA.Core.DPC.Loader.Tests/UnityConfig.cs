@@ -54,7 +54,7 @@ namespace QA.Core.DPC.Loader.Tests
             container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
             container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
             container.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
- //           container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>(), container.Resolve<ILogger>()));
+            container.RegisterInstance<ICacheItemWatcher>(new CacheItemWatcherFake());
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
             container.RegisterType<IRegionService, RegionService>();
             container.RegisterType<IConsumerMonitoringService, FakeConsumerMonitoringService>();

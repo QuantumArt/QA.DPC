@@ -29,7 +29,7 @@ namespace QA.Core.ProductCatalog.Actions.Container
 				.RegisterType<IContentInvalidator, DpcContentInvalidator>()
 				.RegisterType<ISettingsService, SettingsFromContentCoreService>()
 				.RegisterType<IUserProvider, AlwaysAdminUserProvider>()
-                .RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, Container.Resolve<IContentInvalidator>(), Container.Resolve<ILogger>()))
+                .RegisterInstance<ICacheItemWatcher>(new CacheItemWatcherFake())
 				.RegisterType<IQPNotificationService, QPNotificationService>()
 				.RegisterType<IRegionTagReplaceService, RegionTagService>()
 				.RegisterType<IRegionService, RegionService>();

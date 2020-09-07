@@ -51,7 +51,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Core
             {
                 Throws.IfNot(stream != null, "The requested file is not exist.");
                 // создаем экземпляр 
-                return (UIElement)XamlConfigurationParser.CreateFrom(stream);
+                return (UIElement)XamlConfigurationParser.LoadFrom(stream);
             }
         }
     }
