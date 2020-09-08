@@ -3,20 +3,20 @@
 
 <script>
   window.highloadFront = {
-    legend: "@Html.Raw(HfStrings.HighloadFront)",
-    customerCode: "@Html.Raw(@ViewBag.CustomerCode)",
-    processingIndex: "@Html.Raw(@HfStrings.ProceedIndexing)",
-    culture: "@Html.Raw(@CultureInfo.CurrentCulture.Parent.EnglishName)",
-    columnHeaders: {
-      default: "@Html.Raw(@HfStrings.Default)",
-      language: "@Html.Raw(@HfStrings.Language)",
-      type: "@Html.Raw(@HfStrings.Type)",
-      date: "@Html.Raw(@HfStrings.Date)",
-      processing: "@Html.Raw(@HfStrings.Processing)",
-      updating: "@Html.Raw(@HfStrings.Updating)",
-      progress: "@Html.Raw(@HfStrings.Progress)",
-    }
-  }
+    CustomerCode: "@Html.Raw(@ViewBag.CustomerCode)",
+    Culture: "@Html.Raw(@CultureInfo.CurrentCulture.Parent.EnglishName)",
+    strings: {
+      HighloadFront: "@Html.Raw(HfStrings.HighloadFront)",
+      ProceedIndexing: "@Html.Raw(@HfStrings.ProceedIndexing)",
+      Default: "@Html.Raw(@HfStrings.Default)",
+      Language: "@Html.Raw(@HfStrings.Language)",
+      Type: "@Html.Raw(@HfStrings.Type)",
+      Date: "@Html.Raw(@HfStrings.Date)",
+      Processing: "@Html.Raw(@HfStrings.Processing)",
+      Updating: "@Html.Raw(@HfStrings.Updating)",
+      Progress: "@Html.Raw(@HfStrings.Progress)",
+    },
+  };
 </script>
 
 <div id="root"></div>

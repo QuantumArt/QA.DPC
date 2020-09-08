@@ -1,25 +1,24 @@
 import { observable, action } from "mobx";
 import moment from "moment";
-
-import { TaskItem } from "../Shared/Types";
-import { TaskState } from "../Shared/Enums";
+import { TaskItem } from "Shared/Types";
+import { TaskState } from "Shared/Enums";
 
 export default class HighloadFrontStore {
-  @observable private timerId: NodeJS.Timeout;
+  @observable private timerId: number;
   @observable tasks: TaskItem[] = [];
 
   @action setTasks = (value: TaskItem[]): void => {
     this.tasks = value;
   };
 
-  @action setTimerId = (value: NodeJS.Timeout): void => {
+  @action setTimerId = (value: number): void => {
     this.timerId = value;
   };
 
   fetchTasks = async (): Promise<void> => {
-    const { customerCode } = window.highloadFront;
+    const { highloadFront: { CustomerCode } } = window;
     const response = await fetch(
-      `/HighloadFront/GetSettings?customerCode=${customerCode}&url=api/sync/settings`
+      `/HighloadFront/GetSettings?customerCode=${CustomerCode}&url=api/sync/settings`
     );
 
     if (response.ok) {
@@ -31,7 +30,7 @@ export default class HighloadFrontStore {
 
   cyclicFetch = (): void => {
     this.fetchTasks();
-    let timerId = setTimeout(this.cyclicFetch, 5000);
+    const timerId = window.setTimeout(this.cyclicFetch, 5000);
     this.setTimerId(timerId);
   };
 
@@ -40,11 +39,9 @@ export default class HighloadFrontStore {
   };
 
   handleIndexChannel = async (task: TaskItem): Promise<void> => {
-    const { customerCode } = window.highloadFront;
+    const { highloadFront: { CustomerCode } } = window;
     await fetch(
-      `/HighloadFront/IndexChanel?customerCode=${customerCode}&url=api/sync/${
-        task.ChannelLanguage
-      }/${task.ChannelState}/reset`,
+      `/HighloadFront/IndexChanel?customerCode=${CustomerCode}&url=api/sync/${task.ChannelLanguage}/${task.ChannelState}/reset`,
       { method: "POST" }
     );
     await this.fetchTasks();
@@ -63,7 +60,7 @@ export default class HighloadFrontStore {
   };
 
   getTimePassed = (start, end): string => {
-    var timePassed = start || end;
+    const timePassed = start || end;
     if (timePassed) {
       return moment(timePassed).fromNow();
     }
