@@ -3,7 +3,7 @@
 @using QA.Core.Models.Configuration
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
-<script>
+  <script>
     window.definitionEditor = {
       xml: "@Model.Xml",
       saveToDb: '@(Model.ContentItemId.HasValue ? "true" : "false")',
@@ -12,9 +12,12 @@
       getDefinitionLevelUrl: '@Url.Action("GetDefinitionLevel")',
       editBetaUrl: '@Url.Action("EditBeta")',
       editUrl: '@Url.Action("Edit")',
-      saveText: '@ControlStrings.Save',
-      editText: '@ControlStrings.EditXml',
-      endEditText: '@ControlStrings.EndEditXml',
+      editorStrings: {
+        dictionaryCahingSettings: '@Html.Raw(ControlStrings.DictionaryCachingSettings)',
+        saveText: '@Html.Raw(ControlStrings.Save)',
+        editText: '@Html.Raw(ControlStrings.EditXml)',
+        endEditText: '@Html.Raw(ControlStrings.EndEditXml)',
+      },
       //new
       backendEnums: {
         update: '/Resource/GetUpdateEnum',
@@ -38,7 +41,7 @@
         labelText: '@Html.Raw(ControlStrings.LabelText)',
       }
     };
-</script>
+  </script>
 @*@Html.TextArea("code", Model.Xml, new { disabled = "disabled", cols = 100, rows = 10 })*@
 <div id="definitionEditor"></div>
 <script src="~/js/pmrpc.js"></script>

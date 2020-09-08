@@ -6,9 +6,12 @@
   getDefinitionLevelUrl: string;
   editBetaUrl: string;
   editUrl: string;
-  saveText: string;
-  editText: string;
-  endEditText: string;
+  editorStrings: {
+    dictionaryCahingSettings: string;
+    saveText: string;
+    editText: string;
+    endEditText: string;
+  };
   backendEnums: {
     update: string;
     publish: string;

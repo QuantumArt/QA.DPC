@@ -1,3 +1,5 @@
+import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
+
 export interface IDefinitionNode {
   MissingInQp: boolean;
   IsDictionaries: boolean;
@@ -12,4 +14,5 @@ export interface IDefinitionNode {
   imageUrl: string | null;
   spriteCssClass: string | null;
   hasChildren: boolean;
+  IconName: IconName;
 }

@@ -21,6 +21,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 		public const string Separator = "/";
 
+		public string IconName = null;
+
 		public DefinitionTreeNode(Content content, string parentPath, string ownPath, bool isFromDictionaries, bool notInDefinition, ContentService contentService)
 		{
 			Id = ownPath ?? parentPath + Separator + content.ContentId;
@@ -30,6 +32,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			expanded = hasChildren = !isFromDictionaries && !notInDefinition;
 
 			imageUrl = "images/icons/content.gif";
+
+			IconName = "document";
 
 			NotInDefinition = notInDefinition;
 		}
@@ -47,6 +51,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			imageUrl = "images/icons/content.gif";
 
 			NotInDefinition = true;
+
+			IconName = "document";
 		}
 
 		internal const string VirtualFieldPrefix = "V";
@@ -57,22 +63,24 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			text = fieldFromDef.FieldName;
 
-			if (fieldFromDef is BackwardRelationField)
-			{
-				var backwardField = (BackwardRelationField) fieldFromDef;
+            if (fieldFromDef is BackwardRelationField backwardField)
+            {
+                if (backwardField.Content != null)
+                    text += " из " + (backwardField.Content.ContentName ?? "контента " + backwardField.Content.ContentId);
+            }
 
-				if (backwardField.Content != null)
-					text += " из " + (backwardField.Content.ContentName ?? "контента " + backwardField.Content.ContentId);
-			}
-
-			expanded = false;
+            expanded = false;
 
 			hasChildren = !(fieldFromDef is PlainField) && !notInDefinition && !(fieldFromDef is VirtualField);
 
-			if (fieldFromDef is Association)
+			if (fieldFromDef is Association) {
 				imageUrl = "images/icons/relation.gif";
-			else if(fieldFromDef is BaseVirtualField)
+				IconName = "link";
+			}
+			else if(fieldFromDef is BaseVirtualField) {
 				imageUrl = "images/icons/virtualField.gif";
+				IconName = "cube";
+			}
 
 			MissingInQp = missingInQp;
 
@@ -103,8 +111,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			MissingInQp = false;
 
-			if (fieldNotInDef.RelationType != RelationType.None || fieldNotInDef.IsClassifier)
+			if (fieldNotInDef.RelationType != RelationType.None || fieldNotInDef.IsClassifier) {
 				imageUrl = "images/icons/relation.gif";
+				IconName = "link";
+			}
 		}
 
 		

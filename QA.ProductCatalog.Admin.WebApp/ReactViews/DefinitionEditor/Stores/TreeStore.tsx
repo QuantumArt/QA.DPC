@@ -1,9 +1,8 @@
 import React from "react";
-import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
+import { Classes, Icon, IconName, Intent, MaybeElement } from "@blueprintjs/core";
 import { action, computed, observable, when } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
-import { SavingMode } from "DefinitionEditor/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
 import ApiService from "DefinitionEditor/ApiService";
@@ -138,26 +137,32 @@ export default class TreeStore {
     this.errorLog = null;
   };
 
-  private getNodeStatus = (node: IDefinitionNode): { icon: IconName, className: string, label: string } => {
-    const label = node.text ?? 'Dictionary caching settings';
+  private getNodeStatus = (node: IDefinitionNode): { icon: IconName | MaybeElement, className: string, label: string } => {
+    if (node.IsDictionaries) {
+      return {
+        label: window.definitionEditor.editorStrings.dictionaryCahingSettings,
+        icon: <Icon icon="cog" intent={Intent.WARNING} className={Classes.TREE_NODE_ICON} />,
+        className: "",
+      };
+    }
     if (node.MissingInQp) {
       return {
-        label: `${label} (Missing in QP)`,
+        label: `${node.text} (Missing in QP)`,
         icon: "warning-sign",
         className: "",
       };
     }
     if (node.NotInDefinition) {
       return {
-        label,
+        label: `${node.text} (Not in definition)`,
         icon: "exclude-row",
         className: "xml-tree-node-gray",
       };
     }
 
     return {
-      label,
-      icon: "document",
+      label: node.text,
+      icon: node.IconName as IconName,
       className: "",
     };
   };

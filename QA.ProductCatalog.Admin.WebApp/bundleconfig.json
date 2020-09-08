@@ -1,19 +1,5 @@
 [
   {
-    "outputFileName": "wwwroot/css/blueprint/blueprint-icons.min.css",
-    "inputFiles": [
-      "wwwroot/css/blueprint/blueprint-icons.css"
-    ]
-  },
-
-  {
-    "outputFileName": "wwwroot/css/blueprint/blueprint.min.css",
-    "inputFiles": [
-      "wwwroot/css/blueprint/blueprint.css"
-    ]
-  },
-
-  {
     "outputFileName": "wwwroot/css/site.min.css",
     "inputFiles": [
       "wwwroot/css/site.css"
