@@ -80,7 +80,7 @@ namespace QA.ProductCatalog.Admin.WebApp
                         options.EnableEndpointRouting = false;
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
-                .AddXmlSerializerFormatters().AddControllersAsServices();
+                .AddXmlSerializerFormatters().AddControllersAsServices().AddNewtonsoftJson();
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
