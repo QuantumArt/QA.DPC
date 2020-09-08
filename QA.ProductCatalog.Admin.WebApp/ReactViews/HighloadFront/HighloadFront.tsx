@@ -18,7 +18,7 @@ const HighloadFront = observer<Props>(({ store }) => {
     return () => {
       store.clearTimeout();
     };
-  });
+  }, []);
   const {
     tasks,
     getFormattedChannelDate,
