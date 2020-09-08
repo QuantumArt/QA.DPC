@@ -366,7 +366,7 @@ export const ScheduleDialog = ({
               />
               <Button
                 icon="cross"
-                outlined="true"
+                outlined
                 onClick={() => {
                   setIsShouldClear(true);
                   clearValues();

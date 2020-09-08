@@ -4,3 +4,4 @@ export * from "./CronStringUtils";
 export * from "./BrowserNotifications";
 export * from "./SingleRequestedData";
 export * from "./DefinitionFormsHelper";
+export * from "./Localization";

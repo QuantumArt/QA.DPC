@@ -16,6 +16,7 @@ import {
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
 import _ from "lodash";
+import { l } from "DefinitionEditor/Localization";
 
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
@@ -61,9 +62,9 @@ export default class FormStore {
         return new InputParsedModel(field, this.apiEditModel[field]);
       case "FieldTitle":
         return new InputParsedModel(
-          this.settings.formControlStrings.fieldNameForCard,
+          l("FieldNameForCard"),
           this.apiEditModel[field],
-          this.settings.formControlStrings.labelText
+          l("LabelText")
         );
       case "RelateTo":
         if (!this.apiEditModel["RelatedContentName"] && !this.apiEditModel["RelatedContentId"])

@@ -1,14 +1,15 @@
 import React from "react";
-import { Classes, Icon, IconName, Intent, MaybeElement } from "@blueprintjs/core";
+import { Classes, Icon, IconName, Intent, MaybeElement, Tooltip } from "@blueprintjs/core";
 import { action, computed, observable, when } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
 import ApiService from "DefinitionEditor/ApiService";
+import { l } from "DefinitionEditor/Localization";
 
 export default class TreeStore {
-  constructor(private xmlEditorStore: XmlEditorStore) {};
+  constructor(private xmlEditorStore: XmlEditorStore) {}
 
   init = (setSelectedNodeId: (id: string) => void) => {
     this.setSelectedNodeId = setSelectedNodeId;
@@ -19,7 +20,7 @@ export default class TreeStore {
         await this.onNodeExpand(this.tree[0]);
       }
     );
-  }
+  };
 
   submitFormSyntheticEvent;
   @observable operationState: OperationState = OperationState.None;
@@ -38,7 +39,7 @@ export default class TreeStore {
     } else {
       return [];
     }
-  };
+  }
 
   @action
   onNodeExpand = async (node: ITreeNode<Partial<IDefinitionNode>>) => {
@@ -87,9 +88,7 @@ export default class TreeStore {
   };
 
   @action
-  getDefinitionLevel = async (
-    path?: string
-  ): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
+  getDefinitionLevel = async (path?: string): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
     try {
       const formData = new FormData();
       if (path) {
@@ -111,10 +110,10 @@ export default class TreeStore {
         if (e.err) {
           this.errorLog = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
         } else {
-          this.errorLog = await e.text() ?? null;
+          this.errorLog = (await e.text()) ?? null;
         }
-      } catch {}
-      finally {
+      } catch {
+      } finally {
         this.errorText = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
       }
       return [];
@@ -137,52 +136,56 @@ export default class TreeStore {
     this.errorLog = null;
   };
 
-  private getNodeStatus = (node: IDefinitionNode): { icon: IconName | MaybeElement, className: string, label: string } => {
+  private getNodeStatus = (node: IDefinitionNode): Partial<ITreeNode> => {
     if (node.IsDictionaries) {
       return {
-        label: window.definitionEditor.editorStrings.dictionaryCahingSettings,
-        icon: <Icon icon="cog" intent={Intent.WARNING} className={Classes.TREE_NODE_ICON} />,
-        className: "",
+        label: l("DictionaryCachingSettings"),
+        icon: <Icon icon="cog" intent={Intent.PRIMARY} className={Classes.TREE_NODE_ICON} />,
       };
     }
     if (node.MissingInQp) {
       return {
-        label: `${node.text} (Missing in QP)`,
-        icon: "warning-sign",
-        className: "",
+        label: node.text,
+        icon: node.IconName as IconName,
+        secondaryLabel: (
+          <Tooltip content={l("MissingInQP")}>
+            <Icon icon="warning-sign" intent={Intent.WARNING} />
+          </Tooltip>
+        ),
       };
     }
     if (node.NotInDefinition) {
       return {
-        label: `${node.text} (Not in definition)`,
-        icon: "exclude-row",
-        className: "xml-tree-node-gray",
+        label: node.text,
+        icon: (
+          <Tooltip content={l("NotInDefinition")}>
+            <Icon icon="exclude-row" className={Classes.TREE_NODE_ICON} />
+          </Tooltip>
+        ),
+        className: "xml-tree-node-gray"
       };
     }
 
     return {
       label: node.text,
       icon: node.IconName as IconName,
-      className: "",
     };
   };
 
   private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
-      const nodeStatus = this.getNodeStatus(node);
       this.nodesMap.set(node.Id, {
         id: node.Id,
-        label: nodeStatus.label,
+        label: "",
         isExpanded: false,
         hasCaret: node.hasChildren,
         childNodes: [],
         isSelected: false,
-        className: nodeStatus.className,
-        icon: nodeStatus.icon,
+        ...this.getNodeStatus(node),
         nodeData: {
           expanded: node.expanded,
           hasChildren: node.hasChildren,
-          missingInQp: node.MissingInQp,
+          missingInQp: node.MissingInQp
         }
       });
       return this.nodesMap.get(node.Id);
@@ -195,7 +198,10 @@ export default class TreeStore {
     if (lastPart === "0") {
       lastPart = arr.pop();
     }
-    const nodeLabel = this.nodesMap.get(this.selectedNodeId).label.toString().split(" ")[0];
+    const nodeLabel = this.nodesMap
+      .get(this.selectedNodeId)
+      .label.toString()
+      .split(" ")[0];
     const dummy = document.createElement("input");
     document.body.appendChild(dummy);
     dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;

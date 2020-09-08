@@ -4,6 +4,7 @@ import TreeStore from "./TreeStore";
 import FormStore from "DefinitionEditor/Stores/FormStore";
 import { SavingMode } from "DefinitionEditor/Enums";
 import { OperationState } from "Shared/Enums";
+import { l } from "DefinitionEditor/Localization";
 
 export default class ControlsStore {
   constructor(
@@ -38,7 +39,7 @@ export default class ControlsStore {
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
     if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-      this.treeStore.setError("Definition is the same. No changes to apply.");
+      this.treeStore.setError(l("SameDefinition"));
       return;
     }
     await this.treeStore.getDefinitionLevel();
@@ -51,7 +52,7 @@ export default class ControlsStore {
   saveAndExit = async () => {
     this.setSavingMode(SavingMode.Finish);
     if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-      this.treeStore.setError("Definition is the same. No changes to apply.");
+      this.treeStore.setError(l("SameDefinition"));
       return;
     }
     await this.treeStore.getDefinitionLevel();
