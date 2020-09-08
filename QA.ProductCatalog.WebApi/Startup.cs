@@ -64,7 +64,12 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));            
             
             services
-                .AddMvc(SetupMvcOptions)
+                .AddMvc(options => {             
+                    options.Filters.Add(typeof(GlobalExceptionFilterAttribute));
+                    options.EnableEndpointRouting = false;
+                    RegisterMediaTypes(options.FormatterMappings);
+                    RegisterOutputFormatters(options.OutputFormatters);
+                    RegisterInputFormatters(options.InputFormatters); })
                 .AddXmlSerializerFormatters().AddControllersAsServices();
             
             services.AddSwaggerGen(c =>
@@ -103,12 +108,7 @@ namespace QA.ProductCatalog.WebApi
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Web API");
             });
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseMvcWithDefaultRoute();
             
             LogStart(app, loggerFactory);
         }
@@ -121,14 +121,6 @@ namespace QA.ProductCatalog.WebApi
             logger.LogInformation("{appName} started", name);         
         }
         
-        private static void SetupMvcOptions(MvcOptions options)
-        {
-            options.Filters.Add(typeof(GlobalExceptionFilterAttribute));
-            options.EnableEndpointRouting = false;
-            RegisterMediaTypes(options.FormatterMappings);
-            RegisterOutputFormatters(options.OutputFormatters);
-            RegisterInputFormatters(options.InputFormatters);
-        }
         
         private static void RegisterInputFormatters(FormatterCollection<IInputFormatter> formatters)
         {
