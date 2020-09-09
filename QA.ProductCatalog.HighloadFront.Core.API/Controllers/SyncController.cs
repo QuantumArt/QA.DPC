@@ -1,14 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Logging;
+using NLog;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Models;
-using QA.ProductCatalog.HighloadFront.Options;
-using System;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using QA.Core.ProductCatalog.ActionsRunner;
@@ -24,11 +19,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         private readonly ITaskService _taskService;
         
         public SyncController(
-            ILoggerFactory loggerFactory, 
             ProductManager manager, 
             ElasticConfiguration configuration, 
             ITaskService taskService 
-        ) : base(manager, loggerFactory, configuration)
+        ) : base(manager, configuration)
         {
             _taskService = taskService;
         }
@@ -52,7 +46,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
 
-            Log(LogLevel.Information, "Query received for creating/updating product: {id}", id);
+            Logger.Info("Query received for creating/updating product: {id}", id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
@@ -90,7 +84,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return BadRequest($"Unable to remove product {id}. This is read-only instance.");
             }
 
-            Log(LogLevel.Information, "Получен запрос на удаление продукта: " + id);
+            Logger.Info("Query received for deleting product: {id}", id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
@@ -174,7 +168,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private IActionResult CreateUnauthorizedResult(string instanceId, string actualInstanceId)
         {
-            Log(LogLevel.Information, $"InstanceId {instanceId} is specified incorrectly, should be {actualInstanceId}");            
+            Logger.Info("InstanceId {instanceId} is specified incorrectly, should be {actualInstanceId}", instanceId, actualInstanceId);            
             return new UnauthorizedResult();
         }
 

@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Logging;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Options;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
+using NLog;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -53,10 +53,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public ProductsController(
             ProductManager manager, 
             SonicElasticStoreOptions options, 
-            ILoggerFactory loggerFactory, 
             ElasticConfiguration configuration, 
             IMemoryCache cache
-        ) : base(manager, loggerFactory, configuration)
+        ) : base(manager, configuration)
         {
             _options = options;
             _cache = cache;
@@ -468,7 +467,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 {
                     result = BadRequest(errors);
                     var errorstr = string.Join(",", errors);
-                    Logger.LogError($"Model has errors: {errorstr}");                    
+                    Logger.Error($"Model has errors: {errorstr}");                    
                 }
             }
             
