@@ -25,7 +25,7 @@ export default class XmlEditor extends React.Component<Props> {
       <div className="xml-editor">
         {xmlEditorStore.formMode && controlsStore.selectedNodeId && (
           <div className="xml-editor__form-view">
-            <StubForm nodeId={controlsStore.selectedNodeId} />
+            <StubForm />
           </div>
         )}
         <AceEditor

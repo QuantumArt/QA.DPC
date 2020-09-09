@@ -1,18 +1,13 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { useStores } from "DefinitionEditor";
-import { Field, Form } from "react-final-form";
+import { Form } from "react-final-form";
 import FormField from "../FormField";
-import "./Style.scss";
 import FormFieldWrapper from "../FormFieldWrap";
+import "./Style.scss";
 
-interface Props {
-  nodeId: string;
-}
-
-const StubFrom = observer<Props>(({ nodeId }) => {
-  const { formStore, treeStore } = useStores();
-  formStore.setNodeId(nodeId);
+const StubFrom = observer(() => {
+  const { formStore, controlsStore } = useStores();
 
   return (
     <div className="forms-wrapper">
@@ -20,7 +15,7 @@ const StubFrom = observer<Props>(({ nodeId }) => {
         <Form
           onSubmit={formObj => console.log(formObj)}
           render={({ handleSubmit }) => {
-            treeStore.submitFormSyntheticEvent = handleSubmit;
+            controlsStore.submitFormSyntheticEvent = handleSubmit;
             return (
               <form onSubmit={handleSubmit}>
                 {formStore.UIEditModel.map(fieldModel => (

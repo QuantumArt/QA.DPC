@@ -1,4 +1,4 @@
-import { action, observable } from "mobx";
+import { action, observable, reaction } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import TreeStore from "./TreeStore";
 import FormStore from "DefinitionEditor/Stores/FormStore";
@@ -13,10 +13,19 @@ export default class ControlsStore {
     private formStore: FormStore
   ) {
     treeStore.init(this.setSelectedNodeId);
+    formStore.init(action =>
+      reaction(
+        () => this.selectedNodeId,
+        (nodeId: string) => {
+          if (nodeId && action) action(nodeId);
+        }
+      )
+    );
   }
 
   @observable savingMode: SavingMode = SavingMode.Apply;
   @observable selectedNodeId: string = null;
+  submitFormSyntheticEvent;
 
   @action
   setSelectedNodeId = (id: string) => {

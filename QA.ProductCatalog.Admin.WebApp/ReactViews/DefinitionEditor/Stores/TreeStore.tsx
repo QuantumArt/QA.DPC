@@ -21,8 +21,6 @@ export default class TreeStore {
       }
     );
   };
-
-  submitFormSyntheticEvent;
   @observable operationState: OperationState = OperationState.None;
 
   @observable errorText: string = null;

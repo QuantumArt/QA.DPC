@@ -16,13 +16,13 @@ import {
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
 import _ from "lodash";
+import { IReactionDisposer } from "mobx/lib/internal";
 
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
     this.singleRequestedEnums = new singleRequestedData(ApiService.getSelectEnums);
     this.initEnumsModel();
   }
-  @observable private nodeId;
   @observable UIEditModel: ParsedModelType[];
   private apiEditModel: IEditFormModel;
   private singleRequestedEnums: ISingleRequestedData<
@@ -35,13 +35,11 @@ export default class FormStore {
   @observable errorText: string = null;
   @observable errorLog: string = null;
   @observable inDefinitionModel: CheckboxParsedModel;
+  fetchFieldsReaction: IReactionDisposer;
 
-  fetchFieldsReaction = reaction(
-    () => this.nodeId,
-    (nodeId: string) => {
-      if (nodeId) this.fetchFormFields();
-    }
-  );
+  init = (cb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer) => {
+    this.fetchFieldsReaction = cb(this.fetchFormFields);
+  };
 
   initEnumsModel = async () => {
     try {
@@ -94,9 +92,9 @@ export default class FormStore {
         return new InputParsedModel(field, this.apiEditModel[field], "", isFieldShouldBeHide);
       case "FieldTitle":
         return new InputParsedModel(
-          this.settings.formControlStrings.fieldNameForCard,
+          this.settings.strings.FieldNameForCard,
           this.apiEditModel[field],
-          this.settings.formControlStrings.labelText,
+          this.settings.strings.LabelText,
           isFieldShouldBeHide
         );
       case "RelateTo":
@@ -198,9 +196,9 @@ export default class FormStore {
   };
 
   @action
-  fetchFormFields = async (): Promise<void> => {
+  fetchFormFields = async (nodeId: string): Promise<void> => {
     const formData = new FormData();
-    formData.append("path", this.nodeId.charAt(0) === "/" ? this.nodeId : `/${this.nodeId}`);
+    formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
     formData.append("xml", this.xmlEditorStore.xml);
     try {
       if (!this.enumsModel) await this.initEnumsModel();
@@ -211,7 +209,4 @@ export default class FormStore {
       console.log(e);
     }
   };
-
-  @action
-  setNodeId = (nodeId: string) => (this.nodeId = nodeId);
 }

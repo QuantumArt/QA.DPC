@@ -27,7 +27,8 @@ const ToolBar = observer(() => {
             icon={IconNames.CONFIRM}
             type="submit"
             onClick={event => {
-              treeStore.submitFormSyntheticEvent && treeStore.submitFormSyntheticEvent(event);
+              controlsStore.submitFormSyntheticEvent &&
+                controlsStore.submitFormSyntheticEvent(event);
               controlsStore.apply();
             }}
             disabled={treeStore.operationState === OperationState.Pending}
