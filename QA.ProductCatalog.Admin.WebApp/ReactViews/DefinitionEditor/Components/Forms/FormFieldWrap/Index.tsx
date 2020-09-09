@@ -1,9 +1,9 @@
 import { ParsedModelType } from "Shared/Utils";
 import React, { ReactNode } from "react";
 import cn from "classnames";
-import "./Style.scss";
 import { observer } from "mobx-react-lite";
 import { useStores } from "DefinitionEditor";
+import "./Style.scss";
 
 interface IProps {
   model: ParsedModelType;
@@ -21,7 +21,7 @@ const FormFieldWrapper = observer(({ model, children }: IProps) => {
     >
       {model.label && <label className="form-field__label">{model.label}</label>}
       <div className="form-field-element-wrap">
-        {React.Children.map(children, (child, i) => {
+        {React.Children.map(children, child => {
           return React.cloneElement(child as React.ReactElement, {
             model: model
           });

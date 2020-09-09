@@ -13,7 +13,7 @@ interface IProps {
 
 //TODO добавить в модель name и юзать его как ключ. Т.к. label может отсутствовать.
 const FormField = observer(({ model }: IProps) => {
-  const renderFieldDependsOnType = React.useMemo(() => {
+  const renderFieldDependsOnType = () => {
     const formFieldClassName = cn("form-field-element", {
       "form-field-element--inline": model.isInline,
       "form-field-element--hide": model.isHide
@@ -94,9 +94,9 @@ const FormField = observer(({ model }: IProps) => {
       default:
         return "";
     }
-  }, [model.isHide, model.isInline, model.label, model.value, model.type]);
+  };
 
-  return model && <>{renderFieldDependsOnType}</>;
+  return model && <>{renderFieldDependsOnType()}</>;
 });
 
 export default FormField;
