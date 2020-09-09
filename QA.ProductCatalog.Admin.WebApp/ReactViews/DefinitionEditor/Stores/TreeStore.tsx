@@ -1,15 +1,18 @@
 import React from "react";
-import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
+import { Classes, Icon, IconName, Intent, MaybeElement, Tooltip } from "@blueprintjs/core";
 import { action, computed, observable, when } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
-import { SavingMode } from "DefinitionEditor/Enums";
 import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
 import ApiService from "DefinitionEditor/ApiService";
+import { l } from "DefinitionEditor/Localization";
 
 export default class TreeStore {
-  constructor(private xmlEditorStore: XmlEditorStore) {
+  constructor(private xmlEditorStore: XmlEditorStore) {}
+
+  init = (setSelectedNodeId: (id: string) => void) => {
+    this.setSelectedNodeId = setSelectedNodeId;
     when(
       () => this.xmlEditorStore.rootId != null,
       async () => {
@@ -17,16 +20,18 @@ export default class TreeStore {
         await this.onNodeExpand(this.tree[0]);
       }
     );
-  }
+  };
 
   submitFormSyntheticEvent;
   @observable operationState: OperationState = OperationState.None;
-  @observable savingMode: SavingMode = SavingMode.Apply;
+
   @observable errorText: string = null;
   @observable errorLog: string = null;
   @observable nodesMap: Map<ITreeNode["id"], ITreeNode<Partial<IDefinitionNode>>> = new Map();
   @observable openedNodes: ITreeNode["id"][] = [];
-  @observable selectedNodeId: string = null;
+  @observable private selectedNodeId: string = null;
+
+  setSelectedNodeId: (id: string) => void = null;
 
   @computed get tree() {
     if (this.xmlEditorStore.rootId && this.nodesMap.has(`/${this.xmlEditorStore.rootId}`)) {
@@ -76,7 +81,10 @@ export default class TreeStore {
     }
     node.isSelected = originallySelected == null ? true : !originallySelected;
     this.selectedNodeId = node.isSelected ? node.id.toString() : null;
-    this.gatherSearchString();
+    this.setSelectedNodeId(this.selectedNodeId);
+    if (this.xmlEditorStore.queryOnClick && this.selectedNodeId !== null) {
+      this.gatherSearchString();
+    }
   };
 
   @action
@@ -86,8 +94,9 @@ export default class TreeStore {
       if (path) {
         formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
       }
-      if (!this.xmlEditorStore.validateXml()) {
-        throw new Error("XML is not valid");
+      const validation = this.xmlEditorStore.validateXml();
+      if (validation !== true) {
+        throw validation;
       }
       formData.append("xml", this.xmlEditorStore.xml);
       this.operationState = OperationState.Pending;
@@ -97,97 +106,82 @@ export default class TreeStore {
     } catch (e) {
       console.log(e);
       this.operationState = OperationState.Error;
-      this.errorLog = (await e.text()) ?? null;
-      this.errorText = e.message ?? e.statusMessage ?? e.statusText;
+      try {
+        if (e.err) {
+          this.errorLog = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
+        } else {
+          this.errorLog = (await e.text()) ?? null;
+        }
+      } catch {
+      } finally {
+        this.errorText = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
+      }
       return [];
     }
   };
 
   @action
-  setSavingMode = (mode: SavingMode) => (this.savingMode = mode);
-
-  @action
-  refresh = async () => {
-    this.xmlEditorStore.setXml(this.xmlEditorStore.origXml);
-    this.resetErrorState();
-    this.openedNodes = [];
-    await this.getDefinitionLevel();
-    await this.onNodeExpand(this.tree[0]);
-  };
-
-  @action
-  apply = async () => {
-    this.setSavingMode(SavingMode.Apply);
-    await this.getDefinitionLevel();
-    for (const nodeId of this.openedNodes) {
-      await this.onNodeExpand(this.nodesMap.get(nodeId));
+  setError = (text?: string, log?: string) => {
+    this.operationState = OperationState.Error;
+    this.errorText = text ?? "Error";
+    if (log) {
+      this.errorLog = log;
     }
-  };
-
-  @action
-  saveAndExit = async () => {
-    this.setSavingMode(SavingMode.Finish);
-    await this.getDefinitionLevel();
-    if (this.operationState === OperationState.Success) {
-      window.pmrpc.call({
-        destination: parent,
-        publicProcedureName: "SaveXmlToDefinitionField",
-        params: [this.xmlEditorStore.xml]
-      });
-    }
-  };
-
-  exit = () => {
-    window.pmrpc.call({
-      destination: parent,
-      publicProcedureName: "CloseEditor"
-    });
   };
 
   @action
   resetErrorState = () => {
     this.operationState = OperationState.None;
     this.errorText = null;
+    this.errorLog = null;
   };
 
-  private getNodeStatus = (
-    node: IDefinitionNode
-  ): { icon: IconName; className: string; label: string } => {
-    const label = node.text ?? "Dictionary caching settings";
+  private getNodeStatus = (node: IDefinitionNode): Partial<ITreeNode> => {
+    if (node.IsDictionaries) {
+      return {
+        label: l("DictionaryCachingSettings"),
+        icon: <Icon icon="cog" intent={Intent.PRIMARY} className={Classes.TREE_NODE_ICON} />
+      };
+    }
     if (node.MissingInQp) {
       return {
-        label: `${label} (Missing in QP)`,
-        icon: "warning-sign",
-        className: ""
+        label: node.text,
+        icon: node.IconName as IconName,
+        secondaryLabel: (
+          <Tooltip content={l("MissingInQP")}>
+            <Icon icon="warning-sign" intent={Intent.WARNING} />
+          </Tooltip>
+        )
       };
     }
     if (node.NotInDefinition) {
       return {
-        label,
-        icon: "exclude-row",
+        label: node.text,
+        icon: (
+          <Tooltip content={l("NotInDefinition")}>
+            <Icon icon="exclude-row" className={Classes.TREE_NODE_ICON} />
+          </Tooltip>
+        ),
         className: "xml-tree-node-gray"
       };
     }
 
     return {
-      label,
-      icon: "document",
-      className: ""
+      label: node.text,
+      icon: node.IconName as IconName
     };
   };
 
   private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
-      const nodeStatus = this.getNodeStatus(node);
       this.nodesMap.set(node.Id, {
         id: node.Id,
-        label: nodeStatus.label,
+        label: "",
         isExpanded: false,
         hasCaret: node.hasChildren,
         childNodes: [],
         isSelected: false,
-        className: nodeStatus.className,
-        icon: nodeStatus.icon,
+        ...this.getNodeStatus(node),
         nodeData: {
           expanded: node.expanded,
           hasChildren: node.hasChildren,
@@ -199,22 +193,20 @@ export default class TreeStore {
   };
 
   private gatherSearchString = () => {
-    if (this.xmlEditorStore.searchOnClick && this.selectedNodeId !== null) {
-      const arr = this.selectedNodeId.split("/");
-      let lastPart = arr.pop();
-      if (lastPart === "0") {
-        lastPart = arr.pop();
-      }
-      const nodeLabel = this.nodesMap
-        .get(this.selectedNodeId)
-        .label.toString()
-        .split(" ")[0];
-      const dummy = document.createElement("input");
-      document.body.appendChild(dummy);
-      dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;
-      dummy.select();
-      document.execCommand("copy");
-      document.body.removeChild(dummy);
+    const arr = this.selectedNodeId.split("/");
+    let lastPart = arr.pop();
+    if (lastPart === "0") {
+      lastPart = arr.pop();
     }
+    const nodeLabel = this.nodesMap
+      .get(this.selectedNodeId)
+      .label.toString()
+      .split(" ")[0];
+    const dummy = document.createElement("input");
+    document.body.appendChild(dummy);
+    dummy.value = `(.*${lastPart})(.*${nodeLabel}).*`;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
   };
 }

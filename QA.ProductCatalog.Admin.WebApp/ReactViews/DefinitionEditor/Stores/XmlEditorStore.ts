@@ -1,5 +1,6 @@
 ﻿import { action, observable } from "mobx";
-import { parse, validate } from "fast-xml-parser";
+import { parse, validate, ValidationError } from "fast-xml-parser";
+import ControlsStore from "./ControlsStore";
 
 export default class XmlEditorStore {
   constructor(private settings: DefinitionEditorSettings) {
@@ -28,27 +29,32 @@ export default class XmlEditorStore {
   @observable xml: string;
   origXml: string;
   @observable rootId: string;
-  @observable fontSize: number = 14;
-  @observable wrapLines: boolean = true;
-  @observable searchOnClick: boolean = true;
+  @observable fontSize: number = localStorage.getItem("fontSize")
+    ? parseInt(localStorage.getItem("fontSize"))
+    : 14;
+  @observable wrapLines: boolean = localStorage.getItem("wrapLines") === "true";
+  @observable queryOnClick: boolean = localStorage.getItem("queryOnClick") === "true";
   @observable formMode: boolean = false;
 
   @action
-  toggleFormMode = () => this.formMode = !this.formMode;
+  toggleFormMode = () => (this.formMode = !this.formMode);
 
   @action
   changeFontSize = (size: number) => {
     this.fontSize = size;
+    localStorage.setItem("fontSize", `${size}`);
   };
 
   @action
   toggleWrapLines = () => {
     this.wrapLines = !this.wrapLines;
+    localStorage.setItem("wrapLines", `${this.wrapLines}`);
   };
 
   @action
-  toggleSearchOnClick = () => {
-    this.searchOnClick = !this.searchOnClick;
+  toggleQueryOnClick = () => {
+    this.queryOnClick = !this.queryOnClick;
+    localStorage.setItem("queryOnClick", `${this.queryOnClick}`);
   };
 
   @action
@@ -59,7 +65,7 @@ export default class XmlEditorStore {
     this.xml = xml;
   };
 
-  validateXml = () => validate(this.xml) === true;
+  validateXml = (): true | ValidationError => validate(this.xml);
 
   @action
   private setRootId = (xml: string) => {

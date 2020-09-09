@@ -322,7 +322,7 @@
     <value>Настройки кеширования словарей</value>
   </data>
   <data name="MissingInQp" xml:space="preserve">
-    <value>поля не существует в QP!</value>
+    <value>Поля не существует в QP!</value>
   </data>
   <data name="EditXml" xml:space="preserve">
     <value>Править XML</value>
@@ -332,5 +332,41 @@
   </data>
   <data name="Seconds" xml:space="preserve">
     <value>сек</value>
+  </data>
+  <data name="BackToEditing" xml:space="preserve">
+    <value>Обратно к редактированию</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="ExitAnyway" xml:space="preserve">
+    <value>Выйти всё равно</value>
+  </data>
+  <data name="HideLog" xml:space="preserve">
+    <value>Спрятать лог</value>
+  </data>
+  <data name="NotInDefinition" xml:space="preserve">
+    <value>Нет в описании</value>
+  </data>
+  <data name="QueryOnClick" xml:space="preserve">
+    <value>Поисковая строка по клику</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="SameDefinition" xml:space="preserve">
+    <value>В описании нет изменений. </value>
+  </data>
+  <data name="SaveAndExit" xml:space="preserve">
+    <value>Сохранить и выйти</value>
+  </data>
+  <data name="ShowLog" xml:space="preserve">
+    <value>Показать лог</value>
+  </data>
+  <data name="WrapLines" xml:space="preserve">
+    <value>Перенос строк</value>
   </data>
 </root>

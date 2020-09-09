@@ -3,37 +3,47 @@ import { observer } from "mobx-react-lite";
 import { Button, ButtonGroup, Intent, Slider, Switch } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
-import { ErrorDialog, Loading } from "DefinitionEditor/Components";
+import { TreeErrorDialog, Loading } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
+import { l } from "DefinitionEditor/Localization";
 import "./Style.scss";
 
 const ToolBar = observer(() => {
-  const { xmlEditorStore, treeStore } = useStores();
+  const { xmlEditorStore, treeStore, controlsStore } = useStores();
 
   return (
     <div className="editor-toolbar">
-      <ErrorDialog />
+      <TreeErrorDialog />
       <div className="editor-toolbar__buttons">
         <ButtonGroup>
-          <Button icon={IconNames.REFRESH} onClick={treeStore.refresh}>
-            Refresh
+          <Button
+            icon={IconNames.REFRESH}
+            onClick={controlsStore.refresh}
+            disabled={treeStore.operationState === OperationState.Pending}
+          >
+            {l("Refresh")}
           </Button>
           <Button
             icon={IconNames.CONFIRM}
             type="submit"
             onClick={event => {
-              treeStore.submitFormSyntheticEvent(event);
-              treeStore.apply();
+              treeStore.submitFormSyntheticEvent && treeStore.submitFormSyntheticEvent(event);
+              controlsStore.apply();
             }}
+            disabled={treeStore.operationState === OperationState.Pending}
           >
-            Apply
+            {l("Apply")}
           </Button>
-          <Button icon={IconNames.FLOPPY_DISK} onClick={treeStore.saveAndExit}>
-            Save and Exit
+          <Button
+            icon={IconNames.FLOPPY_DISK}
+            onClick={controlsStore.saveAndExit}
+            disabled={treeStore.operationState === OperationState.Pending}
+          >
+            {l("SaveAndExit")}
           </Button>
           <div className="editor-toolbar__divider" />
-          <Button icon={IconNames.CROSS} onClick={treeStore.exit}>
-            Exit
+          <Button icon={IconNames.CROSS} onClick={controlsStore.exit}>
+            {l("Exit")}
           </Button>
           <Loading
             className="editor-toolbar__loading"
@@ -45,12 +55,12 @@ const ToolBar = observer(() => {
           style={{ visibility: xmlEditorStore.formMode ? "hidden" : "visible" }}
         >
           <Switch
-            label="Query on click"
-            checked={xmlEditorStore.searchOnClick}
-            onChange={xmlEditorStore.toggleSearchOnClick}
+            label={l("QueryOnClick")}
+            checked={xmlEditorStore.queryOnClick}
+            onChange={xmlEditorStore.toggleQueryOnClick}
           />
           <Switch
-            label="Wrap lines"
+            label={l("WrapLines")}
             checked={xmlEditorStore.wrapLines}
             onChange={xmlEditorStore.toggleWrapLines}
           />
@@ -67,7 +77,7 @@ const ToolBar = observer(() => {
             />
           </div>
         </div>
-        {treeStore.selectedNodeId !== null && (
+        {controlsStore.selectedNodeId !== null && (
           <Button
             icon={xmlEditorStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}

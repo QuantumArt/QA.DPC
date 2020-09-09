@@ -19,13 +19,13 @@ export default class XmlEditor extends React.Component<Props> {
   static contextType: Context<StoresCtx> = storesCtx;
 
   render() {
-    const { xmlEditorStore, treeStore } = this.context;
+    const { xmlEditorStore, controlsStore } = this.context;
     const { height, width } = this.props;
     return (
       <div className="xml-editor">
-        {xmlEditorStore.formMode && treeStore.selectedNodeId && (
+        {xmlEditorStore.formMode && controlsStore.selectedNodeId && (
           <div className="xml-editor__form-view">
-            <StubForm nodeId={treeStore.selectedNodeId} />
+            <StubForm nodeId={controlsStore.selectedNodeId} />
           </div>
         )}
         <AceEditor

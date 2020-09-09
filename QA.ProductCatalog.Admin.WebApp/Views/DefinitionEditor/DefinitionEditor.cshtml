@@ -3,43 +3,50 @@
 @using QA.Core.Models.Configuration
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
-<script>
-    window.definitionEditor = {
-      xml: "@Model.Xml",
-      saveToDb: '@(Model.ContentItemId.HasValue ? "true" : "false")',
-      saveDefinitionUrl: '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
-      getSingleNodeUrl: '@Url.Action("GetSingleNode")',
-      getDefinitionLevelUrl: '@Url.Action("GetDefinitionLevel")',
-      editBetaUrl: '@Url.Action("EditBeta")',
-      editUrl: '@Url.Action("Edit")',
-      saveText: '@ControlStrings.Save',
-      editText: '@ControlStrings.EditXml',
-      endEditText: '@ControlStrings.EndEditXml',
-      //new
-      backendEnums: {
-        update: '/Resource/GetUpdateEnum',
-        publish: '/Resource/GetPublishEnum',
-        preload: '/Resource/GetPreloadEnum',
-        delete: '/Resource/GetDeleteEnum',
-        clone: '/Resource/GetCloneEnum',
-      },
-      formControlStrings: {
-        saveText: '@ControlStrings.Save',
-        editText: '@ControlStrings.EditXml',
-        endEditText: '@ControlStrings.EndEditXml',
-        jsonFieldName: '@ControlStrings.JsonFieldName',
-        relationConditionDescription: '@ControlStrings.RelationConditionDescription',
-        path:'@ControlStrings.Path',
-        removePath: '@ControlStrings.RemovePath',
-        converter: '@ControlStrings.Converter',
-        dontWrapInCData: '@ControlStrings.DontWrapInCData',
-        loadAsImage: '@ControlStrings.LoadAsImage',
-        fieldNameForCard: '@Html.Raw(ControlStrings.FieldNameForCard)',
-        labelText: '@Html.Raw(ControlStrings.LabelText)',
-      }
-    };
-</script>
-@*@Html.TextArea("code", Model.Xml, new { disabled = "disabled", cols = 100, rows = 10 })*@
+  <script>
+  window.definitionEditor = {
+    xml: "@Model.Xml",
+    saveToDb: '@(Model.ContentItemId.HasValue ? "true" : "false")',
+    saveDefinitionUrl: '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
+    getSingleNodeUrl: '@Url.Action("GetSingleNode")',
+    getDefinitionLevelUrl: '@Url.Action("GetDefinitionLevel")',
+    editBetaUrl: '@Url.Action("EditBeta")',
+    editUrl: '@Url.Action("Edit")',
+    strings: {
+      DictionaryCachingSettings: '@Html.Raw(ControlStrings.DictionaryCachingSettings)',
+      MissingInQP: '@Html.Raw(ControlStrings.MissingInQp)',
+      NotInDefinition: '@Html.Raw(ControlStrings.NotInDefinition)',
+      Apply: '@Html.Raw(ControlStrings.Apply)',
+      Refresh: '@Html.Raw(ControlStrings.Refresh)',
+      SaveAndExit: '@Html.Raw(ControlStrings.SaveAndExit)',
+      Exit: '@Html.Raw(ControlStrings.Exit)',
+      WrapLines: '@Html.Raw(ControlStrings.WrapLines)',
+      QueryOnClick: '@Html.Raw(ControlStrings.QueryOnClick)',
+      Close: '@Html.Raw(ControlStrings.Close)',
+      ExitAnyway: '@Html.Raw(ControlStrings.ExitAnyway)',
+      BackToEditing: '@Html.Raw(ControlStrings.BackToEditing)',
+      HideLog: '@Html.Raw(ControlStrings.HideLog)',
+      ShowLog: '@Html.Raw(ControlStrings.ShowLog)',
+      SameDefinition: '@Html.Raw(ControlStrings.SameDefinition)',
+      JsonFieldName: '@Html.Raw(ControlStrings.JsonFieldName)',
+      RelationConditionDescription: '@Html.Raw(ControlStrings.RelationConditionDescription)',
+      Path: '@Html.Raw(ControlStrings.Path)',
+      RemovePath: '@Html.Raw(ControlStrings.RemovePath)',
+      Converter: '@Html.Raw(ControlStrings.Converter)',
+      DontWrapInCData: '@Html.Raw(ControlStrings.DontWrapInCData)',
+      LoadAsImage: '@Html.Raw(ControlStrings.LoadAsImage)',
+      FieldNameForCard: '@Html.Raw(ControlStrings.FieldNameForCard)',
+      LabelText: '@Html.Raw(ControlStrings.LabelText)',
+    },
+    backendEnums: {
+      update: '/Resource/GetUpdateEnum',
+      publish: '/Resource/GetPublishEnum',
+      preload: '/Resource/GetPreloadEnum',
+      delete: '/Resource/GetDeleteEnum',
+      clone: '/Resource/GetCloneEnum',
+    },
+  };
+  </script>
 <div id="definitionEditor"></div>
 <script src="~/js/pmrpc.js"></script>
 <script src="~/js/bundles/DefinitionEditor/DefinitionEditor.js"></script>

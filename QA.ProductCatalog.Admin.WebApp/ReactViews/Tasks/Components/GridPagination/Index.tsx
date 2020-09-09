@@ -42,14 +42,14 @@ export const GridPagination = ({
           icon="chevron-left"
           onClick={previousPage}
           disabled={!canPreviousPage || isLoading}
-          outlined="true"
+          outlined
         />
         <Button
           className="pagination__button pagination__button--with-left-margin"
           icon="chevron-right"
           onClick={nextPage}
           disabled={!canNextPage || isLoading}
-          outlined="true"
+          outlined
         />
       </div>
     </div>
