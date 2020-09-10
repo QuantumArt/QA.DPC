@@ -11,7 +11,6 @@ interface IProps {
   model?: ParsedModelType;
 }
 
-//TODO добавить в модель name и юзать его как ключ. Т.к. label может отсутствовать.
 const FormField = observer(({ model }: IProps) => {
   const renderFieldDependsOnType = () => {
     const formFieldClassName = cn("form-field-element", {
@@ -22,7 +21,7 @@ const FormField = observer(({ model }: IProps) => {
     switch (model.type) {
       case FormFieldType.Text:
         return (
-          <Field name={model.label} defaultValue={model.value}>
+          <Field name={model.name} defaultValue={model.value}>
             {({ input }) => {
               return <InputGroup {...input} disabled={true} className={formFieldClassName} />;
             }}
@@ -30,7 +29,7 @@ const FormField = observer(({ model }: IProps) => {
         );
       case FormFieldType.Input:
         return (
-          <Field name={model.label} defaultValue={model.value} value={model.value}>
+          <Field name={model.name} defaultValue={model.value} value={model.value}>
             {({ input }) => {
               return (
                 <InputGroup
@@ -44,7 +43,7 @@ const FormField = observer(({ model }: IProps) => {
         );
       case FormFieldType.Textarea:
         return (
-          <Field name={model.label} defaultValue={model.value}>
+          <Field name={model.name} defaultValue={model.value}>
             {({ input }) => {
               return <TextArea {...input} {...model.extraOptions} className={formFieldClassName} />;
             }}
@@ -53,7 +52,7 @@ const FormField = observer(({ model }: IProps) => {
       case FormFieldType.Checkbox:
         return (
           <>
-            <Field name={model.label} defaultValue={model.value} type={model.type}>
+            <Field name={model.name} defaultValue={model.value} type={model.type}>
               {props => {
                 return (
                   <div className={formFieldClassName}>
@@ -76,7 +75,7 @@ const FormField = observer(({ model }: IProps) => {
         );
       case FormFieldType.Select:
         return (
-          <Field name={model.label} defaultValue={model.value} type={model.type}>
+          <Field name={model.name} defaultValue={model.value} type={model.type}>
             {props => {
               return (
                 <HTMLSelect

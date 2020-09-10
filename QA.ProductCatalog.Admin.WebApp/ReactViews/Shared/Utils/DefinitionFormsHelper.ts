@@ -13,6 +13,7 @@ export declare type ParsedModelType =
 export interface IBaseParsedModel {
   type: FormFieldType;
   label: string | null;
+  name: string;
   value: string | boolean | number;
   isHide: boolean;
   isInline: boolean;
@@ -21,6 +22,7 @@ interface IInputParsedModel extends IBaseParsedModel {
   type: FormFieldType.Input;
   value: string;
   placeholder?: string;
+  name: string;
 }
 interface ITextAreaParsedModel extends IBaseParsedModel {
   type: FormFieldType.Textarea;
@@ -50,12 +52,14 @@ interface ICheckboxParsedModel extends IBaseParsedModel {
 }
 
 export abstract class BaseAbstractParsedModel implements IBaseParsedModel {
-  protected constructor(label, value, isHide = false, isInline = false) {
+  protected constructor(name, label, value, isHide = false, isInline = false) {
+    this.name = name;
     this.label = label;
     this.value = value;
     this.isHide = isHide;
     this.isInline = isInline;
   }
+  readonly name: string;
   readonly type: FormFieldType;
   readonly label: string;
   isHide: boolean;
@@ -64,16 +68,16 @@ export abstract class BaseAbstractParsedModel implements IBaseParsedModel {
 }
 
 export class TextParsedModel extends BaseAbstractParsedModel implements ITextParsedModel {
-  constructor(label, value, isHide?, isInline?) {
-    super(label, value, isHide, isInline);
+  constructor(name, label, value, isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
   }
   readonly type = FormFieldType.Text;
   readonly value;
 }
 
 export class SelectParsedModel extends BaseAbstractParsedModel implements ISelectParsedModel {
-  constructor(label, value, options, isHide?, isInline?) {
-    super(label, value, isHide, isInline);
+  constructor(name, label, value, options, isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
     this.options = options;
   }
   readonly type = FormFieldType.Select;
@@ -82,8 +86,8 @@ export class SelectParsedModel extends BaseAbstractParsedModel implements ISelec
 }
 
 export class CheckboxParsedModel extends BaseAbstractParsedModel implements ICheckboxParsedModel {
-  constructor(label, value, subString = "", subComponentOnCheck = null, isHide?, isInline?) {
-    super(label, value, isHide, isInline);
+  constructor(name, label, value, subString = "", subComponentOnCheck = null, isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
     this.subString = subString;
     this.subComponentOnCheck = subComponentOnCheck;
   }
@@ -98,8 +102,8 @@ export class CheckboxParsedModel extends BaseAbstractParsedModel implements IChe
 }
 
 export class TextAreaParsedModel extends BaseAbstractParsedModel implements ITextAreaParsedModel {
-  constructor(label, value, extraOptions, isHide?, isInline?) {
-    super(label, value, isHide, isInline);
+  constructor(name, label, value, extraOptions, isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
     this.extraOptions = extraOptions;
   }
   readonly type = FormFieldType.Textarea;
@@ -108,8 +112,8 @@ export class TextAreaParsedModel extends BaseAbstractParsedModel implements ITex
 }
 
 export class InputParsedModel extends BaseAbstractParsedModel implements IInputParsedModel {
-  constructor(label, value, placeholder = "", isHide?, isInline?) {
-    super(label, value, isHide, isInline);
+  constructor(name, label, value, placeholder = "", isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
     this.placeholder = placeholder;
   }
   @observable isHide: boolean;

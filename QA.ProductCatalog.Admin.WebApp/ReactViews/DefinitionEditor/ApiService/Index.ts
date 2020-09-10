@@ -5,6 +5,7 @@ import {
   IEditFormModel
 } from "DefinitionEditor/ApiService/ApiInterfaces";
 import { BackendEnumType } from "DefinitionEditor/Enums";
+import { mapEditFormModel } from "DefinitionEditor/ApiService/Mappers";
 
 class ApiService extends BaseApiService {
   constructor(private settings: DefinitionEditorSettings) {
@@ -48,15 +49,14 @@ class ApiService extends BaseApiService {
 
   /**
    * POST
-   *
-   * @param body
+   * @param body formData
    */
   public getEditForm = async (body: FormData): Promise<IEditFormModel> => {
     const res = await fetch(this.settings.editBetaUrl, {
       method: "POST",
       body
     });
-    return this.mapResponse(res, (x: IEditFormModel) => x);
+    return this.mapResponse(res, (x: IEditFormModel) => mapEditFormModel(x));
   };
 }
 

@@ -54,13 +54,17 @@ export default class FormStore {
   };
 
   getModelByFieldName = (field: string): ParsedModelType => {
-    const isFieldShouldBeHide = !this.inDefinitionModel.value;
+    const isFieldShouldBeHide = !this.inDefinitionModel?.value;
+    const fieldValue = this.apiEditModel[field];
 
     switch (field) {
-      case "CachePeriod":
+      case "InDefinition":
+        return this.inDefinitionModel;
+      case "CacheEnabled":
         const mainCheckboxModel = new CheckboxParsedModel(
           field,
-          this.apiEditModel["CacheEnabled"],
+          field,
+          fieldValue,
           "Cache",
           null,
           isFieldShouldBeHide,
@@ -68,8 +72,9 @@ export default class FormStore {
         );
 
         const subComponentInput = new InputParsedModel(
-          "Cache",
-          this.apiEditModel[field],
+          "CachePeriod",
+          null,
+          this.apiEditModel["CachePeriod"],
           "",
           !mainCheckboxModel.value,
           true
@@ -88,12 +93,13 @@ export default class FormStore {
       case "FieldName":
       case "ContentName":
       case "DefaultCachePeriod":
-        if (!this.apiEditModel[field]) return undefined;
-        return new InputParsedModel(field, this.apiEditModel[field], "", isFieldShouldBeHide);
+        return new InputParsedModel(field, field, fieldValue, "", isFieldShouldBeHide);
       case "FieldTitle":
+        if (_.isUndefined(fieldValue)) return undefined;
         return new InputParsedModel(
+          field,
           this.settings.strings.FieldNameForCard,
-          this.apiEditModel[field],
+          fieldValue,
           this.settings.strings.LabelText,
           isFieldShouldBeHide
         );
@@ -101,7 +107,8 @@ export default class FormStore {
         if (!this.apiEditModel["RelatedContentName"] && !this.apiEditModel["RelatedContentId"])
           return undefined;
         return new TextParsedModel(
-          this.apiEditModel[field],
+          field,
+          fieldValue,
           `${this.apiEditModel["RelatedContentName"] || ""} ${this.apiEditModel[
             "RelatedContentId"
           ] || ""}`,
@@ -110,40 +117,34 @@ export default class FormStore {
       case "FieldId":
       case "IsClassifier":
       case "ContentId":
-        if (!this.apiEditModel[field]) return undefined;
-        return new TextParsedModel(field, this.apiEditModel[field], isFieldShouldBeHide);
-      case "InDefinition":
-        return this.inDefinitionModel;
+        return new TextParsedModel(field, field, fieldValue, isFieldShouldBeHide);
+      case "SkipCData":
+      case "LoadLikeImage":
+        return new CheckboxParsedModel(field, field, fieldValue, "", null, isFieldShouldBeHide);
       case "IsReadOnly":
       case "LoadAllPlainFields":
         if (this.apiEditModel["IsFromDictionaries"]) return undefined;
-        return new CheckboxParsedModel(
-          field,
-          this.apiEditModel[field],
-          "",
-          null,
-          isFieldShouldBeHide
-        );
+        return new CheckboxParsedModel(field, field, fieldValue, "", null, isFieldShouldBeHide);
       case "RelationConditionDescription":
-        if (!this.apiEditModel[field]) return undefined;
         return new TextAreaParsedModel(
+          "RelationCondition",
           "RelationCondition",
           this.apiEditModel["RelationCondition"],
           {
             rows: 6,
-            placeholder: this.apiEditModel[field],
+            placeholder: fieldValue,
             style: { resize: "none", fontFamily: "monospace" }
           },
           isFieldShouldBeHide
         );
       case "ClonePrototypeConditionDescription":
-        if (!this.apiEditModel[field]) return undefined;
         return new TextAreaParsedModel(
+          "ClonePrototypeCondition",
           "ClonePrototypeCondition",
           this.apiEditModel["ClonePrototypeCondition"],
           {
             rows: 6,
-            placeholder: this.apiEditModel[field],
+            placeholder: fieldValue,
             style: { resize: "none", fontFamily: "monospace" }
           },
           isFieldShouldBeHide
@@ -155,7 +156,8 @@ export default class FormStore {
       case "PublishingMode":
         return new SelectParsedModel(
           field,
-          this.apiEditModel[field],
+          field,
+          fieldValue,
           this.enumsModel[getBackendEnumTypeByFieldName(field)].map(option => {
             return {
               label: option.title,
@@ -169,17 +171,31 @@ export default class FormStore {
     }
   };
 
-  parseEditFormDataToViewDataModel = (model: IEditFormModel): ParsedModelType[] => {
-    if (this.apiEditModel["InDefinition"]) {
+  @action
+  initInDefinitionModel = () => {
+    const definitionFieldValue = this.apiEditModel["InDefinition"];
+    if (!_.isNull(definitionFieldValue)) {
       runInAction(() => {
         this.inDefinitionModel = new CheckboxParsedModel(
           "InDefinition",
-          this.apiEditModel["InDefinition"]
+          "InDefinition",
+          definitionFieldValue
         );
+        console.log(this.inDefinitionModel);
       });
     }
+  };
 
-    if (model["FieldType"] && model["DefaultCachePeriod"]) {
+  parseEditFormDataToUIModel = (model: IEditFormModel): ParsedModelType[] => {
+    const exceptionFields = [
+      { onField: ["DefaultCachePeriod"], fieldsToRender: ["InDefinition", "DefaultCachePeriod"] }
+    ];
+
+    /**
+     * исключение
+     * если заполнено поле DefaultCachePeriod рендерим только его
+     * */
+    if (model["DefaultCachePeriod"]) {
       const fields = ["InDefinition", "DefaultCachePeriod"];
       return fields.map(
         (fieldName): ParsedModelType => {
@@ -204,7 +220,8 @@ export default class FormStore {
       if (!this.enumsModel) await this.initEnumsModel();
       const editForm = await ApiService.getEditForm(formData);
       this.apiEditModel = editForm;
-      this.UIEditModel = _.compact(this.parseEditFormDataToViewDataModel(editForm));
+      this.initInDefinitionModel();
+      this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(editForm));
     } catch (e) {
       console.log(e);
     }

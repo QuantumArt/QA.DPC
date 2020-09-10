@@ -6,6 +6,7 @@ export interface IEditFormModel {
   CloningMode: number;
   UpdatingMode: number;
   DeletingMode: number;
+  PublishingMode: number;
   DefaultCachePeriod: string;
   FieldName: string;
   FieldTitle: string;
@@ -21,6 +22,12 @@ export interface IEditFormModel {
   InDefinition: boolean;
   Path: string;
   Xml: string;
+  IsReadOnly: boolean;
+  LoadAllPlainFields: boolean;
+  IsFromDictionaries: boolean;
+  CachePeriod: string;
+  CacheEnabled: boolean;
+  AlreadyCachedAsDictionary: boolean;
   //new added in c#
   RelateTo: string;
   IsClassifier: string;
