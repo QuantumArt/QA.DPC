@@ -3,6 +3,7 @@ import { isNull, isUndefined } from "lodash";
 
 class EditFormModel implements IEditFormModel {
   ClonePrototypeCondition: string;
+  ContentName: string;
   ClonePrototypeConditionDescription: string;
   CloningMode: number;
   Converter: {};
@@ -48,6 +49,8 @@ export const mapEditFormModel = (x: IEditFormModel): EditFormModel => {
 
   if (isValue(x?.InDefinition)) formModel.InDefinition = x.InDefinition;
   if (isValue(x?.CachePeriod)) formModel.CachePeriod = x.CachePeriod;
+  if (isValue(x?.CacheEnabled)) formModel.CacheEnabled = x.CacheEnabled;
+  if (isValue(x?.ContentName)) formModel.ContentName = x.ContentName;
   if (isValue(x?.DefaultCachePeriod)) formModel.DefaultCachePeriod = x.DefaultCachePeriod;
   if (isValue(x?.FieldId)) formModel.FieldId = x.FieldId;
   if (isValue(x?.FieldName)) formModel.FieldName = x.FieldName;
@@ -79,7 +82,6 @@ export const mapEditFormModel = (x: IEditFormModel): EditFormModel => {
   if (isValue(x?.IsReadOnly)) formModel.IsReadOnly = x.IsReadOnly;
   if (isValue(x?.LoadAllPlainFields)) formModel.LoadAllPlainFields = x.LoadAllPlainFields;
   if (isValue(x?.IsFromDictionaries)) formModel.IsFromDictionaries = x.IsFromDictionaries;
-  if (isValue(x?.CacheEnabled)) formModel.CacheEnabled = x.CacheEnabled;
   if (isValue(x?.AlreadyCachedAsDictionary))
     formModel.AlreadyCachedAsDictionary = x.AlreadyCachedAsDictionary;
   if (isValue(x?.PublishingMode)) formModel.PublishingMode = x.PublishingMode;

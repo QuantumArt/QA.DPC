@@ -28,6 +28,7 @@ export interface IEditFormModel {
   CachePeriod: string;
   CacheEnabled: boolean;
   AlreadyCachedAsDictionary: boolean;
+  ContentName: string;
   //new added in c#
   RelateTo: string;
   IsClassifier: string;

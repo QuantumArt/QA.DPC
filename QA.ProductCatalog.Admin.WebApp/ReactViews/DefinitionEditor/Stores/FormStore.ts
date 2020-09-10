@@ -59,6 +59,11 @@ export default class FormStore {
 
     switch (field) {
       case "InDefinition":
+        if (
+          !_.isNull(this.apiEditModel["IsFromDictionaries"]) &&
+          !_.isUndefined(this.apiEditModel["IsFromDictionaries"])
+        )
+          return undefined;
         return this.inDefinitionModel;
       case "CacheEnabled":
         const mainCheckboxModel = new CheckboxParsedModel(
