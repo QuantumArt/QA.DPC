@@ -6,7 +6,7 @@ import FormField from "../FormField";
 import FormFieldWrapper from "../FormFieldWrap";
 import "./Style.scss";
 
-const StubFrom = observer(() => {
+const EditForm = observer(() => {
   const { formStore, controlsStore } = useStores();
 
   return (
@@ -14,6 +14,7 @@ const StubFrom = observer(() => {
       {formStore.UIEditModel && (
         <Form
           onSubmit={formObj => console.log(formObj)}
+          destroyOnUnregister
           render={({ handleSubmit }) => {
             controlsStore.submitFormSyntheticEvent = handleSubmit;
             return (
@@ -32,4 +33,4 @@ const StubFrom = observer(() => {
   );
 });
 
-export default StubFrom;
+export default EditForm;

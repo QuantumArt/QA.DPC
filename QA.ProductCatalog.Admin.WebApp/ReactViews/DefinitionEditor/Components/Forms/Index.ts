@@ -1,1 +1,1 @@
-export { default as StubForm } from "./StubFrom";
+export { default as EditForm } from "./EditForm";

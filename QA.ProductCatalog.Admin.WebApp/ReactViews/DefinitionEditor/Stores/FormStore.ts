@@ -34,12 +34,22 @@ export default class FormStore {
   @observable formError: string;
   @observable errorText: string = null;
   @observable errorLog: string = null;
+  otherFieldReactions: IReactionDisposer[] = [];
   @observable inDefinitionModel: CheckboxParsedModel;
   fetchFieldsReaction: IReactionDisposer;
 
   init = (cb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer) => {
     this.fetchFieldsReaction = cb(this.fetchFormFields);
   };
+
+  disposeOtherFieldReactions = () => {
+    if (this.otherFieldReactions && this.otherFieldReactions.length) {
+      this.otherFieldReactions.forEach(reaction => reaction());
+      this.otherFieldReactions = [];
+    }
+  };
+
+  addFieldReaction = (reaction: IReactionDisposer) => this.otherFieldReactions.push(reaction);
 
   initEnumsModel = async () => {
     try {
@@ -54,7 +64,7 @@ export default class FormStore {
   };
 
   getModelByFieldName = (field: string): ParsedModelType => {
-    const isFieldShouldBeHide = !this.inDefinitionModel?.value;
+    const isFieldShouldBeHide = !this.inDefinitionModel.value;
     const fieldValue = this.apiEditModel[field];
 
     switch (field) {
@@ -84,16 +94,15 @@ export default class FormStore {
           !mainCheckboxModel.value,
           true
         );
-
-        //TODO вынести в свойства стора для возможности отписки на unmount текущего ui форм
-        reaction(
-          () => mainCheckboxModel.value,
-          (val: boolean) => {
-            subComponentInput.isHide = !val;
-          }
+        this.addFieldReaction(
+          reaction(
+            () => mainCheckboxModel.value,
+            (val: boolean) => {
+              subComponentInput.isHide = !val;
+            }
+          )
         );
         mainCheckboxModel.subComponentOnCheck = subComponentInput;
-
         return mainCheckboxModel;
       case "FieldName":
       case "ContentName":
@@ -186,14 +195,13 @@ export default class FormStore {
           "InDefinition",
           definitionFieldValue
         );
-        console.log(this.inDefinitionModel);
       });
     }
   };
 
   parseEditFormDataToUIModel = (model: IEditFormModel): ParsedModelType[] => {
     const exceptionFields = [
-      { onField: ["DefaultCachePeriod"], fieldsToRender: ["InDefinition", "DefaultCachePeriod"] }
+      { onField: "DefaultCachePeriod", fieldsToRender: ["InDefinition", "DefaultCachePeriod"] }
     ];
 
     /**
@@ -225,6 +233,7 @@ export default class FormStore {
       if (!this.enumsModel) await this.initEnumsModel();
       const editForm = await ApiService.getEditForm(formData);
       this.apiEditModel = editForm;
+      this.disposeOtherFieldReactions();
       this.initInDefinitionModel();
       this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(editForm));
     } catch (e) {

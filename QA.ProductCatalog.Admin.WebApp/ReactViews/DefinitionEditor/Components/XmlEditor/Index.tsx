@@ -4,7 +4,7 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-xml";
 import "ace-builds/src-noconflict/theme-textmate";
 import "ace-builds/src-min-noconflict/ext-searchbox";
-import { StubForm } from "DefinitionEditor/Components";
+import { EditForm } from "DefinitionEditor/Components";
 import { StoresCtx, storesCtx } from "DefinitionEditor/Stores";
 import "./Style.scss";
 
@@ -25,7 +25,7 @@ export default class XmlEditor extends React.Component<Props> {
       <div className="xml-editor">
         {xmlEditorStore.formMode && controlsStore.selectedNodeId && (
           <div className="xml-editor__form-view">
-            <StubForm />
+            <EditForm />
           </div>
         )}
         <AceEditor
