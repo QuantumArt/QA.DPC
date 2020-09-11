@@ -20,10 +20,12 @@ import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 
 //TODO доделать:
-// 1. при вводе значения в пустой инпут и переключениии ноды, значение сохраняется
+// 1. при вводе значения в пустой инпут и переключениии ноды, значение сохраняется --BUG
 // 2. сделать обработку ошибок на всех уровнях работы с формой
 // 3. прикрутить лоадер
 // 4. добавить локализацию
+// 5. isEqualFormDataWithOriginalModel сравнивает модели неккоректно т.к. finalform не собирает значение инпута если оно равно null или ''. Придумать что с этим делать. --BUG
+// 6. сохранение пока работает только с definitionfieldInfo. Для ContentInfo форм будет другой метод и соответствующая проверка.
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
     this.singleRequestedEnums = new singleRequestedData(ApiService.getSelectEnums);
@@ -65,7 +67,11 @@ export default class FormStore {
     this.errorText = errText ?? "Error";
   };
 
-  setFormData = (newFormData: object) => {
+  setFormData = (newFormData: object | null): void => {
+    if (!newFormData) {
+      this.formData = null;
+      return;
+    }
     this.formData = Object.keys(newFormData).reduce((acc, key) => {
       if (!this.excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
       return acc;
@@ -94,6 +100,10 @@ export default class FormStore {
     }
   };
 
+  /**
+   * @param field - ключ исходного объекта - имя элемента формы из ответа сервера
+   * Функция возвращает спаршенную модель для отрисовки UI элемента формы: чекбокс, инпут и тд.
+   * */
   getModelByFieldName = (field: string): ParsedModelType => {
     const fieldValue = this.apiEditModel[field];
 
@@ -265,6 +275,7 @@ export default class FormStore {
       if (validation !== true) {
         throw validation;
       }
+      //TODO не уверен, что нужно отправлять  модель xml из xmlEditorStore т.к. мы работаем с формой, эта уже может быть отредактирована и не сохранена.
       formData.append("xml", this.xmlEditorStore.xml);
       Object.keys(this.formData).forEach(fieldKey => {
         formData.append(fieldKey, _.isNull(this.formData[fieldKey]) ? "" : this.formData[fieldKey]);
@@ -300,7 +311,7 @@ export default class FormStore {
       if (!this.enumsModel) await this.initEnumsModel();
       const editForm = await ApiService.getEditForm(formData);
       this.apiEditModel = editForm;
-      this.formData = null;
+      this.setFormData(null);
       this.disposeOtherFieldReactions();
       this.initInDefinitionModel();
       this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(editForm));
