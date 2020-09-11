@@ -19,6 +19,11 @@ import _ from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 
+//TODO доделать:
+// 1. при вводе значения в пустой инпут и переключениии ноды, значение сохраняется
+// 2. сделать обработку ошибок на всех уровнях работы с формой
+// 3. прикрутить лоадер
+// 4. добавить локализацию
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
     this.singleRequestedEnums = new singleRequestedData(ApiService.getSelectEnums);
