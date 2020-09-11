@@ -5,6 +5,8 @@ import { Form } from "react-final-form";
 import FormField from "../FormField";
 import FormFieldWrapper from "../FormFieldWrap";
 import "./Style.scss";
+import FormErrorDialog from "DefinitionEditor/Components/Forms/FormErrorDialog";
+import FormWarningDialog from "DefinitionEditor/Components/Forms/FormWarningDialog";
 
 const EditForm = observer(() => {
   const { formStore, controlsStore } = useStores();
@@ -20,7 +22,7 @@ const EditForm = observer(() => {
             return (
               <form onSubmit={handleSubmit}>
                 {formStore.UIEditModel.map(fieldModel => (
-                  <FormFieldWrapper model={fieldModel} key={fieldModel.label}>
+                  <FormFieldWrapper model={fieldModel} key={fieldModel.name}>
                     <FormField />
                   </FormFieldWrapper>
                 ))}
@@ -29,6 +31,8 @@ const EditForm = observer(() => {
           }}
         />
       )}
+      <FormErrorDialog />
+      <FormWarningDialog />
     </div>
   );
 });

@@ -29,7 +29,7 @@ const FormField = observer(({ model }: IProps) => {
         );
       case FormFieldType.Input:
         return (
-          <Field name={model.name} defaultValue={model.value} value={model.value}>
+          <Field name={model.name} value={model.value} defaultValue={model.value}>
             {({ input }) => {
               return (
                 <InputGroup

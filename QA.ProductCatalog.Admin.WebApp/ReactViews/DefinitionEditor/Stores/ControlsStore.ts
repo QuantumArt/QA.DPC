@@ -32,6 +32,19 @@ export default class ControlsStore {
 
   @action
   setSelectedNodeId = (id: string) => {
+    /**
+     * При клике на ноду проверяется были ли изменения в модели формы.
+     * */
+    if (this.formMode && !this.formStore.isEqualFormDataWithOriginalModel()) {
+      this.formStore.toggleLeaveWithoutSaveDialog();
+      this.formStore.warningPopupOnExitCb = () => this.setNodeId(id);
+      return;
+    }
+    this.setNodeId(id);
+  };
+
+  @action
+  setNodeId = (id: string) => {
     this.selectedNodeId = id;
   };
 
@@ -56,13 +69,11 @@ export default class ControlsStore {
   };
 
   applyOnOpenedForm = async (): Promise<void> => {
-    //TODO добавить проверку на неизмененные данные формы
-    console.log(this.formStore.isEqualFormDataWithOriginalModel());
-
-    await this.formStore.saveForm(this.selectedNodeId);
-    if (this.isSameDefinition()) {
+    if (this.formStore.isEqualFormDataWithOriginalModel()) {
+      this.formStore.setError("Form wasn't change");
       return;
     }
+    await this.formStore.saveForm(this.selectedNodeId);
     const singleNode = await this.treeStore.getSingleNode(this.selectedNodeId);
     await this.treeStore.setSingleNode(singleNode);
   };
