@@ -23,6 +23,8 @@ export default class FormStore {
     this.singleRequestedEnums = new singleRequestedData(ApiService.getSelectEnums);
     this.initEnumsModel();
   }
+
+  @observable inDefinitionModel: CheckboxParsedModel;
   @observable UIEditModel: ParsedModelType[];
   private apiEditModel: IEditFormModel;
   private singleRequestedEnums: ISingleRequestedData<
@@ -30,15 +32,22 @@ export default class FormStore {
   >;
   private enumsModel: { [key in BackendEnumType]: EnumBackendModel[] };
   public formData: {};
+  private readonly excludeFieldsFromNewFormData: string[] = ["RelateTo"];
 
   @observable operationState: OperationState = OperationState.None;
   @observable formError: string;
   @observable errorText: string = null;
   @observable errorLog: string = null;
-  @observable inDefinitionModel: CheckboxParsedModel;
 
   fetchFieldsReaction: IReactionDisposer;
   otherFieldReactions: IReactionDisposer[] = [];
+
+  setFormData = (newFormData: object) => {
+    this.formData = Object.keys(newFormData).reduce((acc, key) => {
+      if (!this.excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
+      return acc;
+    }, {});
+  };
 
   init = (cb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer) => {
     this.fetchFieldsReaction = cb(this.fetchFormFields);
@@ -243,6 +252,16 @@ export default class FormStore {
     this.initInDefinitionModel();
     this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(newEditForm));
     this.xmlEditorStore.setXml(newEditForm.Xml);
+  };
+
+  isEqualFormDataWithOriginalModel = (): boolean => {
+    const overlapFields = Object.keys(this.formData).reduce((acc, fieldKey, index) => {
+      const formDataValue = this.formData[fieldKey];
+      const modelValue = this.apiEditModel[fieldKey];
+      if (formDataValue !== modelValue) acc.push(fieldKey);
+      return acc;
+    }, [] as string[]);
+    return !overlapFields.length;
   };
 
   @action

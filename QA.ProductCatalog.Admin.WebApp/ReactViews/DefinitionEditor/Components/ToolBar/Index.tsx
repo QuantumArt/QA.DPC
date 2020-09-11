@@ -53,7 +53,7 @@ const ToolBar = observer(() => {
         </ButtonGroup>
         <div
           className="editor-toolbar__xml-controls"
-          style={{ visibility: xmlEditorStore.formMode ? "hidden" : "visible" }}
+          style={{ visibility: controlsStore.formMode ? "hidden" : "visible" }}
         >
           <Switch
             label={l("QueryOnClick")}
@@ -80,12 +80,12 @@ const ToolBar = observer(() => {
         </div>
         {controlsStore.selectedNodeId !== null && (
           <Button
-            icon={xmlEditorStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
+            icon={controlsStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}
-            onClick={xmlEditorStore.toggleFormMode}
+            onClick={controlsStore.toggleFormMode}
             className="editor-toolbar__form-btn"
           >
-            {xmlEditorStore.formMode ? <span>Редактор кода</span> : <span>Форма</span>}
+            {controlsStore.formMode ? <span>Редактор кода</span> : <span>Форма</span>}
           </Button>
         )}
       </div>

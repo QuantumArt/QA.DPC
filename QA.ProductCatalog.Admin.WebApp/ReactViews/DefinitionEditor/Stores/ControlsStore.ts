@@ -22,10 +22,13 @@ export default class ControlsStore {
       )
     );
   }
-
+  @observable formMode: boolean = false;
   @observable savingMode: SavingMode = SavingMode.Apply;
   @observable selectedNodeId: string = null;
   submitFormSyntheticEvent;
+
+  @action
+  toggleFormMode = () => (this.formMode = !this.formMode);
 
   @action
   setSelectedNodeId = (id: string) => {
@@ -44,31 +47,43 @@ export default class ControlsStore {
     await this.treeStore.onNodeExpand(this.treeStore.tree[0]);
   };
 
+  isSameDefinition = (): boolean => {
+    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
+      this.treeStore.setError(l("SameDefinition"));
+      return true;
+    }
+    return false;
+  };
+
+  applyOnOpenedForm = async (): Promise<void> => {
+    //TODO добавить проверку на неизмененные данные формы
+    console.log(this.formStore.isEqualFormDataWithOriginalModel());
+
+    await this.formStore.saveForm(this.selectedNodeId);
+    if (this.isSameDefinition()) {
+      return;
+    }
+    const singleNode = await this.treeStore.getSingleNode(this.selectedNodeId);
+    await this.treeStore.setSingleNode(singleNode);
+  };
+
+  applyOnOpenedXmlEditor = async (): Promise<void> => {
+    if (this.isSameDefinition()) {
+      return;
+    }
+    await this.treeStore.getDefinitionLevel();
+  };
+
   @action
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
 
-    /**
-     * если открыта форма
-     */
-    if (this.xmlEditorStore.formMode) {
-      await this.formStore.saveForm(this.selectedNodeId);
-      if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-        this.treeStore.setError(l("SameDefinition"));
-        return;
-      }
-      await this.treeStore.getSingleNode(this.selectedNodeId);
-
-      /**
-       * если открыт редактор кода
-       */
+    if (this.formMode) {
+      await this.applyOnOpenedForm();
     } else {
-      if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-        this.treeStore.setError(l("SameDefinition"));
-        return;
-      }
-      await this.treeStore.getDefinitionLevel();
+      await this.applyOnOpenedXmlEditor();
     }
+
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }

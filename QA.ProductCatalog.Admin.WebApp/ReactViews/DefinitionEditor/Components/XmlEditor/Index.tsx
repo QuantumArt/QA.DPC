@@ -23,7 +23,7 @@ export default class XmlEditor extends React.Component<Props> {
     const { height, width } = this.props;
     return (
       <div className="xml-editor">
-        {xmlEditorStore.formMode && controlsStore.selectedNodeId && (
+        {controlsStore.formMode && controlsStore.selectedNodeId && (
           <div className="xml-editor__form-view">
             <EditForm />
           </div>

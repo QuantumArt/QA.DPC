@@ -34,10 +34,6 @@ export default class XmlEditorStore {
     : 14;
   @observable wrapLines: boolean = localStorage.getItem("wrapLines") === "true";
   @observable queryOnClick: boolean = localStorage.getItem("queryOnClick") === "true";
-  @observable formMode: boolean = false;
-
-  @action
-  toggleFormMode = () => (this.formMode = !this.formMode);
 
   @action
   changeFontSize = (size: number) => {

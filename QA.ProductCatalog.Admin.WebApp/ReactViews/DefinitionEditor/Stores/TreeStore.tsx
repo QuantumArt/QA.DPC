@@ -119,7 +119,7 @@ export default class TreeStore {
   };
 
   @action
-  getSingleNode = async (path: string): Promise<ITreeNode<Partial<IDefinitionNode>>> => {
+  getSingleNode = async (path: string): Promise<IDefinitionNode> => {
     try {
       const formData = new FormData();
       formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
@@ -129,9 +129,9 @@ export default class TreeStore {
       }
       formData.append("xml", this.xmlEditorStore.xml);
       this.operationState = OperationState.Pending;
-      const res = await ApiService.getSingleNode(formData);
+      const singleNode = await ApiService.getSingleNode(formData);
       this.operationState = OperationState.Success;
-      return this.setSingleNode(res);
+      return singleNode;
     } catch (e) {
       console.log(e);
       this.operationState = OperationState.Error;

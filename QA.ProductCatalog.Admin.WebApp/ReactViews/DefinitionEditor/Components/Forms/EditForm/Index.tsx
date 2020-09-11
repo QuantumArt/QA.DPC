@@ -13,7 +13,7 @@ const EditForm = observer(() => {
     <div className="forms-wrapper">
       {formStore.UIEditModel && (
         <Form
-          onSubmit={formObj => (formStore.formData = formObj)}
+          onSubmit={formStore.setFormData}
           destroyOnUnregister
           render={({ handleSubmit }) => {
             controlsStore.submitFormSyntheticEvent = handleSubmit;
