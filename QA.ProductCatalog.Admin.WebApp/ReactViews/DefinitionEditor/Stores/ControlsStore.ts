@@ -103,11 +103,13 @@ export default class ControlsStore {
   @action
   saveAndExit = async () => {
     this.setSavingMode(SavingMode.Finish);
-    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-      this.treeStore.setError(l("SameDefinition"));
-      return;
+
+    if (this.formMode) {
+      await this.applyOnOpenedForm();
+    } else {
+      await this.applyOnOpenedXmlEditor();
     }
-    await this.treeStore.getDefinitionLevel();
+    //TODO подправить условия с обработкой ошибок т.к. теперь обрабатываются формы.
     if (this.treeStore.operationState === OperationState.Success) {
       window.pmrpc.call({
         destination: parent,
