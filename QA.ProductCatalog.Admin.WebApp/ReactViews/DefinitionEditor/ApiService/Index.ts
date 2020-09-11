@@ -18,13 +18,26 @@ class ApiService extends BaseApiService {
    * @param body
    */
   public getDefinitionLevel = async (body: FormData): Promise<IDefinitionNode[]> => {
-    console.log(this.settings.getDefinitionLevelUrl);
     const res = await fetch(this.settings.getDefinitionLevelUrl, {
       method: "POST",
       body
     });
     return this.mapResponse(res, (x: IDefinitionNode[]) => x);
   };
+
+  /**
+   * POST
+   *
+   * @param body
+   */
+  public getSingleNode = async (body: FormData): Promise<IDefinitionNode> => {
+    const res = await fetch(this.settings.getSingleNodeUrl, {
+      method: "POST",
+      body
+    });
+    return this.mapResponse(res, (x: IDefinitionNode) => x);
+  };
+
   /**
    * GET
    *
@@ -53,6 +66,18 @@ class ApiService extends BaseApiService {
    */
   public getEditForm = async (body: FormData): Promise<IEditFormModel> => {
     const res = await fetch(this.settings.editBetaUrl, {
+      method: "POST",
+      body
+    });
+    return this.mapResponse(res, (x: IEditFormModel) => mapEditFormModel(x));
+  };
+
+  /**
+   * POST
+   * @param body formData
+   */
+  public saveField = async (body: FormData): Promise<IEditFormModel> => {
+    const res = await fetch(this.settings.saveFieldBetaUrl, {
       method: "POST",
       body
     });

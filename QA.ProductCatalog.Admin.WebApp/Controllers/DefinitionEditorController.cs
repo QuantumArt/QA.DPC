@@ -212,6 +212,31 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
+        public ActionResult SaveFieldBeta(DefinitionFieldInfo defInfo)
+        {
+            var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
+
+            var savedField = _definitionEditorService.UpdateOrDeleteField(rootContent, defInfo.GetField(), defInfo.Path, !defInfo.InDefinition);
+
+            string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+
+            ModelState.Clear();
+
+            Field fieldForEditView = savedField ?? (Field)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out _);
+
+            return new ContentResult()
+            {
+                ContentType = "application/json",
+                Content = JsonConvert.SerializeObject(new DefinitionFieldInfo(fieldForEditView)
+                {
+                    InDefinition = defInfo.InDefinition,
+                    Path = defInfo.Path,
+                    Xml = resultXml
+                })
+            };
+        }
+
+        [RequireCustomAction]
         public ActionResult SaveContent(DefinitionContentInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);

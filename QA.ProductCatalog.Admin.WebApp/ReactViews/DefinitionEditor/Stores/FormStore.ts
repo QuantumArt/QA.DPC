@@ -29,14 +29,16 @@ export default class FormStore {
     { [key in BackendEnumType]: EnumBackendModel[] }
   >;
   private enumsModel: { [key in BackendEnumType]: EnumBackendModel[] };
+  public formData: {};
 
   @observable operationState: OperationState = OperationState.None;
   @observable formError: string;
   @observable errorText: string = null;
   @observable errorLog: string = null;
-  otherFieldReactions: IReactionDisposer[] = [];
   @observable inDefinitionModel: CheckboxParsedModel;
+
   fetchFieldsReaction: IReactionDisposer;
+  otherFieldReactions: IReactionDisposer[] = [];
 
   init = (cb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer) => {
     this.fetchFieldsReaction = cb(this.fetchFormFields);
@@ -64,7 +66,6 @@ export default class FormStore {
   };
 
   getModelByFieldName = (field: string): ParsedModelType => {
-    const isFieldShouldBeHide = !this.inDefinitionModel.value;
     const fieldValue = this.apiEditModel[field];
 
     switch (field) {
@@ -82,7 +83,7 @@ export default class FormStore {
           fieldValue,
           "Cache",
           null,
-          isFieldShouldBeHide,
+          false,
           true
         );
 
@@ -107,7 +108,7 @@ export default class FormStore {
       case "FieldName":
       case "ContentName":
       case "DefaultCachePeriod":
-        return new InputParsedModel(field, field, fieldValue, "", isFieldShouldBeHide);
+        return new InputParsedModel(field, field, fieldValue, "", false);
       case "FieldTitle":
         if (_.isUndefined(fieldValue)) return undefined;
         return new InputParsedModel(
@@ -115,7 +116,7 @@ export default class FormStore {
           this.settings.strings.FieldNameForCard,
           fieldValue,
           this.settings.strings.LabelText,
-          isFieldShouldBeHide
+          false
         );
       case "RelateTo":
         if (!this.apiEditModel["RelatedContentName"] && !this.apiEditModel["RelatedContentId"])
@@ -126,19 +127,19 @@ export default class FormStore {
           `${this.apiEditModel["RelatedContentName"] || ""} ${this.apiEditModel[
             "RelatedContentId"
           ] || ""}`,
-          isFieldShouldBeHide
+          false
         );
       case "FieldId":
       case "IsClassifier":
       case "ContentId":
-        return new TextParsedModel(field, field, fieldValue, isFieldShouldBeHide);
+        return new TextParsedModel(field, field, fieldValue, false);
       case "SkipCData":
       case "LoadLikeImage":
-        return new CheckboxParsedModel(field, field, fieldValue, "", null, isFieldShouldBeHide);
+        return new CheckboxParsedModel(field, field, fieldValue, "", null, false);
       case "IsReadOnly":
       case "LoadAllPlainFields":
         if (this.apiEditModel["IsFromDictionaries"]) return undefined;
-        return new CheckboxParsedModel(field, field, fieldValue, "", null, isFieldShouldBeHide);
+        return new CheckboxParsedModel(field, field, fieldValue, "", null, false);
       case "RelationConditionDescription":
         return new TextAreaParsedModel(
           "RelationCondition",
@@ -149,7 +150,7 @@ export default class FormStore {
             placeholder: fieldValue,
             style: { resize: "none", fontFamily: "monospace" }
           },
-          isFieldShouldBeHide
+          false
         );
       case "ClonePrototypeConditionDescription":
         return new TextAreaParsedModel(
@@ -161,7 +162,7 @@ export default class FormStore {
             placeholder: fieldValue,
             style: { resize: "none", fontFamily: "monospace" }
           },
-          isFieldShouldBeHide
+          false
         );
       case "DeletingMode":
       case "UpdatingMode":
@@ -178,7 +179,7 @@ export default class FormStore {
               value: option.value
             };
           }),
-          isFieldShouldBeHide
+          false
         );
       default:
         return undefined;
@@ -225,6 +226,26 @@ export default class FormStore {
   };
 
   @action
+  saveForm = async nodeId => {
+    const formData = new FormData();
+    formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
+    const validation = this.xmlEditorStore.validateXml();
+    if (validation !== true) {
+      throw validation;
+    }
+    //TODO add err catch
+    formData.append("xml", this.xmlEditorStore.xml);
+    Object.keys(this.formData).forEach(fieldKey => {
+      formData.append(fieldKey, _.isNull(this.formData[fieldKey]) ? "" : this.formData[fieldKey]);
+    });
+    const newEditForm = await ApiService.saveField(formData);
+    this.apiEditModel = newEditForm;
+    this.initInDefinitionModel();
+    this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(newEditForm));
+    this.xmlEditorStore.setXml(newEditForm.Xml);
+  };
+
+  @action
   fetchFormFields = async (nodeId: string): Promise<void> => {
     const formData = new FormData();
     formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
@@ -233,6 +254,7 @@ export default class FormStore {
       if (!this.enumsModel) await this.initEnumsModel();
       const editForm = await ApiService.getEditForm(formData);
       this.apiEditModel = editForm;
+      this.formData = null;
       this.disposeOtherFieldReactions();
       this.initInDefinitionModel();
       this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(editForm));

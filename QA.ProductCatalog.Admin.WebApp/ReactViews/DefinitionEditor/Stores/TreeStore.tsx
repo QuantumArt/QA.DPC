@@ -119,6 +119,37 @@ export default class TreeStore {
   };
 
   @action
+  getSingleNode = async (path: string): Promise<ITreeNode<Partial<IDefinitionNode>>> => {
+    try {
+      const formData = new FormData();
+      formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
+      const validation = this.xmlEditorStore.validateXml();
+      if (validation !== true) {
+        throw validation;
+      }
+      formData.append("xml", this.xmlEditorStore.xml);
+      this.operationState = OperationState.Pending;
+      const res = await ApiService.getSingleNode(formData);
+      this.operationState = OperationState.Success;
+      return this.setSingleNode(res);
+    } catch (e) {
+      console.log(e);
+      this.operationState = OperationState.Error;
+      try {
+        if (e.err) {
+          this.errorLog = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
+        } else {
+          this.errorLog = (await e.text()) ?? null;
+        }
+      } catch {
+      } finally {
+        this.errorText = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
+      }
+      return null;
+    }
+  };
+
+  @action
   setError = (text?: string, log?: string) => {
     this.operationState = OperationState.Error;
     this.errorText = text ?? "Error";
@@ -172,22 +203,27 @@ export default class TreeStore {
 
   private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
-      this.nodesMap.set(node.Id, {
-        id: node.Id,
-        label: "",
-        isExpanded: false,
-        hasCaret: node.hasChildren,
-        childNodes: [],
-        isSelected: false,
-        ...this.getNodeStatus(node),
-        nodeData: {
-          expanded: node.expanded,
-          hasChildren: node.hasChildren,
-          missingInQp: node.MissingInQp
-        }
-      });
-      return this.nodesMap.get(node.Id);
+      return this.setSingleNode(node);
     });
+  };
+
+  @action
+  setSingleNode = (node: IDefinitionNode): ITreeNode<Partial<IDefinitionNode>> => {
+    this.nodesMap.set(node.Id, {
+      id: node.Id,
+      label: "",
+      isExpanded: false,
+      hasCaret: node.hasChildren,
+      childNodes: [],
+      isSelected: false,
+      ...this.getNodeStatus(node),
+      nodeData: {
+        expanded: node.expanded,
+        hasChildren: node.hasChildren,
+        missingInQp: node.MissingInQp
+      }
+    });
+    return this.nodesMap.get(node.Id);
   };
 
   private gatherSearchString = () => {

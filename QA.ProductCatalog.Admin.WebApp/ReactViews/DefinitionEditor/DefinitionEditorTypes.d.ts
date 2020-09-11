@@ -6,6 +6,8 @@
   getDefinitionLevelUrl: string;
   editBetaUrl: string;
   editUrl: string;
+  saveFieldUrl: string;
+  saveFieldBetaUrl: string;
   strings: {
     DictionaryCachingSettings: string;
     MissingInQP: string;

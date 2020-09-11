@@ -47,11 +47,28 @@ export default class ControlsStore {
   @action
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
-    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-      this.treeStore.setError(l("SameDefinition"));
-      return;
+
+    /**
+     * если открыта форма
+     */
+    if (this.xmlEditorStore.formMode) {
+      await this.formStore.saveForm(this.selectedNodeId);
+      if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
+        this.treeStore.setError(l("SameDefinition"));
+        return;
+      }
+      await this.treeStore.getSingleNode(this.selectedNodeId);
+
+      /**
+       * если открыт редактор кода
+       */
+    } else {
+      if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
+        this.treeStore.setError(l("SameDefinition"));
+        return;
+      }
+      await this.treeStore.getDefinitionLevel();
     }
-    await this.treeStore.getDefinitionLevel();
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }

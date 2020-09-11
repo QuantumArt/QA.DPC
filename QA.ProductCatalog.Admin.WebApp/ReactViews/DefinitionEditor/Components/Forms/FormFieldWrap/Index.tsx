@@ -16,7 +16,7 @@ const FormFieldWrapper = observer(({ model, children }: IProps) => {
   return (
     <div
       className={cn("form-field", {
-        "form-field--hide": !formStore.inDefinitionModel.value && model.label !== "InDefinition"
+        "form-field--hide": !formStore.inDefinitionModel.value && model.name !== "InDefinition"
       })}
     >
       {model.label && <label className="form-field__label">{model.label}</label>}
