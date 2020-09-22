@@ -17,7 +17,8 @@ const EditForm = observer(() => {
         <Form
           onSubmit={formStore.setFormData}
           destroyOnUnregister
-          render={({ handleSubmit }) => {
+          render={({ handleSubmit, form }) => {
+            formStore.resetForm = form.reset;
             controlsStore.submitFormSyntheticEvent = handleSubmit;
             return (
               <form onSubmit={handleSubmit}>

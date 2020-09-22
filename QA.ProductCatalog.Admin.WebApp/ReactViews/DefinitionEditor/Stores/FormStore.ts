@@ -20,7 +20,6 @@ import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 
 //TODO доделать:
-// 1. при вводе значения в пустой инпут и переключениии ноды, значение сохраняется --BUG
 // 2. сделать обработку ошибок на всех уровнях работы с формой
 // 3. прикрутить лоадер
 // 4. добавить локализацию
@@ -40,6 +39,7 @@ export default class FormStore {
   >;
   private enumsModel: { [key in BackendEnumType]: EnumBackendModel[] };
   public formData: {};
+  resetForm: (initialValues?: any) => void;
   private readonly excludeFieldsFromNewFormData: string[] = ["RelateTo"];
 
   @observable operationState: OperationState = OperationState.None;
@@ -67,19 +67,27 @@ export default class FormStore {
     this.errorText = errText ?? "Error";
   };
 
-  setFormData = (newFormData: object | null): void => {
+  setFormData = (newFormData: object | null = null): void => {
     if (!newFormData) {
       this.formData = null;
       return;
     }
+    debugger;
     this.formData = Object.keys(newFormData).reduce((acc, key) => {
       if (!this.excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
       return acc;
     }, {});
   };
 
-  init = (cb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer) => {
-    this.fetchFieldsReaction = cb(this.fetchFormFields);
+  init = (
+    reactionCb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer
+  ) => {
+    this.fetchFieldsReaction = reactionCb(async (nodeId: string) => {
+      this.clearForm();
+      this.disposeOtherFieldReactions();
+      if (!this.enumsModel) await this.initEnumsModel();
+      await this.fetchFormFields(nodeId);
+    });
   };
 
   disposeOtherFieldReactions = () => {
@@ -302,17 +310,19 @@ export default class FormStore {
     return !overlapFields.length;
   };
 
+  clearForm = () => {
+    this.setFormData();
+    if (this.resetForm) this.resetForm();
+  };
+
   @action
   fetchFormFields = async (nodeId: string): Promise<void> => {
     const formData = new FormData();
     formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
     formData.append("xml", this.xmlEditorStore.xml);
     try {
-      if (!this.enumsModel) await this.initEnumsModel();
       const editForm = await ApiService.getEditForm(formData);
       this.apiEditModel = editForm;
-      this.setFormData(null);
-      this.disposeOtherFieldReactions();
       this.initInDefinitionModel();
       this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(editForm));
     } catch (e) {
