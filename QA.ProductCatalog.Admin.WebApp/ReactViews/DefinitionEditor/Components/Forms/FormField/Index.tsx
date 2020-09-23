@@ -6,6 +6,7 @@ import { FormFieldType } from "DefinitionEditor/Enums";
 import { ParsedModelType } from "Shared/Utils";
 import "./Style.scss";
 import cn from "classnames";
+import { isUndefined } from "lodash";
 
 interface IProps {
   model?: ParsedModelType;
@@ -17,6 +18,7 @@ const FormField = observer(({ model }: IProps) => {
       "form-field-element--inline": model.isInline,
       "form-field-element--hide": model.isHide
     });
+    const parseEmptyStringToNull = value => (value === "" || isUndefined(value) ? null : value);
 
     switch (model.type) {
       case FormFieldType.Text:
@@ -34,6 +36,8 @@ const FormField = observer(({ model }: IProps) => {
               return (
                 <InputGroup
                   {...input}
+                  allowNull
+                  parse={parseEmptyStringToNull}
                   className={formFieldClassName}
                   placeholder={model.placeholder || ""}
                 />
@@ -45,7 +49,15 @@ const FormField = observer(({ model }: IProps) => {
         return (
           <Field name={model.name} defaultValue={model.value}>
             {({ input }) => {
-              return <TextArea {...input} {...model.extraOptions} className={formFieldClassName} />;
+              return (
+                <TextArea
+                  {...input}
+                  {...model.extraOptions}
+                  className={formFieldClassName}
+                  allowNull
+                  parse={parseEmptyStringToNull}
+                />
+              );
             }}
           </Field>
         );
@@ -63,7 +75,7 @@ const FormField = observer(({ model }: IProps) => {
                       name={props.input.name}
                       onChange={event => {
                         props.input.onChange(event);
-                        model?.toggleValue();
+                        model.onChangeCb && model.onChangeCb();
                       }}
                     />
                   </div>

@@ -11,12 +11,10 @@ interface IProps {
 }
 
 const FormFieldWrapper = observer(({ model, children }: IProps) => {
-  const { formStore } = useStores();
-
   return (
     <div
       className={cn("form-field", {
-        "form-field--hide": !formStore.inDefinitionModel.value && model.name !== "InDefinition"
+        "form-field--hide": model.isHide
       })}
     >
       {model.label && <label className="form-field__label">{model.label}</label>}

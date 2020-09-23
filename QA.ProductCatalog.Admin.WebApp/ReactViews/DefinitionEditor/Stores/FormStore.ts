@@ -15,7 +15,7 @@ import {
   TextParsedModel
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
-import _ from "lodash";
+import _, { keys, forIn } from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 
@@ -23,7 +23,6 @@ import { l } from "DefinitionEditor/Localization";
 // 2. сделать обработку ошибок на всех уровнях работы с формой
 // 3. прикрутить лоадер
 // 4. добавить локализацию
-// 5. isEqualFormDataWithOriginalModel сравнивает модели неккоректно т.к. finalform не собирает значение инпута если оно равно null или ''. Придумать что с этим делать. --BUG
 // 6. сохранение пока работает только с definitionfieldInfo. Для ContentInfo форм будет другой метод и соответствующая проверка.
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
@@ -31,15 +30,12 @@ export default class FormStore {
     this.initEnumsModel();
   }
 
-  @observable inDefinitionModel: CheckboxParsedModel;
-  @observable UIEditModel: ParsedModelType[];
-  private apiEditModel: IEditFormModel;
+  @observable UIEditModel: { [key in string]: ParsedModelType };
   private singleRequestedEnums: ISingleRequestedData<
     { [key in BackendEnumType]: EnumBackendModel[] }
   >;
   private enumsModel: { [key in BackendEnumType]: EnumBackendModel[] };
   public formData: {};
-  resetForm: (initialValues?: any) => void;
   private readonly excludeFieldsFromNewFormData: string[] = ["RelateTo"];
 
   @observable operationState: OperationState = OperationState.None;
@@ -47,7 +43,7 @@ export default class FormStore {
   @observable warningPopupOnExitCb: () => void;
   @observable errorText: string = null;
 
-  fetchFieldsReaction: IReactionDisposer;
+  onChangeNodeIdReaction: IReactionDisposer;
   otherFieldReactions: IReactionDisposer[] = [];
 
   @action
@@ -61,18 +57,18 @@ export default class FormStore {
     this.isLeaveWithoutSaveDialog = !this.isLeaveWithoutSaveDialog;
   };
 
-  @action
   setError = (errText?: string) => {
-    this.operationState = OperationState.Error;
-    this.errorText = errText ?? "Error";
+    runInAction(() => {
+      this.operationState = OperationState.Error;
+      this.errorText = errText ?? "Error";
+    });
   };
 
   setFormData = (newFormData: object | null = null): void => {
     if (!newFormData) {
-      this.formData = null;
+      this.formData = newFormData;
       return;
     }
-    debugger;
     this.formData = Object.keys(newFormData).reduce((acc, key) => {
       if (!this.excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
       return acc;
@@ -82,22 +78,11 @@ export default class FormStore {
   init = (
     reactionCb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer
   ) => {
-    this.fetchFieldsReaction = reactionCb(async (nodeId: string) => {
-      this.clearForm();
-      this.disposeOtherFieldReactions();
+    this.onChangeNodeIdReaction = reactionCb(async (nodeId: string) => {
       if (!this.enumsModel) await this.initEnumsModel();
       await this.fetchFormFields(nodeId);
     });
   };
-
-  disposeOtherFieldReactions = () => {
-    if (this.otherFieldReactions && this.otherFieldReactions.length) {
-      this.otherFieldReactions.forEach(reaction => reaction());
-      this.otherFieldReactions = [];
-    }
-  };
-
-  addFieldReaction = (reaction: IReactionDisposer) => this.otherFieldReactions.push(reaction);
 
   initEnumsModel = async () => {
     try {
@@ -109,169 +94,31 @@ export default class FormStore {
   };
 
   /**
-   * @param field - ключ исходного объекта - имя элемента формы из ответа сервера
-   * Функция возвращает спаршенную модель для отрисовки UI элемента формы: чекбокс, инпут и тд.
+   * @param deps - массив зависимостей содержащий name полей, которые не будут скрыты
+   * @param reverseLogic - массив deps работает наоборот,
    * */
-  getModelByFieldName = (field: string): ParsedModelType => {
-    const fieldValue = this.apiEditModel[field];
-
-    switch (field) {
-      /**
-       * checkbox models
-       * */
-      case "InDefinition":
-        if (
-          !_.isNull(this.apiEditModel["IsFromDictionaries"]) &&
-          !_.isUndefined(this.apiEditModel["IsFromDictionaries"])
-        )
-          return undefined;
-        return this.inDefinitionModel;
-      case "CacheEnabled":
-        const mainCheckboxModel = new CheckboxParsedModel(
-          field,
-          field,
-          fieldValue,
-          "Cache",
-          null,
-          false,
-          true
-        );
-        const subComponentInput = new InputParsedModel(
-          "CachePeriod",
-          null,
-          this.apiEditModel["CachePeriod"],
-          "",
-          !mainCheckboxModel.value,
-          true
-        );
-        this.addFieldReaction(
-          reaction(
-            () => mainCheckboxModel.value,
-            (val: boolean) => {
-              subComponentInput.isHide = !val;
-            }
-          )
-        );
-        mainCheckboxModel.subComponentOnCheck = subComponentInput;
-        return mainCheckboxModel;
-      case "SkipCData":
-      case "LoadLikeImage":
-        return new CheckboxParsedModel(field, field, fieldValue);
-      case "IsReadOnly":
-      case "LoadAllPlainFields":
-        if (this.apiEditModel["IsFromDictionaries"]) return undefined;
-        return new CheckboxParsedModel(field, field, fieldValue);
-      case "FieldName":
-      case "ContentName":
-      case "DefaultCachePeriod":
-        return new InputParsedModel(field, field, fieldValue);
-      case "FieldTitle":
-        if (_.isUndefined(fieldValue)) return undefined;
-        return new InputParsedModel(
-          field,
-          this.settings.strings.FieldNameForCard,
-          fieldValue,
-          l("LabelText")
-        );
-      /**
-       * text models
-       * */
-      case "RelateTo":
-        if (!this.apiEditModel["RelatedContentName"] && !this.apiEditModel["RelatedContentId"])
-          return undefined;
-        return new TextParsedModel(
-          field,
-          fieldValue,
-          `${this.apiEditModel["RelatedContentName"] || ""} ${this.apiEditModel[
-            "RelatedContentId"
-          ] || ""}`
-        );
-      case "FieldId":
-      case "IsClassifier":
-      case "ContentId":
-        return new TextParsedModel(field, field, fieldValue);
-      /**
-       * textarea models
-       * */
-      case "RelationConditionDescription":
-        return new TextAreaParsedModel(
-          "RelationCondition",
-          "RelationCondition",
-          this.apiEditModel["RelationCondition"],
-          {
-            rows: 6,
-            placeholder: fieldValue,
-            style: { resize: "none", fontFamily: "monospace" }
-          }
-        );
-      case "ClonePrototypeConditionDescription":
-        return new TextAreaParsedModel(
-          "ClonePrototypeCondition",
-          "ClonePrototypeCondition",
-          this.apiEditModel["ClonePrototypeCondition"],
-          {
-            rows: 6,
-            placeholder: fieldValue,
-            style: { resize: "none", fontFamily: "monospace" }
-          }
-        );
-      /**
-       * select models
-       * */
-      case "DeletingMode":
-      case "UpdatingMode":
-      case "CloningMode":
-      case "PreloadingMode":
-      case "PublishingMode":
-        return new SelectParsedModel(
-          field,
-          field,
-          fieldValue,
-          this.enumsModel[getBackendEnumTypeByFieldName(field)].map(option => {
-            return {
-              label: option.title,
-              value: option.value
-            };
-          })
-        );
-      default:
-        return undefined;
-    }
+  hideUiFields = (deps: string[] = [], reverseLogic: boolean = false) => {
+    forIn(this.UIEditModel, async model => {
+      if (
+        (!deps.includes(model.name) && !reverseLogic) ||
+        (reverseLogic && deps.includes(model.name))
+      ) {
+        model?.toggleIsHide();
+      }
+    });
   };
 
-  @action
-  initInDefinitionModel = () => {
-    const definitionFieldValue = this.apiEditModel["InDefinition"];
-    if (!_.isNull(definitionFieldValue)) {
-      runInAction(() => {
-        this.inDefinitionModel = new CheckboxParsedModel(
-          "InDefinition",
-          "InDefinition",
-          definitionFieldValue
-        );
-      });
-    }
-  };
-
-  parseEditFormDataToUIModel = (model: IEditFormModel): ParsedModelType[] => {
+  parseEditFormDataToUIModel = (model: IEditFormModel): { [key in string]: ParsedModelType } => {
     /**
      * исключение
-     * если заполнено поле DefaultCachePeriod рендерим только его
+     * если заполнено поле DefaultCachePeriod рендерим только  2 поля ниже
      * */
     if (model["DefaultCachePeriod"]) {
-      const fields = ["InDefinition", "DefaultCachePeriod"];
-      return fields.map(
-        (fieldName): ParsedModelType => {
-          return this.getModelByFieldName(fieldName);
-        }
-      );
+      const exceptionFields = ["InDefinition", "DefaultCachePeriod"];
+      return this.getParsedUIModelFromApiFields(model, exceptionFields);
     }
 
-    return Object.keys(model).map(
-      (fieldName): ParsedModelType => {
-        return this.getModelByFieldName(fieldName);
-      }
-    );
+    return this.getParsedUIModelFromApiFields(model);
   };
 
   @action
@@ -289,9 +136,7 @@ export default class FormStore {
         formData.append(fieldKey, _.isNull(this.formData[fieldKey]) ? "" : this.formData[fieldKey]);
       });
       const newEditForm = await ApiService.saveField(formData);
-      this.apiEditModel = newEditForm;
-      this.initInDefinitionModel();
-      this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(newEditForm));
+      this.UIEditModel = this.parseEditFormDataToUIModel(newEditForm);
       this.xmlEditorStore.setXml(newEditForm.Xml);
     } catch (e) {
       this.setError("Ошибка сохранения формы");
@@ -303,16 +148,11 @@ export default class FormStore {
     if (!this.formData) return true;
     const overlapFields = Object.keys(this.formData).reduce((acc, fieldKey) => {
       const formDataValue = this.formData[fieldKey];
-      const modelValue = this.apiEditModel[fieldKey];
+      const modelValue = this.UIEditModel[fieldKey]?.value;
       if (formDataValue !== modelValue) acc.push(fieldKey);
       return acc;
     }, [] as string[]);
     return !overlapFields.length;
-  };
-
-  clearForm = () => {
-    this.setFormData();
-    if (this.resetForm) this.resetForm();
   };
 
   @action
@@ -321,13 +161,166 @@ export default class FormStore {
     formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
     formData.append("xml", this.xmlEditorStore.xml);
     try {
+      this.operationState = OperationState.Pending;
       const editForm = await ApiService.getEditForm(formData);
-      this.apiEditModel = editForm;
-      this.initInDefinitionModel();
-      this.UIEditModel = _.compact(this.parseEditFormDataToUIModel(editForm));
+      this.UIEditModel = this.parseEditFormDataToUIModel(editForm);
+      this.operationState = OperationState.Success;
     } catch (e) {
       this.setError("Ошибка загрузки формы");
       console.log(e);
     }
+  };
+
+  getParsedUIModelFromApiFields = (
+    fields: IEditFormModel,
+    exceptionFields: string[] = []
+  ): { [key in string]: ParsedModelType } => {
+    const OnlyExceptionsFields = exceptionFields.reduce((model, field) => {
+      model[field] = fields[field];
+      return model;
+    }, {});
+
+    const fieldsModel = exceptionFields.length ? OnlyExceptionsFields : fields;
+    return keys(fieldsModel).reduce((acc, field) => {
+      const fieldValue = fields[field];
+
+      switch (field) {
+        /**
+         * checkbox models
+         * */
+        case "InDefinition":
+          if (
+            !_.isNull(fields["IsFromDictionaries"]) &&
+            !_.isUndefined(fields["IsFromDictionaries"])
+          )
+            return acc;
+          acc[field] = new CheckboxParsedModel(field, field, fieldValue, () =>
+            this.hideUiFields([field])
+          );
+          break;
+        case "CacheEnabled":
+          const mainCheckboxModel = new CheckboxParsedModel(
+            field,
+            field,
+            fieldValue,
+            () => {
+              subComponentInput.toggleIsHide();
+            },
+            "Cache",
+            null,
+            false,
+            true
+          );
+          const subComponentInput = new InputParsedModel(
+            "CachePeriod",
+            null,
+            fields["CachePeriod"],
+            "",
+            !mainCheckboxModel.value,
+            true
+          );
+          mainCheckboxModel.subComponentOnCheck = subComponentInput;
+          acc[field] = mainCheckboxModel;
+          break;
+
+        case "SkipCData":
+        case "LoadLikeImage":
+          acc[field] = new CheckboxParsedModel(field, field, fieldValue);
+          break;
+
+        case "IsReadOnly":
+        case "LoadAllPlainFields":
+          if (fields["IsFromDictionaries"]) return acc;
+          acc[field] = new CheckboxParsedModel(field, field, fieldValue);
+          break;
+
+        case "FieldName":
+        case "ContentName":
+        case "DefaultCachePeriod":
+          acc[field] = new InputParsedModel(field, field, fieldValue);
+          break;
+
+        case "FieldTitle":
+          if (_.isUndefined(fieldValue)) return acc;
+          acc[field] = new InputParsedModel(
+            field,
+            l("FieldNameForCard"),
+            fieldValue,
+            l("LabelText")
+          );
+          break;
+
+        /**
+         * text models
+         * */
+        case "RelateTo":
+          if (!fields["RelatedContentName"] && !fields["RelatedContentId"]) return acc;
+          acc[field] = new TextParsedModel(
+            field,
+            fieldValue,
+            `${fields["RelatedContentName"] || ""} ${fields["RelatedContentId"] || ""}`
+          );
+          break;
+
+        case "FieldId":
+        case "IsClassifier":
+        case "ContentId":
+          acc[field] = new TextParsedModel(field, field, fieldValue);
+          break;
+
+        /**
+         * textarea models
+         * */
+        case "RelationConditionDescription":
+          acc["RelationCondition"] = new TextAreaParsedModel(
+            "RelationCondition",
+            "RelationCondition",
+            fields["RelationCondition"] ?? null,
+            {
+              rows: 6,
+              placeholder: fieldValue,
+              style: { resize: "none", fontFamily: "monospace" }
+            }
+          );
+          break;
+
+        case "ClonePrototypeConditionDescription":
+          acc["ClonePrototypeCondition"] = new TextAreaParsedModel(
+            "ClonePrototypeCondition",
+            "ClonePrototypeCondition",
+            fields["ClonePrototypeCondition"] ?? null,
+            {
+              rows: 6,
+              placeholder: fieldValue,
+              style: { resize: "none", fontFamily: "monospace" }
+            }
+          );
+          break;
+
+        /**
+         * select models
+         * */
+        case "DeletingMode":
+        case "UpdatingMode":
+        case "CloningMode":
+        case "PreloadingMode":
+        case "PublishingMode":
+          acc[field] = new SelectParsedModel(
+            field,
+            field,
+            fieldValue,
+            this.enumsModel[getBackendEnumTypeByFieldName(field)].map(option => {
+              return {
+                label: option.title,
+                value: option.value
+              };
+            })
+          );
+          break;
+        default:
+          return acc;
+      }
+      return acc;
+    }, {});
   };
 }

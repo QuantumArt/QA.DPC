@@ -16,6 +16,7 @@ export interface IBaseParsedModel {
   name: string;
   value: string | boolean | number;
   isHide: boolean;
+  toggleIsHide: () => void;
   isInline: boolean;
 }
 interface IInputParsedModel extends IBaseParsedModel {
@@ -48,7 +49,7 @@ interface ICheckboxParsedModel extends IBaseParsedModel {
   value: boolean;
   subString?: string;
   subComponentOnCheck?: ParsedModelType;
-  toggleValue?: () => void;
+  onChangeCb: () => void;
 }
 
 export abstract class BaseAbstractParsedModel implements IBaseParsedModel {
@@ -62,7 +63,9 @@ export abstract class BaseAbstractParsedModel implements IBaseParsedModel {
   readonly name: string;
   readonly type: FormFieldType;
   readonly label: string;
-  isHide: boolean;
+  @observable isHide: boolean;
+  @action
+  toggleIsHide = () => (this.isHide = !this.isHide);
   readonly isInline: boolean;
   value: string | boolean | number;
 }
@@ -86,18 +89,25 @@ export class SelectParsedModel extends BaseAbstractParsedModel implements ISelec
 }
 
 export class CheckboxParsedModel extends BaseAbstractParsedModel implements ICheckboxParsedModel {
-  constructor(name, label, value, subString = "", subComponentOnCheck = null, isHide?, isInline?) {
+  constructor(
+    name,
+    label,
+    value,
+    onChangeCb = null,
+    subString = "",
+    subComponentOnCheck = null,
+    isHide?,
+    isInline?
+  ) {
     super(name, label, value, isHide, isInline);
     this.subString = subString;
     this.subComponentOnCheck = subComponentOnCheck;
+    this.onChangeCb = onChangeCb;
   }
   readonly type = FormFieldType.Checkbox;
-  @observable value;
+  readonly onChangeCb;
+  value;
   subComponentOnCheck;
-  @action
-  toggleValue = () => {
-    this.value = !this.value;
-  };
   readonly subString;
 }
 
@@ -116,7 +126,6 @@ export class InputParsedModel extends BaseAbstractParsedModel implements IInputP
     super(name, label, value, isHide, isInline);
     this.placeholder = placeholder;
   }
-  @observable isHide: boolean;
   readonly type = FormFieldType.Input;
   readonly value;
   readonly placeholder;
