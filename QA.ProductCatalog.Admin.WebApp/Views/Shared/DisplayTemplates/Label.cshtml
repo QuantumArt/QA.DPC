@@ -3,13 +3,18 @@
 @model QA.Core.DPC.UI.Controls.Label
 @if (Model == null || (Model.Hidden ?? false)) { return; }
 @{
-    var title = Model.Title;
-    if (string.IsNullOrEmpty(title)) { return; }
+  var title = Model.Title;
+  if (string.IsNullOrEmpty(title)) { return; }
 }
 
 @{
-
   Func<dynamic, HelperResult> CheckStyle(string model, string css) =>
-    @<text>@( model != null ? (css + ": " + model) + ";" : "")</text>;
+  @<text>@( model != null ? (css + ": " + model) + ";" : "")</text>;
 }
-<span id="@Model.UId" title="@(title)" class="label @Model.TextOverflow @Model.ClassName" style="@CheckStyle(Model.FontColor, "color")(null) @CheckStyle(Model.MaxWidth, "max-width")(null) @CheckStyle(Model.FontSize, "font-size")(null) @CheckStyle(Model.FontWeight, "font-weight")(null)">@Model.ReplaceNotesIfNeeded(title, Model.HtmlEncode)</span>
+<span 
+  id="@Model.UId"
+  title="@(title)"
+  class="label @Model.TextOverflow @Model.ClassName"
+  style="@CheckStyle(Model.FontColor, "color")(null) @CheckStyle(Model.MaxWidth, "max-width")(null) @CheckStyle(Model.FontSize, "font-size")(null) @CheckStyle(Model.FontWeight, "font-weight")(null)"
+    >@Model.ReplaceNotesIfNeeded(title, Model.HtmlEncode)
+</span>

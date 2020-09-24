@@ -14,7 +14,7 @@
 @if (Model.IsFullSized)
 {
     <style>
-        #tabstrip-parent {
+        @*#tabstrip-parent {
             height: 100%;
             border-width: 0;
         }
@@ -27,11 +27,11 @@
         #@Model.UId{
             border-width: 0;
             margin: 0;
-        }
+        }*@
     </style>
 }
-<div data-name="@hash" id="@Model.UId" class="tabstrip hidden @(Model.IsFullSized? "tabstrip_fullsized": "") ">
-    <ul class="tabstrip-header">
+<div data-name="@hash" id="@Model.UId" class="bp3-tabs @(Model.IsFullSized? "tabstrip_fullsized": "") ">
+    <ul class="bp3-tab-list" role="tablist">
         @foreach (var item in items)
         {
             if (!(item.Hidden ?? false))
@@ -42,7 +42,7 @@
                 }
               
                 var title = (item as ITitled<object>)?.Title ?? "не указано";
-                <li id="@item.UId" data-order="@(i++)" class="tabstrip-header-item">@title</li>
+                <li id="@item.UId" data-order="@(i++)" class="bp3-tab" role="tab">@title</li>
             }
         }
     </ul>
@@ -51,7 +51,7 @@
     {
         if (!(item.Hidden ?? false))
         {
-          <div class="tabstip-item @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")">
+          <div class="bp3-tab-panel @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")" role="tabpanel">
             @{
               var tabStripItem = item as TabStripItem;
               var group = item as Group;
@@ -70,11 +70,12 @@
 </div>
 <script>
     $(function () {
-        QA.Product.TabStrip.init("@Model.UId",
-            "@defaultItemId",
-            '@Model.IsFullSized.ToString().ToLower()' == 'true', {
-                tabPosition: '@Model.TabPosition.ToString().ToLower()',
-                collapsible: '@Model.Collapsible.ToString().ToLower()' == 'true'
-            });
+      QA.Product.TabStrip.init(
+        "@Model.UId",
+        "@defaultItemId",
+        '@Model.IsFullSized.ToString().ToLower()' == 'true', {
+            tabPosition: '@Model.TabPosition.ToString().ToLower()',
+            collapsible: '@Model.Collapsible.ToString().ToLower()' == 'true'
+        });
     });
 </script>
