@@ -31,13 +31,11 @@ const FormField = observer(({ model }: IProps) => {
         );
       case FormFieldType.Input:
         return (
-          <Field name={model.name} value={model.value} defaultValue={model.value}>
+          <Field name={model.name} value={model.value} defaultValue={model.value} allowNull>
             {({ input }) => {
               return (
                 <InputGroup
                   {...input}
-                  allowNull
-                  parse={parseEmptyStringToNull}
                   className={formFieldClassName}
                   placeholder={model.placeholder || ""}
                 />
@@ -47,17 +45,14 @@ const FormField = observer(({ model }: IProps) => {
         );
       case FormFieldType.Textarea:
         return (
-          <Field name={model.name} defaultValue={model.value}>
+          <Field
+            name={model.name}
+            defaultValue={model.value}
+            allowNull
+            parse={parseEmptyStringToNull}
+          >
             {({ input }) => {
-              return (
-                <TextArea
-                  {...input}
-                  {...model.extraOptions}
-                  className={formFieldClassName}
-                  allowNull
-                  parse={parseEmptyStringToNull}
-                />
-              );
+              return <TextArea {...input} {...model.extraOptions} className={formFieldClassName} />;
             }}
           </Field>
         );
@@ -82,7 +77,7 @@ const FormField = observer(({ model }: IProps) => {
                 );
               }}
             </Field>
-            {model.subComponentOnCheck && <FormField model={model.subComponentOnCheck} />}
+            {model.subModel && <FormField model={model.subModel} />}
           </>
         );
       case FormFieldType.Select:

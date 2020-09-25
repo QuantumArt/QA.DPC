@@ -9,6 +9,8 @@ import FormErrorDialog from "DefinitionEditor/Components/Forms/FormErrorDialog";
 import FormWarningDialog from "DefinitionEditor/Components/Forms/FormWarningDialog";
 import { OperationState } from "Shared/Enums";
 import { keys } from "lodash";
+import { Loading } from "DefinitionEditor/Components";
+import { ButtonGroup } from "@blueprintjs/core";
 
 const EditForm = observer(() => {
   const { formStore, controlsStore } = useStores();
@@ -36,7 +38,10 @@ const EditForm = observer(() => {
           }}
         />
       )}
-      {formStore.operationState === OperationState.Pending && "loading"}
+      <Loading
+        className="forms-wrapper__loading"
+        active={formStore.operationState === OperationState.Pending}
+      />
       <FormErrorDialog />
       <FormWarningDialog />
     </div>

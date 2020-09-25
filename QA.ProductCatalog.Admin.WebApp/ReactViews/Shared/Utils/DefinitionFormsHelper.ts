@@ -10,6 +10,10 @@ export declare type ParsedModelType =
   | ITextParsedModel
   | ITextAreaParsedModel;
 
+export function isCheckboxParsedModel(model: ParsedModelType): model is ICheckboxParsedModel {
+  return (<ICheckboxParsedModel>model).subModel !== undefined;
+}
+
 export interface IBaseParsedModel {
   type: FormFieldType;
   label: string | null;
@@ -48,7 +52,7 @@ interface ICheckboxParsedModel extends IBaseParsedModel {
   type: FormFieldType.Checkbox;
   value: boolean;
   subString?: string;
-  subComponentOnCheck?: ParsedModelType;
+  subModel?: ParsedModelType;
   onChangeCb: () => void;
 }
 
@@ -101,13 +105,13 @@ export class CheckboxParsedModel extends BaseAbstractParsedModel implements IChe
   ) {
     super(name, label, value, isHide, isInline);
     this.subString = subString;
-    this.subComponentOnCheck = subComponentOnCheck;
+    this.subModel = subComponentOnCheck;
     this.onChangeCb = onChangeCb;
   }
   readonly type = FormFieldType.Checkbox;
   readonly onChangeCb;
   value;
-  subComponentOnCheck;
+  subModel;
   readonly subString;
 }
 

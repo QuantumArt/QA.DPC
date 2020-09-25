@@ -68,33 +68,38 @@ export default class ControlsStore {
     return false;
   };
 
-  applyOnOpenedForm = async (): Promise<void> => {
+  applyOnOpenedForm = async (): Promise<boolean> => {
     if (this.formStore.isEqualFormDataWithOriginalModel()) {
       this.formStore.setError("Form wasn't change");
-      return;
+      return false;
     }
     await this.formStore.saveForm(this.selectedNodeId);
     const singleNode = await this.treeStore.getSingleNode(this.selectedNodeId);
     await this.treeStore.setSingleNode(singleNode);
+    return true;
   };
 
-  applyOnOpenedXmlEditor = async (): Promise<void> => {
+  applyOnOpenedXmlEditor = async (): Promise<boolean> => {
     if (this.isSameDefinition()) {
-      return;
+      return false;
     }
     await this.treeStore.getDefinitionLevel();
+    return true;
   };
 
+  //TODO отрефакторить
   @action
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
+    let result: boolean;
 
     if (this.formMode) {
-      await this.applyOnOpenedForm();
+      result = await this.applyOnOpenedForm();
     } else {
-      await this.applyOnOpenedXmlEditor();
+      result = await this.applyOnOpenedXmlEditor();
     }
 
+    if (!result) return;
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }
@@ -103,12 +108,15 @@ export default class ControlsStore {
   @action
   saveAndExit = async () => {
     this.setSavingMode(SavingMode.Finish);
+    let result: boolean;
 
     if (this.formMode) {
-      await this.applyOnOpenedForm();
+      result = await this.applyOnOpenedForm();
     } else {
-      await this.applyOnOpenedXmlEditor();
+      result = await this.applyOnOpenedXmlEditor();
     }
+    if (!result) return;
+
     //TODO подправить условия с обработкой ошибок т.к. теперь обрабатываются формы.
     if (this.treeStore.operationState === OperationState.Success) {
       window.pmrpc.call({

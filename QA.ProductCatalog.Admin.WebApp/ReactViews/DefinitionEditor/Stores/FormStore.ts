@@ -7,6 +7,7 @@ import {
   CheckboxParsedModel,
   getBackendEnumTypeByFieldName,
   InputParsedModel,
+  isCheckboxParsedModel,
   ISingleRequestedData,
   ParsedModelType,
   SelectParsedModel,
@@ -15,13 +16,12 @@ import {
   TextParsedModel
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
-import _, { keys, forIn } from "lodash";
+import _, { keys, forIn, assign } from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 
 //TODO доделать:
 // 2. сделать обработку ошибок на всех уровнях работы с формой
-// 3. прикрутить лоадер
 // 4. добавить локализацию
 // 6. сохранение пока работает только с definitionfieldInfo. Для ContentInfo форм будет другой метод и соответствующая проверка.
 export default class FormStore {
@@ -35,7 +35,7 @@ export default class FormStore {
     { [key in BackendEnumType]: EnumBackendModel[] }
   >;
   private enumsModel: { [key in BackendEnumType]: EnumBackendModel[] };
-  public formData: {};
+  public finalFormData: {};
   private readonly excludeFieldsFromNewFormData: string[] = ["RelateTo"];
 
   @observable operationState: OperationState = OperationState.None;
@@ -48,7 +48,7 @@ export default class FormStore {
 
   @action
   resetErrorState = () => {
-    this.operationState = OperationState.None;
+    this.operationState = OperationState.Success;
     this.errorText = null;
   };
 
@@ -66,10 +66,10 @@ export default class FormStore {
 
   setFormData = (newFormData: object | null = null): void => {
     if (!newFormData) {
-      this.formData = newFormData;
+      this.finalFormData = newFormData;
       return;
     }
-    this.formData = Object.keys(newFormData).reduce((acc, key) => {
+    this.finalFormData = Object.keys(newFormData).reduce((acc, key) => {
       if (!this.excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
       return acc;
     }, {});
@@ -79,6 +79,7 @@ export default class FormStore {
     reactionCb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer
   ) => {
     this.onChangeNodeIdReaction = reactionCb(async (nodeId: string) => {
+      this.disposeOtherFieldReactions();
       if (!this.enumsModel) await this.initEnumsModel();
       await this.fetchFormFields(nodeId);
     });
@@ -132,8 +133,11 @@ export default class FormStore {
       }
       //TODO не уверен, что нужно отправлять  модель xml из xmlEditorStore т.к. мы работаем с формой, эта уже может быть отредактирована и не сохранена.
       formData.append("xml", this.xmlEditorStore.xml);
-      Object.keys(this.formData).forEach(fieldKey => {
-        formData.append(fieldKey, _.isNull(this.formData[fieldKey]) ? "" : this.formData[fieldKey]);
+      keys(this.finalFormData).forEach(fieldKey => {
+        formData.append(
+          fieldKey,
+          _.isNull(this.finalFormData[fieldKey]) ? "" : String(this.finalFormData[fieldKey])
+        );
       });
       const newEditForm = await ApiService.saveField(formData);
       this.UIEditModel = this.parseEditFormDataToUIModel(newEditForm);
@@ -144,14 +148,28 @@ export default class FormStore {
     }
   };
 
+  getSubModelsFromCheckboxModels = (): { [key in string]: ParsedModelType } => {
+    return keys(this.UIEditModel).reduce((acc, fieldKey) => {
+      const model = this.UIEditModel[fieldKey];
+      if (isCheckboxParsedModel(model)) {
+        if (model.subModel) acc[model.subModel.name] = model.subModel;
+      }
+      return acc;
+    }, {});
+  };
+
   isEqualFormDataWithOriginalModel = (): boolean => {
-    if (!this.formData) return true;
-    const overlapFields = Object.keys(this.formData).reduce((acc, fieldKey) => {
-      const formDataValue = this.formData[fieldKey];
-      const modelValue = this.UIEditModel[fieldKey]?.value;
+    if (!this.finalFormData) return true;
+    const comparableModel = assign({}, this.UIEditModel, this.getSubModelsFromCheckboxModels());
+
+    const overlapFields = keys(this.finalFormData).reduce((acc, fieldKey) => {
+      const formDataValue = this.finalFormData[fieldKey];
+      const modelValue = comparableModel[fieldKey]?.value;
       if (formDataValue !== modelValue) acc.push(fieldKey);
       return acc;
     }, [] as string[]);
+
+    debugger;
     return !overlapFields.length;
   };
 
@@ -168,6 +186,15 @@ export default class FormStore {
     } catch (e) {
       this.setError("Ошибка загрузки формы");
       console.log(e);
+    }
+  };
+
+  addFieldReaction = (reaction: IReactionDisposer) => this.otherFieldReactions.push(reaction);
+
+  disposeOtherFieldReactions = () => {
+    if (this.otherFieldReactions && this.otherFieldReactions.length) {
+      this.otherFieldReactions.forEach(reaction => reaction());
+      this.otherFieldReactions = [];
     }
   };
 
@@ -194,19 +221,27 @@ export default class FormStore {
             !_.isUndefined(fields["IsFromDictionaries"])
           )
             return acc;
-          acc[field] = new CheckboxParsedModel(field, field, fieldValue, () =>
+          acc[field] = new CheckboxParsedModel(field, l(field), fieldValue, () =>
             this.hideUiFields([field])
+          );
+          this.addFieldReaction(
+            reaction(
+              () => this.UIEditModel,
+              () => {
+                if (fieldValue === false) this.hideUiFields([field]);
+              }
+            )
           );
           break;
         case "CacheEnabled":
           const mainCheckboxModel = new CheckboxParsedModel(
             field,
-            field,
+            l("CacheSettings"),
             fieldValue,
             () => {
               subComponentInput.toggleIsHide();
             },
-            "Cache",
+            l("ProceedCaching"),
             null,
             false,
             true
@@ -219,25 +254,27 @@ export default class FormStore {
             !mainCheckboxModel.value,
             true
           );
-          mainCheckboxModel.subComponentOnCheck = subComponentInput;
+          mainCheckboxModel.subModel = subComponentInput;
           acc[field] = mainCheckboxModel;
           break;
 
         case "SkipCData":
+          acc[field] = new CheckboxParsedModel(field, l("DontWrapInCData"), fieldValue);
+          break;
         case "LoadLikeImage":
-          acc[field] = new CheckboxParsedModel(field, field, fieldValue);
+          acc[field] = new CheckboxParsedModel(field, l("LoadAsImage"), fieldValue);
           break;
 
         case "IsReadOnly":
         case "LoadAllPlainFields":
           if (fields["IsFromDictionaries"]) return acc;
-          acc[field] = new CheckboxParsedModel(field, field, fieldValue);
+          acc[field] = new CheckboxParsedModel(field, l(field), fieldValue);
           break;
 
         case "FieldName":
         case "ContentName":
         case "DefaultCachePeriod":
-          acc[field] = new InputParsedModel(field, field, fieldValue);
+          acc[field] = new InputParsedModel(field, l(field), fieldValue);
           break;
 
         case "FieldTitle":
@@ -265,7 +302,7 @@ export default class FormStore {
         case "FieldId":
         case "IsClassifier":
         case "ContentId":
-          acc[field] = new TextParsedModel(field, field, fieldValue);
+          acc[field] = new TextParsedModel(field, l(field), fieldValue);
           break;
 
         /**
@@ -274,8 +311,8 @@ export default class FormStore {
         case "RelationConditionDescription":
           acc["RelationCondition"] = new TextAreaParsedModel(
             "RelationCondition",
-            "RelationCondition",
-            fields["RelationCondition"] ?? null,
+            l("RelationCondition"),
+            fields["RelationCondition"],
             {
               rows: 6,
               placeholder: fieldValue,
@@ -287,8 +324,8 @@ export default class FormStore {
         case "ClonePrototypeConditionDescription":
           acc["ClonePrototypeCondition"] = new TextAreaParsedModel(
             "ClonePrototypeCondition",
-            "ClonePrototypeCondition",
-            fields["ClonePrototypeCondition"] ?? null,
+            l("ClonePrototypeCondition"),
+            fields["ClonePrototypeCondition"],
             {
               rows: 6,
               placeholder: fieldValue,
@@ -307,7 +344,7 @@ export default class FormStore {
         case "PublishingMode":
           acc[field] = new SelectParsedModel(
             field,
-            field,
+            l(field),
             fieldValue,
             this.enumsModel[getBackendEnumTypeByFieldName(field)].map(option => {
               return {
