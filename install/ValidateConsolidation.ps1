@@ -76,10 +76,12 @@ function Test-Port
   
 }
 
-$useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
-$moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
-if (-not(Get-Module -Name $moduleName)) {
-    Import-Module $moduleName
+if ($dbType -eq 0) {
+    $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
+    $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
+    if (-not(Get-Module -Name $moduleName)) {
+        Import-Module $moduleName
+    }
 }
 
 $requiredRuntime = '3.1.8'
