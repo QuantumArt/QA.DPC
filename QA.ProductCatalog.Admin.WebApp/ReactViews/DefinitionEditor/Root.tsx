@@ -4,6 +4,7 @@ import SplitPane from "react-split-pane";
 import debounce from "lodash/debounce";
 import { ToolBar, XmlEditor, XmlTree } from "DefinitionEditor/Components";
 import "./Root.scss";
+import UnsavedChangesDialog from "DefinitionEditor/Components/UnsavedChangesDialog";
 
 const Root = observer(() => {
   const topOffset = 60;
@@ -47,6 +48,7 @@ const Root = observer(() => {
   );
   return (
     <>
+      <UnsavedChangesDialog />
       <ToolBar />
       <SplitPane
         split="vertical"

@@ -13,11 +13,11 @@ export default class ControlsStore {
     private formStore: FormStore
   ) {
     treeStore.init(this.setSelectedNodeId);
-    formStore.init(action =>
+    formStore.init(onReactionFireCb =>
       reaction(
         () => this.selectedNodeId,
         (nodeId: string) => {
-          if (nodeId && action) action(nodeId);
+          if (nodeId && onReactionFireCb) onReactionFireCb(nodeId);
         }
       )
     );
@@ -27,6 +27,28 @@ export default class ControlsStore {
   @observable selectedNodeId: string = null;
   submitFormSyntheticEvent;
 
+  @observable isUnsavedChangesDialog: boolean = false;
+  @observable unsavedChangesDialogOnLeaveCb: () => void;
+
+  @action
+  toggleUnsavedChangesDialog = () => (this.isUnsavedChangesDialog = !this.isUnsavedChangesDialog);
+
+  @action
+  onChangeFormMode = () => {
+    if (this.formMode) {
+    } else {
+      if (!this.xmlEditorStore.isSameDefinition()) {
+        this.toggleUnsavedChangesDialog();
+        this.unsavedChangesDialogOnLeaveCb = () => {
+          this.xmlEditorStore.setXml(this.xmlEditorStore.lastLocalSavedXml);
+          this.toggleFormMode();
+        };
+        return;
+      }
+    }
+    this.toggleFormMode();
+  };
+
   @action
   toggleFormMode = () => (this.formMode = !this.formMode);
 
@@ -35,9 +57,9 @@ export default class ControlsStore {
     /**
      * При клике на ноду проверяется были ли изменения в модели формы.
      * */
-    if (this.formMode && !this.formStore.isEqualFormDataWithOriginalModel()) {
-      this.formStore.toggleLeaveWithoutSaveDialog();
-      this.formStore.warningPopupOnExitCb = () => this.setNodeId(id);
+    if (this.formMode && !this.formStore.isFormTheSame()) {
+      this.toggleUnsavedChangesDialog();
+      this.unsavedChangesDialogOnLeaveCb = () => this.setNodeId(id);
       return;
     }
     this.setNodeId(id);
@@ -56,12 +78,12 @@ export default class ControlsStore {
     this.xmlEditorStore.setXml(this.xmlEditorStore.origXml);
     this.treeStore.resetErrorState();
     this.treeStore.openedNodes = [];
-    await this.treeStore.getDefinitionLevel();
+    await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
     await this.treeStore.onNodeExpand(this.treeStore.tree[0]);
   };
 
   isSameDefinition = (): boolean => {
-    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
+    if (this.xmlEditorStore.isSameDefinition()) {
       this.treeStore.setError(l("SameDefinition"));
       return true;
     }
@@ -69,13 +91,14 @@ export default class ControlsStore {
   };
 
   applyOnOpenedForm = async (): Promise<boolean> => {
-    if (this.formStore.isEqualFormDataWithOriginalModel()) {
-      this.formStore.setError("Form wasn't change");
+    if (this.formStore.isFormTheSame()) {
       return false;
     }
     await this.formStore.saveForm(this.selectedNodeId);
-    const singleNode = await this.treeStore.getSingleNode(this.selectedNodeId);
-    await this.treeStore.setSingleNode(singleNode);
+    const singleNode = await this.treeStore.withLogError(
+      async () => await this.treeStore.getSingleNode(this.selectedNodeId)
+    );
+    await this.treeStore.setOpenedNodes(singleNode.Id);
     return true;
   };
 
@@ -83,40 +106,31 @@ export default class ControlsStore {
     if (this.isSameDefinition()) {
       return false;
     }
-    await this.treeStore.getDefinitionLevel();
+    await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
     return true;
   };
 
-  //TODO отрефакторить
-  @action
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
-    let result: boolean;
-
-    if (this.formMode) {
-      result = await this.applyOnOpenedForm();
-    } else {
-      result = await this.applyOnOpenedXmlEditor();
-    }
-
-    if (!result) return;
+    if (!this.doLocalSave()) return;
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }
   };
 
-  @action
+  doLocalSave = async (): Promise<boolean> => {
+    let isLocalSaveWasCorrect: boolean;
+    if (this.formMode) {
+      isLocalSaveWasCorrect = await this.applyOnOpenedForm();
+    } else {
+      isLocalSaveWasCorrect = await this.applyOnOpenedXmlEditor();
+    }
+    return isLocalSaveWasCorrect;
+  };
+
   saveAndExit = async () => {
     this.setSavingMode(SavingMode.Finish);
-    let result: boolean;
-
-    if (this.formMode) {
-      result = await this.applyOnOpenedForm();
-    } else {
-      result = await this.applyOnOpenedXmlEditor();
-    }
-    if (!result) return;
-
+    if (!this.doLocalSave()) return;
     //TODO подправить условия с обработкой ошибок т.к. теперь обрабатываются формы.
     if (this.treeStore.operationState === OperationState.Success) {
       window.pmrpc.call({

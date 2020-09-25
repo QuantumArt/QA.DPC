@@ -8,6 +8,7 @@
   editUrl: string;
   saveFieldUrl: string;
   saveFieldBetaUrl: string;
+  saveContentBetaUrl: string;
   strings: {
     DictionaryCachingSettings: string;
     MissingInQP: string;

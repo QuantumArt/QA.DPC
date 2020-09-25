@@ -83,6 +83,17 @@ class ApiService extends BaseApiService {
     });
     return this.mapResponse(res, (x: IEditFormModel) => mapEditFormModel(x));
   };
+  /**
+   * POST
+   * @param body formData
+   */
+  public saveContent = async (body: FormData): Promise<IEditFormModel> => {
+    const res = await fetch(this.settings.saveContentBetaUrl, {
+      method: "POST",
+      body
+    });
+    return this.mapResponse(res, (x: IEditFormModel) => mapEditFormModel(x));
+  };
 }
 
 const apiService = new ApiService(window.definitionEditor);

@@ -1,5 +1,5 @@
 import { IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
-import { isNull, isUndefined } from "lodash";
+import { isNull, isUndefined, keys } from "lodash";
 
 class EditFormModel implements IEditFormModel {
   ClonePrototypeCondition: string;

@@ -2,7 +2,7 @@ import XmlEditorStore from "./XmlEditorStore";
 import { action, observable, reaction, runInAction } from "mobx";
 import ApiService from "DefinitionEditor/ApiService";
 import { EnumBackendModel, IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
-import { BackendEnumType } from "DefinitionEditor/Enums";
+import { BackendEnumType, ModelType } from "DefinitionEditor/Enums";
 import {
   CheckboxParsedModel,
   getBackendEnumTypeByFieldName,
@@ -16,14 +16,13 @@ import {
   TextParsedModel
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
-import _, { keys, forIn, assign } from "lodash";
+import { keys, forIn, assign, isNull, isUndefined } from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 
 //TODO доделать:
-// 2. сделать обработку ошибок на всех уровнях работы с формой
-// 4. добавить локализацию
-// 6. сохранение пока работает только с definitionfieldInfo. Для ContentInfo форм будет другой метод и соответствующая проверка.
+// 1. сделать обработку ошибок на всех уровнях работы с формой
+// 2. мелкий рефакторинг
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
     this.singleRequestedEnums = new singleRequestedData(ApiService.getSelectEnums);
@@ -31,6 +30,7 @@ export default class FormStore {
   }
 
   @observable UIEditModel: { [key in string]: ParsedModelType };
+  ModelType: ModelType;
   private singleRequestedEnums: ISingleRequestedData<
     { [key in BackendEnumType]: EnumBackendModel[] }
   >;
@@ -39,8 +39,6 @@ export default class FormStore {
   private readonly excludeFieldsFromNewFormData: string[] = ["RelateTo"];
 
   @observable operationState: OperationState = OperationState.None;
-  @observable isLeaveWithoutSaveDialog: boolean = false;
-  @observable warningPopupOnExitCb: () => void;
   @observable errorText: string = null;
 
   onChangeNodeIdReaction: IReactionDisposer;
@@ -50,11 +48,6 @@ export default class FormStore {
   resetErrorState = () => {
     this.operationState = OperationState.Success;
     this.errorText = null;
-  };
-
-  @action
-  toggleLeaveWithoutSaveDialog = () => {
-    this.isLeaveWithoutSaveDialog = !this.isLeaveWithoutSaveDialog;
   };
 
   setError = (errText?: string) => {
@@ -69,16 +62,18 @@ export default class FormStore {
       this.finalFormData = newFormData;
       return;
     }
-    this.finalFormData = Object.keys(newFormData).reduce((acc, key) => {
+    this.finalFormData = keys(newFormData).reduce((acc, key) => {
       if (!this.excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
       return acc;
     }, {});
   };
 
   init = (
-    reactionCb: (onReactionAction: (nodeId: string) => Promise<void>) => IReactionDisposer
+    onChangeNodeIdReaction: (
+      onReactionAction: (nodeId: string) => Promise<void>
+    ) => IReactionDisposer
   ) => {
-    this.onChangeNodeIdReaction = reactionCb(async (nodeId: string) => {
+    this.onChangeNodeIdReaction = onChangeNodeIdReaction(async (nodeId: string) => {
       this.disposeOtherFieldReactions();
       if (!this.enumsModel) await this.initEnumsModel();
       await this.fetchFormFields(nodeId);
@@ -127,19 +122,15 @@ export default class FormStore {
     try {
       const formData = new FormData();
       formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
-      const validation = this.xmlEditorStore.validateXml();
-      if (validation !== true) {
-        throw validation;
-      }
-      //TODO не уверен, что нужно отправлять  модель xml из xmlEditorStore т.к. мы работаем с формой, эта уже может быть отредактирована и не сохранена.
       formData.append("xml", this.xmlEditorStore.xml);
       keys(this.finalFormData).forEach(fieldKey => {
         formData.append(
           fieldKey,
-          _.isNull(this.finalFormData[fieldKey]) ? "" : String(this.finalFormData[fieldKey])
+          isNull(this.finalFormData[fieldKey]) ? "" : String(this.finalFormData[fieldKey])
         );
       });
-      const newEditForm = await ApiService.saveField(formData);
+
+      const newEditForm = await this.getApiMethodByModelType()(formData);
       this.UIEditModel = this.parseEditFormDataToUIModel(newEditForm);
       this.xmlEditorStore.setXml(newEditForm.Xml);
     } catch (e) {
@@ -169,8 +160,29 @@ export default class FormStore {
       return acc;
     }, [] as string[]);
 
-    debugger;
     return !overlapFields.length;
+  };
+
+  isFormTheSame = (): boolean => {
+    if (this.isEqualFormDataWithOriginalModel()) {
+      this.setError("Form wasn't change");
+      return true;
+    }
+    return false;
+  };
+
+  setModelTypeByFieldType = (fieldType: number | undefined): void => {
+    if (fieldType) {
+      this.ModelType = ModelType.Field;
+    } else {
+      this.ModelType = ModelType.Content;
+    }
+  };
+
+  getApiMethodByModelType = (): ((body: FormData) => Promise<IEditFormModel>) => {
+    if (this.ModelType === ModelType.Field) return ApiService.saveField;
+    if (this.ModelType === ModelType.Content) return ApiService.saveContent;
+    return null;
   };
 
   @action
@@ -181,6 +193,7 @@ export default class FormStore {
     try {
       this.operationState = OperationState.Pending;
       const editForm = await ApiService.getEditForm(formData);
+      this.setModelTypeByFieldType(editForm?.FieldType);
       this.UIEditModel = this.parseEditFormDataToUIModel(editForm);
       this.operationState = OperationState.Success;
     } catch (e) {
@@ -216,11 +229,6 @@ export default class FormStore {
          * checkbox models
          * */
         case "InDefinition":
-          if (
-            !_.isNull(fields["IsFromDictionaries"]) &&
-            !_.isUndefined(fields["IsFromDictionaries"])
-          )
-            return acc;
           acc[field] = new CheckboxParsedModel(field, l(field), fieldValue, () =>
             this.hideUiFields([field])
           );
@@ -278,7 +286,7 @@ export default class FormStore {
           break;
 
         case "FieldTitle":
-          if (_.isUndefined(fieldValue)) return acc;
+          if (isUndefined(fieldValue)) return acc;
           acc[field] = new InputParsedModel(
             field,
             l("FieldNameForCard"),

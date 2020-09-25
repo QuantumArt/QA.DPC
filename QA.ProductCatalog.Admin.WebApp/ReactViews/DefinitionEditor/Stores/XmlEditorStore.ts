@@ -1,6 +1,6 @@
 ﻿import { action, observable } from "mobx";
 import { parse, validate, ValidationError } from "fast-xml-parser";
-import ControlsStore from "./ControlsStore";
+import { l } from "DefinitionEditor/Localization";
 
 export default class XmlEditorStore {
   constructor(private settings: DefinitionEditorSettings) {
@@ -28,12 +28,15 @@ export default class XmlEditorStore {
 
   @observable xml: string;
   origXml: string;
+  lastLocalSavedXml: string;
   @observable rootId: string;
   @observable fontSize: number = localStorage.getItem("fontSize")
     ? parseInt(localStorage.getItem("fontSize"))
     : 14;
   @observable wrapLines: boolean = localStorage.getItem("wrapLines") === "true";
   @observable queryOnClick: boolean = localStorage.getItem("queryOnClick") === "true";
+
+  setLastLocalSavedXml = (xml: string) => (this.lastLocalSavedXml = xml);
 
   @action
   changeFontSize = (size: number) => {
@@ -47,6 +50,8 @@ export default class XmlEditorStore {
     localStorage.setItem("wrapLines", `${this.wrapLines}`);
   };
 
+  isSameDefinition = (): boolean => this.xml === this.origXml;
+
   @action
   toggleQueryOnClick = () => {
     this.queryOnClick = !this.queryOnClick;
@@ -57,6 +62,7 @@ export default class XmlEditorStore {
   setXml = (xml: string, firstTime: boolean = false) => {
     if (firstTime) {
       this.origXml = xml;
+      this.setLastLocalSavedXml(xml);
     }
     this.xml = xml;
   };

@@ -16,7 +16,7 @@ export default class TreeStore {
     when(
       () => this.xmlEditorStore.rootId != null,
       async () => {
-        await this.getDefinitionLevel();
+        await this.withLogError(async () => await this.getDefinitionLevel());
         await this.onNodeExpand(this.tree[0]);
       }
     );
@@ -42,7 +42,9 @@ export default class TreeStore {
   @action
   onNodeExpand = async (node: ITreeNode<Partial<IDefinitionNode>>) => {
     if (node.nodeData.hasChildren && node.childNodes.length === 0) {
-      node.childNodes = await this.getDefinitionLevel(node.id.toString());
+      node.childNodes =
+        (await this.withLogError(async () => await this.getDefinitionLevel(node.id.toString()))) ||
+        [];
     }
     node.isExpanded = true;
     this.setOpenedNodes(node.id);
@@ -87,66 +89,58 @@ export default class TreeStore {
 
   @action
   getDefinitionLevel = async (path?: string): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
+    const formData = new FormData();
+    if (path) {
+      formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
+    }
+    const validation = this.xmlEditorStore.validateXml();
+    if (validation !== true) {
+      throw validation;
+    }
+    formData.append("xml", this.xmlEditorStore.xml);
+    this.operationState = OperationState.Pending;
+    const res = await ApiService.getDefinitionLevel(formData);
+    this.xmlEditorStore.setLastLocalSavedXml(this.xmlEditorStore.xml);
+    this.operationState = OperationState.Success;
+    return this.mapTree(res);
+  };
+
+  @action
+  withLogError = async <T extends {}>(cb: () => Promise<T>): Promise<T> => {
     try {
-      const formData = new FormData();
-      if (path) {
-        formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
-      }
-      const validation = this.xmlEditorStore.validateXml();
-      if (validation !== true) {
-        throw validation;
-      }
-      formData.append("xml", this.xmlEditorStore.xml);
-      this.operationState = OperationState.Pending;
-      const res = await ApiService.getDefinitionLevel(formData);
-      this.operationState = OperationState.Success;
-      return this.mapTree(res);
+      return await cb();
     } catch (e) {
-      console.log(e);
-      this.operationState = OperationState.Error;
+      let log: string;
+      console.error(e);
       try {
         if (e.err) {
-          this.errorLog = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
+          log = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
         } else {
-          this.errorLog = (await e.text()) ?? null;
+          log = (await e.text()) ?? null;
         }
       } catch {
       } finally {
-        this.errorText = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
+        const text = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
+        this.setError(text, log);
       }
-      return [];
+      return null;
     }
   };
 
   @action
   getSingleNode = async (path: string): Promise<IDefinitionNode> => {
-    try {
-      const formData = new FormData();
-      formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
-      const validation = this.xmlEditorStore.validateXml();
-      if (validation !== true) {
-        throw validation;
-      }
-      formData.append("xml", this.xmlEditorStore.xml);
-      this.operationState = OperationState.Pending;
-      const singleNode = await ApiService.getSingleNode(formData);
-      this.operationState = OperationState.Success;
-      return singleNode;
-    } catch (e) {
-      console.log(e);
-      this.operationState = OperationState.Error;
-      try {
-        if (e.err) {
-          this.errorLog = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
-        } else {
-          this.errorLog = (await e.text()) ?? null;
-        }
-      } catch {
-      } finally {
-        this.errorText = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
-      }
-      return null;
+    const formData = new FormData();
+    formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
+    const validation = this.xmlEditorStore.validateXml();
+    if (validation !== true) {
+      throw validation;
     }
+    formData.append("xml", this.xmlEditorStore.xml);
+    this.operationState = OperationState.Pending;
+    const singleNode = await ApiService.getSingleNode(formData);
+    this.xmlEditorStore.setLastLocalSavedXml(this.xmlEditorStore.xml);
+    this.operationState = OperationState.Success;
+    return singleNode;
   };
 
   @action

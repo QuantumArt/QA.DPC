@@ -6,15 +6,12 @@ import FormField from "../FormField";
 import FormFieldWrapper from "../FormFieldWrap";
 import "./Style.scss";
 import FormErrorDialog from "DefinitionEditor/Components/Forms/FormErrorDialog";
-import FormWarningDialog from "DefinitionEditor/Components/Forms/FormWarningDialog";
 import { OperationState } from "Shared/Enums";
 import { keys } from "lodash";
 import { Loading } from "DefinitionEditor/Components";
-import { ButtonGroup } from "@blueprintjs/core";
 
 const EditForm = observer(() => {
   const { formStore, controlsStore } = useStores();
-
   return (
     <div className="forms-wrapper">
       {formStore.UIEditModel && formStore.operationState === OperationState.Success && (
@@ -43,7 +40,6 @@ const EditForm = observer(() => {
         active={formStore.operationState === OperationState.Pending}
       />
       <FormErrorDialog />
-      <FormWarningDialog />
     </div>
   );
 });

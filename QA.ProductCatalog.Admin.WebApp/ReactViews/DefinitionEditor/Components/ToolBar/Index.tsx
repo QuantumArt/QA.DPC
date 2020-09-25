@@ -82,7 +82,7 @@ const ToolBar = observer(() => {
           <Button
             icon={controlsStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}
-            onClick={controlsStore.toggleFormMode}
+            onClick={controlsStore.onChangeFormMode}
             className="editor-toolbar__form-btn"
           >
             {controlsStore.formMode ? <span>Редактор кода</span> : <span>Форма</span>}
