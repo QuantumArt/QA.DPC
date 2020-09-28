@@ -83,14 +83,10 @@ export default class ControlsStore {
   };
 
   isSameDefinition = (originalMode: boolean = true): boolean => {
-    if (
+    return (
       (this.xmlEditorStore.isSameDefinition() && originalMode) ||
       (this.xmlEditorStore.isSameDefinitionWithLastSaved() && !originalMode)
-    ) {
-      this.treeStore.setError(l("SameDefinition"));
-      return true;
-    }
-    return false;
+    );
   };
 
   applyOnOpenedForm = async (): Promise<boolean> => {
@@ -107,6 +103,7 @@ export default class ControlsStore {
 
   applyOnOpenedXmlEditor = async (): Promise<boolean> => {
     if (this.isSameDefinition()) {
+      this.treeStore.setError(l("SameDefinition"));
       return false;
     }
     await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
