@@ -37,7 +37,7 @@ export default class ControlsStore {
   onChangeFormMode = () => {
     if (this.formMode) {
     } else {
-      if (!this.xmlEditorStore.isSameDefinition()) {
+      if (!this.isSameDefinition(false)) {
         this.toggleUnsavedChangesDialog();
         this.unsavedChangesDialogOnLeaveCb = () => {
           this.xmlEditorStore.setXml(this.xmlEditorStore.lastLocalSavedXml);
@@ -82,8 +82,11 @@ export default class ControlsStore {
     await this.treeStore.onNodeExpand(this.treeStore.tree[0]);
   };
 
-  isSameDefinition = (): boolean => {
-    if (this.xmlEditorStore.isSameDefinition()) {
+  isSameDefinition = (originalMode: boolean = true): boolean => {
+    if (
+      (this.xmlEditorStore.isSameDefinition() && originalMode) ||
+      (this.xmlEditorStore.isSameDefinitionWithLastSaved() && !originalMode)
+    ) {
       this.treeStore.setError(l("SameDefinition"));
       return true;
     }
@@ -113,9 +116,14 @@ export default class ControlsStore {
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
     if (!this.doLocalSave()) return;
+
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }
+  };
+
+  updateFormWithNewData = () => {
+    if (this.selectedNodeId) this.formStore.fetchFormFields(this.selectedNodeId);
   };
 
   doLocalSave = async (): Promise<boolean> => {
@@ -124,6 +132,7 @@ export default class ControlsStore {
       isLocalSaveWasCorrect = await this.applyOnOpenedForm();
     } else {
       isLocalSaveWasCorrect = await this.applyOnOpenedXmlEditor();
+      this.updateFormWithNewData();
     }
     return isLocalSaveWasCorrect;
   };
@@ -131,8 +140,10 @@ export default class ControlsStore {
   saveAndExit = async () => {
     this.setSavingMode(SavingMode.Finish);
     if (!this.doLocalSave()) return;
-    //TODO подправить условия с обработкой ошибок т.к. теперь обрабатываются формы.
-    if (this.treeStore.operationState === OperationState.Success) {
+    if (
+      (this.treeStore.operationState === OperationState.Success && !this.formMode) ||
+      (this.formMode && this.formStore.operationState === OperationState.Success)
+    ) {
       window.pmrpc.call({
         destination: parent,
         publicProcedureName: "SaveXmlToDefinitionField",

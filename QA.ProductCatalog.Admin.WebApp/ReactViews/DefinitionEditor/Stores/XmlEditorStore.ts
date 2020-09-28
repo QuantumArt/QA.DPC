@@ -51,6 +51,7 @@ export default class XmlEditorStore {
   };
 
   isSameDefinition = (): boolean => this.xml === this.origXml;
+  isSameDefinitionWithLastSaved = (): boolean => this.xml === this.lastLocalSavedXml;
 
   @action
   toggleQueryOnClick = () => {

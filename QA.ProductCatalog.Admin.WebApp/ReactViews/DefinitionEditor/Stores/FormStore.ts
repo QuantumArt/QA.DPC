@@ -20,9 +20,6 @@ import { keys, forIn, assign, isNull, isUndefined } from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 
-//TODO доделать:
-// 1. сделать обработку ошибок на всех уровнях работы с формой
-// 2. мелкий рефакторинг
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
     this.singleRequestedEnums = new singleRequestedData(ApiService.getSelectEnums);
@@ -36,7 +33,6 @@ export default class FormStore {
   >;
   private enumsModel: { [key in BackendEnumType]: EnumBackendModel[] };
   public finalFormData: {};
-  private readonly excludeFieldsFromNewFormData: string[] = ["RelateTo"];
 
   @observable operationState: OperationState = OperationState.None;
   @observable errorText: string = null;
@@ -58,12 +54,14 @@ export default class FormStore {
   };
 
   setFormData = (newFormData: object | null = null): void => {
+    const excludeFieldsFromNewFormData: string[] = ["RelateTo", "IsClassifier"];
+
     if (!newFormData) {
       this.finalFormData = newFormData;
       return;
     }
     this.finalFormData = keys(newFormData).reduce((acc, key) => {
-      if (!this.excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
+      if (!excludeFieldsFromNewFormData.includes(key)) acc[key] = newFormData[key];
       return acc;
     }, {});
   };
@@ -133,6 +131,7 @@ export default class FormStore {
       const newEditForm = await this.getApiMethodByModelType()(formData);
       this.UIEditModel = this.parseEditFormDataToUIModel(newEditForm);
       this.xmlEditorStore.setXml(newEditForm.Xml);
+      this.xmlEditorStore.setLastLocalSavedXml(newEditForm.Xml);
     } catch (e) {
       this.setError("Ошибка сохранения формы");
       console.error(e);
@@ -308,9 +307,12 @@ export default class FormStore {
           break;
 
         case "FieldId":
+          acc[field] = new TextParsedModel(field, l(field), fieldValue);
+          break;
+
         case "IsClassifier":
         case "ContentId":
-          acc[field] = new TextParsedModel(field, l(field), fieldValue);
+          acc[field] = new TextParsedModel(field, field, fieldValue);
           break;
 
         /**
