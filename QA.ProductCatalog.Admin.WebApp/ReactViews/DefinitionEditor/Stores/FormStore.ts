@@ -285,7 +285,6 @@ export default class FormStore {
           break;
 
         case "FieldTitle":
-          if (isUndefined(fieldValue)) return acc;
           acc[field] = new InputParsedModel(
             field,
             l("FieldNameForCard"),
@@ -318,30 +317,20 @@ export default class FormStore {
         /**
          * textarea models
          * */
-        case "RelationConditionDescription":
-          acc["RelationCondition"] = new TextAreaParsedModel(
-            "RelationCondition",
-            l("RelationCondition"),
-            fields["RelationCondition"],
-            {
-              rows: 6,
-              placeholder: fieldValue,
-              style: { resize: "none", fontFamily: "monospace" }
-            }
-          );
+        case "RelationCondition":
+          acc[field] = new TextAreaParsedModel(field, l(field), fieldValue, {
+            rows: 6,
+            placeholder: l("RelationConditionDescription"),
+            style: { resize: "none", fontFamily: "monospace" }
+          });
           break;
 
-        case "ClonePrototypeConditionDescription":
-          acc["ClonePrototypeCondition"] = new TextAreaParsedModel(
-            "ClonePrototypeCondition",
-            l("ClonePrototypeCondition"),
-            fields["ClonePrototypeCondition"],
-            {
-              rows: 6,
-              placeholder: fieldValue,
-              style: { resize: "none", fontFamily: "monospace" }
-            }
-          );
+        case "ClonePrototypeCondition":
+          acc[field] = new TextAreaParsedModel(field, l(field), fieldValue, {
+            rows: 6,
+            placeholder: l("ClonePrototypeConditionDescription"),
+            style: { resize: "none", fontFamily: "monospace" }
+          });
           break;
 
         /**

@@ -45,7 +45,9 @@ class EditFormModel implements IEditFormModel {
  * */
 export const mapEditFormModel = (x: IEditFormModel): EditFormModel => {
   const formModel = {} as EditFormModel;
-  const isValue = (val: any) => !isNull(val) && !isUndefined(val);
+  const isValue = (val: any, isValueCanBeNull: boolean = false) => {
+    return isValueCanBeNull ? !isUndefined(val) : !isNull(val) && !isUndefined(val);
+  };
 
   if (isValue(x?.InDefinition)) formModel.InDefinition = x.InDefinition;
   if (isValue(x?.CachePeriod)) formModel.CachePeriod = x.CachePeriod;
@@ -54,18 +56,17 @@ export const mapEditFormModel = (x: IEditFormModel): EditFormModel => {
   if (isValue(x?.DefaultCachePeriod)) formModel.DefaultCachePeriod = x.DefaultCachePeriod;
   if (isValue(x?.FieldId)) formModel.FieldId = x.FieldId;
   if (isValue(x?.FieldName)) formModel.FieldName = x.FieldName;
-  //FieldTitle нужен тут с null значением
-  formModel.FieldTitle = x.FieldTitle;
+  if (isValue(x.FieldTitle, true)) formModel.FieldTitle = x.FieldTitle;
   if (isValue(x?.CloningMode)) formModel.CloningMode = x.CloningMode;
   if (isValue(x?.DeletingMode)) formModel.DeletingMode = x.DeletingMode;
   if (isValue(x?.UpdatingMode)) formModel.UpdatingMode = x.UpdatingMode;
   if (isValue(x?.IsClassifier)) formModel.IsClassifier = x.IsClassifier;
   if (isValue(x?.PreloadingMode)) formModel.PreloadingMode = x.PreloadingMode;
-  if (isValue(x?.ClonePrototypeCondition))
-    formModel.ClonePrototypeCondition = x.ClonePrototypeCondition;
   if (isValue(x?.ClonePrototypeConditionDescription))
     formModel.ClonePrototypeConditionDescription = x.ClonePrototypeConditionDescription;
-  if (isValue(x?.RelationCondition)) formModel.RelationCondition = x.RelationCondition;
+  if (isValue(x.RelationCondition, true)) formModel.RelationCondition = x.RelationCondition;
+  if (isValue(x.ClonePrototypeCondition, true))
+    formModel.ClonePrototypeCondition = x.ClonePrototypeCondition;
   if (isValue(x?.RelationConditionDescription))
     formModel.RelationConditionDescription = x.RelationConditionDescription;
   if (isValue(x?.RelateTo)) formModel.RelateTo = x.RelateTo;
