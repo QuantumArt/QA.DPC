@@ -73,12 +73,13 @@ namespace QA.ProductCatalog.HighloadFront
                 }
             }
 
-            var regionTagProducts = data.Select(d => GetRegionTagsProduct(d.Product, d.RegionTags, language, state)).Where(d => d != null);
-            var products = data.Select(d => d.Product).Concat(regionTagProducts);
-            
             var version = StoreFactory.GetProductStoreVersion(language, state);
             if (stores.TryGetValue(version, out var store))
             {
+                var regionTagProducts = data.Select(d => GetRegionTagsProduct(int.Parse(store.GetId(d.Product)), d.RegionTags))
+                    .Where(d => d != null);
+                var products = data.Select(d => d.Product).Concat(regionTagProducts);
+
                 return await store.BulkCreateAsync(products, language, state);              
             }
             throw StoreFactory.ElasticVersionNotSupported(version);
@@ -127,24 +128,26 @@ namespace QA.ProductCatalog.HighloadFront
 
         JObject GetRegionTagsProduct(JObject product, RegionTag[] regionTags, string language, string state)
         {
+            var productId = int.Parse(GetProductId(product, language, state));
+            return GetRegionTagsProduct(productId, regionTags);
+        }
+        
+        JObject GetRegionTagsProduct(int productId, RegionTag[] regionTags)
+        {
             if (regionTags == null || !regionTags.Any())
             {
                 return null;
             }
-            else
+
+            var tags = JObject.FromObject(new
             {
-                var id = int.Parse(GetProductId(product, language, state));
+                Id = -productId,
+                ProductId = productId,
+                Type = "RegionTags",
+                RegionTags = regionTags
+            });
 
-                var tags = JObject.FromObject(new
-                {
-                    Id = -id,
-                    ProductId = id,
-                    Type = "RegionTags",
-                    RegionTags = regionTags
-                });
-
-                return tags;
-            }
+            return tags;
         }
     }
 }
