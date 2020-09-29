@@ -4,6 +4,8 @@
     {
         public string FixedConnectionString { get; set; }
         
+        public string FixedCustomerCode { get; set; }
+        
         public string DesignConnectionString { get; set; }
         
         public bool UsePostgres { get; set; }
