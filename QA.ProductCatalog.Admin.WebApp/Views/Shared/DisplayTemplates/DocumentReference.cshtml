@@ -6,7 +6,12 @@
 	object title = Model.GetTitle();
     string referenceId = Model.ReferenceTo.UId;
 }
-<span class="anchor-wrapper"><a class="anchor bold" href="#@referenceId">@Model.ReplaceNotesIfNeeded(title.ToString())</a></span>
+<span class="anchor-wrapper">
+  <a class="anchor bold" href="#@referenceId">
+    <i class="icon fas fa-link"></i>
+    @Model.ReplaceNotesIfNeeded(title.ToString())
+  </a>
+</span>
 
 
 

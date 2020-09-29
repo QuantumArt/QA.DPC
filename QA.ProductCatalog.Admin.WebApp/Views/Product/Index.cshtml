@@ -18,6 +18,11 @@
   @*<link href="~/css/kendo.min.css" rel="stylesheet" />*@
   <link href="~/css/Product.css" rel="stylesheet" />
 }
+
+@section jquery{
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
+}
+
 <div class="formLayout">
   @if (Model.Cultures.Length > 0)
   {

@@ -15,7 +15,7 @@
     @if (Model.Collapsible)
     {
         <div class="grid-view-header">
-            <span class="toggle-all anchor">свернуть/развернуть все</span>
+            <button type="button" class="toggle-all anchor bp3-button bp3-minimal bp3-intent-primary">свернуть/развернуть все</button>
         </div>
     }
     <table cellspacing="0" cellpadding="0" style="@(Model.Width != null? "width: " + Model.Width : "")">
@@ -27,7 +27,7 @@
             @foreach (var col in firstRow.Columns)
             {
                 <th>
-                    @Model.ReplaceNotesIfNeeded(col.Title)
+                    <a title="@Model.ReplaceNotesIfNeeded(col.Title)">@Model.ReplaceNotesIfNeeded(col.Title)</a>
                 </th>
             }
         </tr>
@@ -62,7 +62,7 @@
                         @content
                         @if (Model.Collapsible)
                         {
-                            <span class="anchor click-handle">+/-</span>
+                            <button type="button" class="bp3-button bp3-minimal bp3-outlined bp3-intent-primary click-handle anchor">+/-</button>
                         }
                     </td>
                 </tr>
@@ -71,7 +71,6 @@
                     var t = 0;
                     <tr class="@(Model.Collapsible ? "collapsible-row" : "")">
                         <td colspan="@Model.Columns.Count">
-
                             <table class="inner-groupping-table" cellspacing="0" cellpadding="0">
                                 @foreach (var col in firstRow.Columns)
                                 {
@@ -79,7 +78,6 @@
                                 }
                                 @foreach (var row in Model.GetChildren(gr))
                                 {
-
                                     if (Model.RowTemplate != null)
                                     {
                                         Model.RowTemplate.DataContext = row.DataContext;
@@ -94,7 +92,6 @@
                                                 <td style="overflow: @col.Overflow.ToString().ToLower(); @(col.Padding!=null?col.Padding.ToString():"")">
                                                     @Html.DisplayFor(x => col)
                                                 </td>
-
                                             }
                                         </tr>
                                     }

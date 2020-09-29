@@ -14,15 +14,15 @@
     <dd style="@(Model.Padding != null ? Model.Padding.ToString(): "")" class="plain-field-value field">
     @if (Model.Value is string modelString)
     {
-			@Model.ReplaceNotesIfNeeded(modelString)
+      @Model.ReplaceNotesIfNeeded(modelString)
     }
     else if (Model.Value is UIElement modelValue)
     {
-      @Html.DisplayForUIElement(modelValue);      
+      @Html.DisplayForUIElement(modelValue);
     }
     else
     {
-	    @Html.DisplayFor(x => Model.Value);
+      @Html.DisplayFor(x => Model.Value);
     }
     </dd>
 
@@ -30,20 +30,15 @@
 @if (Model.Content != null)
 {
     <dl class="row">
-        <dt class="label">
-
-        </dt>
         <dd class="field">
-          <div>
             @if (Model.Content is UIElement ui)
             {
               @Html.DisplayForUIElement(ui)
             }
             else
             {
-              @Html.DisplayFor(x => Model.Content)             
+              @Html.DisplayFor(x => Model.Content)
             }
-          </div>
         </dd>
     </dl>
 }

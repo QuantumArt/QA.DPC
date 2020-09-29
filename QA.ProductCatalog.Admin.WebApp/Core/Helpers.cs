@@ -32,16 +32,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
     {
         public static HtmlString LinkButton(this IHtmlHelper helper, string text, string id, string @class = "")
         {
-            var template = @"<span id='{2}' class='linkButton actionLink'>
+            var template = @"<span id='{2}' class='linkButton actionlink'>
+                <i class='icon fas fa-{1}'></i>
                 <a href='javascript:void(0);'>
-                    <span class='icon {1}'>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     <span class='text'>{3}</span>
                 </a>
             </span>";
-            return new HtmlString(string.Format(template, "/images/icons/0.gif",
-                @class,
-                id,
-                text));
+            return new HtmlString(string.Format(template, "/images/icons/0.gif", @class, id, text));
         }
 
         public static string GetUniqueId(this IHtmlHelper helper, string key)
