@@ -64,8 +64,11 @@ class ApiService extends BaseApiService {
    * POST
    * @param body formData
    */
-  public getEditForm = async (body: FormData): Promise<IEditFormModel> => {
+  public getEditForm = async (body: string): Promise<IEditFormModel> => {
     const res = await fetch(this.settings.editBetaUrl, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      },
       method: "POST",
       body
     });
@@ -76,8 +79,11 @@ class ApiService extends BaseApiService {
    * POST
    * @param body formData
    */
-  public saveField = async (body: FormData): Promise<IEditFormModel> => {
+  public saveField = async (body: string): Promise<IEditFormModel> => {
     const res = await fetch(this.settings.saveFieldBetaUrl, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      },
       method: "POST",
       body
     });
@@ -87,8 +93,11 @@ class ApiService extends BaseApiService {
    * POST
    * @param body formData
    */
-  public saveContent = async (body: FormData): Promise<IEditFormModel> => {
+  public saveContent = async (body: string): Promise<IEditFormModel> => {
     const res = await fetch(this.settings.saveContentBetaUrl, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      },
       method: "POST",
       body
     });

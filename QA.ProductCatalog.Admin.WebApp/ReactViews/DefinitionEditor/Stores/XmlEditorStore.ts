@@ -1,6 +1,5 @@
 ﻿import { action, observable } from "mobx";
 import { parse, validate, ValidationError } from "fast-xml-parser";
-import { l } from "DefinitionEditor/Localization";
 
 export default class XmlEditorStore {
   constructor(private settings: DefinitionEditorSettings) {

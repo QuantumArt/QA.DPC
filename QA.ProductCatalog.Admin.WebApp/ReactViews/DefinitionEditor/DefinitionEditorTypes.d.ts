@@ -31,7 +31,6 @@
     Path: string;
     RemovePath: string;
     Converter: string;
-
     DontWrapInCData: string;
     LoadAsImage: string;
     FieldNameForCard: string;
@@ -54,6 +53,9 @@
     CacheSettings: string;
     ExitAnyway: string;
     UnsavedChanges: string;
+    FormLoadError: string;
+    FormSaveError: string;
+    SameForm: string;
   };
   backendEnums: {
     update: string;

@@ -112,8 +112,8 @@ export default class ControlsStore {
 
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
-    if (!this.doLocalSave()) return;
-
+    const isSaveSuccess = await this.doLocalSave();
+    if (!isSaveSuccess) return;
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }
@@ -136,7 +136,8 @@ export default class ControlsStore {
 
   saveAndExit = async () => {
     this.setSavingMode(SavingMode.Finish);
-    if (!this.doLocalSave()) return;
+    const isSaveSuccess = await this.doLocalSave();
+    if (!isSaveSuccess) return;
     if (
       (this.treeStore.operationState === OperationState.Success && !this.formMode) ||
       (this.formMode && this.formStore.operationState === OperationState.Success)

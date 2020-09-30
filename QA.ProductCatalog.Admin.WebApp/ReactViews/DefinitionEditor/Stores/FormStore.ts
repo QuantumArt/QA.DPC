@@ -16,9 +16,10 @@ import {
   TextParsedModel
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
-import { keys, forIn, assign, isNull, isUndefined } from "lodash";
+import { keys, forIn, assign } from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
+import qs from "qs";
 
 export default class FormStore {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
@@ -82,7 +83,7 @@ export default class FormStore {
     try {
       this.enumsModel = await this.singleRequestedEnums.getData();
     } catch (e) {
-      this.setError("Ошибка загрузки формы");
+      this.setError(l("FormLoadError"));
       throw e;
     }
   };
@@ -115,25 +116,25 @@ export default class FormStore {
     return this.getParsedUIModelFromApiFields(model);
   };
 
+  getXmlAndPathObj = (nodeId: string): { xml: string; path: string } => {
+    return {
+      xml: this.xmlEditorStore.xml,
+      path: nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`
+    };
+  };
   @action
   saveForm = async (nodeId): Promise<void> => {
     try {
-      const formData = new FormData();
-      formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
-      formData.append("xml", this.xmlEditorStore.xml);
-      keys(this.finalFormData).forEach(fieldKey => {
-        formData.append(
-          fieldKey,
-          isNull(this.finalFormData[fieldKey]) ? "" : String(this.finalFormData[fieldKey])
-        );
-      });
-
-      const newEditForm = await this.getApiMethodByModelType()(formData);
+      this.operationState = OperationState.Pending;
+      const newEditForm = await this.getApiMethodByModelType()(
+        qs.stringify(assign({}, this.finalFormData, this.getXmlAndPathObj(nodeId)))
+      );
       this.UIEditModel = this.parseEditFormDataToUIModel(newEditForm);
       this.xmlEditorStore.setXml(newEditForm.Xml);
       this.xmlEditorStore.setLastLocalSavedXml(newEditForm.Xml);
+      this.operationState = OperationState.Success;
     } catch (e) {
-      this.setError("Ошибка сохранения формы");
+      this.setError(l("FormSaveError"));
       console.error(e);
     }
   };
@@ -164,7 +165,7 @@ export default class FormStore {
 
   isFormTheSame = (): boolean => {
     if (this.isEqualFormDataWithOriginalModel()) {
-      this.setError("Form wasn't change");
+      this.setError(l("SameForm"));
       return true;
     }
     return false;
@@ -178,7 +179,7 @@ export default class FormStore {
     }
   };
 
-  getApiMethodByModelType = (): ((body: FormData) => Promise<IEditFormModel>) => {
+  getApiMethodByModelType = (): ((body: string) => Promise<IEditFormModel>) => {
     if (this.ModelType === ModelType.Field) return ApiService.saveField;
     if (this.ModelType === ModelType.Content) return ApiService.saveContent;
     return null;
@@ -186,17 +187,14 @@ export default class FormStore {
 
   @action
   fetchFormFields = async (nodeId: string): Promise<void> => {
-    const formData = new FormData();
-    formData.append("path", nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`);
-    formData.append("xml", this.xmlEditorStore.xml);
     try {
       this.operationState = OperationState.Pending;
-      const editForm = await ApiService.getEditForm(formData);
+      const editForm = await ApiService.getEditForm(qs.stringify(this.getXmlAndPathObj(nodeId)));
       this.setModelTypeByFieldType(editForm?.FieldType);
       this.UIEditModel = this.parseEditFormDataToUIModel(editForm);
       this.operationState = OperationState.Success;
     } catch (e) {
-      this.setError("Ошибка загрузки формы");
+      this.setError(l("FormLoadError"));
       console.log(e);
     }
   };
