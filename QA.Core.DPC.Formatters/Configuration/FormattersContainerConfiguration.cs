@@ -38,9 +38,9 @@ namespace QA.Core.DPC.Formatters.Configuration
             Container.RegisterType<XmlProductFormatter>();
             Container.RegisterType<XamlProductFormatter>();
             
-#if NET_FRAMEWORK          
+        
             Container.RegisterFactory<Func<PdfProductFormatter>>(c => new Func<PdfProductFormatter>(() => c.Resolve<PdfProductFormatter>()));
-#endif            
+           
             Container.RegisterFactory<Func<JsonSchemaFormatter>>(c => new Func<JsonSchemaFormatter>(() => c.Resolve<JsonSchemaFormatter>()));
             Container.RegisterFactory<Func<JsonProductFormatter>>(c => new Func<JsonProductFormatter>(() => c.Resolve<JsonProductFormatter>()));
             Container.RegisterType<JsonProductFormatter>();

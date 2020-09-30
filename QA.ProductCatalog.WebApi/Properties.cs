@@ -20,5 +20,7 @@ namespace QA.ProductCatalog.WebApi
         
         public string Name { get; set; }
         
+        public string DocumentLicenceKey { get; set; }
+        
     }
 }

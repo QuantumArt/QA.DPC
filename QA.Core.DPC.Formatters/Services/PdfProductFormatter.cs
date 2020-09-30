@@ -1,5 +1,4 @@
-﻿#if NET_FRAMEWORK
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using QA.Core.DocumentGenerator;
@@ -26,28 +25,22 @@ namespace QA.Core.DPC.Formatters.Services
 
 		public async Task Write(Stream stream, Article product)
 		{
-			// using (var xmlStream = new MemoryStream())
-			// {
-			// 	await _xmlFormatter.Write(xmlStream, product);
-			// 	xmlStream.Position = 0;
-			// 	
-			// 	using (var xmlReader = new StreamReader(xmlStream))
-			// 	using (var pdfStream = new MemoryStream())
-			// 	{	
-			// 		string xml = xmlReader.ReadToEnd();
-			// 		_documentGenerator.SaveAsPdf(xml, null, pdfStream);
-			// 		pdfStream.Position = 0;
-			// 		await pdfStream.CopyToAsync(stream);
-			// 	}
-
-				/*
-				 //Does not work. Why?
-				using (var xmlReader = new StreamReader(xmlStream))
-				{
-					_documentGenerator.SaveAsPdf(xmlReader.ReadToEnd(), null, stream);
-				}*/
+			using (var xmlStream = new MemoryStream())
+			{
+				await _xmlFormatter.Write(xmlStream, product);
+				xmlStream.Position = 0;
 				
-			//}
+				using (var xmlReader = new StreamReader(xmlStream))
+				using (var pdfStream = new MemoryStream())
+				{	
+					string xml = xmlReader.ReadToEnd();
+					_documentGenerator.SaveAsPdf(xml, null, pdfStream);
+					pdfStream.Position = 0;
+					await pdfStream.CopyToAsync(stream);
+				}
+
+				
+			}
 			throw new NotImplementedException();
 		}
 
@@ -57,4 +50,3 @@ namespace QA.Core.DPC.Formatters.Services
 		}
 	}
 }
-#endif

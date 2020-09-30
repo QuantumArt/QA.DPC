@@ -208,11 +208,5 @@ namespace QA.Core.DocumentGenerator
 				notesSection.HeadersFooters.Add(footer);
 			}
 		}
-
-
-		static DocumentGenerator()
-		{
-			ComponentInfo.SetLicense("D9RD-F99M-XT3X-2GGN");
-		}
 	}
 }

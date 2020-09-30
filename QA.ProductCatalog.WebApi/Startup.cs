@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GemBox.Document;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi
@@ -43,7 +44,9 @@ namespace QA.ProductCatalog.WebApi
             Configuration.Bind("Loader", loaderProps);
             
             var props = new Properties();
-            Configuration.Bind("Properties", props);            
+            Configuration.Bind("Properties", props);
+            
+            ComponentInfo.SetLicense(props.DocumentLicenceKey);
             
             UnityConfig.Configure(container, loaderProps, props);
         }
@@ -217,10 +220,10 @@ namespace QA.ProductCatalog.WebApi
                 new ModelMediaTypeOutputFormatter<Article, XamlProductFormatter>(WebApiConstants.XamlMediaType));
             formatters.Add(
                 new ModelMediaTypeOutputFormatter<Article, JsonProductFormatter>(WebApiConstants.JsonMediaType));
-#if !NETSTANDARD
+
             formatters.Add(
                 new ModelMediaTypeOutputFormatter<Article, PdfProductFormatter>(WebApiConstants.PdfMediaType));
-#endif
+
         }
 
         private static void RegisterMediaTypes(FormatterMappings formatterMappings)
