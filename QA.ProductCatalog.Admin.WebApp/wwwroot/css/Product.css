@@ -1,3 +1,12 @@
+html,
+body,
+.tabstrip_fullsized {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+}
+
 /* Links */
 .actionlink {
   cursor: pointer;
@@ -45,7 +54,6 @@
   padding: 2px 0;
 }
 
-/* Inputs */
 /* Form Layout */
 .formLayout fieldset {
   margin: 0 0 1.875rem 0;
@@ -103,25 +111,9 @@
   font-family: Verdana, Arial, Helvetica, sans-serif;
 }
 
-/* .entity-editor .plain-field.row:nth-child(even) {
-    background-color: rgba(206, 217, 224, 0.2);
-  } */
-
 /* Panel */
-.stack-panel {
-}
-
 .is-horizontal > .stack-panel-item {
   display: inline-block;
-}
-
-.stack-panel-item {
-}
-
-.group-panel .handle {
-}
-
-.group-panel-item {
 }
 
 /* Icons */
@@ -226,15 +218,20 @@
   display: none;
 }
 
-.collapsed > fieldset {
+.collapsed > fieldset:after {
+  content: ". . .";
+  margin-left: 2px;
+}
+
+/* .collapsed > fieldset {
   padding-top: 0;
   padding-bottom: 0;
-}
+} */
 
 .collapsed.group-row + tr.collapsible-row {
   display: none;
 }
 
-.collapsed > fieldset > label {
+/* .collapsed > fieldset > label {
   margin: 0;
-}
+} */
