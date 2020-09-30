@@ -824,5 +824,32 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("UnsavedChanges", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Form Save Error
+        /// </summary>
+        public static string FormSaveError {
+            get {
+                return ResourceManager.GetString("FormSaveError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FormLoadError
+        /// </summary>
+        public static string FormLoadError {
+            get {
+                return ResourceManager.GetString("FormLoadError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to SameForm
+        /// </summary>
+        public static string SameForm {
+            get {
+                return ResourceManager.GetString("SameForm", resourceCulture);
+            }
+        }
     }
 }
