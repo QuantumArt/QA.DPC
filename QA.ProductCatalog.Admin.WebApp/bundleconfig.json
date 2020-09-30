@@ -13,13 +13,6 @@
   },
 
   {
-    "outputFileName": "wwwroot/css/site.min.css",
-    "inputFiles": [
-      "wwwroot/css/site.css"
-    ]
-  },
-
-  {
     "outputFileName": "wwwroot/css/kendo.min.css",
     "inputFiles": [
       "wwwroot/css/KendoUI/kendo.common.min.css",

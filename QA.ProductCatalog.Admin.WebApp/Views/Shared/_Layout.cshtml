@@ -5,20 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
   <title>@(ViewBag.Title ?? "DPC")</title>
   <meta name="app" content="dpc" />
-  @*<link href="~/css/site.min.css" rel="stylesheet" />*@
   <link href="~/css/blueprint.min.css" rel="stylesheet" />
-  @if (IsSectionDefined("jquery"))
-  {
-    @RenderSection("jquery", true)
-  }
-  else
-  {
-    <text>
-      <script src="~/js/jquery.min.js"></script>
-    </text>
-  }
-
-  <script src="~/js/bundles/scripts.min.js"></script>
 
   @RenderSection("head", false)
   <script>

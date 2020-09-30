@@ -6,6 +6,7 @@ import { getTaskIntentDependsOnState } from "Shared/Utils";
 import Store from "./HighloadFrontStore";
 import { l } from "./Localization";
 import { ProgressBar } from "Shared/Components";
+import "./Style.scss";
 
 type Props = {
   store: Store;
@@ -27,13 +28,11 @@ const HighloadFront = observer<Props>(({ store }) => {
     handleIndexChannel
   } = store;
   return (
-    <div className="formLayout">
-      <fieldset>
-        <legend>{l("HighloadFront")}</legend>
-      </fieldset>
-      <table className="inner-groupping-table">
+    <div className="container">
+      <h3 className="bp3-heading">{l("HighloadFront")}</h3>
+      <table className="table">
         <colgroup>
-          <col style={{ width: "15%" }} />
+          <col style={{ width: "10%" }} />
           <col style={{ width: "10%" }} />
           <col style={{ width: "9%" }} />
           <col style={{ width: "15%" }} />
@@ -58,7 +57,7 @@ const HighloadFront = observer<Props>(({ store }) => {
             tasks.map((task, index) => (
               <tr key={index}>
                 <td>
-                  <Checkbox disabled checked={task.IsDefault} />
+                  <Checkbox disabled inline checked={task.IsDefault} />
                 </td>
                 <td>{task.ChannelLanguage}</td>
                 <td>{task.ChannelState}</td>
