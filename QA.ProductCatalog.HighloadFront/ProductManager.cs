@@ -64,10 +64,10 @@ namespace QA.ProductCatalog.HighloadFront
 
         public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state, Dictionary<string, IProductStore> stores)
         {
-
+            var filteredData = data.Where(n => n != null).ToArray();
             if (_productPostProcessor != null)
             {
-                foreach (var d in data)
+                foreach (var d in filteredData)
                 {
                     d.Product = _productPostProcessor.Process(d);
                 }
@@ -76,9 +76,9 @@ namespace QA.ProductCatalog.HighloadFront
             var version = StoreFactory.GetProductStoreVersion(language, state);
             if (stores.TryGetValue(version, out var store))
             {
-                var regionTagProducts = data.Select(d => GetRegionTagsProduct(int.Parse(store.GetId(d.Product)), d.RegionTags))
+                var regionTagProducts = filteredData.Select(d => GetRegionTagsProduct(int.Parse(store.GetId(d.Product)), d.RegionTags))
                     .Where(d => d != null);
-                var products = data.Select(d => d.Product).Concat(regionTagProducts);
+                var products = filteredData.Select(d => d.Product).Concat(regionTagProducts);
 
                 return await store.BulkCreateAsync(products, language, state);              
             }
