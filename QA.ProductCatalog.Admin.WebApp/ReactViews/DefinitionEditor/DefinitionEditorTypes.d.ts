@@ -52,6 +52,8 @@
     ContentName: string;
     ProceedCaching: string;
     CacheSettings: string;
+    ExitAnyway: string;
+    UnsavedChanges: string;
   };
   backendEnums: {
     update: string;

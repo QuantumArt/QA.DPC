@@ -369,4 +369,7 @@
   <data name="WrapLines" xml:space="preserve">
     <value>Перенос строк</value>
   </data>
+    <data name="UnsavedChanges" xml:space="preserve">
+      <value>Внесенные изменения не сохранятся. Вы уверены, что хотите выйти?</value>
+    </data>
 </root>

@@ -369,4 +369,7 @@
   <data name="WrapLines" xml:space="preserve">
     <value>Wrap lines</value>
   </data>
+  <data name="UnsavedChanges" xml:space="preserve">
+    <value>Your changes will not save. Are you sure that you want to leave?</value>
+  </data>
 </root>

@@ -815,5 +815,14 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("WrapLines", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unsaved Changes
+        /// </summary>
+        public static string UnsavedChanges {
+            get {
+                return ResourceManager.GetString("UnsavedChanges", resourceCulture);
+            }
+        }
     }
 }

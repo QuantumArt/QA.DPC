@@ -18,12 +18,12 @@ const UnsavedChangesDialog = observer(() => {
       intent={Intent.WARNING}
       icon="walk"
       cancelButtonText={l("BackToEditing")}
-      confirmButtonText="Exit anyway"
+      confirmButtonText={l("ExitAnyway")}
       onCancel={stay}
       onConfirm={leave}
       className="error-dialog"
     >
-      Your changes will not save. Are you sure that you want to leave?
+      {l("UnsavedChanges")}
     </Alert>
   );
 });
