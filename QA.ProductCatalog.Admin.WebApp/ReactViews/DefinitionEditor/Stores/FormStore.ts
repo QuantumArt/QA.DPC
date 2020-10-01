@@ -16,7 +16,7 @@ import {
   TextParsedModel
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
-import { keys, forIn, assign } from "lodash";
+import { keys, forIn, assign, isNull, isUndefined } from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 import qs from "qs";
@@ -34,6 +34,7 @@ export default class FormStore {
   >;
   private enumsModel: { [key in BackendEnumType]: EnumBackendModel[] };
   public finalFormData: {};
+  subFieldsForSave: Partial<IEditFormModel> = {};
 
   @observable operationState: OperationState = OperationState.None;
   @observable errorText: string = null;
@@ -106,10 +107,18 @@ export default class FormStore {
   parseEditFormDataToUIModel = (model: IEditFormModel): { [key in string]: ParsedModelType } => {
     /**
      * исключение
-     * если заполнено поле DefaultCachePeriod рендерим только  2 поля ниже
+     * если заполнено поле DefaultCachePeriod рендерим только поля exceptionFields
      * */
     if (model["DefaultCachePeriod"]) {
       const exceptionFields = ["InDefinition", "DefaultCachePeriod"];
+      return this.getParsedUIModelFromApiFields(model, exceptionFields);
+    }
+    /**
+     * исключение
+     * если поле FieldType равняется нулю рендерим только поля exceptionFields
+     * */
+    if (model["FieldType"] === 0) {
+      const exceptionFields = ["InDefinition", "FieldId", "FieldName", "FieldTitle"];
       return this.getParsedUIModelFromApiFields(model, exceptionFields);
     }
 
@@ -121,22 +130,6 @@ export default class FormStore {
       xml: this.xmlEditorStore.xml,
       path: nodeId.charAt(0) === "/" ? nodeId : `/${nodeId}`
     };
-  };
-  @action
-  saveForm = async (nodeId): Promise<void> => {
-    try {
-      this.operationState = OperationState.Pending;
-      const newEditForm = await this.getApiMethodByModelType()(
-        qs.stringify(assign({}, this.finalFormData, this.getXmlAndPathObj(nodeId)))
-      );
-      this.UIEditModel = this.parseEditFormDataToUIModel(newEditForm);
-      this.xmlEditorStore.setXml(newEditForm.Xml);
-      this.xmlEditorStore.setLastLocalSavedXml(newEditForm.Xml);
-      this.operationState = OperationState.Success;
-    } catch (e) {
-      this.setError(l("FormSaveError"));
-      console.error(e);
-    }
   };
 
   getSubModelsFromCheckboxModels = (): { [key in string]: ParsedModelType } => {
@@ -185,17 +178,44 @@ export default class FormStore {
     return null;
   };
 
+  setSubFieldsForSave = (fields: Partial<IEditFormModel>): void => {
+    keys(fields).map(field => {
+      const value = fields[field];
+      if (!isNull(value) && !isUndefined(value)) this.subFieldsForSave[field] = value;
+    });
+  };
+
   @action
   fetchFormFields = async (nodeId: string): Promise<void> => {
     try {
       this.operationState = OperationState.Pending;
       const editForm = await ApiService.getEditForm(qs.stringify(this.getXmlAndPathObj(nodeId)));
       this.setModelTypeByFieldType(editForm?.FieldType);
+      this.setSubFieldsForSave({ FieldType: editForm?.FieldType });
       this.UIEditModel = this.parseEditFormDataToUIModel(editForm);
       this.operationState = OperationState.Success;
     } catch (e) {
       this.setError(l("FormLoadError"));
       console.log(e);
+    }
+  };
+
+  @action
+  saveForm = async (nodeId): Promise<void> => {
+    try {
+      this.operationState = OperationState.Pending;
+      const newEditForm = await this.getApiMethodByModelType()(
+        qs.stringify(
+          assign({}, this.finalFormData, this.getXmlAndPathObj(nodeId), this.subFieldsForSave)
+        )
+      );
+      this.UIEditModel = this.parseEditFormDataToUIModel(newEditForm);
+      this.xmlEditorStore.setXml(newEditForm.Xml);
+      this.xmlEditorStore.setLastLocalSavedXml(newEditForm.Xml);
+      this.operationState = OperationState.Success;
+    } catch (e) {
+      this.setError(l("FormSaveError"));
+      console.error(e);
     }
   };
 
