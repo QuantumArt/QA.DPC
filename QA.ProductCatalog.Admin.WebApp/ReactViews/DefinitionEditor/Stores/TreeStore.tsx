@@ -31,6 +31,11 @@ export default class TreeStore {
 
   setSelectedNodeId: (id: string) => void = null;
 
+  @action
+  setSelectedNodeIdInUI = () => {
+    if (this.selectedNodeId) this.nodesMap.get(this.selectedNodeId).isSelected = true;
+  };
+
   @computed get tree() {
     if (this.xmlEditorStore.rootId && this.nodesMap.has(`/${this.xmlEditorStore.rootId}`)) {
       return [this.nodesMap.get(`/${this.xmlEditorStore.rootId}`)];
@@ -102,7 +107,6 @@ export default class TreeStore {
     const res = await ApiService.getDefinitionLevel(formData);
     this.xmlEditorStore.setLastLocalSavedXml(this.xmlEditorStore.xml);
     this.operationState = OperationState.Success;
-    //TODO при открытом дереве нод происходит схлопывании всех нод, возможно это не нужно при открытой форме.
     return this.mapTree(res);
   };
 

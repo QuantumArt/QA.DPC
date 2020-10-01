@@ -117,6 +117,7 @@ export default class ControlsStore {
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }
+    this.treeStore.setSelectedNodeIdInUI();
   };
 
   updateFormWithNewData = () => {
