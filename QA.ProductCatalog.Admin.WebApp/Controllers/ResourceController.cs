@@ -50,7 +50,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(new[] {
                 new { Value = (int)CloningMode.Ignore, Title = ControlStrings.SetNull },
                 new { Value = (int)CloningMode.UseExisting, Title = ControlStrings.UseExisting },
-                new { Value = (int)CloningMode.Copy, Title = ControlStrings.CloningMode },
+                new { Value = (int)CloningMode.Copy, Title = ControlStrings.Clone },
             });
         }
 
