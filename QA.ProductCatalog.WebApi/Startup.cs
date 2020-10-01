@@ -73,7 +73,7 @@ namespace QA.ProductCatalog.WebApi
                     RegisterMediaTypes(options.FormatterMappings);
                     RegisterOutputFormatters(options.OutputFormatters);
                     RegisterInputFormatters(options.InputFormatters); })
-                .AddXmlSerializerFormatters().AddControllersAsServices();
+                .AddXmlSerializerFormatters().AddControllersAsServices().AddNewtonsoftJson();;
             
             services.AddSwaggerGen(c =>
             {
