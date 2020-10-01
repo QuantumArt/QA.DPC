@@ -80,72 +80,61 @@ export const ScheduleDialog = ({
   const [singleDate, setSingleDate] = useState<Date | undefined>(new Date());
   const [singleTime, setSingleTime] = useState<Date | undefined>(new Date());
 
-  useEffect(
-    () => {
-      if (scheduleCronExpression && isOpen) {
-        try {
-          setIsCronsParseError(false);
-          const cronParts = getValuesFromCronString(scheduleCronExpression);
-          if (cronParts.cronParts.length === 5) {
-            setPeriod(cronParts.period);
-            setMinuteValues(
-              partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true)
-            );
-            setHourValues(
-              partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true)
-            );
-            setMonthDaysValues(
-              partToString(cronParts.cronParts[2], UNITS.get(CronUnitType.MonthDays), true)
-            );
-            setMonthValues(
-              partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true)
-            );
-            setWeekDaysValues(
-              partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true)
-            );
-          }
-          if (cronParts.cronParts.length === 6) {
-            setTaskSetType(ScheduleType.Single);
-            const date = cronParts.cronParts[2][0];
-            const month = cronParts.cronParts[3][0];
-            const year = cronParts.cronParts[5][0];
-            const hours = cronParts.cronParts[1][0];
-            const mins = cronParts.cronParts[0][0];
-            const dd = new Date();
-            dd.setDate(date);
-            dd.setMonth(month - 1);
-            dd.setFullYear(year);
-            dd.setHours(hours);
-            dd.setMinutes(mins);
-            setSingleDate(dd);
-            setSingleTime(dd);
-          }
-        } catch (e) {
-          setIsCronsParseError(true);
+  useEffect(() => {
+    if (scheduleCronExpression && isOpen) {
+      try {
+        setIsCronsParseError(false);
+        const cronParts = getValuesFromCronString(scheduleCronExpression);
+        if (cronParts.cronParts.length === 5) {
+          setPeriod(cronParts.period);
+          setMinuteValues(
+            partToString(cronParts.cronParts[0], UNITS.get(CronUnitType.Minutes), true)
+          );
+          setHourValues(partToString(cronParts.cronParts[1], UNITS.get(CronUnitType.Hours), true));
+          setMonthDaysValues(
+            partToString(cronParts.cronParts[2], UNITS.get(CronUnitType.MonthDays), true)
+          );
+          setMonthValues(
+            partToString(cronParts.cronParts[3], UNITS.get(CronUnitType.Months), true)
+          );
+          setWeekDaysValues(
+            partToString(cronParts.cronParts[4], UNITS.get(CronUnitType.WeekDays), true)
+          );
         }
+        if (cronParts.cronParts.length === 6) {
+          setTaskSetType(ScheduleType.Single);
+          const date = cronParts.cronParts[2][0];
+          const month = cronParts.cronParts[3][0];
+          const year = cronParts.cronParts[5][0];
+          const hours = cronParts.cronParts[1][0];
+          const mins = cronParts.cronParts[0][0];
+          const dd = new Date();
+          dd.setDate(date);
+          dd.setMonth(month - 1);
+          dd.setFullYear(year);
+          dd.setHours(hours);
+          dd.setMinutes(mins);
+          setSingleDate(dd);
+          setSingleTime(dd);
+        }
+      } catch (e) {
+        setIsCronsParseError(true);
       }
-    },
-    [scheduleCronExpression, isOpen]
-  );
+    }
+  }, [scheduleCronExpression, isOpen]);
 
-  useEffect(
-    () => {
-      const clear = () => {
-        if (isShouldClear) {
-          setIsShouldClear(false);
-        }
-      };
-      clear();
-    },
-    [isShouldClear]
-  );
+  useEffect(() => {
+    const clear = () => {
+      if (isShouldClear) {
+        setIsShouldClear(false);
+      }
+    };
+    clear();
+  }, [isShouldClear]);
 
-  useEffect(
-    () => {
-      if (isOpen) setIsEnable(isScheduleEnabled);
-    },
-    [isScheduleEnabled, isOpen]
-  );
+  useEffect(() => {
+    if (isOpen) setIsEnable(isScheduleEnabled);
+  }, [isScheduleEnabled, isOpen]);
 
   const multiSelectPropsByUnit = useMemo(
     () =>
@@ -222,41 +211,38 @@ export const ScheduleDialog = ({
     ]
   );
 
-  const getMultiSelectProps = useMemo(
-    (): IMultiSelectForm[] => {
-      switch (period) {
-        case CronPeriodType.Week:
-          return [
-            multiSelectPropsByUnit.get(CronUnitType.WeekDays),
-            multiSelectPropsByUnit.get(CronUnitType.Hours),
-            multiSelectPropsByUnit.get(CronUnitType.Minutes)
-          ];
-        case CronPeriodType.Year:
-          return [
-            multiSelectPropsByUnit.get(CronUnitType.MonthDays),
-            multiSelectPropsByUnit.get(CronUnitType.Months),
-            multiSelectPropsByUnit.get(CronUnitType.Hours),
-            multiSelectPropsByUnit.get(CronUnitType.Minutes)
-          ];
-        case CronPeriodType.Day:
-          return [
-            multiSelectPropsByUnit.get(CronUnitType.Hours),
-            multiSelectPropsByUnit.get(CronUnitType.Minutes)
-          ];
-        case CronPeriodType.Hour:
-          return [multiSelectPropsByUnit.get(CronUnitType.Minutes)];
-        case CronPeriodType.Month:
-          return [
-            multiSelectPropsByUnit.get(CronUnitType.MonthDays),
-            multiSelectPropsByUnit.get(CronUnitType.Hours),
-            multiSelectPropsByUnit.get(CronUnitType.Minutes)
-          ];
-        default:
-          return [];
-      }
-    },
-    [period, multiSelectPropsByUnit]
-  );
+  const getMultiSelectProps = useMemo((): IMultiSelectForm[] => {
+    switch (period) {
+      case CronPeriodType.Week:
+        return [
+          multiSelectPropsByUnit.get(CronUnitType.WeekDays),
+          multiSelectPropsByUnit.get(CronUnitType.Hours),
+          multiSelectPropsByUnit.get(CronUnitType.Minutes)
+        ];
+      case CronPeriodType.Year:
+        return [
+          multiSelectPropsByUnit.get(CronUnitType.MonthDays),
+          multiSelectPropsByUnit.get(CronUnitType.Months),
+          multiSelectPropsByUnit.get(CronUnitType.Hours),
+          multiSelectPropsByUnit.get(CronUnitType.Minutes)
+        ];
+      case CronPeriodType.Day:
+        return [
+          multiSelectPropsByUnit.get(CronUnitType.Hours),
+          multiSelectPropsByUnit.get(CronUnitType.Minutes)
+        ];
+      case CronPeriodType.Hour:
+        return [multiSelectPropsByUnit.get(CronUnitType.Minutes)];
+      case CronPeriodType.Month:
+        return [
+          multiSelectPropsByUnit.get(CronUnitType.MonthDays),
+          multiSelectPropsByUnit.get(CronUnitType.Hours),
+          multiSelectPropsByUnit.get(CronUnitType.Minutes)
+        ];
+      default:
+        return [];
+    }
+  }, [period, multiSelectPropsByUnit]);
 
   const parsedCronsMultiSelectsModel = () => {
     /** don't change the order of array*/
@@ -366,7 +352,7 @@ export const ScheduleDialog = ({
               />
               <Button
                 icon="cross"
-                outlined="true"
+                outlined
                 onClick={() => {
                   setIsShouldClear(true);
                   clearValues();

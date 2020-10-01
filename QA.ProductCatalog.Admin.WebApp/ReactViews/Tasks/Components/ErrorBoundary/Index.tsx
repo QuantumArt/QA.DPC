@@ -15,9 +15,7 @@ export class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <h3 className="color-danger" style={{ padding: "10" }}>
-          Что-то пошло не так. Поробуйте обновить страницу.
-        </h3>
+        <h3 className="color-danger ui-error">Что-то пошло не так. Поробуйте обновить страницу.</h3>
       );
     }
 

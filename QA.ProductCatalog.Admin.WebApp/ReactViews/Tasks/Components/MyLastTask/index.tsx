@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { Callout, Icon, IProgressBarProps, Tooltip } from "@blueprintjs/core";
 import { Task } from "Tasks/ApiServices/DataContracts";
 import { DateGridCell, StatusTag } from "Tasks/Components";
@@ -14,43 +14,39 @@ interface IProps {
   width?: number;
 }
 
-export const MyLastTask = ({ task, width }: IProps) => {
+export const MyLastTask = memo(({ task, width }: IProps) => {
   if (!task) return null;
   const intent = getTaskIntentDependsOnStatus(task.StateId);
+  const TooltipContent = React.useMemo(() => {
+    const progressBarProps: IProgressBarProps = {
+      value: task.Progress,
+      intent: getTaskIntentDependsOnStatus(task.StateId),
+      animate: false,
+      stripes: false
+    };
 
-  const TooltipContent = React.useMemo(
-    () => {
-      const progressBarProps: IProgressBarProps = {
-        value: task.Progress,
-        intent: getTaskIntentDependsOnStatus(task.StateId),
-        animate: false,
-        stripes: false
-      };
+    if (task.StateId === TaskStatuses.Progress) {
+      progressBarProps.animate = true;
+      progressBarProps.stripes = true;
+    }
 
-      if (task.StateId === TaskStatuses.Progress) {
-        progressBarProps.animate = true;
-        progressBarProps.stripes = true;
-      }
-
-      return (
-        <div className="last-task-tooltip__wrap">
-          <div className="last-task-tooltip__row last-task-tooltip__row--margin-top">
-            Заказчик: {task.DisplayName}
-          </div>
-          <div className="last-task-tooltip__row">
-            Создано: {DateGridCell({ value: task.CreatedTime })}
-          </div>
-          <div className="last-task-tooltip__row last-task-tooltip__row--margin-bottom">
-            Изменено: {DateGridCell({ value: task.LastStatusChangeTime })}
-          </div>
-          <div className="last-task-tooltip__bar-wrapper">
-            <ProgressBar defaultBarProps={progressBarProps} withLabel={false} />
-          </div>
+    return (
+      <div className="last-task-tooltip__wrap">
+        <div className="last-task-tooltip__row last-task-tooltip__row--margin-top">
+          Заказчик: {task.UserName}
         </div>
-      );
-    },
-    [task.Progress, task.StateId, task.DisplayName, task.CreatedTime, task.LastStatusChangeTime]
-  );
+        <div className="last-task-tooltip__row">
+          Создано: {DateGridCell({ value: task.CreatedTime })}
+        </div>
+        <div className="last-task-tooltip__row last-task-tooltip__row--margin-bottom">
+          Изменено: {DateGridCell({ value: task.LastStatusChangeTime })}
+        </div>
+        <div className="last-task-tooltip__bar-wrapper">
+          <ProgressBar defaultBarProps={progressBarProps} withLabel={false} />
+        </div>
+      </div>
+    );
+  }, [task.Progress, task.StateId, task.DisplayName, task.CreatedTime, task.LastStatusChangeTime]);
 
   return (
     <div className="my-last-task" style={width && { width: width }}>
@@ -85,4 +81,4 @@ export const MyLastTask = ({ task, width }: IProps) => {
       </Callout>
     </div>
   );
-};
+});
