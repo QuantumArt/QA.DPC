@@ -1,7 +1,8 @@
 import { observable, action } from "mobx";
 import moment from "moment";
-import { TaskItem } from "Shared/Types";
+import { TaskItem, TaskMessage } from "Shared/Types";
 import { TaskState } from "Shared/Enums";
+import { setBrowserNotifications } from "Shared/Utils";
 
 export default class HighloadFrontStore {
   @observable private timerId: number;
@@ -17,14 +18,30 @@ export default class HighloadFrontStore {
 
   fetchTasks = async (): Promise<void> => {
     const { highloadFront: { CustomerCode } } = window;
-    const response = await fetch(
-      `/HighloadFront/GetSettings?customerCode=${CustomerCode}&url=api/sync/settings`
-    );
-
-    if (response.ok) {
-      const json = await response.json();
-      const tasks = json as TaskItem[];
-      this.setTasks(tasks);
+    try {
+      const response = await fetch(`/HighloadFront/GetSettings?customerCode=${CustomerCode}&url=api/sync/settings`);
+      if (response.ok) {
+        const res: TaskItem[] = await response.json();
+        const tasks = res.map(t => {
+          try {
+            t.TaskMessage = JSON.parse(t.TaskMessage as string) as TaskMessage;
+            if (t?.TaskMessage?.IsSuccess) {
+              Notification.requestPermission().then(function(result) {
+                console.log(result);
+              });
+              setBrowserNotifications(() => {
+                new Notification("kek", {
+                  body: "body"
+                });
+              });
+            }
+          } catch (e) {}
+          return t;
+        });
+        this.setTasks(tasks);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -40,11 +57,15 @@ export default class HighloadFrontStore {
 
   handleIndexChannel = async (task: TaskItem): Promise<void> => {
     const { highloadFront: { CustomerCode } } = window;
-    await fetch(
-      `/HighloadFront/IndexChanel?customerCode=${CustomerCode}&url=api/sync/${task.ChannelLanguage}/${task.ChannelState}/reset`,
-      { method: "POST" }
-    );
-    await this.fetchTasks();
+    try {
+      await fetch(
+        `/HighloadFront/IndexChanel?customerCode=${CustomerCode}&url=api/sync/${task.ChannelLanguage}/${task.ChannelState}/reset`,
+        { method: "POST" }
+      );
+      await this.fetchTasks();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   clearTimeout = (): void => {

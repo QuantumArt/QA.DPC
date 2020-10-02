@@ -1,12 +1,13 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { locale } from "moment";
-import { Checkbox } from "@blueprintjs/core";
+import { Checkbox, Button, Intent } from "@blueprintjs/core";
 import { getTaskIntentDependsOnState } from "Shared/Utils";
 import Store from "./HighloadFrontStore";
 import { l } from "./Localization";
 import { ProgressBar } from "Shared/Components";
 import "./Style.scss";
+import { intentClass } from '@blueprintjs/core/lib/esm/common/classes';
 
 type Props = {
   store: Store;
@@ -64,9 +65,9 @@ const HighloadFront = observer<Props>(({ store }) => {
                 <td>{getFormattedChannelDate(task.ChannelDate)}</td>
                 <td>
                   {isIndexingAvailable(task.TaskState) && (
-                    <a href="#" onClick={() => handleIndexChannel(task)}>
+                    <Button minimal intent={Intent.PRIMARY} onClick={() => handleIndexChannel(task)}>
                       {l("ProceedIndexing")}
-                    </a>
+                    </Button>
                   )}
                 </td>
                 <td>{getTimePassed(task.TaskStart, task.TaskEnd)}</td>
