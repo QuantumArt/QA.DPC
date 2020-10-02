@@ -10,9 +10,9 @@ namespace QA.Core.DPC.Formatters.Services
 	public class PdfProductFormatter : IFormatter<Article>
 	{
 		private readonly IDocumentGenerator _documentGenerator;
-		private readonly IFormatter<Article> _xmlFormatter;
+		private readonly XmlProductFormatter _xmlFormatter;
 
-		public PdfProductFormatter(IDocumentGenerator documentGenerator, IFormatter<Article> xmlFormatter)
+		public PdfProductFormatter(IDocumentGenerator documentGenerator, XmlProductFormatter xmlFormatter)
 		{
 			_documentGenerator = documentGenerator;
 			_xmlFormatter = xmlFormatter;
@@ -38,10 +38,7 @@ namespace QA.Core.DPC.Formatters.Services
 					pdfStream.Position = 0;
 					await pdfStream.CopyToAsync(stream);
 				}
-
-				
 			}
-			throw new NotImplementedException();
 		}
 
 		public string Serialize(Article product)

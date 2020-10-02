@@ -44,6 +44,9 @@ namespace QA.Core.DPC.Formatters.Configuration
             Container.RegisterFactory<Func<JsonSchemaFormatter>>(c => new Func<JsonSchemaFormatter>(() => c.Resolve<JsonSchemaFormatter>()));
             Container.RegisterFactory<Func<JsonProductFormatter>>(c => new Func<JsonProductFormatter>(() => c.Resolve<JsonProductFormatter>()));
             Container.RegisterType<JsonProductFormatter>();
+            Container.RegisterType<PdfProductFormatter>();
+            Container.RegisterType<DocumentGenerator.DocumentGenerator>();
+
             Container.RegisterFactory<Func<BinaryModelFormatter<Article>>>(c => new Func<BinaryModelFormatter<Article>>(() => c.Resolve<BinaryModelFormatter<Article>>()));
             Container.RegisterFactory<Func<BinaryModelFormatter<Content>>>(c => new Func<BinaryModelFormatter<Content>>(() => c.Resolve<BinaryModelFormatter<Content>>()));
         }
