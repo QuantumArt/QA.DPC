@@ -52,6 +52,8 @@ declare interface TaskWindowTypes {
     weekDays: string;
     close: string;
     apply: string;
+    week: string;
+    all: string;
   };
   notify: {
     isNotifyActive: boolean;

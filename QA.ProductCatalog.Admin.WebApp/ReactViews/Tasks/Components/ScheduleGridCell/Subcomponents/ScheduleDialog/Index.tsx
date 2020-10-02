@@ -43,6 +43,7 @@ export const ScheduleDialog = ({
   isScheduleEnabled
 }: IProps) => {
   const store = useStore();
+
   const {
     taskRecurrenceSchedule,
     weekDays,
@@ -63,8 +64,11 @@ export const ScheduleDialog = ({
     month,
     scheduleEnabled,
     close,
-    apply
+    apply,
+    week,
+    all
   } = window.task.schedule;
+
   const [taskSetType, setTaskSetType] = useState(ScheduleType.Repeat);
   const [isEnable, setIsEnable] = useState(isScheduleEnabled);
   const [period, setPeriod] = useState(CronPeriodType.Minute);
@@ -124,17 +128,10 @@ export const ScheduleDialog = ({
   }, [scheduleCronExpression, isOpen]);
 
   useEffect(() => {
-    const clear = () => {
-      if (isShouldClear) {
-        setIsShouldClear(false);
-      }
-    };
-    clear();
-  }, [isShouldClear]);
-
-  useEffect(() => {
-    if (isOpen) setIsEnable(isScheduleEnabled);
-  }, [isScheduleEnabled, isOpen]);
+    setIsShouldClear(isShouldClear => {
+      return isShouldClear ? !isShouldClear : isShouldClear;
+    });
+  }, []);
 
   const multiSelectPropsByUnit = useMemo(
     () =>
@@ -258,7 +255,7 @@ export const ScheduleDialog = ({
       if (!model || !model.length) return "*";
       return model
         .map((val, index) =>
-          val.label === "Все"
+          val.label === all
             ? "*"
             : partToString(
                 _.flatten(model.map(x => x.values)).sort(),
@@ -278,7 +275,7 @@ export const ScheduleDialog = ({
   };
 
   const acceptSchedule = (): void => {
-    if (taskSetType === "repeat") {
+    if (taskSetType === ScheduleType.Repeat) {
       store.setSchedule(taskIdNumber, isEnable, parsedCronsMultiSelectsModel(), "on");
     } else {
       store.setSchedule(taskIdNumber, isEnable, parseCronsSingleModel(), "on");
@@ -298,7 +295,7 @@ export const ScheduleDialog = ({
     { label: minute, value: CronPeriodType.Minute },
     { label: hour, value: CronPeriodType.Hour },
     { label: day, value: CronPeriodType.Day },
-    { label: "Неделю", value: CronPeriodType.Week },
+    { label: week, value: CronPeriodType.Week },
     { label: month, value: CronPeriodType.Month },
     { label: year, value: CronPeriodType.Year }
   ];
@@ -366,7 +363,7 @@ export const ScheduleDialog = ({
         )}
 
         {taskSetType === ScheduleType.Single && (
-          <SelectRow label="Дата и время">
+          <SelectRow>
             <>
               <DateInput
                 className="schedule-popup__select--inline"

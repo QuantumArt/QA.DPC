@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { ItemPredicate, MultiSelect } from "@blueprintjs/select";
 import { MenuItem } from "@blueprintjs/core";
 import { ICronsTagModel, MONTH_UNITS, partToString, UNITS, WEEK_UNITS } from "Shared/Utils";
@@ -8,7 +8,7 @@ import { CronUnitType } from "Shared/Enums";
 
 export interface ICronsMultiSelectProps {
   type: CronUnitType;
-  setParsedCronsModel: (val: ICronsTagModel[]) => void;
+  setParsedCronsModel: Dispatch<SetStateAction<ICronsTagModel[]>>;
   parsedCronsModel: ICronsTagModel[] | undefined;
   isShouldClear: boolean;
 }
@@ -76,35 +76,29 @@ export const CronsMultiselect = ({
   const [multiSelectValues, setMultiSelectValues] = useState<ISelectItem[] | undefined>(
     getFromParenState()
   );
-  const [parsedMultiSelectValues, setParsedMultiSelectValues] = useState<
-    ICronsTagModel[] | undefined
-  >(parsedCronsModel);
 
-  const getSelectedItemIndex = (film: ISelectItem): number => {
+  const getSelectedItemIndex = (item: ISelectItem): number => {
     let foundIndex = -1;
     multiSelectValues.find((x: ISelectItem, index) => {
-      const isFound = x.value === film.value;
+      const isFound = x.value === item.value;
       if (isFound) foundIndex = index;
       return isFound;
     });
     return foundIndex;
   };
 
-  const isItemSelected = (film: ISelectItem) => {
-    return getSelectedItemIndex(film) !== -1;
+  const isItemSelected = (item: ISelectItem) => {
+    return getSelectedItemIndex(item) !== -1;
   };
 
   const deselectItem = (index: number) => {
     const newMultiSelectModel = multiSelectValues.filter((_film, i) => i !== index);
     setMultiSelectValues(newMultiSelectModel);
-    setParsedMultiSelectValues(
-      partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true)
-    );
     setParsedCronsModel(partToString(newMultiSelectModel.map(x => x.value).sort(), UNIT, true));
   };
 
-  const onRemoveTag = (_tag: string, index: number) => {
-    const currentItem = parsedMultiSelectValues.find((_x, valIndex) => index === valIndex);
+  const onRemoveTag = (_tag: string) => {
+    const currentItem = parsedCronsModel.find(_x => _tag === _x.label);
     const newMultiSelectModel = multiSelectValues.filter(
       x => !currentItem.values.includes(x.value)
     );
@@ -133,15 +127,12 @@ export const CronsMultiselect = ({
     }
   };
 
-  useEffect(
-    () => {
-      if (isShouldClear) {
-        setMultiSelectValues([]);
-        setParsedCronsModel([]);
-      }
-    },
-    [isShouldClear]
-  );
+  useEffect(() => {
+    if (isShouldClear) {
+      setMultiSelectValues([]);
+      setParsedCronsModel([]);
+    }
+  }, [isShouldClear]);
 
   return (
     <MultiSelect<ISelectItem | ICronsTagModel>
