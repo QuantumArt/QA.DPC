@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -13,8 +14,6 @@ using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Binders;
-using QA.ProductCatalog.Integration;
-using Swashbuckle.AspNetCore.Swagger;
 using Unity;
 
 namespace QA.ProductCatalog.Admin.WebApp
@@ -53,7 +52,10 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            services.Configure<QPOptions>(Configuration.GetSection("QP"));        
+            services.Configure<QPOptions>(Configuration.GetSection("QP"));
+            
+            var props = new IntegrationProperties();
+            Configuration.Bind("Integration", props);
             
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
@@ -61,14 +63,14 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.Secure = CookieSecurePolicy.SameAsRequest;
-                options.MinimumSameSitePolicy = SameSiteMode.None; 
+                options.MinimumSameSitePolicy = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax; 
             }); 
             
             services.AddSession(options =>
             {
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SameSite = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax;
             });
             
             services.AddResponseCaching();
@@ -78,13 +80,11 @@ namespace QA.ProductCatalog.Admin.WebApp
                         options.EnableEndpointRouting = false;
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
-                .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2); 
-           
+                .AddXmlSerializerFormatters().AddControllersAsServices().AddNewtonsoftJson();
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {

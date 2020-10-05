@@ -1,10 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-#if !NETSTANDARD
-using System.Xaml;
-#else
-using Portable.Xaml;
-#endif
+using QA.Configuration;
 using QA.Core.Models.Configuration;
 using QA.ProductCatalog.Infrastructure;
 
@@ -15,19 +11,19 @@ namespace QA.Core.DPC.Formatters.Services
 		#region IFormatter implementation
 		public Task<Content> Read(Stream stream)
 		{
-			return Task.Run<Content>(() => (Content)XamlServices.Load(stream));
+			return Task.Run<Content>(() => (Content)XamlConfigurationParser.LoadFrom(stream));
 		}
 
 		public Task Write(Stream stream, Content product)
 		{
-			return Task.Run(() => XamlServices.Save(stream, product));
+			return Task.Run(() => XamlConfigurationParser.SaveTo(stream, product));
 		}
 
 		public string Serialize(Content product)
 		{
 			using (var stream = new MemoryStream())
 			{
-				XamlServices.Save(stream, product);
+				XamlConfigurationParser.SaveTo(stream, product);
 				return new StreamReader(stream).ReadToEnd();
 			}
 		}

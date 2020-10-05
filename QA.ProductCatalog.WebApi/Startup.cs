@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
+using Microsoft.OpenApi.Models;
 using QA.Core.DPC.Formatters.Formatting;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.Loader;
@@ -22,6 +24,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using GemBox.Document;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi
@@ -41,7 +44,9 @@ namespace QA.ProductCatalog.WebApi
             Configuration.Bind("Loader", loaderProps);
             
             var props = new Properties();
-            Configuration.Bind("Properties", props);            
+            Configuration.Bind("Properties", props);
+            
+            ComponentInfo.SetLicense(props.DocumentLicenceKey);
             
             UnityConfig.Configure(container, loaderProps, props);
         }
@@ -61,15 +66,18 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<Properties>(Configuration.GetSection("Properties"));                 
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));            
             
-            var sp = services.BuildServiceProvider();
             services
-                .AddMvc(options => { SetupMvcOptions(options, sp); } )
-                .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddMvc(options => {             
+                    options.Filters.Add(typeof(GlobalExceptionFilterAttribute));
+                    options.EnableEndpointRouting = false;
+                    RegisterMediaTypes(options.FormatterMappings);
+                    RegisterOutputFormatters(options.OutputFormatters);
+                    RegisterInputFormatters(options.InputFormatters); })
+                .AddXmlSerializerFormatters().AddControllersAsServices().AddNewtonsoftJson();;
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "DPC Web API", 
                     Version = "v1",
@@ -83,7 +91,7 @@ namespace QA.ProductCatalog.WebApi
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -116,13 +124,6 @@ namespace QA.ProductCatalog.WebApi
             logger.LogInformation("{appName} started", name);         
         }
         
-        private static void SetupMvcOptions(MvcOptions options, ServiceProvider sp)
-        {
-            options.Filters.Add(typeof(GlobalExceptionFilterAttribute));
-            RegisterMediaTypes(options.FormatterMappings);
-            RegisterOutputFormatters(options.OutputFormatters);
-            RegisterInputFormatters(options.InputFormatters);
-        }
         
         private static void RegisterInputFormatters(FormatterCollection<IInputFormatter> formatters)
         {
@@ -151,7 +152,7 @@ namespace QA.ProductCatalog.WebApi
             RestoreDefaultJsonOutputFormatter(formatters, jsonOutputFormatter);
         }
 
-        private static void RestoreDefaultJsonOutputFormatter(FormatterCollection<IOutputFormatter> formatters, JsonOutputFormatter jsonOutputFormatter)
+        private static void RestoreDefaultJsonOutputFormatter(FormatterCollection<IOutputFormatter> formatters, SystemTextJsonOutputFormatter jsonOutputFormatter)
         {
             if (jsonOutputFormatter != null)
             {
@@ -159,9 +160,9 @@ namespace QA.ProductCatalog.WebApi
             }
         }
 
-        private static JsonOutputFormatter RemoveDefaultJsonOutputFormatter(FormatterCollection<IOutputFormatter> formatters)
+        private static SystemTextJsonOutputFormatter RemoveDefaultJsonOutputFormatter(FormatterCollection<IOutputFormatter> formatters)
         {
-            var jsonOutputFormatter = formatters.OfType<JsonOutputFormatter>().FirstOrDefault();
+            var jsonOutputFormatter = formatters.OfType<SystemTextJsonOutputFormatter>().FirstOrDefault();
             if (jsonOutputFormatter != null)
             {
                 formatters.Remove(jsonOutputFormatter);
@@ -219,10 +220,10 @@ namespace QA.ProductCatalog.WebApi
                 new ModelMediaTypeOutputFormatter<Article, XamlProductFormatter>(WebApiConstants.XamlMediaType));
             formatters.Add(
                 new ModelMediaTypeOutputFormatter<Article, JsonProductFormatter>(WebApiConstants.JsonMediaType));
-#if !NETSTANDARD
+
             formatters.Add(
                 new ModelMediaTypeOutputFormatter<Article, PdfProductFormatter>(WebApiConstants.PdfMediaType));
-#endif
+
         }
 
         private static void RegisterMediaTypes(FormatterMappings formatterMappings)

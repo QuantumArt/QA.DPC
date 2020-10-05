@@ -2,11 +2,7 @@
 using System.Linq;
 using QA.Core.Models.UI;
 using QA.Core.DPC.UI.Controls;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
 using QA.Core.Models.Comparers;
 
 namespace QA.Core.DPC.UI

@@ -22,10 +22,6 @@ namespace QA.Core.DPC.API.Container
 {
     public class APIContainerConfiguration : UnityContainerExtension
 	{
-		public ITypeLifetimeManager GetHttpContextLifeTimeManager()
-		{
-            return new HttpContextCoreLifetimeManager(Container.Resolve<IHttpContextAccessor>());
-		}		
 		protected override void Initialize()
 		{
 			Container.AddNewExtension<ActionContainerConfiguration>();
@@ -39,13 +35,6 @@ namespace QA.Core.DPC.API.Container
 			Container.RegisterType<IProductUpdateService, ProductUpdateService>();
             Container.RegisterType<IProductRelevanceService, ProductRelevanceService>();            
 
-            Container.RegisterType<IServiceFactory, ServiceFactory>();
-			Container.RegisterFactory<ArticleService>(c => c.Resolve<IServiceFactory>().GetArticleService());
-			Container.RegisterType<IArticleService, ArticleServiceAdapter>();
-			Container.RegisterFactory<FieldService>(c => c.Resolve<IServiceFactory>().GetFieldService());
-			Container.RegisterType<IFieldService, FieldServiceAdapter>(GetHttpContextLifeTimeManager());
-			Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));
-			Container.RegisterFactory<Func<ITransaction>>(c => new Func<ITransaction>(() => c.Resolve<ITransaction>()));
 			Container.RegisterType<IQPNotificationService, QPNotificationService>();
 			Container.RegisterType<IXmlProductService, XmlProductService>();
         }

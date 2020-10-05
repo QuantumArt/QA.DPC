@@ -374,17 +374,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 locator.Language = language.ToString();
             }
 
-            string fixedConnectionString = null;
+            var fixedConnectionString = Options.FixedConnectionString;
             
-            if (customerCode != null && customerCode != SingleCustomerCoreProvider.Key)
+            if (String.IsNullOrEmpty(fixedConnectionString))
             {
-                locator.CustomerCode = customerCode;
-                fixedConnectionString= DBConnector.GetConnectionString(customerCode);
-            }
-            
-            if (!String.IsNullOrEmpty(Options.FixedConnectionString))
-            {
-                fixedConnectionString = Options.FixedConnectionString;                
+                if (customerCode != null && customerCode != SingleCustomerCoreProvider.Key)
+                {
+                    locator.CustomerCode = customerCode;
+                    fixedConnectionString = DBConnector.GetConnectionString(customerCode);
+                }
             }
             
             if (String.IsNullOrEmpty(fixedConnectionString))

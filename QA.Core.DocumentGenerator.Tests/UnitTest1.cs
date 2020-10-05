@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using GemBox.Document;
 using NUnit.Framework;
 using Moq;
 using QA.ProductCatalog.Infrastructure;
@@ -15,6 +16,7 @@ namespace QA.Core.DocumentGenerator.Tests
         [OneTimeSetUp]
         public static void ClassInitialize()
         {
+            ComponentInfo.SetLicense("FREE-LIMITED-KEY");
             NotesServiceMoq.Setup(x => x.GetNoteText(It.IsAny<int>())).Returns<int>(x => $"Тестовая заметка с id={x}.");
 
             _xmlText = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.Product.xml")).ReadToEnd();
@@ -32,7 +34,6 @@ namespace QA.Core.DocumentGenerator.Tests
 
             generator.SaveAsPdf(_xmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestMailMerge.docx"), new FileStream(resFilePath, FileMode.Create));
 
-            Process.Start(resFilePath);
         }
 
         [Test]
@@ -44,7 +45,6 @@ namespace QA.Core.DocumentGenerator.Tests
 
             generator.SaveAsPdf(_xmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestNotes.docx"), new FileStream(resFilePath, FileMode.Create));
 
-            Process.Start(resFilePath);
         }
 
         [Test]
@@ -56,7 +56,6 @@ namespace QA.Core.DocumentGenerator.Tests
 
             generator.SaveAsPdf(_xmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestRazor.docx"), new FileStream(resFilePath, FileMode.Create));
 
-            Process.Start(resFilePath);
         }
 
     }

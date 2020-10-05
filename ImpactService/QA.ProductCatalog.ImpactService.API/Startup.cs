@@ -12,6 +12,7 @@ using Polly;
 using Polly.Registry;
 using QA.ProductCatalog.ImpactService.API.Services;
 using QA.ProductCatalog.ImpactService.API.Helpers;
+using Microsoft.Extensions.Hosting;
 
 namespace QA.ProductCatalog.ImpactService.API
 {
@@ -33,7 +34,7 @@ namespace QA.ProductCatalog.ImpactService.API
             
             services.AddSingleton(new PolicyRegistry());
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc();
 
             services.AddMemoryCache();
 
@@ -44,7 +45,7 @@ namespace QA.ProductCatalog.ImpactService.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {
@@ -55,7 +56,11 @@ namespace QA.ProductCatalog.ImpactService.API
                 app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
             }
 
-            app.UseMvc();
+            app.UseRouting();
+            app.UseEndpoints(routes =>
+            {
+                routes.MapControllers();
+            });
             
             LogStart(app, loggerFactory);
         }

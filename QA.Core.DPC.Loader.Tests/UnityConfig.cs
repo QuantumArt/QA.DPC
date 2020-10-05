@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Moq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Container;
@@ -15,20 +17,24 @@ using QA.ProductCatalog.Integration;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
+using ILogger = QA.Core.Logger.ILogger;
 
 namespace QA.Core.DPC.Loader.Tests
 {
     public static class UnityConfig
     {
-        public static IUnityContainer Configure()
+        public static IUnityContainer Configure(string connStr)
         {
-            var container = RegisterTypes(new UnityContainer());
+            var container = RegisterTypes(new UnityContainer(), connStr);
             ObjectFactoryConfigurator.DefaultContainer = container;
             return container;
         }
 
-        public static UnityContainer RegisterTypes(UnityContainer container)
+        public static UnityContainer RegisterTypes(UnityContainer container, string connStr)
         {
+            container.RegisterType<ILoggerFactory, LoggerFactory>(
+                new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>())
+            );
             container.AddExtension(new Diagnostic());
             // логируем в консоль
             container.RegisterInstance<ILogger>(new TextWriterLogger(Console.Out));
@@ -38,6 +44,7 @@ namespace QA.Core.DPC.Loader.Tests
             container.AddNewExtension<LoaderConfigurationExtension>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
 
+            container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
 
             // устанавливаем фальшивый сервис для загрузки модели
             container.RegisterType<IProductService, ProductLoader>().RegisterType<IXmlProductService, XmlProductService>();
@@ -47,11 +54,11 @@ namespace QA.Core.DPC.Loader.Tests
             container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
             container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
             container.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
-            container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>(), container.Resolve<ILogger>()));
+            container.RegisterInstance<ICacheItemWatcher>(new CacheItemWatcherFake());
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
             container.RegisterType<IRegionService, RegionService>();
             container.RegisterType<IConsumerMonitoringService, FakeConsumerMonitoringService>();
-            container.RegisterInstance<IConnectionProvider>(new ExplicitConnectionProvider(ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString));
+            container.RegisterInstance<IConnectionProvider>(new ExplicitConnectionProvider(connStr));
 
             container.RegisterType<IArticleDependencyService, ArticleDependencyService>(
                 new InjectionConstructor(

@@ -1,9 +1,6 @@
 using System.Runtime.CompilerServices;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
+
 
 [assembly: XmlnsDefinition("http://artq.com/configuration", "QA.Core.Models")]
 [assembly: XmlnsDefinition("http://artq.com/configuration", "QA.Core.Models.Configuration")]

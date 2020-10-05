@@ -51,6 +51,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.AddSingleton<IHostedService, ActionsService>();
+
             
             var props = new ConnectionProperties();
             Configuration.Bind("Connection", props);
@@ -63,13 +64,16 @@ namespace QA.Core.ProductCatalog.ActionsService
                     options.UseSqlServer(props.DesignConnectionString));
             }
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });;
             
 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {

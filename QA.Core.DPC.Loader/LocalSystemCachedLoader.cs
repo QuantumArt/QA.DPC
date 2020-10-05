@@ -7,16 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
-#if !NETSTANDARD
-using System.Xaml;
-#else
 using Portable.Xaml;
-#endif
-
 using System.IO;
 using System.IO.Compression;
+using QA.Configuration;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader
@@ -83,13 +78,13 @@ namespace QA.Core.DPC.Loader
                             var entry = archive.Entries.FirstOrDefault();
                             using (var stream = entry.Open())
                             {
-                                return (T)XamlServices.Load(stream);
+                                return (T)XamlConfigurationParser.LoadFrom(stream);
                             }
                         }
                     }
                     else
                     {
-                        return (T)XamlServices.Load(path);
+                        return (T)XamlConfigurationParser.LoadFrom(path);
                     }
 
                 }
@@ -109,7 +104,7 @@ namespace QA.Core.DPC.Loader
 
                             using (var stream = entry.Open())
                             {
-                                XamlServices.Save(stream, data);
+                                XamlConfigurationParser.SaveTo(stream, data);
                             }
                         }
                     }

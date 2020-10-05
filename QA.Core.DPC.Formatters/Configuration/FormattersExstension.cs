@@ -29,13 +29,6 @@ namespace QA.Core.DPC.Formatters.Configuration
 		}
 		
 		
-#if !NETSTANDARD
-		public static void AddRouteMapping(this MediaTypeFormatter formatter, string parameterName, string parameterValue, string mediaType)
-		{
-			formatter.MediaTypeMappings.Add(new RouteDataMapping(parameterName, parameterValue, mediaType));
-		}
-#endif
-
 		public static void RegisterModelMediaTypeFormatter<TFormatter, TModel>(this IUnityContainer container, string name, string mediaType)
 			where TModel : class
 			where TFormatter : IFormatter<TModel>

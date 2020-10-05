@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Net.Http.Formatting;
-#if !NETSTANDARD
-using QA.Core.DocumentGenerator;
-#endif
 using QA.Core.DPC.Formatters.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Entities;
@@ -17,9 +14,6 @@ namespace QA.Core.DPC.Formatters.Configuration
 	{
 		protected override void Initialize()
 		{
-#if !NETSTANDARD			
-			Container.RegisterFactory<PdfProductFormatter>(c => new PdfProductFormatter(c.Resolve<IDocumentGenerator>(), c.Resolve<XmlProductFormatter>()));
-#endif			
 			Container.RegisterFactory<Func<string, MediaTypeFormatter>>(c => (Func<string, MediaTypeFormatter>)(name => c.Resolve<MediaTypeFormatter>(name)));
 			Container.RegisterFactory<Func<Type, MediaTypeFormatter>>(c => (Func<Type, MediaTypeFormatter>)(type => c.Resolve<MediaTypeFormatter>(type.Name)));
 
@@ -44,12 +38,15 @@ namespace QA.Core.DPC.Formatters.Configuration
             Container.RegisterType<XmlProductFormatter>();
             Container.RegisterType<XamlProductFormatter>();
             
-#if !NETSTANDARD            
+        
             Container.RegisterFactory<Func<PdfProductFormatter>>(c => new Func<PdfProductFormatter>(() => c.Resolve<PdfProductFormatter>()));
-#endif            
+           
             Container.RegisterFactory<Func<JsonSchemaFormatter>>(c => new Func<JsonSchemaFormatter>(() => c.Resolve<JsonSchemaFormatter>()));
             Container.RegisterFactory<Func<JsonProductFormatter>>(c => new Func<JsonProductFormatter>(() => c.Resolve<JsonProductFormatter>()));
             Container.RegisterType<JsonProductFormatter>();
+            Container.RegisterType<PdfProductFormatter>();
+            Container.RegisterType<DocumentGenerator.DocumentGenerator>();
+
             Container.RegisterFactory<Func<BinaryModelFormatter<Article>>>(c => new Func<BinaryModelFormatter<Article>>(() => c.Resolve<BinaryModelFormatter<Article>>()));
             Container.RegisterFactory<Func<BinaryModelFormatter<Content>>>(c => new Func<BinaryModelFormatter<Content>>(() => c.Resolve<BinaryModelFormatter<Content>>()));
         }

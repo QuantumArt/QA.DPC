@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using QA.Core.Logger;
 using QA.DPC.Core.Helpers;
 using Swashbuckle.AspNetCore.Swagger;
@@ -25,18 +27,18 @@ namespace QA.ProductCatalog.FileSyncWebHost
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc(opts =>
+            services.AddMvcCore(opts =>
             {
-                opts.InputFormatters.RemoveType<JsonInputFormatter>();
+                opts.InputFormatters.RemoveType<SystemTextJsonInputFormatter>();
                 opts.InputFormatters.Add(new TextUniversalInputFormatter());
-            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);;
+            }).AddApiExplorer();
             
             services.Configure<DataOptions>(Configuration.GetSection("Data"));
             services.AddScoped<ILogger>(logger => new NLogLogger("NLogClient.config"));
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "DPC FileSyncWebHost API", 
                     Version = "v1",
@@ -47,7 +49,7 @@ namespace QA.ProductCatalog.FileSyncWebHost
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
                 
@@ -58,9 +60,11 @@ namespace QA.ProductCatalog.FileSyncWebHost
             {
                 app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
             }
+            app.UseRouting();
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
+            });
 
-            app.UseMvcWithDefaultRoute();
-            
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 

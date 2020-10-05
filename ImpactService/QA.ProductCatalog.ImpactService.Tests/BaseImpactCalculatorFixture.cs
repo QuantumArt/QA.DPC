@@ -11,7 +11,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
     {
         private JObject GetJsonFromFile(string file)
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"TestData\\{file}");
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"TestData\\{file}").Replace('\\', Path.DirectorySeparatorChar);
             return JObject.Parse(File.ReadAllText(path));
         }
 

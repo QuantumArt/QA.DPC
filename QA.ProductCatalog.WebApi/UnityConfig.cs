@@ -1,7 +1,4 @@
 ﻿using QA.Core;
-#if !NETSTANDARD
-using QA.Core.DocumentGenerator;
-#endif
 using QA.Core.DPC.API.Container;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
@@ -16,6 +13,7 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.Configuration;
 using System;
+using QA.Core.DocumentGenerator;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
@@ -75,14 +73,10 @@ namespace QA.ProductCatalog.WebApi.App_Start
 			unityContainer.RegisterType<IXmlProductService, XmlProductService>();
 
 			unityContainer.RegisterType<IContentDefinitionService, ContentDefinitionService>();
-
-#if !NETSTANDARD 
-			unityContainer.RegisterType<IProductPdfTemplateService, ProductPdfTemplateService>();
-
+			
+			unityContainer.RegisterType<INotesService, NotesFromContentService>();
+			
 			unityContainer.RegisterType<IDocumentGenerator, DocumentGenerator>();
-#endif
-
-			unityContainer.RegisterType<INotesService, NotesFromContentService>();            
 
             unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 

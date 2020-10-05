@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -48,14 +49,12 @@ namespace QA.DPC.Core.Helpers
             Encoding encoding)
         {
             string data = null;
-            using (var streamReader = context.ReaderFactory(
-                context.HttpContext.Request.Body,
-                encoding))
+            using (var streamReader = new StreamReader(context.HttpContext.Request.Body, encoding))
             {
                 data = await streamReader.ReadToEndAsync();
             }
 
-            return InputFormatterResult.Success(data);
+            return await InputFormatterResult.SuccessAsync(data);
         }
     }
 }

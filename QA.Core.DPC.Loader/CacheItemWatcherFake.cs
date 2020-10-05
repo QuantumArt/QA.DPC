@@ -1,7 +1,6 @@
-﻿using QA.Core.Cache;
-using QA.Core.Data;
+using QA.Core.Cache;
 
-namespace QA.ProductCatalog.Admin.WebApp.Core
+namespace QA.Core.DPC.Loader
 {
     public class CacheItemWatcherFake : ICacheItemWatcher
     {

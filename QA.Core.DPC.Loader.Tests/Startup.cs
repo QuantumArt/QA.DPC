@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 using QA.Validation.Xaml.Extensions.Rules;
+using Quantumart.QP8.BLL.Services.MultistepActions.Publish;
+using System.IO;
 using Unity;
 
 namespace QA.Core.DPC.Loader.Tests
@@ -8,6 +12,7 @@ namespace QA.Core.DPC.Loader.Tests
     public class Startup
     {
         public static IUnityContainer Container;
+
         [OneTimeSetUp]
         public static void StartUp()
         {
@@ -15,7 +20,16 @@ namespace QA.Core.DPC.Loader.Tests
             var processRemoteValidationIf = new ProcessRemoteValidationIf { Condition = null };
             TestContext.WriteLine("Started!");
             TestContext.WriteLine("stub");
-            Container = UnityConfig.Configure();
+
+            string curDir = Directory.GetCurrentDirectory();
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(curDir)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+            var configuration = builder.Build();
+            var conn = configuration.GetConnectionString("qp_database");
+
+            Container = UnityConfig.Configure(conn);
         }
     }
 }

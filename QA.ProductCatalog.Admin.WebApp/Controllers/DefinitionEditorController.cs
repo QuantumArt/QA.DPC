@@ -49,7 +49,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			var definitionXml = contentItemId.HasValue
 				? _contentDefinitionService.GetDefinitionXml(contentItemId.Value)
 				: contentId.HasValue
-					? XamlConfigurationParser.CreateFromObject(new Content {ContentId = contentId.Value})
+					? XamlConfigurationParser.Save(new Content {ContentId = contentId.Value})
 					: string.Empty;
 
 			return View(new DefinitionEditor {ContentItemId = contentItemId, Xml = definitionXml});
@@ -154,7 +154,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
 			var savedField = _definitionEditorService.UpdateOrDeleteField(rootContent, defInfo.GetField(), defInfo.Path, !defInfo.InDefinition);
 
-			string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+			string resultXml = XamlConfigurationParser.Save(rootContent);
 
 			ModelState.Clear();
 
@@ -203,7 +203,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			    }
 			}
 
-			string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+			string resultXml = XamlConfigurationParser.Save(rootContent);
             
 
 			ModelState.Clear();
