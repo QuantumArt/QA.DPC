@@ -24,11 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Portable.Xaml" Version="0.30.0-beta39" />
-
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="NLog" Version="4.7.4" />
-    <PackageReference Include="QA.Configuration" Version="1.1.0-portable84" />
+    <PackageReference Include="QA.Configuration" Version="1.1.0-portable86" />
     <PackageReference Include="QA.Core" Version="3.5.2" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.7.0" />
   </ItemGroup>
