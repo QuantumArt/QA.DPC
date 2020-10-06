@@ -333,4 +333,52 @@
   <data name="Seconds" xml:space="preserve">
     <value>s</value>
   </data>
+  <data name="BackToEditing" xml:space="preserve">
+    <value>Back to editing</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="ExitAnyway" xml:space="preserve">
+    <value>Exit anyway</value>
+  </data>
+  <data name="HideLog" xml:space="preserve">
+    <value>Hide log</value>
+  </data>
+  <data name="NotInDefinition" xml:space="preserve">
+    <value>Not in definition</value>
+  </data>
+  <data name="QueryOnClick" xml:space="preserve">
+    <value>Query on click</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="SameDefinition" xml:space="preserve">
+    <value>Definition is the same. No changes to apply.</value>
+  </data>
+  <data name="SaveAndExit" xml:space="preserve">
+    <value>Save and exit</value>
+  </data>
+  <data name="ShowLog" xml:space="preserve">
+    <value>Show log</value>
+  </data>
+  <data name="WrapLines" xml:space="preserve">
+    <value>Wrap lines</value>
+  </data>
+  <data name="UnsavedChanges" xml:space="preserve">
+    <value>Your changes will not save. Are you sure that you want to leave?</value>
+  </data>
+  <data name="FormLoadError" xml:space="preserve">
+    <value>Form loading error</value>
+  </data>
+  <data name="FormSaveError" xml:space="preserve">
+    <value>Form saving error</value>
+  </data>
+  <data name="SameForm" xml:space="preserve">
+    <value>The form wasn't changed</value>
+  </data>
 </root>

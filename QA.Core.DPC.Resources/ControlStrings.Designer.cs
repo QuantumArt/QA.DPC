@@ -79,6 +79,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Back to editing.
+        /// </summary>
+        public static string BackToEditing {
+            get {
+                return ResourceManager.GetString("BackToEditing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cache Settings.
         /// </summary>
         public static string CacheSettings {
@@ -129,6 +138,15 @@ namespace QA.Core.DPC.Resources {
         public static string CloningMode {
             get {
                 return ResourceManager.GetString("CloningMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
             }
         }
         
@@ -277,6 +295,24 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Exit.
+        /// </summary>
+        public static string Exit {
+            get {
+                return ResourceManager.GetString("Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exit anyway.
+        /// </summary>
+        public static string ExitAnyway {
+            get {
+                return ResourceManager.GetString("ExitAnyway", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field Id.
         /// </summary>
         public static string FieldId {
@@ -300,6 +336,15 @@ namespace QA.Core.DPC.Resources {
         public static string FieldNameForCard {
             get {
                 return ResourceManager.GetString("FieldNameForCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hide log.
+        /// </summary>
+        public static string HideLog {
+            get {
+                return ResourceManager.GetString("HideLog", resourceCulture);
             }
         }
         
@@ -430,6 +475,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not in definition.
+        /// </summary>
+        public static string NotInDefinition {
+            get {
+                return ResourceManager.GetString("NotInDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Сoncurrent execution of send tasks is prohibited. Please, wait for completion of the current task..
         /// </summary>
         public static string OnlyOneTask {
@@ -556,6 +610,24 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Query on click.
+        /// </summary>
+        public static string QueryOnClick {
+            get {
+                return ResourceManager.GetString("QueryOnClick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Refresh.
+        /// </summary>
+        public static string Refresh {
+            get {
+                return ResourceManager.GetString("Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Relates to content.
         /// </summary>
         public static string RelateToAnother {
@@ -610,11 +682,29 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Definition is the same. No changes to apply..
+        /// </summary>
+        public static string SameDefinition {
+            get {
+                return ResourceManager.GetString("SameDefinition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save and exit.
+        /// </summary>
+        public static string SaveAndExit {
+            get {
+                return ResourceManager.GetString("SaveAndExit", resourceCulture);
             }
         }
         
@@ -651,6 +741,15 @@ namespace QA.Core.DPC.Resources {
         public static string SetNull {
             get {
                 return ResourceManager.GetString("SetNull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show log.
+        /// </summary>
+        public static string ShowLog {
+            get {
+                return ResourceManager.GetString("ShowLog", resourceCulture);
             }
         }
         
@@ -705,6 +804,51 @@ namespace QA.Core.DPC.Resources {
         public static string UserName {
             get {
                 return ResourceManager.GetString("UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Wrap lines.
+        /// </summary>
+        public static string WrapLines {
+            get {
+                return ResourceManager.GetString("WrapLines", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Unsaved Changes
+        /// </summary>
+        public static string UnsavedChanges {
+            get {
+                return ResourceManager.GetString("UnsavedChanges", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Form Save Error
+        /// </summary>
+        public static string FormSaveError {
+            get {
+                return ResourceManager.GetString("FormSaveError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to FormLoadError
+        /// </summary>
+        public static string FormLoadError {
+            get {
+                return ResourceManager.GetString("FormLoadError", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to SameForm
+        /// </summary>
+        public static string SameForm {
+            get {
+                return ResourceManager.GetString("SameForm", resourceCulture);
             }
         }
     }

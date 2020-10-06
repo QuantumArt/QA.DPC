@@ -1,11 +1,13 @@
-﻿/**
+/**
  * Global definitions for developement
  * DO NOT IMPORT ANYTHING OR YOU WILL BREAK BUILD PROCESS!
  */
 
 declare interface Window {
+  definitionEditor: DefinitionEditorSettings;
   task: TaskWindowTypes;
   notificationPermissionRequested: boolean;
+  pmrpc: any;
 
   highloadFront?: {
     legend: string;

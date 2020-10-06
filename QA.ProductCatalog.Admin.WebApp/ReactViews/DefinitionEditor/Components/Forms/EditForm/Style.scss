@@ -1,0 +1,11 @@
+.forms-wrapper {
+  width: calc(100% - 383px);
+  height: 86vh;
+  overflow-y: auto;
+  &__loading.sk-circle {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    margin-left: 20px;
+  }
+}

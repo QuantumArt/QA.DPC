@@ -7,3 +7,4 @@ export * from "./FetchStatus";
 export * from "./CronUnitType";
 export * from "./CronPeriodType";
 export * from "./ScheduleType";
+export * from "./OperationState";

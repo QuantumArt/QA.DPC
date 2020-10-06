@@ -60,7 +60,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.Secure = CookieSecurePolicy.SameAsRequest;
-                options.MinimumSameSitePolicy = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax; 
+                options.MinimumSameSitePolicy = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax;
             }); 
             
             services.AddSession(options =>

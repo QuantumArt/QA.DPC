@@ -1,4 +1,4 @@
-﻿namespace QA.ProductCatalog.Admin.WebApp.Models
+namespace QA.ProductCatalog.Admin.WebApp.Models
 {
     public class DefinitionEditor
 	{

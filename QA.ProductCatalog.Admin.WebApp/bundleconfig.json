@@ -1,16 +1,14 @@
 [
   {
-    "outputFileName": "wwwroot/css/blueprint/blueprint-icons.min.css",
+    "outputFileName": "wwwroot/css/blueprint.min.css",
     "inputFiles": [
-      "wwwroot/css/blueprint/blueprint-icons.css"
-    ]
-  },
-
-  {
-    "outputFileName": "wwwroot/css/blueprint/blueprint.min.css",
-    "inputFiles": [
-      "wwwroot/css/blueprint/blueprint.css"
-    ]
+      "node_modules/normalize.css/normalize.css",
+      "node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css",
+      "node_modules/@blueprintjs/core/lib/css/blueprint.css"
+    ],
+    "minify": {
+      "enabled": true
+    }
   },
 
   {

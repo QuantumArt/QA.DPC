@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,6 +113,44 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
+        public ActionResult EditBeta(DefinitionPathInfo defInfo)
+        {
+            var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
+
+            var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
+
+            if (objectToEdit is Field edit)
+                return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(new DefinitionFieldInfo(edit)
+                {
+                    InDefinition = !notFoundInDef,
+                    Path = defInfo.Path,
+                    Xml = defInfo.Xml
+                }
+               )};
+
+            var isFromDictionaries = false;
+
+            if (!Equals(rootContent, objectToEdit))
+                isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path) is Dictionaries;
+
+            var contentToEdit = (Content)objectToEdit;
+            return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(new DefinitionContentInfo
+            {
+                ContentName = contentToEdit.ContentName,
+                IsReadOnly = contentToEdit.IsReadOnly,
+                PublishingMode = contentToEdit.PublishingMode,
+                ContentId = contentToEdit.ContentId,
+                LoadAllPlainFields = contentToEdit.LoadAllPlainFields,
+                CacheEnabled = contentToEdit.CachePeriod.HasValue,
+                CachePeriod = contentToEdit.CachePeriod ?? new TimeSpan(1, 45, 0),
+                Path = defInfo.Path,
+                Xml = defInfo.Xml,
+                InDefinition = !notFoundInDef,
+                IsFromDictionaries = isFromDictionaries,
+            }) };  
+        }
+
+        [RequireCustomAction]
         public ActionResult Edit(DefinitionPathInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
@@ -174,6 +212,31 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
+        public ActionResult SaveFieldBeta(DefinitionFieldInfo defInfo)
+        {
+            var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
+
+            var savedField = _definitionEditorService.UpdateOrDeleteField(rootContent, defInfo.GetField(), defInfo.Path, !defInfo.InDefinition);
+
+            string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+
+            ModelState.Clear();
+
+            Field fieldForEditView = savedField ?? (Field)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out _);
+
+            return new ContentResult()
+            {
+                ContentType = "application/json",
+                Content = JsonConvert.SerializeObject(new DefinitionFieldInfo(fieldForEditView)
+                {
+                    InDefinition = defInfo.InDefinition,
+                    Path = defInfo.Path,
+                    Xml = resultXml
+                })
+            };
+        }
+
+        [RequireCustomAction]
         public ActionResult SaveContent(DefinitionContentInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
@@ -214,6 +277,72 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             ModelState.Clear();
 
             return Edit(new DefinitionPathInfo { Xml = resultXml, Path = defInfo.Path });
+        }
+    
+        [RequireCustomAction]
+        public ActionResult SaveContentBeta(DefinitionContentInfo defInfo)
+        {
+            var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
+
+            var contentToSave = (Content)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
+
+            contentToSave.ContentName = defInfo.ContentName;
+            contentToSave.CachePeriod = defInfo.CacheEnabled ? defInfo.CachePeriod : (TimeSpan?)null;
+
+            if (defInfo.IsFromDictionaries)
+            {
+                var dictionaries = (Dictionaries)_definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
+
+                if (contentToSave.CachePeriod != null && notFoundInDef)
+                    dictionaries.ContentDictionaries[contentToSave.ContentId] = contentToSave;
+                else if (contentToSave.CachePeriod == null && !notFoundInDef)
+                    dictionaries.ContentDictionaries.Remove(contentToSave.ContentId);
+            }
+            else
+            {
+                contentToSave.IsReadOnly = defInfo.IsReadOnly;
+                contentToSave.LoadAllPlainFields = defInfo.LoadAllPlainFields;
+                contentToSave.PublishingMode = defInfo.PublishingMode;
+
+
+                if (notFoundInDef)
+                {
+                    var parentExtension = (ExtensionField)_definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
+
+                    parentExtension.ContentMapping[contentToSave.ContentId] = contentToSave;
+                }
+            }
+
+            string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+
+
+            var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out _);
+            var isFromDictionaries = false;
+
+            if (!Equals(rootContent, objectToEdit))
+                isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path) is Dictionaries;
+
+            var contentToEdit = (Content)objectToEdit;
+            ModelState.Clear();
+
+            return new ContentResult()
+            {
+                ContentType = "application/json",
+                Content = JsonConvert.SerializeObject(new DefinitionContentInfo
+                {
+                    ContentName = contentToEdit.ContentName,
+                    IsReadOnly = contentToEdit.IsReadOnly,
+                    PublishingMode = contentToEdit.PublishingMode,
+                    ContentId = contentToEdit.ContentId,
+                    LoadAllPlainFields = contentToEdit.LoadAllPlainFields,
+                    CacheEnabled = contentToEdit.CachePeriod.HasValue,
+                    CachePeriod = contentToEdit.CachePeriod ?? new TimeSpan(1, 45, 0),
+                    Path = defInfo.Path,
+                    Xml = resultXml,
+                    InDefinition = !notFoundInDef,
+                    IsFromDictionaries = isFromDictionaries,
+                })
+            };
         }
     }
 }
