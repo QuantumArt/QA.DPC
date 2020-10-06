@@ -115,6 +115,7 @@ export class TaskStore {
     setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
   };
 
+  @action
   cyclicFetchGrid = async (): Promise<void> => {
     try {
       const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(
@@ -131,6 +132,7 @@ export class TaskStore {
       }
       this.setGridData(response.tasks);
       this.setTotal(response.totalTasks);
+      this.setMyLastTask(response.myLastTask);
 
       if (window.task.notify.isNotifyActive) {
         setBrowserNotifications(() =>
@@ -221,6 +223,7 @@ export class TaskStore {
     return filtersOptions.length ? filtersOptions : null;
   };
 
+  @action
   withLoader = async (cb: () => Promise<void>): Promise<void> => {
     try {
       this.toggleLoading(true);
@@ -244,6 +247,7 @@ export class TaskStore {
     }
   };
 
+  @action
   fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> =>
     this.withIsPendingRequest(async () => {
       try {
@@ -259,14 +263,29 @@ export class TaskStore {
       }
     });
 
-  fetchRerunTask = async (taskId: number): Promise<void> =>
-    this.withIsPendingRequest(async () => {
-      try {
-        await apiService.fetchRerunTask(taskId);
-      } catch (e) {
-        console.error(e);
+  fetchRerunTask = async (taskId: number): Promise<void> => {
+    try {
+      const res = await apiService.fetchRerunTask(taskId);
+      if (!res) {
+        throw new Error();
       }
-    });
+      await this.fetchGridData();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  fetchCancelRerun = async (taskId: number): Promise<void> => {
+    try {
+      const res = await apiService.fetchCancelTask(taskId);
+      if (!res) {
+        throw new Error();
+      }
+      await this.fetchGridData();
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   setSchedule = async (
     taskId: number,

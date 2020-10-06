@@ -1,5 +1,7 @@
-﻿import _ from "lodash";
+import _ from "lodash";
 import { CronPeriodType, CronUnitType } from "Shared/Enums";
+
+const { all } = window.task.schedule;
 
 export type Unit = {
   type: CronUnitType;
@@ -176,12 +178,12 @@ export function partToString(
   leadingZero?: boolean | "month-days" | "hours" | "minutes",
   clockFormat?: "24-hour-clock" | "12-hour-clock"
 ): ICronsTagModel[] {
-  let retval = [] as (ICronsTagModel)[];
+  let retval = [] as ICronsTagModel[];
 
   if (isFull(cronPart, unit)) {
     retval = [
       {
-        label: "Все",
+        label: all,
         values: cronPart
       }
     ];

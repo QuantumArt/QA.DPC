@@ -54,6 +54,8 @@ declare interface TaskWindowTypes {
     apply: string;
     week: string;
     all: string;
+    typicalError: string;
+    cronParseError: string;
   };
   notify: {
     isNotifyActive: boolean;

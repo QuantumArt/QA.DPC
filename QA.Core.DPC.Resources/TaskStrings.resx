@@ -279,5 +279,71 @@
   <data name="All">
     <value>All</value>
   </data>
+  <data name="Search">
+    <value>Search...</value>
+  </data>
+  <data name="CronParseError">
+    <value>Cron expression parse error</value>
+  </data>
+  <data name="TypicalError">
+    <value>Something went wrong. Try to reload the page.</value>
+  </data>
+  <data name="Sun">
+    <value>Sun</value>
+  </data>
+  <data name="Mon">
+    <value>Mon</value>
+  </data>
+  <data name="Tue">
+    <value>Tue</value>
+  </data>
+  <data name="Wed">
+    <value>Wed</value>
+  </data>
+  <data name="Thu">
+    <value>Thu</value>
+  </data>
+  <data name="Fri">
+    <value>Fri</value>
+  </data>
+  <data name="Sat">
+    <value>Sat</value>
+  </data>
+  <data name="Jan">
+    <value>JAN</value>
+  </data>
+  <data name="Feb">
+    <value>Feb</value>
+  </data>
+  <data name="Mar">
+    <value>Mar</value>
+  </data>
+  <data name="Apr">
+    <value>Apr</value>
+  </data>
+  <data name="May">
+    <value>May</value>
+  </data>
+  <data name="Jun">
+    <value>Jun</value>
+  </data>
+  <data name="Jul">
+    <value>Jul</value>
+  </data>
+  <data name="Aug">
+    <value>Aug</value>
+  </data>
+  <data name="Sep">
+    <value>Sep</value>
+  </data>
+  <data name="Oct">
+    <value>Oct</value>
+  </data>
+  <data name="Nov">
+    <value>Nov</value>
+  </data>
+  <data name="Dec">
+    <value>Dec</value>
+  </data>
 </root>
 

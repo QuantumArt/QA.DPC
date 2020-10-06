@@ -13,10 +13,10 @@ export class ErrorBoundary extends React.Component {
   }
 
   render() {
+    const { typicalError } = window.task.schedule;
+
     if (this.state.hasError) {
-      return (
-        <h3 className="color-danger ui-error">Что-то пошло не так. Поробуйте обновить страницу.</h3>
-      );
+      return <h3 className="color-danger ui-error">{typicalError}</h3>;
     }
 
     return this.props.children;

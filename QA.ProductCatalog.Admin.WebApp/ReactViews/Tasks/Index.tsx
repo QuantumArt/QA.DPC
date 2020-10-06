@@ -27,7 +27,6 @@ import "./Root.scss";
 
 /**
  * ColumnModel
- * showOnHover: показывать поле только при наведении
  * getClassNameByEnableSchedule: параметр для EnableSchedule
  * truncate: {
  * onWidth: схлопывать при указананой ширине
@@ -38,7 +37,6 @@ export interface ColumnModel {
   Header: any;
   accessor: Accessor;
   Cell?: any;
-  showOnHover?: boolean;
   fixedWidth?: number;
   getClassNameByEnableSchedule?: (taskId: number) => string;
   truncate?: {
@@ -67,12 +65,9 @@ export const Task = observer(() => {
     store.init();
   }, []);
 
-  useEffect(
-    () => {
-      if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
-    },
-    [gridWrap, store.isLoading]
-  );
+  useEffect(() => {
+    if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
+  }, [gridWrap, store.isLoading]);
 
   const gridColumns = React.useMemo<Column<ColumnModel>[]>(
     () => [
@@ -179,12 +174,20 @@ export const Task = observer(() => {
       },
       {
         Header: "",
-        accessor: " ",
-        showOnHover: true,
+        accessor: "IsCancellationRequested",
         className: "grid__rerun-cell",
         Cell: (cellProps: any) => {
-          const Id = cellProps.row.values.Id;
-          return <RerunGridCell id={Id} method={store.fetchRerunTask} />;
+          const { Id, StateId, IsCancellationRequested } = cellProps.row.values;
+          console.log(IsCancellationRequested);
+          return (
+            <RerunGridCell
+              id={Id}
+              onRerun={store.fetchRerunTask}
+              stateId={StateId}
+              onCancel={store.fetchCancelRerun}
+              IsCancellationRequested={IsCancellationRequested}
+            />
+          );
         }
       }
     ],

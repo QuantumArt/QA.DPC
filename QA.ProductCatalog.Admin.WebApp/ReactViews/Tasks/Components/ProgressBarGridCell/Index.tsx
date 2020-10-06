@@ -11,8 +11,12 @@ interface IProgressBarProps {
   stripes: boolean;
   intent: Intent;
 }
+interface IProps {
+  value: number;
+  stateId: number;
+}
 
-export const ProgressBarGridCell = ({ value, stateId }: { value: number; stateId: number }) => {
+export const ProgressBarGridCell = React.memo(({ value, stateId }: IProps) => {
   if (value !== 0 && !value) return null;
   const progressBarProps: IProgressBarProps = {
     value: value,
@@ -21,12 +25,9 @@ export const ProgressBarGridCell = ({ value, stateId }: { value: number; stateId
     stripes: false
   };
   if (stateId === TaskStatuses.Cancelled || stateId === TaskStatuses.Error) return null;
-
-  switch (true) {
-    case stateId === TaskStatuses.Progress:
-      progressBarProps.animate = true;
-      progressBarProps.stripes = true;
-      break;
+  if (stateId === TaskStatuses.Progress) {
+    progressBarProps.animate = true;
+    progressBarProps.stripes = true;
   }
 
   return (
@@ -39,4 +40,4 @@ export const ProgressBarGridCell = ({ value, stateId }: { value: number; stateId
       />
     </div>
   );
-};
+});

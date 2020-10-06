@@ -37,13 +37,28 @@ class ApiService extends BaseApiService {
    *
    * @param taskId id задачи
    */
-  fetchRerunTask = async (taskId: number): Promise<void> => {
+  fetchRerunTask = async (taskId: number): Promise<boolean> => {
     const queryStr: string = qs.stringify({
       taskId
     });
     const requestUrl = `${this.rootUrl}/Task/Rerun?${queryStr}`;
     const response = await fetch(requestUrl, { method: "POST" });
     throwOnExpiredSession(response.status);
+    return await this.mapResponse<boolean, boolean>(response, x => x);
+  };
+  /**
+   * POST /​Task/Rerun
+   *
+   * @param taskId id задачи
+   */
+  fetchCancelTask = async (taskId: number): Promise<boolean> => {
+    const queryStr: string = qs.stringify({
+      taskId
+    });
+    const requestUrl = `${this.rootUrl}/Task/Cancel?${queryStr}`;
+    const response = await fetch(requestUrl, { method: "POST" });
+    throwOnExpiredSession(response.status);
+    return await this.mapResponse<boolean, boolean>(response, x => x);
   };
 
   /**

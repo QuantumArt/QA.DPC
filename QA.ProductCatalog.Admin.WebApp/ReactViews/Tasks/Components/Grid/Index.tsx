@@ -89,7 +89,6 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                       return (
                         <div
                           className={cn("inside-cell", {
-                            "inside-cell--hidden": cell.column.showOnHover,
                             "bp3-skeleton truncate-cell": isLoading
                           })}
                         >

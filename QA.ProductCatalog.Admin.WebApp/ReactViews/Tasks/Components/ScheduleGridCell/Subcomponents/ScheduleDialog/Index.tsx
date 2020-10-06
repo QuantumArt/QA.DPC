@@ -66,7 +66,8 @@ export const ScheduleDialog = ({
     close,
     apply,
     week,
-    all
+    all,
+    cronParseError
   } = window.task.schedule;
 
   const [taskSetType, setTaskSetType] = useState(ScheduleType.Repeat);
@@ -301,7 +302,7 @@ export const ScheduleDialog = ({
   ];
 
   const renderSelectsUiPart = () => {
-    if (isCronsParseError) return "Ошибка обработки cronExpression";
+    if (isCronsParseError) return cronParseError;
     return (
       <>
         <SelectRow>
