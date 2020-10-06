@@ -1,10 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
+
 
 
 // Setting ComVisible to false makes the types in this assembly not visible 

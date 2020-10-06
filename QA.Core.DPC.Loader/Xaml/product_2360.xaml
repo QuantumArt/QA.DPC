@@ -436,8 +436,7 @@
                         <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID2
-                                        <x:Key>2205</x:Key>
+                                    <x:Reference x:Key="2205">__ReferenceID2
                                     </x:Reference>
                                     <Article x:Key="2208" x:Name="__ReferenceID8" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T15:59:07.727" Id="2208" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                         <Article.Fields>
@@ -549,8 +548,7 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID7
-                                        <x:Key>2516</x:Key>
+                                    <x:Reference x:Key="2516">__ReferenceID7
                                     </x:Reference>
                                     <Article x:Key="2519" x:Name="__ReferenceID12" Archived="False" ContentDisplayName="Модификаторы базовых параметров продукта" ContentId="339" ContentName="BaseParameterModifier" Created="2014-04-16T19:46:05.387" Id="2519" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                         <Article.Fields>
@@ -589,8 +587,7 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID7
-                                        <x:Key>2516</x:Key>
+                                    <x:Reference x:Key="2516">__ReferenceID7
                                     </x:Reference>
                                     <Article x:Key="2520" x:Name="__ReferenceID13" Archived="False" ContentDisplayName="Модификаторы базовых параметров продукта" ContentId="339" ContentName="BaseParameterModifier" Created="2014-04-16T19:48:31.75" Id="2520" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                         <Article.Fields>
@@ -641,11 +638,9 @@
                         <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID2
-                                        <x:Key>2205</x:Key>
+                                    <x:Reference x:Key="2205">__ReferenceID2
                                     </x:Reference>
-                                    <x:Reference>__ReferenceID8
-                                        <x:Key>2208</x:Key>
+                                    <x:Reference x:Key="2208">__ReferenceID8
                                     </x:Reference>
                                 </scg:Dictionary>
                             </MultiArticleField.Items>
@@ -808,11 +803,9 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID7
-                                        <x:Key>2516</x:Key>
+                                    <x:Reference x:Key="2516">__ReferenceID7
                                     </x:Reference>
-                                    <x:Reference>__ReferenceID10
-                                        <x:Key>2518</x:Key>
+                                    <x:Reference x:Key="2518">__ReferenceID10
                                     </x:Reference>
                                 </scg:Dictionary>
                             </MultiArticleField.Items>
@@ -843,11 +836,9 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID7
-                                        <x:Key>2516</x:Key>
+                                    <x:Reference x:Key="2516">__ReferenceID7
                                     </x:Reference>
-                                    <x:Reference>__ReferenceID12
-                                        <x:Key>2519</x:Key>
+                                    <x:Reference x:Key="2519">__ReferenceID12
                                     </x:Reference>
                                 </scg:Dictionary>
                             </MultiArticleField.Items>
@@ -878,11 +869,9 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID7
-                                        <x:Key>2516</x:Key>
+                                    <x:Reference x:Key="2516">__ReferenceID7
                                     </x:Reference>
-                                    <x:Reference>__ReferenceID13
-                                        <x:Key>2520</x:Key>
+                                    <x:Reference x:Key="2520">__ReferenceID13
                                     </x:Reference>
                                 </scg:Dictionary>
                             </MultiArticleField.Items>
@@ -913,8 +902,7 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID14
-                                        <x:Key>2514</x:Key>
+                                    <x:Reference x:Key="2514">__ReferenceID14
                                     </x:Reference>
                                 </scg:Dictionary>
                             </MultiArticleField.Items>
@@ -1407,8 +1395,7 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID7
-                                        <x:Key>2516</x:Key>
+                                    <x:Reference x:Key="2516">__ReferenceID7
                                     </x:Reference>
                                 </scg:Dictionary>
                             </MultiArticleField.Items>
@@ -1455,8 +1442,7 @@
                         <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                    <x:Reference>__ReferenceID14
-                                        <x:Key>2514</x:Key>
+                                    <x:Reference x:Key="2514">__ReferenceID14
                                     </x:Reference>
                                 </scg:Dictionary>
                             </MultiArticleField.Items>
@@ -2043,8 +2029,7 @@
                                         <MultiArticleField x:Key="Modifiers" ContentId="307" FieldDisplayName="Modifiers" FieldId="1376" FieldName="Modifiers">
                                             <MultiArticleField.Items>
                                                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                                                    <x:Reference>__ReferenceID27
-                                                        <x:Key>2410</x:Key>
+                                                    <x:Reference x:Key="2410">__ReferenceID27
                                                     </x:Reference>
                                                     <Article x:Key="2411" Archived="False" ContentDisplayName="Модификаторы связей" ContentId="331" ContentName="ProductRelationModifier" Created="2014-04-14T20:36:12.55" Id="2411" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                                         <Article.Fields>

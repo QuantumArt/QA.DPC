@@ -35,7 +35,7 @@ namespace QA.Core.DPC.Formatters.Formatting
             var response = context.HttpContext.Response;
             IServiceProvider serviceProvider = context.HttpContext.RequestServices;
             var formatter = (IFormatter<T>)serviceProvider.GetService(typeof(TF));
-            await response.WriteAsync(formatter.Serialize((T)context.Object));
+            await formatter.Write(response.Body, (T)context.Object);
         }
     }
 }

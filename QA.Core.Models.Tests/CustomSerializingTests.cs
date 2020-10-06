@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Xaml;
 using NUnit.Framework;
+using Portable.Xaml;
 using QA.Core.DPC.UI;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Tests.Controls;

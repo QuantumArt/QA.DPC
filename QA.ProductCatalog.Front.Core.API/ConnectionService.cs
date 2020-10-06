@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -28,16 +29,23 @@ namespace QA.ProductCatalog.Front.Core.API
 
         public async Task<Customer> GetCustomer()
         {
-            string customerCode = _context.GetRouteData().Values.ContainsKey("customerCode") 
+            var connectionString = _options.DesignConnectionString ?? _options.FixedConnectionString;
+            
+            var customerCode = _context.GetRouteData().Values.ContainsKey("customerCode") 
                 ? _context.GetRouteData().Values["customerCode"].ToString() 
                 : _context.Request.Query["customerCode"].FirstOrDefault();
             
-            if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key)
+            if (string.IsNullOrEmpty(connectionString) && string.IsNullOrWhiteSpace(customerCode))
+            {
+                throw new ApplicationException("Customer code or connection string is not defined");
+            }
+            
+            if (!string.IsNullOrEmpty(connectionString))
             {
                 return new Customer
                 {
-                    ConnectionString = _options.DesignConnectionString ?? _options.FixedConnectionString,
-                    CustomerCode = customerCode,
+                    ConnectionString = connectionString,
+                    CustomerCode = _options.FixedCustomerCode,
                     DatabaseType = _options.UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
                 };
             }

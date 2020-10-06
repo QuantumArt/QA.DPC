@@ -15,7 +15,8 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
  using System.Collections.Generic;
  using Microsoft.EntityFrameworkCore;
-using QA.Configuration;
+ using Microsoft.Extensions.Logging;
+ using QA.Configuration;
 using QA.Core.DPC.Service;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
@@ -23,7 +24,8 @@ using QA.ProductCatalog.Infrastructure;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
-using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
+ using ILogger = QA.Core.Logger.ILogger;
+ using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
 using IUserProvider = QA.ProductCatalog.ContentProviders.IUserProvider;
 using NotificationChannel = QA.ProductCatalog.ContentProviders.NotificationChannel;
 using INotificationChannelService = QA.ProductCatalog.ContentProviders.INotificationChannelService;
@@ -42,6 +44,10 @@ namespace QA.Core.DPC
 
 		public static IUnityContainer RegisterTypes(IUnityContainer unityContainer, NotificationProperties props)
 		{
+			//fix Diagnostic extension
+			unityContainer.RegisterType<ILoggerFactory, LoggerFactory>(
+				new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>())
+			);
 			unityContainer.AddExtension(new Diagnostic());
 			
 			unityContainer.RegisterType<IConnectionProvider, CoreConnectionProvider>();

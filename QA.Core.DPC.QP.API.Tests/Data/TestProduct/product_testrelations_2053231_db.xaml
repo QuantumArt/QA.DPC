@@ -64,8 +64,7 @@
             </BackwardArticleField.CustomProperties>
             <BackwardArticleField.Items>
                 <scg:Dictionary x:TypeArguments="x:Int32, Article">
-                    <x:Reference>__ReferenceID0
-                        <x:Key>2053229</x:Key>
+                    <x:Reference x:Key="2053229">__ReferenceID0
                     </x:Reference>
                 </scg:Dictionary>
             </BackwardArticleField.Items>

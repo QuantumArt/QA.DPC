@@ -135,7 +135,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                     )
                 )
                 ORDER BY ID {_pgForUpdateHint} {PgTop(1)}";
-                var task = context.Tasks.FromSql(sql, State.New, State.Running).SingleOrDefault();
+                var task = context.Tasks.FromSqlRaw(sql, State.New, State.Running).SingleOrDefault();
 
                 if (task == null)
                     return null;
@@ -179,13 +179,13 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         public Task GetTaskWithUpdateLock(TaskRunnerEntities ctx, int id)
         {
             var sql = $@"SELECT * FROM tasks {_sqlForUpdateHint} where id = {{0}} {_pgForUpdateHint}";
-            return ctx.Tasks.FromSql(sql, id).SingleOrDefault();
+            return ctx.Tasks.FromSqlRaw(sql, id).SingleOrDefault();
         }
         
         public Task GetTaskWithNoLock(TaskRunnerEntities ctx, int id)
         {
             var sql = $@"SELECT * FROM tasks {_sqlNolockHint} where id = {{0}}";
-            return ctx.Tasks.FromSql(sql, id).SingleOrDefault();
+            return ctx.Tasks.FromSqlRaw(sql, id).SingleOrDefault();
         }
 
 
@@ -353,7 +353,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 var sql =
                     ($@"UPDATE tasks {_sqlUpdateHint} SET {_stateId}={{0}} WHERE {_isCancellationRequested} = 1 AND {_stateId}={{1}}");
                 var fString = FormattableStringFactory.Create(sql, State.Cancelled, State.Running);
-                context.Database.ExecuteSqlCommand(fString);
+                context.Database.ExecuteSqlInterpolated(fString);
             }
         }
 
@@ -431,7 +431,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             {
                 var sql = ($@"UPDATE tasks SET {_isCancellationRequested} = 1 WHERE id = {{0}} AND {_stateId}={{1}}");
                 var fString = FormattableStringFactory.Create(sql, id, State.Running);
-                var rowsAffected = context.Database.ExecuteSqlCommand(fString);
+                var rowsAffected = context.Database.ExecuteSqlInterpolated(fString);
                 return rowsAffected == 1;            
             }
         }
@@ -440,7 +440,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
-                context.Database.ExecuteSqlCommand(
+                context.Database.ExecuteSqlInterpolated(
                     $@"UPDATE tasks SET progress={progress} WHERE id={id}"
                 );             
             }

@@ -20,7 +20,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Binders
             {
                 if (TryGetValue(bindingContext, "CachePeriod", out TimeSpan cachePeriod))
                 {
-                    XmlMappingBehavior.SetCachePeriod(content, cachePeriod);
+                    content.CachePeriod = cachePeriod;
                 }
             }
             if (TryGetValue(bindingContext, nameof(Content.IsReadOnly), out bool isReadOnly))

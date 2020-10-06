@@ -46,11 +46,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             _cacheItemWatcher.TrackChanges();
 
-            var definitionXml = contentItemId.HasValue
-                ? _contentDefinitionService.GetDefinitionXml(contentItemId.Value)
-                : contentId.HasValue
-                    ? XamlConfigurationParser.CreateFromObject(new Content { ContentId = contentId.Value })
-                    : string.Empty;
+			var definitionXml = contentItemId.HasValue
+				? _contentDefinitionService.GetDefinitionXml(contentItemId.Value)
+				: contentId.HasValue
+					? XamlConfigurationParser.Save(new Content {ContentId = contentId.Value})
+					: string.Empty;
 
             if (beta)
             {
@@ -159,7 +159,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             var savedField = _definitionEditorService.UpdateOrDeleteField(rootContent, defInfo.GetField(), defInfo.Path, !defInfo.InDefinition);
 
-            string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+			string resultXml = XamlConfigurationParser.Save(rootContent);
 
             ModelState.Clear();
 
@@ -208,8 +208,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 }
             }
 
-            string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
-
+			string resultXml = XamlConfigurationParser.Save(rootContent);
+            
 
             ModelState.Clear();
 

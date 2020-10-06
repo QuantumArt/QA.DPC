@@ -1,21 +1,20 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using QA.Core.DPC.QP.API.Tests.Providers;
 using System.Collections;
-using System.Data.Linq.Mapping;
-using DataAttribute = System.Data.Linq.Mapping.DataAttribute;
 
 namespace QA.Core.DPC.QP.API.Tests.Attributes
 {
-    public class ParameterAttribute : DataAttribute, IParameterDataSource
+    public class ParameterAttribute : Attribute, IParameterDataSource
     {
-        private readonly string _paremeter;
+        private readonly string _parameter;
         private JArray _configuration;
 
-        public ParameterAttribute(string paremeter)
+        public ParameterAttribute(string parameter)
         {
-            _paremeter = paremeter;
+            _parameter = parameter;
             _configuration = ProviderBase.GetJson<JArray>($"QA.Core.DPC.QP.API.Tests.configuration.json");
         }
 
@@ -23,7 +22,7 @@ namespace QA.Core.DPC.QP.API.Tests.Attributes
         {
             foreach (var item in _configuration)
             {
-                yield return item.Value<string>(_paremeter);
+                yield return item.Value<string>(_parameter);
             }
         }
     }

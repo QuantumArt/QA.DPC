@@ -1,5 +1,4 @@
-﻿#if !NETSTANDARD
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using QA.Core.DocumentGenerator;
@@ -11,9 +10,9 @@ namespace QA.Core.DPC.Formatters.Services
 	public class PdfProductFormatter : IFormatter<Article>
 	{
 		private readonly IDocumentGenerator _documentGenerator;
-		private readonly IFormatter<Article> _xmlFormatter;
+		private readonly XmlProductFormatter _xmlFormatter;
 
-		public PdfProductFormatter(IDocumentGenerator documentGenerator, IFormatter<Article> xmlFormatter)
+		public PdfProductFormatter(IDocumentGenerator documentGenerator, XmlProductFormatter xmlFormatter)
 		{
 			_documentGenerator = documentGenerator;
 			_xmlFormatter = xmlFormatter;
@@ -39,14 +38,6 @@ namespace QA.Core.DPC.Formatters.Services
 					pdfStream.Position = 0;
 					await pdfStream.CopyToAsync(stream);
 				}
-
-				/*
-				 //Does not work. Why?
-				using (var xmlReader = new StreamReader(xmlStream))
-				{
-					_documentGenerator.SaveAsPdf(xmlReader.ReadToEnd(), null, stream);
-				}*/
-				
 			}
 		}
 
@@ -56,4 +47,3 @@ namespace QA.Core.DPC.Formatters.Services
 		}
 	}
 }
-#endif

@@ -16,9 +16,9 @@ using QA.Core.ProductCatalog.Actions;
 using Unity;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
 using Swashbuckle.AspNetCore.Swagger;
-
+using Microsoft.OpenApi.Models;
 
 namespace QA.Core.DPC
 {
@@ -61,7 +61,7 @@ namespace QA.Core.DPC
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info
+                c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Notification API", 
                     Version = "v1",
@@ -70,8 +70,10 @@ namespace QA.Core.DPC
             });
 
             services
-                .AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .AddMvc(opts =>
+                {
+                    opts.EnableEndpointRouting = false;
+                }).AddControllersAsServices();
             
             
             
@@ -79,7 +81,7 @@ namespace QA.Core.DPC
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {

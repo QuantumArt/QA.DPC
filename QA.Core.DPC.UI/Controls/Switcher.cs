@@ -1,8 +1,4 @@
-﻿#if NETSTANDARD
-using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
+﻿using Portable.Xaml.Markup;
 using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI.Controls

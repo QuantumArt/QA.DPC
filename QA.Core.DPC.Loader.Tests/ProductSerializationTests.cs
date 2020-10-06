@@ -29,7 +29,7 @@ namespace QA.Core.DPC.Loader.Tests
             st.Stop();
 
             Debug.WriteLine(st.Elapsed);
-            XamlConfigurationParser.CreateFromObject(resultArticle);
+            XamlConfigurationParser.Save(resultArticle);
             File.ReadAllText("TestData\\ReferenceDto.xaml");
         }
 
@@ -40,7 +40,7 @@ namespace QA.Core.DPC.Loader.Tests
             var defStr = File.ReadAllText("TestData\\ProductDefinition.xaml");
             var json = File.ReadAllText("TestData\\ProductJson.js");
             var resultArticle = jsonProductService.DeserializeProduct(json, (Content)XamlConfigurationParser.CreateFrom(defStr));
-            var resultXaml = XamlConfigurationParser.CreateFromObject(resultArticle);
+            var resultXaml = XamlConfigurationParser.Save(resultArticle);
             var referenceXaml = File.ReadAllText("TestData\\ReferenceDto.xaml");
             Assert.AreEqual(resultXaml, referenceXaml);
         }
@@ -68,7 +68,7 @@ namespace QA.Core.DPC.Loader.Tests
         {
             var productService = ObjectFactoryBase.Resolve<IProductService>();
             var article = productService.GetProductById(2166354);
-            XamlConfigurationParser.CreateFromObject(article);
+            XamlConfigurationParser.Save(article);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace QA.Core.Models.Tests
     [TestFixture]
     public class ProductControlsTests
     {
-        [Test]
+        [Test]  
         public void Test_Entity_Editor()
         {
             Run(() =>

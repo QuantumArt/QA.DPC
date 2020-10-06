@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Xml.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -25,7 +26,8 @@ namespace QA.ProductCatalog.WebApi.Filters
                 string content;
                 using (var ms = new MemoryStream())
                 {
-                    new DataContractSerializer(exception.GetType()).WriteObject(ms, exception);
+                    var error = new Error(exception);
+                    new XmlSerializer(error.GetType()).Serialize(ms, error);
                     content = Encoding.UTF8.GetString(ms.ToArray());
                 }
                 context.Result = new ContentResult() {ContentType = WebApiConstants.XmlMediaType, Content = content};

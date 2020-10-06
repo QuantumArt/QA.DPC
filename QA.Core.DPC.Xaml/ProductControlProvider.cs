@@ -30,7 +30,7 @@ namespace QA.Core.DPC.Xaml
             {
                 Throws.IfNot(stream != null, "The requested file is not found in embedded resource.");
                 // создаем экземпляр 
-                return (T)XamlConfigurationParser.CreateFrom(stream);
+                return (T)XamlConfigurationParser.LoadFrom(stream);
             }
         }
 

@@ -1,8 +1,5 @@
-﻿#if NETSTANDARD
-using Portable.Xaml;
-#else
-using System.Xaml;
-#endif
+﻿using Portable.Xaml;
+using QA.Configuration;
 using QA.Core.Models.Configuration;
 
 namespace QA.Core.Models.Tools
@@ -11,12 +8,12 @@ namespace QA.Core.Models.Tools
     {
         public static string GetXml<T>(T content)
         {
-            return XamlServices.Save(content);
+            return XamlConfigurationParser.Save(content);
         }
 
         public static Content GetContent(string text)
         {
-            return (Content)XamlServices.Parse(text);
+            return (Content)XamlConfigurationParser.CreateFrom(text);
         }
     }
 }
