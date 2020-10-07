@@ -7,7 +7,6 @@ import Store from "./HighloadFrontStore";
 import { l } from "./Localization";
 import { ProgressBar } from "Shared/Components";
 import "./Style.scss";
-import { intentClass } from '@blueprintjs/core/lib/esm/common/classes';
 
 type Props = {
   store: Store;

@@ -9,7 +9,7 @@ export default interface TaskItem {
   TaskId: number;
   TaskState: TaskState;
   TaskProgress: number;
-  TaskStart: Date;
+  TaskStart: string; // Date string
   TaskEnd: Date;
-  TaskMessage: string | TaskMessage; // Backend return object as a string, we parse is every time for in-app use
+  TaskMessage: string | TaskMessage; // Backend returns object as a string, we parse is every time for in-app use
 }
