@@ -199,7 +199,17 @@ if ($dbType -eq 0) {
 }
 $validationQuery = "update site set XAML_DICTIONARIES = $replace where XAML_DICTIONARIES like '%$validationPlaceholder%'"
 
-Execute-Sql @cnnParams -query $validationQuery  
+Execute-Sql @cnnParams -query $validationQuery
+
+$localhost = "localhost:5250"
+if ($dbType -eq 0) {
+    $replace = "cast(replace(cast(FORM_SCRIPT as nvarchar(max)), '$localhost', '$adminHost') as ntext)"
+} else {
+    $replace = "replace(FORM_SCRIPT, '$localhost', '$adminHost')"
+}
+$formQuery = "update content set FORM_SCRIPT = $replace where FORM_SCRIPT like '%$localhost%'"
+
+Execute-Sql @cnnParams -query $formQuery
  
 Write-Host "Database updated"  
 $savedParams = @{
