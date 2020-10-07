@@ -52,10 +52,6 @@ export const Task = observer(() => {
   const { statusValues } = window.task;
 
   useEffect(() => {
-    store.init();
-  }, []);
-
-  useEffect(() => {
     if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
   }, [gridWrap, store.isLoading]);
 

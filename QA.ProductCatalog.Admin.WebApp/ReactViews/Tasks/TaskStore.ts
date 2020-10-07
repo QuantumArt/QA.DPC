@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction } from "mobx";
+import { action, computed, observable, runInAction, onBecomeObserved } from "mobx";
 import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { apiService } from "Tasks/ApiServices";
@@ -11,6 +11,7 @@ import {
 } from "Tasks/Constants";
 import { setBrowserNotifications } from "Shared/Utils";
 import { l } from "Tasks/Localization";
+import { differenceWith, isEqual } from "lodash";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
@@ -83,18 +84,19 @@ export class Filter {
 }
 
 export class TaskStore {
+  constructor() {
+    onBecomeObserved(this, "gridData", this.init);
+  }
   private isUpdateRateRequestsPending: boolean = false;
   private alreadyNotifiedTaskIds: { [x: number]: boolean } = {};
-  @observable private gridData: Task[] = [];
+  @observable.ref private gridData: Task[] = [];
   @observable private myLastTask: Task;
   @observable private total: number = 0;
   @observable isLoading: boolean = true;
   @observable pagination: Pagination = new Pagination((operation: PaginationActions) => {
     this.withLoader(() => this.fetchGridData(operation));
   });
-  filterValueMapper = function() {
-    return this.value === ScheduleFilterValues.YES;
-  };
+
   @observable filters: Map<TaskGridFilterType, Filter> = new Map([
     [
       TaskGridFilterType.StatusFilter,
@@ -105,7 +107,9 @@ export class TaskStore {
       new Filter(
         () => this.withLoader(() => this.fetchGridData()),
         "HasSchedule",
-        this.filterValueMapper
+        function() {
+          return this.value === ScheduleFilterValues.YES;
+        }
       )
     ]
   ]);
@@ -182,7 +186,10 @@ export class TaskStore {
 
   @action
   setGridData = (data: Task[]) => {
-    this.gridData = data;
+    const isSameData = differenceWith(data, this.gridData, isEqual).length === 0;
+    if (!isSameData) {
+      this.gridData = data;
+    }
   };
 
   @action
