@@ -20,7 +20,7 @@ const getStringByPeriod = (
   let label = "";
   switch (preiodType) {
     case CronPeriodType.Week:
-      label += `${l("every")} неделю${weekDays}${hours}:${minutes}`;
+      label += `${l("every")} ${l("week")}${weekDays}${hours}:${minutes}`;
       break;
     case CronPeriodType.Month:
       label = `${l("every")} ${l("month")}${monthDays}${hours}:${minutes}`;
