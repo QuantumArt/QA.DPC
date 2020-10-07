@@ -77,7 +77,6 @@ namespace QA.ProductCatalog.Admin.WebApp
                         options.EnableEndpointRouting = false;
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
-                .AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true)
                 .AddXmlSerializerFormatters().AddControllersAsServices().AddNewtonsoftJson();
         }
         

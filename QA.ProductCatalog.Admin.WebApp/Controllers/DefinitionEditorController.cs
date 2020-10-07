@@ -218,7 +218,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             var savedField = _definitionEditorService.UpdateOrDeleteField(rootContent, defInfo.GetField(), defInfo.Path, !defInfo.InDefinition);
 
-            string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+            string resultXml = XamlConfigurationParser.Save(rootContent);
 
             ModelState.Clear();
 
@@ -313,7 +313,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 }
             }
 
-            string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+            string resultXml = XamlConfigurationParser.Save(rootContent);
 
 
             var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out _);
