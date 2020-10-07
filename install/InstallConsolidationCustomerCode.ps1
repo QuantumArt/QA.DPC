@@ -202,14 +202,21 @@ $validationQuery = "update site set XAML_DICTIONARIES = $replace where XAML_DICT
 Execute-Sql @cnnParams -query $validationQuery
 
 $localhost = "localhost:5250"
+$oldCustomerCode = "sber_pg"
+
 if ($dbType -eq 0) {
     $replace = "cast(replace(cast(FORM_SCRIPT as nvarchar(max)), '$localhost', '$adminHost') as ntext)"
+    $replace2 = "cast(replace(cast(FORM_SCRIPT as nvarchar(max)), '$oldCustomerCode', '$customerCode') as ntext)"    
 } else {
     $replace = "replace(FORM_SCRIPT, '$localhost', '$adminHost')"
+    $replace2 = "replace(FORM_SCRIPT, '$oldCustomerCode', '$customerCode')"
 }
 $formQuery = "update content set FORM_SCRIPT = $replace where FORM_SCRIPT like '%$localhost%'"
+$formQuery2 = "update content set FORM_SCRIPT = $replace2 where FORM_SCRIPT like '%$oldCustomerCode%'"
 
 Execute-Sql @cnnParams -query $formQuery
+
+Execute-Sql @cnnParams -query $formQuery2
  
 Write-Host "Database updated"  
 $savedParams = @{
