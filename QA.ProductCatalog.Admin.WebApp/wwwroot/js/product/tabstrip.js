@@ -100,37 +100,37 @@ QA.Product.TabStrip =
 
       findSelected(tabStripElement, defaultItemId, modelUId);
 
-      var resizeAll = function() {
-        resize(tabStripElement);
-      };
+      // var resizeAll = function() {
+      //   resize(tabStripElement);
+      // };
 
-      if (fullSize) {
-        var t = resizeAll;
-        resizeAll = function() {
-          expandContentDivs(tabStripElement.children(".k-content"));
-          resize(tabStripElement);
-        };
+      // if (fullSize) {
+      //   var t = resizeAll;
+      //   resizeAll = function() {
+      //     expandContentDivs(tabStripElement.children(".k-content"));
+      //     resize(tabStripElement);
+      //   };
 
-        var tabStrip = tabStripElement.data("kendoTabStrip");
+      //   var tabStrip = tabStripElement.data("kendoTabStrip");
 
-        var expandContentDivs = function(divs) {
-          divs.height(
-            tabStripElement.innerHeight() -
-              tabStripElement.children(".k-tabstrip-items").outerHeight() -
-              16
-          );
-        };
+      //   var expandContentDivs = function(divs) {
+      //     divs.height(
+      //       tabStripElement.innerHeight() -
+      //         tabStripElement.children(".k-tabstrip-items").outerHeight() -
+      //         16
+      //     );
+      //   };
 
-        tabStripElement.parent().attr("id", "tabstrip-parent");
-      }
+      //   tabStripElement.parent().attr("id", "tabstrip-parent");
+      // }
 
-      $(window).resize(
-        $.throttle(250, function() {
-          resizeAll();
-        })
-      );
+      // $(window).resize(
+      //   $.throttle(250, function() {
+      //     resizeAll();
+      //   })
+      // );
 
-      resizeAll();
+      // resizeAll();
 
       var scrollingTab = localStorage.getItem("activeTabName");
       if (scrollingTab == tabStripElement.data("name")) {

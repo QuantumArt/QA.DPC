@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Global definitions for developement
  * DO NOT IMPORT ANYTHING OR YOU WILL BREAK BUILD PROCESS!
  */
@@ -10,18 +10,18 @@ declare interface Window {
   pmrpc: any;
 
   highloadFront?: {
-    legend: string;
-    customerCode: string;
-    processingIndex: string;
-    culture: string;
-    columnHeaders: {
-      default: string;
-      language: string;
-      type: string;
-      date: string;
-      processing: string;
-      updating: string;
-      progress: string;
+    CustomerCode: string;
+    Culture: string;
+    strings: {
+      Legend: string;
+      ProceedIndexing: string;
+      Default: string;
+      Language: string;
+      Type: string;
+      Date: string;
+      Processing: string;
+      Updating: string;
+      Progress: string;
     };
   };
 

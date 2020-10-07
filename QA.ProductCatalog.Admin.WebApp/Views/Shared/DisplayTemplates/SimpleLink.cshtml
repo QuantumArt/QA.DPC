@@ -13,6 +13,13 @@
 }
 @if (!string.IsNullOrWhiteSpace(Model.IconClass))
 { 
-    <span class="icon @Model.IconClass">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+    <span class="icon bp3-icon-@Model.IconClass">&nbsp;&nbsp;&nbsp;&nbsp;</span>
 }
-<a class="js @Model.ClassName" title="@href" href="@(href)" target="@(Model.OpenInNewWindow ? "_blank" : "")"> @(title)</a>
+<a 
+  class="js @Model.ClassName"
+  title="@href"
+  href="@(href)"
+  target="@(Model.OpenInNewWindow ? "_blank" : "")"
+>
+  @(title)
+</a>

@@ -1,28 +1,14 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-	<title>@(ViewBag.Title ?? "DPC")</title>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <title>@(ViewBag.Title ?? "DPC")</title>
   <meta name="app" content="dpc" />
-  <link href="~/css/site.min.css" rel="stylesheet" />
-	<link href="~/css/blueprint.min.css" rel="stylesheet" />
-  @if (IsSectionDefined("jquery"))
-  {
-    @RenderSection("jquery", true)
-  }
-  else
-  {
-    <text>
-      <script src="~/js/jquery.min.js"></script>
-    </text>	   
-  }
+  <link href="~/css/blueprint.min.css" rel="stylesheet" />
 
-  <script src="~/js/bundles/scripts.min.js"></script>
-  
-	@RenderSection("head", false)
-	<script>
-		Url.SetRootPath("@Url.Content("~/")");
+  @RenderSection("head", false)
+  <script>
 		if (!window.console) {
 			window.console = {};
 			window.console.log = function () { };
@@ -34,12 +20,12 @@
 		<text>
 		  window.name = '@(ViewBag.HostId)';
 		</text>
-		} 
-	</script>
+		}
+  </script>
 </head>
 <body>
-<div class="loadingLayer hidden"></div>
-@RenderBody()
-@RenderSection("scripts", false)
+  <div class="loadingLayer hidden"></div>
+  @RenderBody()
+  @RenderSection("scripts", false)
 </body>
 </html>
