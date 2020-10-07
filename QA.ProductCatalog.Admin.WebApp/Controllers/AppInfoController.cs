@@ -4,10 +4,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
     public class AppInfoController : Controller
     {
-        public ContentResult Index()
+        public ActionResult Index()
         {
-            return Content(System.IO.File.GetLastWriteTime(typeof (AppInfoController).Assembly.Location).ToString());
+            return View();
         }
-
     }
 }

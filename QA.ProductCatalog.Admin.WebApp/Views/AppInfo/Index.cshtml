@@ -1,0 +1,14 @@
+﻿@using System;
+@using QA.ProductCatalog.Admin.WebApp.Controllers;
+
+<div>@Html.Raw(System.IO.File.GetLastWriteTime(typeof(AppInfoController).Assembly.Location).ToString())</div>
+<script>
+  Notification.requestPermission().then(function (result) {
+    console.log(result);
+    if (result === "granted") {
+      window.close();
+    } else if (confirm("You won't be able to get notifications")) {
+      window.close();
+    }
+  });
+</script>

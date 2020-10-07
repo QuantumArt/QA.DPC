@@ -2,9 +2,16 @@ import { observable, action } from "mobx";
 import moment from "moment";
 import { TaskItem, TaskMessage } from "Shared/Types";
 import { TaskState } from "Shared/Enums";
-import { setBrowserNotifications } from "Shared/Utils";
+import { isString } from "lodash";
+import { setBrowserNotifications, checkPermissions } from "Shared/Utils";
 
 export default class HighloadFrontStore {
+
+  constructor() {
+    checkPermissions();
+    this.clearLs();
+  }
+
   @observable private timerId: number;
   @observable tasks: TaskItem[] = [];
 
@@ -16,6 +23,29 @@ export default class HighloadFrontStore {
     this.timerId = value;
   };
 
+  clearLs = () => {
+    for (const item in localStorage) {
+      if (localStorage.hasOwnProperty(item) && isString(item)) {
+        const record = moment(item);
+        const yesterday = moment().subtract(1, 'days');
+        if (record.isValid() && record.isBefore(yesterday)) {
+          localStorage.removeItem(item);
+        }
+      }
+    }
+  }
+
+  sendNoditifaction = (t: TaskItem, m: string) => {
+    if (!localStorage.getItem(t.TaskStart)) {
+      setBrowserNotifications(() => {
+        new Notification(m, {
+          body: `Channel: ${t.ChannelState}`
+        });
+      });
+      localStorage.setItem(t.TaskStart, m);
+    }
+  }
+
   fetchTasks = async (): Promise<void> => {
     const { highloadFront: { CustomerCode } } = window;
     try {
@@ -24,16 +54,22 @@ export default class HighloadFrontStore {
         const res: TaskItem[] = await response.json();
         const tasks = res.map(t => {
           try {
-            t.TaskMessage = JSON.parse(t.TaskMessage as string) as TaskMessage;
-            if (t?.TaskMessage?.IsSuccess) {
-              Notification.requestPermission().then(function(result) {
-                console.log(result);
+            const taskMessage = (t.TaskMessage as unknown) as string;
+            t.TaskMessage = JSON.parse(taskMessage);
+            if (t.TaskState === 3) {
+              const messages = t?.TaskMessage as TaskMessage;
+              console.log(messages);
+              messages.Messages.forEach(m => {
+                this.sendNoditifaction(t, m.Message);
               });
-              setBrowserNotifications(() => {
-                new Notification("kek", {
-                  body: "body"
+            } else if (t.TaskState === 4) {
+              if (isString(t.TaskMessage)) {
+                this.sendNoditifaction(t, `ERROR: ${t.TaskMessage}`);
+              } else {
+                t.TaskMessage.Messages.forEach(m => {
+                  this.sendNoditifaction(t, `ERROR: ${m.Message}`);
                 });
-              });
+              }
             }
           } catch (e) {}
           return t;
