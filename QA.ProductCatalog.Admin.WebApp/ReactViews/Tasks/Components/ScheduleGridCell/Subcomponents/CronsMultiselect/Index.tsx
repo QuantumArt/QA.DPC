@@ -1,7 +1,7 @@
 import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { ItemPredicate, MultiSelect } from "@blueprintjs/select";
 import { MenuItem } from "@blueprintjs/core";
-import { ICronsTagModel, MONTH_UNITS, partToString, UNITS, WEEK_UNITS } from "Shared/Utils";
+import { ICronsTagModel, MONTH_UNITS, partToString, UNITS, WEEK_UNITS } from "Tasks/Utils";
 import _ from "lodash";
 import "./Style.scss";
 import { CronUnitType } from "Shared/Enums";
@@ -23,7 +23,7 @@ export const CronsMultiselect = ({
   parsedCronsModel,
   isShouldClear
 }: ICronsMultiSelectProps) => {
-  const UNIT = UNITS.get(type);
+  const UNIT = React.useMemo(() => UNITS.get(type), [type]);
 
   const items = React.useMemo((): ISelectItem[] => {
     switch (type) {
@@ -65,16 +65,16 @@ export const CronsMultiselect = ({
       default:
         return [];
     }
-  }, []);
+  }, [type, UNIT]);
 
-  const getFromParenState = () => {
+  const getFromParenState = React.useMemo(() => {
     if (!parsedCronsModel) return [];
-    const deep = _.flatten(parsedCronsModel.map(val => val.values));
-    return deep.length ? items.filter(item => deep.includes(item.value)) : [];
-  };
+    const values = _.flatten(parsedCronsModel.map(val => val.values));
+    return values.length ? items.filter(item => values.includes(item.value)) : [];
+  }, [items, parsedCronsModel]);
 
   const [multiSelectValues, setMultiSelectValues] = useState<ISelectItem[] | undefined>(
-    getFromParenState()
+    getFromParenState
   );
 
   const getSelectedItemIndex = (item: ISelectItem): number => {

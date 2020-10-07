@@ -7,7 +7,7 @@ export class Localization {
     }
   }
   public get = (key: string) => {
-    if (this.strings[key]) {
+    if (this.strings[key] !== undefined && this.strings[key] !== null) {
       return this.strings[key];
     } else {
       console.log("No such string");

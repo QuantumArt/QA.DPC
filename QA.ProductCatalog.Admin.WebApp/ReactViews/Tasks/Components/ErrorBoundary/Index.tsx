@@ -1,5 +1,6 @@
 import React from "react";
 import "./Style.scss";
+import { l } from "Tasks/Localization";
 
 export class ErrorBoundary extends React.Component {
   state = { hasError: false };
@@ -13,10 +14,8 @@ export class ErrorBoundary extends React.Component {
   }
 
   render() {
-    const { typicalError } = window.task.schedule;
-
     if (this.state.hasError) {
-      return <h3 className="color-danger ui-error">{typicalError}</h3>;
+      return <h3 className="color-danger ui-error">{l("typicalError")}</h3>;
     }
 
     return this.props.children;

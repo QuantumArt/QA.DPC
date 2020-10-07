@@ -19,11 +19,12 @@ import {
   getValuesFromCronString,
   UNITS,
   getUnitByIndex
-} from "Shared/Utils";
+} from "Tasks/Utils";
 import { useStore } from "Tasks/UseStore";
 import { CronPeriodType, CronUnitType, ScheduleType } from "Shared/Enums";
 import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
 import _ from "lodash";
+import { l } from "Tasks/Localization";
 import "./Style.scss";
 
 interface IProps {
@@ -35,6 +36,20 @@ interface IProps {
   isScheduleEnabled: boolean;
 }
 
+const recurrenceOptions = [
+  { label: l("modeRepeat"), value: ScheduleType.Repeat },
+  { label: l("modeOneTime"), value: ScheduleType.Single }
+];
+
+const periodItems = [
+  { label: l("minute"), value: CronPeriodType.Minute },
+  { label: l("hour"), value: CronPeriodType.Hour },
+  { label: l("day"), value: CronPeriodType.Day },
+  { label: l("week"), value: CronPeriodType.Week },
+  { label: l("month"), value: CronPeriodType.Month },
+  { label: l("year"), value: CronPeriodType.Year }
+];
+
 export const ScheduleDialog = ({
   taskIdNumber,
   scheduleCronExpression,
@@ -44,37 +59,11 @@ export const ScheduleDialog = ({
 }: IProps) => {
   const store = useStore();
 
-  const {
-    taskRecurrenceSchedule,
-    weekDays,
-    monthDays,
-    hours,
-    minutes,
-    minute,
-    hour,
-    day,
-    year,
-    recurrenceMode,
-    modeRepeat,
-    modeOneTime,
-    recurrencePeriod,
-    every,
-    taskId,
-    months,
-    month,
-    scheduleEnabled,
-    close,
-    apply,
-    week,
-    all,
-    cronParseError
-  } = window.task.schedule;
-
-  const [taskSetType, setTaskSetType] = useState(ScheduleType.Repeat);
-  const [isEnable, setIsEnable] = useState(isScheduleEnabled);
-  const [period, setPeriod] = useState(CronPeriodType.Minute);
-  const [isShouldClear, setIsShouldClear] = useState(false);
-  const [isCronsParseError, setIsCronsParseError] = useState(false);
+  const [taskSetType, setTaskSetType] = useState<ScheduleType>(ScheduleType.Repeat);
+  const [isEnable, setIsEnable] = useState<boolean>(isScheduleEnabled);
+  const [period, setPeriod] = useState<CronPeriodType>(CronPeriodType.Minute);
+  const [isShouldClear, setIsShouldClear] = useState<boolean>(false);
+  const [isCronsParseError, setIsCronsParseError] = useState<boolean>(false);
 
   const [monthDaysValues, setMonthDaysValues] = useState<ICronsTagModel[] | undefined>();
   const [monthValues, setMonthValues] = useState<ICronsTagModel[] | undefined>();
@@ -89,6 +78,7 @@ export const ScheduleDialog = ({
     if (scheduleCronExpression && isOpen) {
       try {
         setIsCronsParseError(false);
+        setIsEnable(isScheduleEnabled);
         const cronParts = getValuesFromCronString(scheduleCronExpression);
         if (cronParts.cronParts.length === 5) {
           setPeriod(cronParts.period);
@@ -140,7 +130,7 @@ export const ScheduleDialog = ({
         [
           CronUnitType.MonthDays,
           {
-            label: monthDays,
+            label: l("monthDays"),
             selectProps: {
               isShouldClear,
               parsedCronsModel: monthDaysValues,
@@ -152,7 +142,7 @@ export const ScheduleDialog = ({
         [
           CronUnitType.Months,
           {
-            label: months,
+            label: l("months"),
             selectProps: {
               isShouldClear,
               parsedCronsModel: monthValues,
@@ -164,7 +154,7 @@ export const ScheduleDialog = ({
         [
           CronUnitType.Hours,
           {
-            label: hours,
+            label: l("hours"),
             selectProps: {
               isShouldClear,
               parsedCronsModel: hourValues,
@@ -176,7 +166,7 @@ export const ScheduleDialog = ({
         [
           CronUnitType.Minutes,
           {
-            label: minutes,
+            label: l("minutes"),
             selectProps: {
               isShouldClear,
               parsedCronsModel: minuteValues,
@@ -188,7 +178,7 @@ export const ScheduleDialog = ({
         [
           CronUnitType.WeekDays,
           {
-            label: weekDays,
+            label: l("weekDays"),
             selectProps: {
               isShouldClear,
               parsedCronsModel: weekDaysValues,
@@ -256,7 +246,7 @@ export const ScheduleDialog = ({
       if (!model || !model.length) return "*";
       return model
         .map((val, index) =>
-          val.label === all
+          val.label === l("all")
             ? "*"
             : partToString(
                 _.flatten(model.map(x => x.values)).sort(),
@@ -292,23 +282,14 @@ export const ScheduleDialog = ({
     setMinuteValues(undefined);
   };
 
-  const periodItems = [
-    { label: minute, value: CronPeriodType.Minute },
-    { label: hour, value: CronPeriodType.Hour },
-    { label: day, value: CronPeriodType.Day },
-    { label: week, value: CronPeriodType.Week },
-    { label: month, value: CronPeriodType.Month },
-    { label: year, value: CronPeriodType.Year }
-  ];
-
   const renderSelectsUiPart = () => {
-    if (isCronsParseError) return cronParseError;
+    if (isCronsParseError) return l("cronParseError");
     return (
       <>
         <SelectRow>
           <Switch
             alignIndicator={"left"}
-            labelElement={scheduleEnabled}
+            labelElement={l("scheduleEnabled")}
             checked={isEnable}
             className="schedule-popup__switch"
             onChange={(): void => {
@@ -317,7 +298,7 @@ export const ScheduleDialog = ({
           />
         </SelectRow>
 
-        <SelectRow label={recurrenceMode}>
+        <SelectRow label={l("recurrenceMode")}>
           <HTMLSelect
             className="schedule-popup__select"
             iconProps={{ icon: "caret-down" }}
@@ -326,17 +307,14 @@ export const ScheduleDialog = ({
               setTaskSetType(event.target.value as ScheduleType);
               clearValues();
             }}
-            options={[
-              { label: modeRepeat, value: ScheduleType.Repeat },
-              { label: modeOneTime, value: ScheduleType.Single }
-            ]}
+            options={recurrenceOptions}
           />
         </SelectRow>
 
         {taskSetType === ScheduleType.Repeat && (
-          <SelectRow label={recurrencePeriod}>
+          <SelectRow label={l("recurrencePeriod")}>
             <>
-              <span className="just-label">{every}</span>
+              <span className="just-label">{l("every")}</span>
               {"   "}
               <HTMLSelect
                 className="schedule-popup__select schedule-popup__select--inline"
@@ -393,10 +371,10 @@ export const ScheduleDialog = ({
   const renderDialogButtons = () => {
     return (
       <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-        <Button onClick={closeDialogCb}>{close}</Button>
+        <Button onClick={closeDialogCb}>{l("close")}</Button>
         {!isCronsParseError && (
           <AnchorButton intent={Intent.PRIMARY} onClick={acceptSchedule}>
-            {apply}
+            {l("apply")}
           </AnchorButton>
         )}
       </div>
@@ -409,11 +387,11 @@ export const ScheduleDialog = ({
         className="schedule-popup"
         icon="calendar"
         onClose={closeDialogCb}
-        title={taskRecurrenceSchedule}
+        title={l("taskRecurrenceSchedule")}
         isOpen={isOpen}
       >
         <div className={cn(Classes.DIALOG_BODY, "schedule-popup__body")}>
-          <SelectRow label={taskId}>
+          <SelectRow label={l("taskId")}>
             <InputGroup disabled={true} value={String(taskIdNumber)} />
           </SelectRow>
 

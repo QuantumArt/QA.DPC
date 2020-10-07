@@ -8,7 +8,10 @@
 @section scripts{
   <script type="text/javascript" defer>
     window.task = {
-      tableFields: {
+      statusValues: [
+      @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
+      ],
+      strings: {
         userName: '@Html.Raw(TaskStrings.UserName)',
         status: '@Html.Raw(TaskStrings.Status)',
         schedule: '@Html.Raw(TaskStrings.Schedule)',
@@ -17,14 +20,10 @@
         created: '@Html.Raw(TaskStrings.Created)',
         lastStatusChange: '@Html.Raw(TaskStrings.LastStatusChange)',
         message: '@Html.Raw(TaskStrings.Message)',
-      },
-      gridFiltersDefinitions: {
         isFalse: '@Html.Raw(TaskStrings.No)',
         isTrue: '@Html.Raw(TaskStrings.Yes)',
         filter: '@Html.Raw(TaskStrings.Apply)',
-        clear: '@Html.Raw(TaskStrings.Clear)'
-      },
-      schedule: {
+        clear: '@Html.Raw(TaskStrings.Clear)',
         every: '@Html.Raw(TaskStrings.Every)',
         year: '@Html.Raw(TaskStrings.Year)',
         hour: '@Html.Raw(TaskStrings.Hour)',
@@ -62,18 +61,32 @@
         cronParseError: '@Html.Raw(TaskStrings.CronParseError)',
         typicalError: '@Html.Raw(TaskStrings.TypicalError)',
         all: '@Html.Raw(TaskStrings.All)',
-      },
-      other: {
-        statusValues: [
-        @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
-        ],
+        sun: '@Html.Raw(TaskStrings.Sun)',
+        mon: '@Html.Raw(TaskStrings.Mon)',
+        tue: '@Html.Raw(TaskStrings.Tue)',
+        wed: '@Html.Raw(TaskStrings.Wed)',
+        thu: '@Html.Raw(TaskStrings.Thu)',
+        fri: '@Html.Raw(TaskStrings.Fri)',
+        sat: '@Html.Raw(TaskStrings.Sat)',
+        jan: '@Html.Raw(TaskStrings.Jan)',
+        feb: '@Html.Raw(TaskStrings.Feb)',
+        mar: '@Html.Raw(TaskStrings.Mar)',
+        apr: '@Html.Raw(TaskStrings.Apr)',
+        may: '@Html.Raw(TaskStrings.May)',
+        jun: '@Html.Raw(TaskStrings.Jun)',
+        jul: '@Html.Raw(TaskStrings.Jul)',
+        aug: '@Html.Raw(TaskStrings.Aug)',
+        sep: '@Html.Raw(TaskStrings.Sep)',
+        oct: '@Html.Raw(TaskStrings.Oct)',
+        nov: '@Html.Raw(TaskStrings.Nov)',
+        dec: '@Html.Raw(TaskStrings.Dec)',
+        state: "@Html.Raw(TaskStrings.State)",
+        task: "@Html.Raw(TaskStrings.Task) ",
+        proceed: "@Html.Raw(TaskStrings.Processed)",
       },
       notify: {
         isNotifyActive: "@Model.Notify",
         runningStateId: "@((byte) QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)",
-        state: "@(TaskStrings.State)",
-        task: "@(TaskStrings.Task) ",
-        proceed: "@(TaskStrings.Processed)",
         img: '@Url.Content("~/images/TaskStates/")',
         formRenderedServerTime: '@(DateTime.Now)'
       }

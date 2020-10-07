@@ -10,6 +10,7 @@ import {
   SESSION_EXPIRED
 } from "Tasks/Constants";
 import { setBrowserNotifications } from "Shared/Utils";
+import { l } from "Tasks/Localization";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
@@ -48,7 +49,6 @@ export class Pagination {
     });
   };
 }
-declare type filterValueType = string;
 
 export class Filter {
   constructor(onChangeFilter: () => Promise<void>, field: string, getMappedValue?: () => boolean) {
@@ -59,11 +59,11 @@ export class Filter {
   @observable isActive: boolean = false;
   private field: string;
   private operator: string = "eq";
-  value: filterValueType;
+  value: string;
 
   private getMappedValue: () => boolean;
   onChangeFilter: () => Promise<void>;
-  setValue = (value: filterValueType) => {
+  setValue = (value: string) => {
     this.value = value;
   };
 
@@ -118,6 +118,8 @@ export class TaskStore {
   @action
   cyclicFetchGrid = async (): Promise<void> => {
     try {
+      const { isNotifyActive, runningStateId } = window.task.notify;
+
       const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(
         PaginationActions.None
       );
@@ -134,9 +136,9 @@ export class TaskStore {
       this.setTotal(response.totalTasks);
       this.setMyLastTask(response.myLastTask);
 
-      if (window.task.notify.isNotifyActive) {
+      if (isNotifyActive) {
         setBrowserNotifications(() =>
-          this.tasksNotificationsSender(response.tasks, window.task.notify.runningStateId)
+          this.tasksNotificationsSender(response.tasks, runningStateId)
         );
       }
 
@@ -150,7 +152,9 @@ export class TaskStore {
   };
 
   tasksNotificationsSender = (tasks, runningStateId) => {
-    const gridRenderServerTime = new Date(window.task.notify.formRenderedServerTime);
+    const { formRenderedServerTime, img } = window.task.notify;
+
+    const gridRenderServerTime = new Date(formRenderedServerTime);
     const tasksShouldNotify = tasks.filter(task => {
       const lastStatusChangeTime = task.LastStatusChangeTime
         ? new Date(task.LastStatusChangeTime)
@@ -166,15 +170,12 @@ export class TaskStore {
     if (tasksShouldNotify.length) {
       tasksShouldNotify.forEach(task => {
         this.alreadyNotifiedTaskIds[task.Id] = true;
-        let body = `${window.task.notify.state}: ${task.State}`;
+        let body = `${l("state")}: ${task.State}`;
         if (task.Message) body += "\r\n" + task.Message;
-        new Notification(
-          `${window.task.notify.task}${task.DisplayName} ${window.task.notify.proceed}`,
-          {
-            body: body,
-            icon: `${window.task.notify.img}${task.IconName}48.png`
-          }
-        );
+        new Notification(`${l("task")}${task.DisplayName} ${l("proceed")}`, {
+          body: body,
+          icon: `${img}${task.IconName}48.png`
+        });
       });
     }
   };
