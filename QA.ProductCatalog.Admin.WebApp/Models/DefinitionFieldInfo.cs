@@ -92,12 +92,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         private void FillPlainField(PlainField plain)
         {
-            if (SkipCData ?? false)
+            if (SkipCData)
             {
                 plain.CustomProperties[XmlProductService.RenderTextFieldAsXmlName] = true;
             }
 
-            if (LoadLikeImage ?? false)
+            if (LoadLikeImage)
             {
                 plain.CustomProperties[XmlProductService.RenderFileFieldAsImage] = true;
             }
@@ -228,9 +228,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         public IFixedTypeValueConverter Converter { get; set; }
         
-        public bool?  SkipCData { get; set; }
+        public bool SkipCData { get; set; }
         
-        public bool? LoadLikeImage { get; set; }
+        public bool LoadLikeImage { get; set; }
         
         
 	}
