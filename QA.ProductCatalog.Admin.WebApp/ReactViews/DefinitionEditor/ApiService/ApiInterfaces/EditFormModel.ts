@@ -3,6 +3,7 @@ export interface IEditFormModel {
   RelatedContentName: string;
   RelatedContentId: string;
   FieldId: number;
+  ContentId: number;
   CloningMode: number;
   UpdatingMode: number;
   DeletingMode: number;
@@ -29,7 +30,6 @@ export interface IEditFormModel {
   CacheEnabled: boolean;
   AlreadyCachedAsDictionary: boolean;
   ContentName: string;
-  //new added in c#
   RelateTo: string;
   IsClassifier: string;
   RelationConditionDescription: string;

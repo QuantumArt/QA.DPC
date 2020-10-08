@@ -118,7 +118,14 @@ export default class FormStore {
      * если поле FieldType равняется нулю рендерим только поля exceptionFields
      * */
     if (model["FieldType"] === 0) {
-      const exceptionFields = ["InDefinition", "FieldId", "FieldName", "FieldTitle"];
+      const exceptionFields = [
+        "InDefinition",
+        "FieldId",
+        "FieldName",
+        "FieldTitle",
+        "SkipCData",
+        "LoadLikeImage"
+      ];
       return this.getParsedUIModelFromApiFields(model, exceptionFields);
     }
 
