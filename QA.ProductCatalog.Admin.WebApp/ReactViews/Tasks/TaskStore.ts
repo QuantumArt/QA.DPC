@@ -9,7 +9,7 @@ import {
   INIT_PAGINATION_OPTIONS,
   SESSION_EXPIRED
 } from "Tasks/Constants";
-import { setBrowserNotifications } from "Shared/Utils";
+import { checkPermissions, setBrowserNotifications } from "Shared/Utils";
 import { l } from "Tasks/Localization";
 import { differenceWith, isEqual } from "lodash";
 
@@ -58,12 +58,12 @@ export class Filter {
     this.getMappedValue = getMappedValue;
   }
   @observable isActive: boolean = false;
-  private field: string;
+  private readonly field: string;
   private operator: string = "eq";
   value: string;
-
-  private getMappedValue: () => boolean;
+  private readonly getMappedValue: () => boolean;
   onChangeFilter: () => Promise<void>;
+
   setValue = (value: string) => {
     this.value = value;
   };
@@ -85,9 +85,10 @@ export class Filter {
 
 export class TaskStore {
   constructor() {
+    checkPermissions();
     onBecomeObserved(this, "gridData", this.init);
   }
-  private isUpdateRateRequestsPending: boolean = false;
+  private IsPriorityRequestPending: boolean = false;
   private alreadyNotifiedTaskIds: { [x: number]: boolean } = {};
   @observable.ref private gridData: Task[] = [];
   @observable private myLastTask: Task;
@@ -131,7 +132,7 @@ export class TaskStore {
 
       const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
       if (
-        this.isUpdateRateRequestsPending ||
+        this.IsPriorityRequestPending ||
         paginationOptions.skip !== this.pagination.getPaginationOptions.skip
       ) {
         throw "the request already have sent and new response from cyclic fetch will not accept in grid";
@@ -243,21 +244,21 @@ export class TaskStore {
     }
   };
 
-  withIsPendingRequest = async (cb: () => Promise<void>): Promise<void> => {
+  priorityRequestInSameTime = async (cb: () => Promise<void>): Promise<void> => {
     try {
-      this.isUpdateRateRequestsPending = true;
+      this.IsPriorityRequestPending = true;
       await cb();
     } catch (e) {
       console.error(e);
       throw e;
     } finally {
-      this.isUpdateRateRequestsPending = false;
+      this.IsPriorityRequestPending = false;
     }
   };
 
   @action
   fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> =>
-    this.withIsPendingRequest(async () => {
+    this.priorityRequestInSameTime(async () => {
       try {
         const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(operation);
         const filtersOptions = this.getFiltersOptions();
@@ -301,7 +302,7 @@ export class TaskStore {
     cronExpression: string,
     repeatType = "on"
   ): Promise<void> =>
-    this.withIsPendingRequest(async () => {
+    this.priorityRequestInSameTime(async () => {
       try {
         await apiService.fetchSchedule(taskId, isEnabled, cronExpression, repeatType);
         await this.fetchGridData();
