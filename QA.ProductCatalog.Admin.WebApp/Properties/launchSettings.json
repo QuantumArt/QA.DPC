@@ -5,7 +5,8 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev",
-        "ASPNETCORE_URLS": "http://*:5250;https://*:5251"
+        "ASPNETCORE_URLS": "http://*:5250;https://*:5251",
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
       },
       "applicationUrl": "https://localhost:5251/AppInfo"
     }
