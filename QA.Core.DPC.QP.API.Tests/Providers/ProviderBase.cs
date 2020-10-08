@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.IO;
 using System.Reflection;
-using System.Xaml;
+using Portable.Xaml;
+using QA.Configuration;
 
 namespace QA.Core.DPC.QP.API.Tests.Providers
 {
@@ -11,13 +12,13 @@ namespace QA.Core.DPC.QP.API.Tests.Providers
         {
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path))
             {
-                return (T)XamlServices.Load(stream);
+                return (T)XamlConfigurationParser.LoadFrom(stream);
             }
         }
 
         public static void SaveXaml(string path, object data)
         {
-            XamlServices.Save(path, data);
+            XamlConfigurationParser.Save(data);
         }
 
         public static T GetJson<T>(string path)

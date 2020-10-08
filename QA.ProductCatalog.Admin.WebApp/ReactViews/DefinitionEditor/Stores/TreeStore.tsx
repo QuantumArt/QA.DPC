@@ -16,13 +16,11 @@ export default class TreeStore {
     when(
       () => this.xmlEditorStore.rootId != null,
       async () => {
-        await this.getDefinitionLevel();
+        await this.withLogError(async () => await this.getDefinitionLevel());
         await this.onNodeExpand(this.tree[0]);
       }
     );
   };
-
-  submitFormSyntheticEvent;
   @observable operationState: OperationState = OperationState.None;
 
   @observable errorText: string = null;
@@ -32,6 +30,11 @@ export default class TreeStore {
   @observable private selectedNodeId: string = null;
 
   setSelectedNodeId: (id: string) => void = null;
+
+  @action
+  setSelectedNodeIdInUI = () => {
+    if (this.selectedNodeId) this.nodesMap.get(this.selectedNodeId).isSelected = true;
+  };
 
   @computed get tree() {
     if (this.xmlEditorStore.rootId && this.nodesMap.has(`/${this.xmlEditorStore.rootId}`)) {
@@ -44,7 +47,9 @@ export default class TreeStore {
   @action
   onNodeExpand = async (node: ITreeNode<Partial<IDefinitionNode>>) => {
     if (node.nodeData.hasChildren && node.childNodes.length === 0) {
-      node.childNodes = await this.getDefinitionLevel(node.id.toString());
+      node.childNodes =
+        (await this.withLogError(async () => await this.getDefinitionLevel(node.id.toString()))) ||
+        [];
     }
     node.isExpanded = true;
     this.setOpenedNodes(node.id);
@@ -89,35 +94,58 @@ export default class TreeStore {
 
   @action
   getDefinitionLevel = async (path?: string): Promise<ITreeNode<Partial<IDefinitionNode>>[]> => {
+    const formData = new FormData();
+    if (path) {
+      formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
+    }
+    const validation = this.xmlEditorStore.validateXml();
+    if (validation !== true) {
+      throw validation;
+    }
+    formData.append("xml", this.xmlEditorStore.xml);
+    this.operationState = OperationState.Pending;
+    const res = await ApiService.getDefinitionLevel(formData);
+    this.xmlEditorStore.setLastLocalSavedXml(this.xmlEditorStore.xml);
+    this.operationState = OperationState.Success;
+    return this.mapTree(res);
+  };
+
+  @action
+  withLogError = async <T extends {}>(cb: () => Promise<T>): Promise<T> => {
     try {
-      const formData = new FormData();
-      if (path) {
-        formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
-      }
-      const validation = this.xmlEditorStore.validateXml();
-      if (validation !== true) {
-        throw validation;
-      }
-      formData.append("xml", this.xmlEditorStore.xml);
-      this.operationState = OperationState.Pending;
-      const res = await ApiService.getDefinitionLevel(formData);
-      this.operationState = OperationState.Success;
-      return this.mapTree(res);
+      return await cb();
     } catch (e) {
-      console.log(e);
-      this.operationState = OperationState.Error;
+      let log: string;
+      console.error(e);
       try {
         if (e.err) {
-          this.errorLog = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
+          log = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
         } else {
-          this.errorLog = (await e.text()) ?? null;
+          log = (await e.text()) ?? null;
         }
       } catch {
       } finally {
-        this.errorText = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
+        const text = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
+        this.setError(text, log);
       }
-      return [];
+      return null;
     }
+  };
+
+  @action
+  getSingleNode = async (path: string): Promise<IDefinitionNode> => {
+    const formData = new FormData();
+    formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
+    const validation = this.xmlEditorStore.validateXml();
+    if (validation !== true) {
+      throw validation;
+    }
+    formData.append("xml", this.xmlEditorStore.xml);
+    this.operationState = OperationState.Pending;
+    const singleNode = await ApiService.getSingleNode(formData);
+    this.xmlEditorStore.setLastLocalSavedXml(this.xmlEditorStore.xml);
+    this.operationState = OperationState.Success;
+    return singleNode;
   };
 
   @action
@@ -140,7 +168,7 @@ export default class TreeStore {
     if (node.IsDictionaries) {
       return {
         label: l("DictionaryCachingSettings"),
-        icon: <Icon icon="cog" intent={Intent.PRIMARY} className={Classes.TREE_NODE_ICON} />,
+        icon: <Icon icon="cog" intent={Intent.PRIMARY} className={Classes.TREE_NODE_ICON} />
       };
     }
     if (node.MissingInQp) {
@@ -151,7 +179,7 @@ export default class TreeStore {
           <Tooltip content={l("MissingInQP")}>
             <Icon icon="warning-sign" intent={Intent.WARNING} />
           </Tooltip>
-        ),
+        )
       };
     }
     if (node.NotInDefinition) {
@@ -168,28 +196,33 @@ export default class TreeStore {
 
     return {
       label: node.text,
-      icon: node.IconName as IconName,
+      icon: node.IconName as IconName
     };
   };
 
   private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
-      this.nodesMap.set(node.Id, {
-        id: node.Id,
-        label: "",
-        isExpanded: false,
-        hasCaret: node.hasChildren,
-        childNodes: [],
-        isSelected: false,
-        ...this.getNodeStatus(node),
-        nodeData: {
-          expanded: node.expanded,
-          hasChildren: node.hasChildren,
-          missingInQp: node.MissingInQp
-        }
-      });
-      return this.nodesMap.get(node.Id);
+      return this.setSingleNode(node);
     });
+  };
+
+  @action
+  setSingleNode = (node: IDefinitionNode): ITreeNode<Partial<IDefinitionNode>> => {
+    this.nodesMap.set(node.Id, {
+      id: node.Id,
+      label: "",
+      isExpanded: false,
+      hasCaret: node.hasChildren,
+      childNodes: [],
+      isSelected: false,
+      ...this.getNodeStatus(node),
+      nodeData: {
+        expanded: node.expanded,
+        hasChildren: node.hasChildren,
+        missingInQp: node.MissingInQp
+      }
+    });
+    return this.nodesMap.get(node.Id);
   };
 
   private gatherSearchString = () => {

@@ -1,10 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
 using QA.Core.Models.Tools;
 
 namespace QA.Core.Models.Configuration

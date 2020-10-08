@@ -1,6 +1,6 @@
 import React from "react";
 import { CronSelectRow } from "Tasks/Components/ScheduleGridCell/Subcomponents";
-import { CronsMultiselect, ICronsMultiSelectProps } from "Shared/Components";
+import { CronsMultiselect, ICronsMultiSelectProps } from "../CronsMultiselect";
 import "./Style.scss";
 
 export interface IMultiSelectForm {

@@ -17,14 +17,16 @@ namespace QA.Core.Models.Tests
                 ContentName = "Продукты",
                 LoadAllPlainFields = true,
             };
-
+            
             var mp = new Content();
+            mp.CachePeriod = TimeSpan.FromMinutes(30);
 
             mp.Fields.Add(new EntityField { FieldName = "Categories"});
             mp.Fields.Add(new EntityField { FieldName = "Family"});
             mp.Fields.Add(new EntityField { FieldName = "Tabs"});
             mp.Fields.Add(new EntityField { FieldName = "MarketingSign"});
             mp.Fields.Add(new EntityField { FieldName = "Modifiers"});
+            
 
             entity.Fields.Add(new EntityField
             {

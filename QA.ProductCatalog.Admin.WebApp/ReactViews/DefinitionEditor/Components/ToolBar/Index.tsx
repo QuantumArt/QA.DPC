@@ -27,7 +27,8 @@ const ToolBar = observer(() => {
             icon={IconNames.CONFIRM}
             type="submit"
             onClick={event => {
-              treeStore.submitFormSyntheticEvent && treeStore.submitFormSyntheticEvent(event);
+              controlsStore.submitFormSyntheticEvent &&
+                controlsStore.submitFormSyntheticEvent(event);
               controlsStore.apply();
             }}
             disabled={treeStore.operationState === OperationState.Pending}
@@ -42,10 +43,7 @@ const ToolBar = observer(() => {
             {l("SaveAndExit")}
           </Button>
           <div className="editor-toolbar__divider" />
-          <Button
-            icon={IconNames.CROSS}
-            onClick={controlsStore.exit}
-          >
+          <Button icon={IconNames.CROSS} onClick={controlsStore.exit}>
             {l("Exit")}
           </Button>
           <Loading
@@ -55,7 +53,7 @@ const ToolBar = observer(() => {
         </ButtonGroup>
         <div
           className="editor-toolbar__xml-controls"
-          style={{ visibility: xmlEditorStore.formMode ? "hidden" : "visible" }}
+          style={{ visibility: controlsStore.formMode ? "hidden" : "visible" }}
         >
           <Switch
             label={l("QueryOnClick")}
@@ -82,12 +80,12 @@ const ToolBar = observer(() => {
         </div>
         {controlsStore.selectedNodeId !== null && (
           <Button
-            icon={xmlEditorStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
+            icon={controlsStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}
-            onClick={xmlEditorStore.toggleFormMode}
+            onClick={controlsStore.onChangeFormMode}
             className="editor-toolbar__form-btn"
           >
-            {xmlEditorStore.formMode ? <span>Редактор кода</span> : <span>Форма</span>}
+            {controlsStore.formMode ? <span>Редактор кода</span> : <span>Форма</span>}
           </Button>
         )}
       </div>

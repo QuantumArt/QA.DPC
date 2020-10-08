@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -48,7 +49,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            services.Configure<QPOptions>(Configuration.GetSection("QP"));    
+            services.Configure<QPOptions>(Configuration.GetSection("QP"));
             
             var props = new IntegrationProperties();
             Configuration.Bind("Integration", props);
@@ -76,14 +77,11 @@ namespace QA.ProductCatalog.Admin.WebApp
                         options.EnableEndpointRouting = false;
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
-                .AddRazorOptions(options => options.AllowRecompilingViewsOnFileChange = true)
-                .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-           
+                .AddXmlSerializerFormatters().AddControllersAsServices().AddNewtonsoftJson();
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
             if (env.IsDevelopment())
             {

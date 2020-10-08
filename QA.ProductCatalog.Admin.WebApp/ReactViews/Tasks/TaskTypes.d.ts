@@ -1,5 +1,6 @@
 declare interface TaskWindowTypes {
-  tableFields: {
+  statusValues: { label: string; value: number }[];
+  strings: {
     userName: string;
     status: number;
     schedule: string;
@@ -8,17 +9,10 @@ declare interface TaskWindowTypes {
     created: string;
     lastStatusChange: string;
     message: string;
-  };
-  gridFiltersDefinitions: {
     isFalse: string;
     isTrue: string;
     filter: string;
     clear: string;
-  };
-  other: {
-    statusValues: { label: string; value: number }[];
-  };
-  schedule: {
     every: string;
     year: string;
     hour: string;
@@ -52,13 +46,37 @@ declare interface TaskWindowTypes {
     weekDays: string;
     close: string;
     apply: string;
+    week: string;
+    all: string;
+    typicalError: string;
+    cronParseError: string;
+    sun: string;
+    mon: string;
+    tue: string;
+    wed: string;
+    thu: string;
+    fri: string;
+    sat: string;
+    jan: string;
+    feb: string;
+    mar: string;
+    apr: string;
+    may: string;
+    jun: string;
+    jul: string;
+    aug: string;
+    sep: string;
+    oct: string;
+    nov: string;
+    dec: string;
+    state: string;
+    task: string;
+    proceed: string;
   };
   notify: {
     isNotifyActive: boolean;
     runningStateId: number;
-    state: string;
-    task: string;
-    proceed: string;
+
     img: string;
     formRenderedServerTime: string;
   };

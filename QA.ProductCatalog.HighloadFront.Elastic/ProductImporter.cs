@@ -131,12 +131,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private async Task<Tuple<string, DateTime>> GetContent(string url)
         {
             url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
-            _logger.LogDebug($"Requesting URL: {url}", url);
+            _logger.LogDebug($"Requesting URL: {url}");
             var client = _factory.CreateClient();
-            client.DefaultRequestHeaders.Accept.Clear();            
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.Timeout = TimeSpan.FromMinutes(5);
             var response = await client.GetAsync(url);
             var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
-            var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogError($"URL {url} failed with code {response.StatusCode}");
+                return new Tuple<string, DateTime>("", modified);
+            }
+            var result = await response.Content.ReadAsStringAsync();
             _logger.LogDebug($"Received {response.StatusCode} for URL: {url}");
             return new Tuple<string, DateTime>(result, modified);
         }
@@ -151,11 +157,21 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private async Task<ProductPostProcessorData> GetProductById(string reindexUrl, int id)
         {
             var relUri = $"{reindexUrl}/{id}";
-            var result = await GetContent(relUri);
-            var obj = JsonConvert.DeserializeObject(result.Item1) as JObject;
+            Tuple<string, DateTime> result;
+            try
+            {
+                result = await GetContent(relUri);
+            }
+            catch (TaskCanceledException)
+            {
+                _logger.LogError($"Cannot get product {id} with url {relUri}");
+                return null;
+            }
+
+            var obj = !string.IsNullOrEmpty(result.Item1) ? JsonConvert.DeserializeObject(result.Item1) as JObject : null;
             if (obj == null)
             {
-                _logger.LogError($"Cannot parse JSON from url {relUri}");
+                _logger.LogError($"Cannot parse JSON for product {id} with url {relUri}");
                 return null;
             }
             var product = (JObject)obj["product"];

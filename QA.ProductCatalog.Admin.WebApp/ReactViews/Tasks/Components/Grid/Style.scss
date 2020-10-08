@@ -51,14 +51,6 @@ $text-color: rgb(24, 32, 38);
         }
       }
     }
-
-    .inside-cell--hidden {
-      display: none;
-
-      &:hover {
-        display: inline-block;
-      }
-    }
   }
 }
 

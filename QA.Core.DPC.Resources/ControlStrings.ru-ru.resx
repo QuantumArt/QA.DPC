@@ -369,4 +369,16 @@
   <data name="WrapLines" xml:space="preserve">
     <value>Перенос строк</value>
   </data>
+   <data name="UnsavedChanges" xml:space="preserve">
+     <value>Внесенные изменения не сохранятся. Вы уверены, что хотите выйти?</value>
+   </data>
+   <data name="FormLoadError" xml:space="preserve">
+     <value>Ошибка загрузки формы</value>
+   </data>
+   <data name="FormSaveError" xml:space="preserve">
+     <value>Ошибка сохранения формы</value>
+   </data>
+  <data name="SameForm" xml:space="preserve">
+    <value>Форма не была изменена</value>
+  </data>
 </root>

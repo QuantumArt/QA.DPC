@@ -4,7 +4,7 @@
 
     .DESCRIPTION
     Checks:
-    - .NET Core Runtime 2.2.8 is installed
+    - .NET Core Runtime 3.1.8 is installed
     - QP is installed
     - Database Server is avaialable for current user (or with specific credentials)
     - Ports are available
@@ -76,23 +76,25 @@ function Test-Port
   
 }
 
-$useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
-$moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
-if (-not(Get-Module -Name $moduleName)) {
-    Import-Module $moduleName
+if ($dbType -eq 0) {
+    $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
+    $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
+    if (-not(Get-Module -Name $moduleName)) {
+        Import-Module $moduleName
+    }
 }
 
-If ($databaseServer) {
-    $requiredRuintime = '2.2.8'
-    
-    Try {
-        $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
-    } Catch {
-        Write-Error $_.Exception
-        Throw "Check .NET Core runtime : failed"
-    } 
-    If ($actualRuntime -notcontains $requiredRuintime){ Throw "Check .NET Core runtime $requiredRuintime : failed" }
+$requiredRuntime = '3.1.8'
+  
+Try {
+    $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.AspNetCore.App')).Name
+} Catch {
+    Write-Error $_.Exception
+    Throw "Check ASP.NET Core runtime : failed"
+} 
+If ($actualRuntime -notcontains $requiredRuntime){ Throw "Check ASP.NET Core runtime $requiredRuntime : failed" }
 
+If ($databaseServer) {
     Try {
         Execute-Sql -server $databaseServer -name $login -pass $password -query "select 1 as result" -dbType $dbType | Out-Null
     } Catch {

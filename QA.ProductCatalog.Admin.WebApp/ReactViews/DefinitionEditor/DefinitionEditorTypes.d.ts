@@ -6,6 +6,9 @@
   getDefinitionLevelUrl: string;
   editBetaUrl: string;
   editUrl: string;
+  saveFieldUrl: string;
+  saveFieldBetaUrl: string;
+  saveContentBetaUrl: string;
   strings: {
     DictionaryCachingSettings: string;
     MissingInQP: string;
@@ -23,6 +26,7 @@
     ShowLog: string;
     SameDefinition: string;
     JsonFieldName: string;
+    FieldName: string;
     RelationConditionDescription: string;
     Path: string;
     RemovePath: string;
@@ -31,6 +35,27 @@
     LoadAsImage: string;
     FieldNameForCard: string;
     LabelText: string;
+    FieldId: string;
+    InDefinition: string;
+    DeletingMode: string;
+    UpdatingMode: string;
+    CloningMode: string;
+    PreloadingMode: string;
+    PublishingMode: string;
+    RelationCondition: string;
+    ClonePrototypeCondition: string;
+    RelationConditionDescription: string;
+    ClonePrototypeConditionDescription: string;
+    DefaultCachePeriod: string;
+    LoadAllPlainFields: string;
+    ContentName: string;
+    ProceedCaching: string;
+    CacheSettings: string;
+    ExitAnyway: string;
+    UnsavedChanges: string;
+    FormLoadError: string;
+    FormSaveError: string;
+    SameForm: string;
   };
   backendEnums: {
     update: string;

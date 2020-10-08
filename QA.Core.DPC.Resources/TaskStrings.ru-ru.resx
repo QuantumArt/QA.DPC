@@ -374,10 +374,73 @@
     <value>Закрыть</value>
   </data>
   <data name="Week">
-    <value>неделя</value>
+    <value>неделю</value>
   </data>
   <data name="All">
-    <value>все</value>
+    <value>Все</value>
+  </data>
+  <data name="CronParseError">
+    <value>Ошибка обработки cron expression</value>
+  </data>
+  <data name="TypicalError">
+    <value>Что-то пошло не так. Поробуйте обновить страницу.</value>
+  </data>
+  <data name="Sun">
+    <value>Вс</value>
+  </data>
+  <data name="Mon">
+    <value>Пон</value>
+  </data>
+  <data name="Tue">
+    <value>Вт</value>
+  </data>
+  <data name="Wed">
+    <value>Ср</value>
+  </data>
+  <data name="Thu">
+    <value>Чт</value>
+  </data>
+  <data name="Fri">
+    <value>Пт</value>
+  </data>
+  <data name="Sat">
+    <value>Сб</value>
+  </data>
+  <data name="Jan">
+    <value>Янв</value>
+  </data>
+  <data name="Feb">
+    <value>Фев</value>
+  </data>
+  <data name="Mar">
+    <value>Март</value>
+  </data>
+  <data name="Apr">
+    <value>Апр</value>
+  </data>
+  <data name="May">
+    <value>Май</value>
+  </data>
+  <data name="Jun">
+    <value>Июнь</value>
+  </data>
+  <data name="Jul">
+    <value>Июль</value>
+  </data>
+  <data name="Aug">
+    <value>Авг</value>
+  </data>
+  <data name="Sep">
+    <value>Сент</value>
+  </data>
+  <data name="Oct">
+    <value>Окт</value>
+  </data>
+  <data name="Nov">
+    <value>Нояб</value>
+  </data>
+  <data name="Dec">
+    <value>Дек</value>
   </data>
 </root>
 

@@ -219,13 +219,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				}
 				catch (Exception ex)
 				{
-					try
-					{
-						_logger.ErrorException("Error while receiving actual triggers and jobs", ex);
-					}
-					catch
-					{
-					}
+					_logger.Error(ex, "Error while receiving actual triggers and jobs");
 				}
 				finally
 				{

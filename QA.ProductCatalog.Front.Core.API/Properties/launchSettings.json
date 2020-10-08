@@ -3,7 +3,7 @@
     "QA.ProductCatalog.Front.Core.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/mts_catalog/healthcheck",
+      "launchUrl": "api/sber_mobile_catalog_cluster/healthcheck",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       },

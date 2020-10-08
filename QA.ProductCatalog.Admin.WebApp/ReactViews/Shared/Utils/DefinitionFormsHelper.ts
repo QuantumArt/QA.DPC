@@ -1,6 +1,7 @@
 ﻿import { BackendEnumType, FormFieldType } from "DefinitionEditor/Enums";
 import React from "react";
 import { EnumBackendModel } from "DefinitionEditor/ApiService/ApiInterfaces";
+import { action, observable } from "mobx";
 
 export declare type ParsedModelType =
   | ICheckboxParsedModel
@@ -9,15 +10,24 @@ export declare type ParsedModelType =
   | ITextParsedModel
   | ITextAreaParsedModel;
 
+export function isCheckboxParsedModel(model: ParsedModelType): model is ICheckboxParsedModel {
+  return (<ICheckboxParsedModel>model).subModel !== undefined;
+}
+
 export interface IBaseParsedModel {
   type: FormFieldType;
-  label: string;
+  label: string | null;
+  name: string;
   value: string | boolean | number;
+  isHide: boolean;
+  toggleIsHide: () => void;
+  isInline: boolean;
 }
 interface IInputParsedModel extends IBaseParsedModel {
   type: FormFieldType.Input;
   value: string;
   placeholder?: string;
+  name: string;
 }
 interface ITextAreaParsedModel extends IBaseParsedModel {
   type: FormFieldType.Textarea;
@@ -42,29 +52,39 @@ interface ICheckboxParsedModel extends IBaseParsedModel {
   type: FormFieldType.Checkbox;
   value: boolean;
   subString?: string;
+  subModel?: ParsedModelType;
+  onChangeCb: () => void;
 }
 
 export abstract class BaseAbstractParsedModel implements IBaseParsedModel {
-  protected constructor(label, value) {
+  protected constructor(name, label, value, isHide = false, isInline = false) {
+    this.name = name;
     this.label = label;
     this.value = value;
+    this.isHide = isHide;
+    this.isInline = isInline;
   }
+  readonly name: string;
   readonly type: FormFieldType;
   readonly label: string;
+  @observable isHide: boolean;
+  @action
+  toggleIsHide = () => (this.isHide = !this.isHide);
+  readonly isInline: boolean;
   value: string | boolean | number;
 }
 
 export class TextParsedModel extends BaseAbstractParsedModel implements ITextParsedModel {
-  constructor(label, value) {
-    super(label, value);
+  constructor(name, label, value, isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
   }
   readonly type = FormFieldType.Text;
   readonly value;
 }
 
 export class SelectParsedModel extends BaseAbstractParsedModel implements ISelectParsedModel {
-  constructor(label, value, options) {
-    super(label, value);
+  constructor(name, label, value, options, isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
     this.options = options;
   }
   readonly type = FormFieldType.Select;
@@ -73,18 +93,31 @@ export class SelectParsedModel extends BaseAbstractParsedModel implements ISelec
 }
 
 export class CheckboxParsedModel extends BaseAbstractParsedModel implements ICheckboxParsedModel {
-  constructor(label, value, subString = "") {
-    super(label, value);
+  constructor(
+    name,
+    label,
+    value,
+    onChangeCb = null,
+    subString = "",
+    subComponentOnCheck = null,
+    isHide?,
+    isInline?
+  ) {
+    super(name, label, value, isHide, isInline);
     this.subString = subString;
+    this.subModel = subComponentOnCheck;
+    this.onChangeCb = onChangeCb;
   }
   readonly type = FormFieldType.Checkbox;
+  readonly onChangeCb;
   value;
+  subModel;
   readonly subString;
 }
 
 export class TextAreaParsedModel extends BaseAbstractParsedModel implements ITextAreaParsedModel {
-  constructor(label, value, extraOptions) {
-    super(label, value);
+  constructor(name, label, value, extraOptions, isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
     this.extraOptions = extraOptions;
   }
   readonly type = FormFieldType.Textarea;
@@ -93,8 +126,8 @@ export class TextAreaParsedModel extends BaseAbstractParsedModel implements ITex
 }
 
 export class InputParsedModel extends BaseAbstractParsedModel implements IInputParsedModel {
-  constructor(label, value, placeholder = "") {
-    super(label, value);
+  constructor(name, label, value, placeholder = "", isHide?, isInline?) {
+    super(name, label, value, isHide, isInline);
     this.placeholder = placeholder;
   }
   readonly type = FormFieldType.Input;
@@ -103,7 +136,7 @@ export class InputParsedModel extends BaseAbstractParsedModel implements IInputP
 }
 
 export const getBackendEnumTypeByFieldName = (
-  field: "DeletingMode" | "UpdatingMode" | "CloningMode" | "PreloadingMode"
+  field: "DeletingMode" | "UpdatingMode" | "CloningMode" | "PreloadingMode" | "PublishingMode"
 ): BackendEnumType => {
   switch (field) {
     case "DeletingMode":
@@ -114,5 +147,7 @@ export const getBackendEnumTypeByFieldName = (
       return BackendEnumType.Update;
     case "PreloadingMode":
       return BackendEnumType.Preload;
+    case "PublishingMode":
+      return BackendEnumType.Publish;
   }
 };

@@ -13,7 +13,7 @@ namespace QA.Core.Models.Tests.Helpers
                .GetManifestResourceStream(path))
             {
                 // создаем экземпляр валидатора
-                return (T)XamlConfigurationParser.CreateFrom(stream);
+                return (T)XamlConfigurationParser.LoadFrom(stream);
             }
         }
 

@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Reflection;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
+
 using QA.Core.Logger;
 
 namespace QA.Core.Models.UI

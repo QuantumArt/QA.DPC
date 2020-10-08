@@ -1,5 +1,6 @@
 ﻿#if !NETSTANDARD
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using QA.Core.Logger;
 using QA.Core.Models.UI;
 
@@ -29,13 +30,6 @@ namespace QA.Core.DPC.UI
         public ActionResult Index()
         {
             return null;
-        }
-
-
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
-        {
-            var elem = requestContext.RouteData.DataTokens[_uIElementKey] as T;
-            base.Initialize(requestContext);
         }
     }
 }

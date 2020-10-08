@@ -1,5 +1,5 @@
 ﻿using System.Net.Http;
-using System.Xaml;
+using Portable.Xaml;
 using Moq;
 using NUnit.Framework;
 using QA.Core.Logger;

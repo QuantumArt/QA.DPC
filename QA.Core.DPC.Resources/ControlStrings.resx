@@ -369,4 +369,16 @@
   <data name="WrapLines" xml:space="preserve">
     <value>Wrap lines</value>
   </data>
+  <data name="UnsavedChanges" xml:space="preserve">
+    <value>Your changes will not save. Are you sure that you want to leave?</value>
+  </data>
+  <data name="FormLoadError" xml:space="preserve">
+    <value>Form loading error</value>
+  </data>
+  <data name="FormSaveError" xml:space="preserve">
+    <value>Form saving error</value>
+  </data>
+  <data name="SameForm" xml:space="preserve">
+    <value>The form wasn't changed</value>
+  </data>
 </root>

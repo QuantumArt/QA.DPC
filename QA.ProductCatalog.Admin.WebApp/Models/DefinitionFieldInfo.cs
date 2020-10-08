@@ -34,7 +34,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
             FieldName = field.FieldName;
             FieldTitle = field.FieldTitle;
             FieldId = field.FieldId;
-            
             if (field is Dictionaries dict)
             {
                 DefaultCachePeriod = dict.DefaultCachePeriod;
@@ -113,14 +112,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         private void FillAssociationField(Association output)
         {
-            output.CloningMode = CloningMode;
-            output.DeletingMode = DeletingMode;
-            output.UpdatingMode = UpdatingMode;
+            output.CloningMode = CloningMode ?? 0;
+            output.DeletingMode = DeletingMode ?? 0;
+            output.UpdatingMode = UpdatingMode ?? 0;
 
             if (output is EntityField er)
             {
                 er.RelationCondition = RelationCondition;
-                er.PreloadingMode = PreloadingMode;
+                er.PreloadingMode = PreloadingMode ?? 0;
                 er.ClonePrototypeCondition = ClonePrototypeCondition;
             }
         }
@@ -174,8 +173,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
                     ? FieldDefinitionType.BackwardRelationField
                     : FieldDefinitionType.EntityField;
 
-                RelationConditionDescription = ControlStrings.RelationConditionDescription;
-                ClonePrototypeConditionDescription = ControlStrings.ClonePrototypeConditionDescription;
                 RelateTo = assoc is BackwardRelationField ? ControlStrings.RelateToThis : ControlStrings.RelateToAnother;
 
             }
@@ -197,13 +194,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         public int FieldId { get; set; }
         
         [Display(Name="CloningMode", ResourceType = typeof(ControlStrings))]
-        public CloningMode CloningMode { get; set; }
+        public CloningMode? CloningMode { get; set; }
 
         [Display(Name="UpdatingMode", ResourceType = typeof(ControlStrings))]
-        public UpdatingMode UpdatingMode { get; set; }
+        public UpdatingMode? UpdatingMode { get; set; }
 
         [Display(Name="DeletingMode", ResourceType = typeof(ControlStrings))]
-        public DeletingMode DeletingMode { get; set; }
+        public DeletingMode? DeletingMode { get; set; }
 
         [Display(Name = "DefaultCachePeriod", ResourceType = typeof(ControlStrings))]
         public TimeSpan? DefaultCachePeriod { get; set; } = null;
@@ -215,7 +212,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         public string FieldTitle { get; set; }
         
         [Display(Name="PreloadingMode", ResourceType = typeof(ControlStrings))]
-        public PreloadingMode PreloadingMode { get; set; }
+        public PreloadingMode? PreloadingMode { get; set; }
 
         [Display(Name="RelationCondition", ResourceType = typeof(ControlStrings))]
         public string RelationCondition { get; set; }
@@ -223,10 +220,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         [Display(Name="ClonePrototypeCondition", ResourceType = typeof(ControlStrings))]
         public string ClonePrototypeCondition { get; set; }
         public string RelateTo { get; set; }
-        public string RelationConditionDescription { get; set; }
-        public string ClonePrototypeConditionDescription { get; set; }
         public string IsClassifier { get; set; }
-
         public string VirtualPath { get; set; }
         public string ObjectToRemovePath { get; set; }
         

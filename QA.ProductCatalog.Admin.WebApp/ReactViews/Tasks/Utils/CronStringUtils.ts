@@ -1,5 +1,6 @@
-﻿import _ from "lodash";
+import _ from "lodash";
 import { CronPeriodType, CronUnitType } from "Shared/Enums";
+import { l } from "Tasks/Localization";
 
 export type Unit = {
   type: CronUnitType;
@@ -14,20 +15,20 @@ export interface ICronsTagModel {
   values: number[];
 }
 
-export const WEEK_UNITS = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+export const WEEK_UNITS = [l("sun"), l("mon"), l("tue"), l("wed"), l("fri"), l("sat")];
 export const MONTH_UNITS = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AUG",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DEC"
+  l("jan"),
+  l("feb"),
+  l("mar"),
+  l("apr"),
+  l("may"),
+  l("jun"),
+  l("jul"),
+  l("aug"),
+  l("sep"),
+  l("oct"),
+  l("nov"),
+  l("dec")
 ];
 
 export const UNITS: Map<CronUnitType, Unit> = new Map([
@@ -176,12 +177,12 @@ export function partToString(
   leadingZero?: boolean | "month-days" | "hours" | "minutes",
   clockFormat?: "24-hour-clock" | "12-hour-clock"
 ): ICronsTagModel[] {
-  let retval = [] as (ICronsTagModel)[];
+  let retval = [] as ICronsTagModel[];
 
   if (isFull(cronPart, unit)) {
     retval = [
       {
-        label: "Все",
+        label: l("all"),
         values: cronPart
       }
     ];

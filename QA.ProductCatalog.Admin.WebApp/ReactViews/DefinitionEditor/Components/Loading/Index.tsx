@@ -14,11 +14,11 @@ const Loading = ({ style, className, active }: Props) => {
       className={cn("loader", className)}
       style={{ visibility: active ? "visible" : "hidden", ...style }}
     >
-      <div className="rect rect1"/>
-      <div className="rect rect2"/>
-      <div className="rect rect3"/>
-      <div className="rect rect4"/>
-      <div className="rect rect5"/>
+      <div className="rect rect1" />
+      <div className="rect rect2" />
+      <div className="rect rect3" />
+      <div className="rect rect4" />
+      <div className="rect rect5" />
     </div>
   );
 };

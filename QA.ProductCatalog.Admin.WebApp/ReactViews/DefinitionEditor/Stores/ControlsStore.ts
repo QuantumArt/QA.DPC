@@ -1,4 +1,4 @@
-import { action, observable } from "mobx";
+import { action, observable, reaction } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import TreeStore from "./TreeStore";
 import FormStore from "DefinitionEditor/Stores/FormStore";
@@ -13,50 +13,136 @@ export default class ControlsStore {
     private formStore: FormStore
   ) {
     treeStore.init(this.setSelectedNodeId);
+    formStore.init(onReactionFireCb =>
+      reaction(
+        () => this.selectedNodeId,
+        (nodeId: string) => {
+          if (nodeId && onReactionFireCb) onReactionFireCb(nodeId);
+        }
+      )
+    );
   }
-
+  @observable formMode: boolean = false;
   @observable savingMode: SavingMode = SavingMode.Apply;
   @observable selectedNodeId: string = null;
+  submitFormSyntheticEvent;
+
+  @observable isUnsavedChangesDialog: boolean = false;
+  @observable unsavedChangesDialogOnLeaveCb: () => void;
+
+  @action
+  toggleUnsavedChangesDialog = () => (this.isUnsavedChangesDialog = !this.isUnsavedChangesDialog);
+
+  @action
+  onChangeFormMode = () => {
+    if (this.formMode) {
+    } else {
+      if (!this.isSameDefinition(false)) {
+        this.toggleUnsavedChangesDialog();
+        this.unsavedChangesDialogOnLeaveCb = () => {
+          this.xmlEditorStore.setXml(this.xmlEditorStore.lastLocalSavedXml);
+          this.toggleFormMode();
+        };
+        return;
+      }
+    }
+    this.toggleFormMode();
+  };
+
+  @action
+  toggleFormMode = () => (this.formMode = !this.formMode);
 
   @action
   setSelectedNodeId = (id: string) => {
+    /**
+     * При клике на ноду проверяется были ли изменения в модели формы.
+     * */
+    if (this.formMode && !this.formStore.isFormTheSame()) {
+      this.toggleUnsavedChangesDialog();
+      this.unsavedChangesDialogOnLeaveCb = () => this.setNodeId(id);
+      return;
+    }
+    this.setNodeId(id);
+  };
+
+  @action
+  setNodeId = (id: string) => {
     this.selectedNodeId = id;
   };
 
   @action
-  setSavingMode = (mode: SavingMode) => this.savingMode = mode;
+  setSavingMode = (mode: SavingMode) => (this.savingMode = mode);
 
   @action
   refresh = async () => {
     this.xmlEditorStore.setXml(this.xmlEditorStore.origXml);
     this.treeStore.resetErrorState();
     this.treeStore.openedNodes = [];
-    await this.treeStore.getDefinitionLevel();
+    await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
     await this.treeStore.onNodeExpand(this.treeStore.tree[0]);
   };
 
-  @action
+  isSameDefinition = (originalMode: boolean = true): boolean => {
+    return (
+      (this.xmlEditorStore.isSameDefinition() && originalMode) ||
+      (this.xmlEditorStore.isSameDefinitionWithLastSaved() && !originalMode)
+    );
+  };
+
+  applyOnOpenedForm = async (): Promise<boolean> => {
+    if (this.formStore.isFormTheSame()) {
+      return false;
+    }
+    await this.formStore.saveForm(this.selectedNodeId);
+    const singleNode = await this.treeStore.withLogError(
+      async () => await this.treeStore.getSingleNode(this.selectedNodeId)
+    );
+    await this.treeStore.setOpenedNodes(singleNode.Id);
+    return true;
+  };
+
+  applyOnOpenedXmlEditor = async (): Promise<boolean> => {
+    if (this.isSameDefinition()) {
+      this.treeStore.setError(l("SameDefinition"));
+      return false;
+    }
+    await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
+    return true;
+  };
+
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
-    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-      this.treeStore.setError(l("SameDefinition"));
-      return;
-    }
-    await this.treeStore.getDefinitionLevel();
+    const isSaveSuccess = await this.doLocalSave();
+    if (!isSaveSuccess) return;
     for (const nodeId of this.treeStore.openedNodes) {
       await this.treeStore.onNodeExpand(this.treeStore.nodesMap.get(nodeId));
     }
+    this.treeStore.setSelectedNodeIdInUI();
   };
 
-  @action
+  updateFormWithNewData = () => {
+    if (this.selectedNodeId) this.formStore.fetchFormFields(this.selectedNodeId);
+  };
+
+  doLocalSave = async (): Promise<boolean> => {
+    let isLocalSaveWasCorrect: boolean;
+    if (this.formMode) {
+      isLocalSaveWasCorrect = await this.applyOnOpenedForm();
+    } else {
+      isLocalSaveWasCorrect = await this.applyOnOpenedXmlEditor();
+      this.updateFormWithNewData();
+    }
+    return isLocalSaveWasCorrect;
+  };
+
   saveAndExit = async () => {
     this.setSavingMode(SavingMode.Finish);
-    if (this.xmlEditorStore.xml === this.xmlEditorStore.origXml) {
-      this.treeStore.setError(l("SameDefinition"));
-      return;
-    }
-    await this.treeStore.getDefinitionLevel();
-    if (this.treeStore.operationState === OperationState.Success) {
+    const isSaveSuccess = await this.doLocalSave();
+    if (!isSaveSuccess) return;
+    if (
+      (this.treeStore.operationState === OperationState.Success && !this.formMode) ||
+      (this.formMode && this.formStore.operationState === OperationState.Success)
+    ) {
       window.pmrpc.call({
         destination: parent,
         publicProcedureName: "SaveXmlToDefinitionField",
@@ -68,7 +154,7 @@ export default class ControlsStore {
   exit = () => {
     window.pmrpc.call({
       destination: parent,
-      publicProcedureName: "CloseEditor",
+      publicProcedureName: "CloseEditor"
     });
   };
 }

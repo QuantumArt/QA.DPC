@@ -40,8 +40,11 @@ using System.Reflection;
  using QA.Core.ProductCatalog.ActionsRunner;
  using Quantumart.QP8.Configuration;
  using Quantumart.QP8.Constants;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using ILogger = QA.Core.Logger.ILogger;
 
- namespace QA.ProductCatalog.Admin.WebApp
+namespace QA.ProductCatalog.Admin.WebApp
 {
     public static class UnityConfig
     {
@@ -62,6 +65,10 @@ using System.Reflection;
             IntegrationProperties integrationProperties,             
             Properties properties)
         {
+            //fix Diagnostic extension
+            container.RegisterType<ILoggerFactory, LoggerFactory>(
+                new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>())
+            );
             container.AddExtension(new Diagnostic());
             container.RegisterType<DynamicResourceDictionaryContainer>();
             container.RegisterType<ProcessRemoteValidationIf>();
@@ -108,7 +115,7 @@ using System.Reflection;
             //container.RegisterType<IRegionTagReplaceService, RegionTagReplaceService>();
 
             BindingValueProviderFactory.Current = new DefaultBindingValueProviderFactory(new QPModelBindingValueProvider());
-
+            container.RegisterType<ILoggerFactory, LoggerFactory>(new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>()));
 
             container.RegisterType<ITaskService, TaskService>();
 

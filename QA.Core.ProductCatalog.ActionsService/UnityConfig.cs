@@ -1,30 +1,27 @@
-﻿﻿using Microsoft.Practices.Unity.Configuration;
-using QA.Core.DPC.Formatters.Configuration;
+﻿using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Container;
 using QA.Core.ProductCatalog.ActionsRunner;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core.ProductCatalog.TaskScheduler;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Integration.Configuration;
 using Quartz;
 using System;
-using System.Configuration;
-using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Configuration;
-using QA.Core.Logger;
-using QA.Core.ProductCatalog.Actions;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
 using Unity;
-using Unity.Injection;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml;
+using Unity.Injection;
+using Unity.Lifetime;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -40,6 +37,10 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         public static IUnityContainer RegisterTypes(IUnityContainer container, LoaderProperties loaderProps)
         {
+            //fix Diagnostic extension
+            container.RegisterType<ILoggerFactory, LoggerFactory>(
+                new ContainerControlledLifetimeManager(), new InjectionConstructor(new ResolvedParameter<IEnumerable<ILoggerProvider>>())
+            );
             container.AddExtension(new Diagnostic());
             container.RegisterType<DynamicResourceDictionaryContainer>();
             container.RegisterType<ProcessRemoteValidationIf>();

@@ -1,6 +1,5 @@
 ﻿import { action, observable } from "mobx";
 import { parse, validate, ValidationError } from "fast-xml-parser";
-import ControlsStore from "./ControlsStore";
 
 export default class XmlEditorStore {
   constructor(private settings: DefinitionEditorSettings) {
@@ -28,16 +27,15 @@ export default class XmlEditorStore {
 
   @observable xml: string;
   origXml: string;
+  lastLocalSavedXml: string;
   @observable rootId: string;
   @observable fontSize: number = localStorage.getItem("fontSize")
     ? parseInt(localStorage.getItem("fontSize"))
     : 14;
   @observable wrapLines: boolean = localStorage.getItem("wrapLines") === "true";
   @observable queryOnClick: boolean = localStorage.getItem("queryOnClick") === "true";
-  @observable formMode: boolean = false;
 
-  @action
-  toggleFormMode = () => (this.formMode = !this.formMode);
+  setLastLocalSavedXml = (xml: string) => (this.lastLocalSavedXml = xml);
 
   @action
   changeFontSize = (size: number) => {
@@ -51,6 +49,9 @@ export default class XmlEditorStore {
     localStorage.setItem("wrapLines", `${this.wrapLines}`);
   };
 
+  isSameDefinition = (): boolean => this.xml === this.origXml;
+  isSameDefinitionWithLastSaved = (): boolean => this.xml === this.lastLocalSavedXml;
+
   @action
   toggleQueryOnClick = () => {
     this.queryOnClick = !this.queryOnClick;
@@ -61,6 +62,7 @@ export default class XmlEditorStore {
   setXml = (xml: string, firstTime: boolean = false) => {
     if (firstTime) {
       this.origXml = xml;
+      this.setLastLocalSavedXml(xml);
     }
     this.xml = xml;
   };

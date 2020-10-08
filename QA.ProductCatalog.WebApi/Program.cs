@@ -5,32 +5,42 @@ using System.Collections;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
-using NLog.Web;
+using NLog.Extensions.Logging;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Unity.Microsoft.DependencyInjection;
+using Unity;
+using NLog.Web;
 
 namespace QA.ProductCatalog.WebApi
 {
     public class Program
     {
+        private static IUnityContainer _container;
+
         public static void Main(string[] args)
         {
-
+            _container = new UnityContainer();
             NLog.LogManager.LoadConfiguration("NLogClient.config");
-            BuildWebHost(args).Run();
+            BuildWebHost(args).Build().Run();
         }
 
-        private static IWebHost BuildWebHost(string[] args)
+        private static IHostBuilder BuildWebHost(string[] args)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
-                .Build();
+                .AddJsonFile("hosting.json", optional: true, reloadOnChange: true);
             
-            var builder = WebHost.CreateDefaultBuilder(args)
-                    .UseConfiguration(config)
+            var builder = Host.CreateDefaultBuilder(args)
+                    .UseUnityServiceProvider(_container)
+                    .ConfigureWebHostDefaults(webBuilder =>
+                    {
+                        webBuilder
+                        .UseConfiguration(config.Build())
+                        .UseStartup<Startup>();
+                    })
                     .ConfigureLogging((hostingContext, logging) =>
                     {
                         logging.ClearProviders();
@@ -43,11 +53,9 @@ namespace QA.ProductCatalog.WebApi
                         }
                     })
                     .UseNLog()
-                    .UseUnityServiceProvider()
-                    .UseStartup<Startup>()
                 ;
 
-            return builder.Build();
+            return builder;
         }
     }
 }

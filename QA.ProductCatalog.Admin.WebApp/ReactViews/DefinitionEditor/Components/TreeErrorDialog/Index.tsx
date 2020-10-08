@@ -7,9 +7,7 @@ import { useStores } from "DefinitionEditor";
 import { l } from "DefinitionEditor/Localization";
 import "./Style.scss";
 
-interface Props {
-
-}
+interface Props {}
 
 const TreeErrorDialog = observer<Props>(() => {
   const { treeStore, controlsStore } = useStores();
@@ -24,9 +22,13 @@ const TreeErrorDialog = observer<Props>(() => {
       isOpen={treeStore.operationState === OperationState.Error}
       intent={Intent.DANGER}
       icon="warning-sign"
-      confirmButtonText={controlsStore.savingMode === SavingMode.Apply ? l("Close") : l("ExitAnyway")}
+      confirmButtonText={
+        controlsStore.savingMode === SavingMode.Apply ? l("Close") : l("ExitAnyway")
+      }
       onConfirm={
-        controlsStore.savingMode === SavingMode.Apply ? treeStore.resetErrorState : controlsStore.exit
+        controlsStore.savingMode === SavingMode.Apply
+          ? treeStore.resetErrorState
+          : controlsStore.exit
       }
       cancelButtonText={controlsStore.savingMode === SavingMode.Apply ? null : l("BackToEditing")}
       onCancel={treeStore.resetErrorState}

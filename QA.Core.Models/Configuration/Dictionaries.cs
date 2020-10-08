@@ -2,11 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-#if NETSTANDARD
 using Portable.Xaml.Markup;
-#else
-using System.Windows.Markup;
-#endif
 using QA.Core.Models.Tools;
 
 namespace QA.Core.Models.Configuration

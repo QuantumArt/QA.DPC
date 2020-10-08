@@ -24,10 +24,10 @@ import { Column, Accessor } from "react-table";
 import { Task as GridTask } from "Tasks/ApiServices/DataContracts";
 import { Intent } from "@blueprintjs/core";
 import "./Root.scss";
+import { l } from "Tasks/Localization";
 
 /**
  * ColumnModel
- * showOnHover: показывать поле только при наведении
  * getClassNameByEnableSchedule: параметр для EnableSchedule
  * truncate: {
  * onWidth: схлопывать при указананой ширине
@@ -38,7 +38,6 @@ export interface ColumnModel {
   Header: any;
   accessor: Accessor;
   Cell?: any;
-  showOnHover?: boolean;
   fixedWidth?: number;
   getClassNameByEnableSchedule?: (taskId: number) => string;
   truncate?: {
@@ -50,29 +49,11 @@ export const Task = observer(() => {
   const store = useStore();
   const gridWrap = React.useRef(null);
   const [gridWidth, setGridWidth] = React.useState(1000);
-  const {
-    userName,
-    status,
-    schedule,
-    progress,
-    name,
-    created,
-    lastStatusChange,
-    message
-  } = window.task.tableFields;
-  const { statusValues } = window.task.other;
-  const { filter, clear, isFalse, isTrue } = window.task.gridFiltersDefinitions;
+  const { statusValues } = window.task;
 
   useEffect(() => {
-    store.init();
-  }, []);
-
-  useEffect(
-    () => {
-      if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
-    },
-    [gridWrap, store.isLoading]
-  );
+    if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
+  }, [gridWrap, store.isLoading]);
 
   const gridColumns = React.useMemo<Column<ColumnModel>[]>(
     () => [
@@ -81,16 +62,16 @@ export const Task = observer(() => {
         accessor: "Id"
       },
       {
-        Header: userName,
+        Header: l("userName"),
         accessor: "UserName",
         truncate: { onWidth: 120 }
       },
       {
         Header: (
-          <GridHeadFilterTooltip label={status}>
+          <GridHeadFilterTooltip label={l("status")}>
             <FilterButtonsWrapper
-              acceptLabel={filter}
-              revokeLabel={clear}
+              acceptLabel={l("filter")}
+              revokeLabel={l("clear")}
               filter={store.filters.get(TaskGridFilterType.StatusFilter)}
             >
               <StatusFilterContent options={statusValues} />
@@ -102,16 +83,16 @@ export const Task = observer(() => {
       },
       {
         Header: (
-          <GridHeadFilterTooltip label={schedule}>
+          <GridHeadFilterTooltip label={l("schedule")}>
             <FilterButtonsWrapper
-              acceptLabel={filter}
-              revokeLabel={clear}
+              acceptLabel={l("filter")}
+              revokeLabel={l("clear")}
               filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
             >
               <ScheduleFilterContent
                 options={[
-                  { label: isTrue, value: ScheduleFilterValues.YES },
-                  { label: isFalse, value: ScheduleFilterValues.NO }
+                  { label: l("isTrue"), value: ScheduleFilterValues.YES },
+                  { label: l("isFalse"), value: ScheduleFilterValues.NO }
                 ]}
               />
             </FilterButtonsWrapper>
@@ -119,11 +100,8 @@ export const Task = observer(() => {
         ),
         accessor: "HasSchedule",
         Cell: (cellProps: any) => {
-          return (
-            <ScheduleGridCellDescription
-              cronExpression={cellProps.data[cellProps.row.index].ScheduleCronExpression}
-            />
-          );
+          const cronExpression = cellProps.data[cellProps.row.index].ScheduleCronExpression;
+          return <ScheduleGridCellDescription cronExpression={cronExpression} />;
         },
         getClassNameByEnableSchedule: (gridElement: GridTask) => {
           if (gridElement.ScheduleEnabled) {
@@ -146,7 +124,7 @@ export const Task = observer(() => {
         }
       },
       {
-        Header: progress,
+        Header: l("progress"),
         accessor: "Progress",
         Cell: (cellProps: any) => {
           const stateId = cellProps.cell.row.values.StateId;
@@ -154,37 +132,44 @@ export const Task = observer(() => {
         }
       },
       {
-        Header: name,
+        Header: l("name"),
         accessor: "DisplayName",
         truncate: { onWidth: 120 }
       },
       {
-        Header: created,
+        Header: l("created"),
         accessor: "CreatedTime",
         Cell: DateGridCell,
         className: "grid__date-cell",
         truncate: { onWidth: 110 }
       },
       {
-        Header: lastStatusChange,
+        Header: l("lastStatusChange"),
         accessor: "LastStatusChangeTime",
         Cell: DateGridCell,
         className: "grid__date-cell",
         truncate: { onWidth: 110 }
       },
       {
-        Header: message,
+        Header: l("message"),
         accessor: "Message",
         truncate: { onWidth: 140 }
       },
       {
         Header: "",
-        accessor: " ",
-        showOnHover: true,
+        accessor: "IsCancellationRequested",
         className: "grid__rerun-cell",
         Cell: (cellProps: any) => {
-          const Id = cellProps.row.values.Id;
-          return <RerunGridCell id={Id} method={store.fetchRerunTask} />;
+          const { Id, StateId, IsCancellationRequested } = cellProps.row.values;
+          return (
+            <RerunGridCell
+              id={Id}
+              onRerun={store.fetchRerunTask}
+              stateId={StateId}
+              onCancel={store.fetchCancelRerun}
+              IsCancellationRequested={IsCancellationRequested}
+            />
+          );
         }
       }
     ],
