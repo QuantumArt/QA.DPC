@@ -58,7 +58,6 @@ export default class HighloadFrontStore {
             t.TaskMessage = JSON.parse(taskMessage);
             if (t.TaskState === 3) {
               const messages = t?.TaskMessage as TaskMessage;
-              console.log(messages);
               messages.Messages.forEach(m => {
                 this.sendNoditifaction(t, m.Message);
               });

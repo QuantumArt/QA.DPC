@@ -1,14 +1,32 @@
 ﻿@using System;
 @using QA.ProductCatalog.Admin.WebApp.Controllers;
-
-<div>@Html.Raw(System.IO.File.GetLastWriteTime(typeof(AppInfoController).Assembly.Location).ToString())</div>
-<script>
-  Notification.requestPermission().then(function (result) {
-    console.log(result);
-    if (result === "granted") {
-      window.close();
-    } else if (confirm("You won't be able to get notifications")) {
-      window.close();
+@section head {
+  <style>
+    .wrap {
+      margin: 30px 10px 10px;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
     }
-  });
+    .info {
+      margin-bottom: 10px;
+    }
+  </style>
+}
+
+<div class="wrap">
+  <div class="info">@Html.Raw(System.IO.File.GetLastWriteTime(typeof(AppInfoController).Assembly.Location).ToString())</div>
+  <button role="button" class="bp3-button bp3-intent-primary bp3-large" onclick="allowNotifications()">Allow Notifications</button>
+</div>
+<script>
+  function allowNotifications() {
+    Notification.requestPermission().then(function (result) {
+      if (result === "granted") {
+        window.close();
+      } else if (confirm("You won't be able to get notifications")) {
+        window.close();
+      }
+    });
+  }
 </script>
