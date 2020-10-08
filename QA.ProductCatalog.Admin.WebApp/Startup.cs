@@ -50,9 +50,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.Configure<QPOptions>(Configuration.GetSection("QP"));
-
-            services.AddRazorPages().AddRazorRuntimeCompilation();
-
+            
             var props = new IntegrationProperties();
             Configuration.Bind("Integration", props);
             
