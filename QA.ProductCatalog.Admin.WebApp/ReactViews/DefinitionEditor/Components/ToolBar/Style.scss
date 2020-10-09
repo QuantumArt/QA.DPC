@@ -6,6 +6,9 @@
     position: relative;
     height: 50px;
   }
+  &__info-btn {
+    margin-top: -6px;
+  }
   &__xml-controls {
     display: flex;
     margin-left: auto;

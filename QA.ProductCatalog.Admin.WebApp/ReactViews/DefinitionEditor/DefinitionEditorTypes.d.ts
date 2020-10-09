@@ -44,14 +44,12 @@
     PublishingMode: string;
     RelationCondition: string;
     ClonePrototypeCondition: string;
-    RelationConditionDescription: string;
     ClonePrototypeConditionDescription: string;
     DefaultCachePeriod: string;
     LoadAllPlainFields: string;
     ContentName: string;
     ProceedCaching: string;
     CacheSettings: string;
-    ExitAnyway: string;
     UnsavedChanges: string;
     FormLoadError: string;
     FormSaveError: string;

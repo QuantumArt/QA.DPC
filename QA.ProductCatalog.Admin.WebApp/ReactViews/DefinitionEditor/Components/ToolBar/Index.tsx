@@ -1,15 +1,40 @@
 import React from "react";
-import { observer } from "mobx-react-lite";
-import { Button, ButtonGroup, Intent, Slider, Switch } from "@blueprintjs/core";
+import { observer, useLocalStore } from "mobx-react-lite";
+import { Button, ButtonGroup, Card, Intent, Popover, Slider, Switch } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
 import { TreeErrorDialog, Loading } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
 import { l } from "DefinitionEditor/Localization";
 import "./Style.scss";
+import { Position } from "@blueprintjs/core/lib/esm/common/position";
 
 const ToolBar = observer(() => {
   const { xmlEditorStore, treeStore, controlsStore } = useStores();
+  const infoState = useLocalStore(() => ({
+    opened: false,
+    toggle() {
+      this.opened = !this.opened;
+    }
+  }));
+  const infoContent = () => (
+    <Card>
+      <h4 className="bp3-heading">"Query on click" Guide:</h4>
+      <ol className="bp3-list">
+        <li>Turn on "Query on click" setting</li>
+        <li>Click on node in the tree</li>
+        <li>
+          Open Search in the XML editor <b>(Ctrl+F)</b>
+        </li>
+        <li>
+          Turn on <i>Regexp mode</i> <b>(Alt+R)</b>
+        </li>
+        <li>
+          Insert generated query <b>(Ctrl+V)</b>
+        </li>
+      </ol>
+    </Card>
+  );
 
   return (
     <div className="editor-toolbar">
@@ -55,6 +80,19 @@ const ToolBar = observer(() => {
           className="editor-toolbar__xml-controls"
           style={{ visibility: controlsStore.formMode ? "hidden" : "visible" }}
         >
+          <Popover
+            position={Position.BOTTOM}
+            content={infoContent()}
+            isOpen={infoState.opened}
+            modifiers={{ arrow: { enabled: false } }}
+          >
+            <Button
+              minimal
+              icon={IconNames.INFO_SIGN}
+              className="editor-toolbar__info-btn"
+              onClick={infoState.toggle}
+            />
+          </Popover>
           <Switch
             label={l("QueryOnClick")}
             checked={xmlEditorStore.queryOnClick}
@@ -72,9 +110,7 @@ const ToolBar = observer(() => {
               min={14}
               stepSize={2}
               labelStepSize={2}
-              onChange={(val: number) => {
-                xmlEditorStore.changeFontSize(val);
-              }}
+              onChange={xmlEditorStore.changeFontSize}
             />
           </div>
         </div>
