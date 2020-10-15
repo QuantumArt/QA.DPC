@@ -76,7 +76,6 @@ declare interface TaskWindowTypes {
   notify: {
     isNotifyActive: boolean;
     runningStateId: number;
-
     img: string;
     formRenderedServerTime: string;
   };
