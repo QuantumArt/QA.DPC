@@ -56,7 +56,7 @@
   $mycreds = New-Object System.Management.Automation.PSCredential ($login, $secpasswd)
 
   Write-Host "Installing service: $name"
-  New-Service -name $name -binaryPathName "dotnet $installFolder\$projectName.dll" -Description $description -displayName $displayName -startupType Automatic -credential $mycreds
+  New-Service -name $name -binaryPathName "dotnet $installFolder\$projectName.dll" -Description $description -displayName $displayName -startupType Automatic -credential $mycreds | Out-Null
   Write-Host "Installation completed: $name"
 
 }

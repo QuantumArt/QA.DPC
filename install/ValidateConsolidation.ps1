@@ -76,14 +76,6 @@ function Test-Port
   
 }
 
-if ($dbType -eq 0) {
-    $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
-    $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
-    if (-not(Get-Module -Name $moduleName)) {
-        Import-Module $moduleName
-    }
-}
-
 $requiredRuntime = '3.1.8'
   
 Try {
@@ -95,6 +87,14 @@ Try {
 If ($actualRuntime -notcontains $requiredRuntime){ Throw "Check ASP.NET Core runtime $requiredRuntime : failed" }
 
 If ($databaseServer) {
+    if ($dbType -eq 0) {
+        $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
+        $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
+        if (-not(Get-Module -Name $moduleName)) {
+            Import-Module $moduleName
+        }
+    }
+
     Try {
         Execute-Sql -server $databaseServer -name $login -pass $password -query "select 1 as result" -dbType $dbType | Out-Null
     } Catch {
