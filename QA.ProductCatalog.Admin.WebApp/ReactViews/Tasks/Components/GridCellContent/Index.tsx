@@ -1,4 +1,4 @@
-import React, { RefObject, useLayoutEffect, useRef, useState } from "react";
+import React, { RefObject, useEffect, useRef, useState } from "react";
 import { Tooltip } from "@blueprintjs/core";
 import { IUntruncatedElementProps, UntruncatedElementWrap } from "./Subcomponents";
 import "./Style.scss";
@@ -17,22 +17,19 @@ export const GridTruncatedCellContent = React.memo(
     const [isTruncate, setIsTruncate] = useState(false);
 
     //проверяет ширину и высоту строки и схлопывает ее добавляя тултип если это нужно
-    useLayoutEffect(
-      () => {
-        if (!isTruncate && cellRef.current.offsetWidth > truncateOnWidth) {
-          setIsTruncate(true);
-          return;
-        }
-        if (
-          isTruncate &&
-          cellRefTruncated.current &&
-          cellRefTruncated.current.offsetWidth < truncateOnWidth
-        ) {
-          setIsTruncate(false);
-        }
-      },
-      [isLoading, cellRef, truncateOnWidth, isTruncate, cellRefTruncated]
-    );
+    useEffect(() => {
+      if (!isTruncate && cellRef.current.offsetWidth > truncateOnWidth) {
+        setIsTruncate(true);
+        return;
+      }
+      if (
+        isTruncate &&
+        cellRefTruncated.current &&
+        cellRefTruncated.current.offsetWidth < truncateOnWidth
+      ) {
+        setIsTruncate(false);
+      }
+    }, [isLoading, cellRef, truncateOnWidth, isTruncate, cellRefTruncated]);
 
     if (isTruncate && !isLoading) {
       return (

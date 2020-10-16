@@ -5,39 +5,37 @@ import { TaskStatuses } from "Shared/Enums";
 import cn from "classnames";
 import "./Style.scss";
 
-interface StatusCell {
-  label: string;
-  props: ITagProps;
+interface IProps {
+  stateId: number;
+  state: string;
+  className?: string;
 }
 
-export const StatusTag = ({ value, className }) => {
-  const statusValues = window.task.statusValues;
-  const statusObj = statusValues.find(status => {
-    return status.value === value;
-  });
+export const StatusTag = React.memo(({ stateId, className, state }: IProps) => {
+  const tagProps = React.useMemo(() => {
+    const tagProps: ITagProps = {
+      round: true,
+      icon: false,
+      intent: getTaskIntentDependsOnStatus(stateId)
+    };
 
-  if (!statusObj) return null;
-
-  const StatusCellObj: StatusCell = {
-    label: statusObj.label,
-    props: { round: true, icon: false, intent: getTaskIntentDependsOnStatus(value) }
-  };
-
-  switch (statusObj.value) {
-    case TaskStatuses.Success:
-      Object.assign(StatusCellObj.props, { icon: "tick-circle" });
-      break;
-    case TaskStatuses.New:
-      Object.assign(StatusCellObj.props, { icon: "pause" });
-      break;
-    case TaskStatuses.Progress:
-      Object.assign(StatusCellObj.props, { icon: "refresh" });
-      break;
-  }
+    switch (stateId) {
+      case TaskStatuses.Success:
+        Object.assign(tagProps, { icon: "tick-circle" });
+        break;
+      case TaskStatuses.New:
+        Object.assign(tagProps, { icon: "pause" });
+        break;
+      case TaskStatuses.Progress:
+        Object.assign(tagProps, { icon: "refresh" });
+        break;
+    }
+    return tagProps;
+  }, [stateId]);
 
   return (
-    <Tag {...StatusCellObj.props} className={cn("status-cell-tag", className)}>
-      {StatusCellObj.label}
+    <Tag {...tagProps} className={cn("status-cell-tag", className)}>
+      {state}
     </Tag>
   );
-};
+});
