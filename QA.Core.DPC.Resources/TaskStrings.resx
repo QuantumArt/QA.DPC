@@ -345,5 +345,14 @@
   <data name="Dec">
     <value>Dec</value>
   </data>
+  <data name="Customer">
+    <value>Customer</value>
+  </data>
+  <data name="Create">
+    <value>Created</value>
+  </data>
+  <data name="Changed">
+    <value>Changed</value>
+  </data>
 </root>
 

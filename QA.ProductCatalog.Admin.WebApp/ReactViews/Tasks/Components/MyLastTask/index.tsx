@@ -9,6 +9,7 @@ import { getClassnameByIntent } from "Shared/Utils";
 import cn from "classnames";
 import { format, isValid } from "date-fns";
 import "./Style.scss";
+import { l } from "Tasks/Localization";
 
 interface IProps {
   task: Task;
@@ -31,14 +32,14 @@ export const MyLastTask = memo(({ task, width }: IProps) => {
     return (
       <div className="last-task-tooltip__wrap">
         <div className="last-task-tooltip__row last-task-tooltip__row--margin-top">
-          Заказчик: {task.UserName}
+          {l("customer")}: {task.UserName}
         </div>
         <div className="last-task-tooltip__row">
-          Создано:{" "}
+          {l("created")}:{" "}
           {task.CreatedTime && isValid(createdTime) && format(createdTime, "DD.MM.YYYY HH:mm:ss")}
         </div>
         <div className="last-task-tooltip__row last-task-tooltip__row--margin-bottom">
-          Изменено:{" "}
+          {l("changed")}:{" "}
           {task.LastStatusChangeTime &&
             isValid(lastStatusChangeTime) &&
             format(lastStatusChangeTime, "DD.MM.YYYY HH:mm:ss")}

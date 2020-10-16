@@ -42,7 +42,8 @@ export interface ColumnModel {
   getClassNameByEnableSchedule?: (taskId: number) => string;
   truncate?: {
     onWidth?: number;
-    noTruncateElement?: (taskId: number) => Element | String;
+    noTruncateElementWidth?: number;
+    noTruncateElement?: (task: GridTask) => Element | String;
   };
 }
 export const Task = observer(() => {
@@ -114,6 +115,7 @@ export const Task = observer(() => {
         },
         truncate: {
           onWidth: 120,
+          noTruncateElementWidth: 30,
           noTruncateElement: (gridElement: GridTask) => {
             return (
               <ScheduleGridCellCalendar
