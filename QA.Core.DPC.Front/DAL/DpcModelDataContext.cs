@@ -44,7 +44,9 @@ namespace QA.Core.DPC.Front.DAL
         
         public Product GetProduct(ProductLocator locator, int id)
         {
-            return GetProducts(locator).Include(m => m.ProductRegions).FirstOrDefault(m => id == m.DpcId);
+            var p = GetProducts(locator).FirstOrDefault(m => id == m.DpcId);
+            p.ProductRegions = GetProductRegions(p).ToList();
+            return p;
         }
 
         public ProductVersion GetProductVersion(ProductLocator locator, int id, DateTime date)
@@ -92,6 +94,11 @@ namespace QA.Core.DPC.Front.DAL
             return (string.IsNullOrEmpty(locator.Slug))
                 ? products.Where(m => String.IsNullOrEmpty(m.Slug))
                 : products.Where(m => m.Slug == locator.Slug);
+        }
+
+        public IQueryable<ProductRegion> GetProductRegions(Product p)
+        {
+            return ProductRegions.Where(n => n.ProductId == p.Id);
         }
 
         public void FillProduct(ProductLocator locator, Product product)

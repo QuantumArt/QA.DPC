@@ -375,7 +375,7 @@ function Restore-Database
         Execute-Sql @executeParams -query $createQuery
         $cnnString = Get-ConnectionString @executeParams -database $databaseName 
         $numCores = (Get-WmiObject -class Win32_ComputerSystem).NumberOfLogicalProcessors
-        Invoke-Expression "pg_restore -Fc -d '$cnnString' -j $numCores '$backupPath'"
+        Invoke-Expression "pg_restore -Fc -c -d '$cnnString' -j $numCores '$backupPath'"
 
     } else {
  
