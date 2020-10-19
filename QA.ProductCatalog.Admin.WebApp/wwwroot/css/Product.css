@@ -201,7 +201,7 @@ body,
 
 .collapsible .handle {
   position: absolute;
-  top: -2px;
+  top: 10px;
   right: 20px;
 }
 

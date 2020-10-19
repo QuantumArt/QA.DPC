@@ -43,7 +43,7 @@ export default class SendForm extends Component<Props> {
     return (
       <div className="formLayout PartialSend">
         <fieldset>
-          <legend>{legend}</legend>
+          <h3 className="bp3-heading">{legend}</h3>
           <p
             className="PartialSend__description"
             dangerouslySetInnerHTML={{ __html: description }}

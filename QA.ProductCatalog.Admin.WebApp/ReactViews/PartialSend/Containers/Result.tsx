@@ -61,7 +61,7 @@ export default class Result extends Component<Props> {
     return (
       <div className="formLayout PartialSend">
         <fieldset>
-          <legend>{legend}</legend>
+          <h3 className="bp3-heading">{legend}</h3>
           <dl className="plain-field row">
             <dt className="plain-field-capture label">{displayName}</dt>
             <dd className="plain-field-value field">{this.renderValue(task.displayName)}</dd>

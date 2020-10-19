@@ -36,10 +36,12 @@
         }
         else if (field.PlainFieldType == PlainFieldType.File)
         {
-            <input type="text" class="bp3-input bp3-fill" readonly="readonly" value="@value" />
-            <a href="@Model.GetFileUrl(field)" target="_blank" role="button" class="bp3-button bp3-minimal bp3-intent-success" title="Открыть файл в новой вкладке">
-                <i class="icon fas fa-external-link-alt"></i>
-            </a>
+            <div class="bp3-input-group">
+              <input type="text" class="bp3-input bp3-fill" readonly="readonly" value="@value" />
+              <a href="@Model.GetFileUrl(field)" target="_blank" role="button" class="bp3-button bp3-minimal bp3-intent-success" title="Открыть файл в новой вкладке">
+                  <i class="icon fas fa-external-link-alt"></i>
+              </a>
+            </div>
         }
         else
         {
