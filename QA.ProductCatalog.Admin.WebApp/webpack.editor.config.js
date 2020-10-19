@@ -5,8 +5,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
-const outDir = "wwwroot/js/Bundles";
-const relOutDir = "js/Bundles";
+const outDir = "wwwroot/js/bundles";
+const relOutDir = "js/bundles";
 
 const outPath = path.resolve(__dirname, outDir);
 

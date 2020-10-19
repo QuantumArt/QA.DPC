@@ -2,7 +2,7 @@ import React from "react";
 import { getValuesFromCronString, ICronsTagModel, partToString, UNITS } from "Tasks/Utils";
 import { getDateValueWithZeroAhead } from "Shared/Utils";
 import { CronPeriodType, CronUnitType } from "Shared/Enums";
-import "./style.scss";
+import "./Style.scss";
 import { l } from "Tasks/Localization";
 
 interface IProps {

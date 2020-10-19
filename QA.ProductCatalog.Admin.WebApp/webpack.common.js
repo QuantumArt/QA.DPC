@@ -8,8 +8,8 @@ const CleanWebpackPlugin = require("clean-webpack-plugin");
 const { TsconfigPathsPlugin } = require("tsconfig-paths-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 
-const outDir = "wwwroot/js/Bundles";
-const relOutDir = "js/Bundles";
+const outDir = "wwwroot/js/bundles";
+const relOutDir = "js/bundles";
 const outPath = path.resolve(__dirname, outDir);
 const viewsPath = path.resolve(__dirname, "Views");
 const views = new Set(glob.sync(path.resolve(viewsPath, "**/*.cshtml")));

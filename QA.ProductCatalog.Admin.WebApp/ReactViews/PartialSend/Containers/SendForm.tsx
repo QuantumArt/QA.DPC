@@ -5,7 +5,7 @@ import { FormGroup, TextArea, Checkbox, Button, Intent } from "@blueprintjs/core
 import { FetchStatus } from "Shared/Enums";
 
 import Store from "../PartialSendStore";
-import { CurrentStep } from "../enums";
+import { CurrentStep } from "../Enums";
 
 type Props = {
   store: Store;
