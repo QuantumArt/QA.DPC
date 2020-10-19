@@ -7,6 +7,10 @@ body,
   border-width: 0;
 }
 
+.hidden {
+  display: none !important;
+}
+
 /* Links */
 .actionlink {
   cursor: pointer;
@@ -19,14 +23,6 @@ body,
   width: 100%;
   text-overflow: ellipsis;
 }
-
-/* .Clip {
-    overflow: hidden;
-    white-space: nowrap;
-    display: inline-block;
-    width: 100%;
-    text-overflow: clip;
-  } */
 
 .Clip a {
   display: none;
@@ -223,15 +219,6 @@ body,
   margin-left: 2px;
 }
 
-/* .collapsed > fieldset {
-  padding-top: 0;
-  padding-bottom: 0;
-} */
-
 .collapsed.group-row + tr.collapsible-row {
   display: none;
 }
-
-/* .collapsed > fieldset > label {
-  margin: 0;
-} */

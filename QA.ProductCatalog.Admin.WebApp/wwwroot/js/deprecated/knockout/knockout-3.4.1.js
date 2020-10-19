@@ -548,7 +548,7 @@
             return c.apply(a, e);
           };
         });
-      a.a.e = new function() {
+      a.a.e = new (function() {
         function a(b, g) {
           var h = b[d];
           if (!h || "null" === h || !e[h]) {
@@ -577,10 +577,10 @@
             return c++ + d;
           }
         };
-      }();
+      })();
       a.b("utils.domData", a.a.e);
       a.b("utils.domData.clear", a.a.e.clear);
-      a.a.F = new function() {
+      a.a.F = new (function() {
         function b(b, c) {
           var e = a.a.e.get(b, d);
           e === n && c && ((e = []), a.a.e.set(b, d, e));
@@ -624,7 +624,7 @@
             u && "function" == typeof u.cleanData && u.cleanData([a]);
           }
         };
-      }();
+      })();
       a.$ = a.a.F.$;
       a.removeNode = a.a.F.removeNode;
       a.b("cleanNode", a.$);

@@ -32,7 +32,7 @@
     {
         if (!(item.Hidden ?? false))
         {
-          <div class="bp3-tab-panel tab-panel tabstip-item @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")" role="tabpanel">
+          <div class="bp3-tab-panel tab-panel tabstip-item hidden @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")" role="tabpanel">
             @{
               var tabStripItem = item as TabStripItem;
               var group = item as Group;
@@ -50,13 +50,13 @@
     }
 </div>
 <script>
-    $(function () {
-      QA.Product.TabStrip.init(
-        "@Model.UId",
-        "@defaultItemId",
-        '@Model.IsFullSized.ToString().ToLower()' == 'true', {
-            tabPosition: '@Model.TabPosition.ToString().ToLower()',
-            collapsible: '@Model.Collapsible.ToString().ToLower()' == 'true'}
-      );
-    });
+  $(function () {
+    QA.Product.TabStrip.init(
+      "@Model.UId",
+      "@defaultItemId",
+      '@Model.IsFullSized.ToString().ToLower()' == 'true', {
+          tabPosition: '@Model.TabPosition.ToString().ToLower()',
+          collapsible: '@Model.Collapsible.ToString().ToLower()' == 'true'}
+    );
+  });
 </script>

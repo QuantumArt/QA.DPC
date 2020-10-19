@@ -1,7 +1,15 @@
 ﻿/**
- * Global definitions for developement
+ * Global definitions
  * DO NOT IMPORT ANYTHING OR YOU WILL BREAK BUILD PROCESS!
  */
+
+declare interface JQueryStatic {
+  scrollTo(...args): void;
+}
+
+declare interface JQuery {
+  scrollTo(...args): void;
+}
 
 declare interface Window {
   definitionEditor: DefinitionEditorSettings;
@@ -57,5 +65,17 @@ declare interface Window {
       };
       sendNewPackageButton: string;
     };
+  };
+
+  Quantumart: import("../../../wwwroot/js/qp/QP8BackendApi.Interaction").Quantumart;
+
+  QA?: {
+    Product?: {
+      Index?: any;
+      TabStrip?: any;
+    };
+    Utils?: any;
+    Integration?: any;
+    Enums?: any;
   };
 }
