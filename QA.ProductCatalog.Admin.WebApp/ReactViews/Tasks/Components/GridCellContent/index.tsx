@@ -13,26 +13,19 @@ interface IProps extends IUntruncatedElementProps {
 export const GridTruncatedCellContent = React.memo(
   ({ refBody, isLoading, truncateOnWidth, untruncatedElement, value }: IProps) => {
     const cellRef = useRef(null);
-    const cellRefTruncated = useRef(null);
     const [isTruncate, setIsTruncate] = useState(false);
 
-    //проверяет ширину и высоту строки и схлопывает ее добавляя тултип если это нужно
-    useLayoutEffect(
-      () => {
-        if (!isTruncate && cellRef.current.offsetWidth > truncateOnWidth) {
-          setIsTruncate(true);
-          return;
-        }
-        if (
-          isTruncate &&
-          cellRefTruncated.current &&
-          cellRefTruncated.current.offsetWidth < truncateOnWidth
-        ) {
-          setIsTruncate(false);
-        }
-      },
-      [isLoading, cellRef, truncateOnWidth, isTruncate, cellRefTruncated]
-    );
+    useLayoutEffect(() => {
+      if (!isTruncate && cellRef.current.offsetHeight > 20 && !isLoading) {
+        setIsTruncate(true);
+      }
+    }, [isLoading, cellRef, isTruncate]);
+
+    useLayoutEffect(() => {
+      if (isTruncate && isLoading) {
+        setIsTruncate(false);
+      }
+    }, [isLoading, isTruncate]);
 
     if (isTruncate && !isLoading) {
       return (
@@ -46,7 +39,7 @@ export const GridTruncatedCellContent = React.memo(
               style={truncateOnWidth && { width: truncateOnWidth }}
               className="truncate-cell truncate-string"
             >
-              <span ref={cellRefTruncated}> {value && value}</span>
+              <span>{value && value}</span>
             </div>
           </Tooltip>
         </UntruncatedElementWrap>

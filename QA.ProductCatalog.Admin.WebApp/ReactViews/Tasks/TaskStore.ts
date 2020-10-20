@@ -89,7 +89,7 @@ export class TaskStore {
     onBecomeObserved(this, "gridData", this.init);
   }
   private IsPriorityRequestPending: boolean = false;
-  private alreadyNotifiedTaskIds: { [x: number]: boolean } = {};
+  private alreadyNotifiedTaskIds: { [x: number]: Task } = {};
   @observable.ref private gridData: Task[] = [];
   @observable private myLastTask: Task;
   @observable private total: number = 0;
@@ -156,7 +156,7 @@ export class TaskStore {
     }
   };
 
-  tasksNotificationsSender = (tasks, runningStateId) => {
+  tasksNotificationsSender = (tasks: Task[], runningStateId: number) => {
     const { formRenderedServerTime, img } = window.task.notify;
 
     const gridRenderServerTime = new Date(formRenderedServerTime);
@@ -164,17 +164,22 @@ export class TaskStore {
       const lastStatusChangeTime = task.LastStatusChangeTime
         ? new Date(task.LastStatusChangeTime)
         : null;
+      const alreadyNotifiedTask = this.alreadyNotifiedTaskIds[task.Id];
+      const isTaskShodBeNotify = !!alreadyNotifiedTask
+        ? new Date(task.LastStatusChangeTime).getTime() >
+          new Date(alreadyNotifiedTask.LastStatusChangeTime).getTime()
+        : true;
       return (
         lastStatusChangeTime &&
+        isTaskShodBeNotify &&
         task.StateId > runningStateId &&
-        !this.alreadyNotifiedTaskIds[task.Id] &&
         lastStatusChangeTime.getTime() > gridRenderServerTime.getTime()
       );
     });
 
     if (tasksShouldNotify.length) {
       tasksShouldNotify.forEach(task => {
-        this.alreadyNotifiedTaskIds[task.Id] = true;
+        this.alreadyNotifiedTaskIds[task.Id] = task;
         let body = `${l("state")}: ${task.State}`;
         if (task.Message) body += "\r\n" + task.Message;
         new Notification(`${l("task")}${task.DisplayName} ${l("proceed")}`, {

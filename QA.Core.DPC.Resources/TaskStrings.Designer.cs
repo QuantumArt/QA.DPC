@@ -1027,5 +1027,29 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Dec", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Customer
+        /// </summary>
+        public static string Customer {
+            get {
+                return ResourceManager.GetString("Customer", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Create
+        /// </summary>
+        public static string Create {
+            get {
+                return ResourceManager.GetString("Create", resourceCulture);
+            }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Changed
+        /// </summary>
+        public static string Changed {
+            get {
+                return ResourceManager.GetString("Changed", resourceCulture);
+            }
+        }
     }
 }
