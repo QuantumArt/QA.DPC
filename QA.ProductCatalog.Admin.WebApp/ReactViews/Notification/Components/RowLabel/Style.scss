@@ -1,8 +1,9 @@
 .field {
   width: 100%;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
+
   padding: 5px 10px 5px 0;
   &__label {
     width: 18%;

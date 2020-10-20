@@ -8,3 +8,4 @@ export * from "./CronUnitType";
 export * from "./CronPeriodType";
 export * from "./ScheduleType";
 export * from "./OperationState";
+export * from "./ChannelStatuses";

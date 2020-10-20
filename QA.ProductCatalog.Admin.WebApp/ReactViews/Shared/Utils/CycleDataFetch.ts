@@ -35,20 +35,25 @@ export class CycleDataFetch<T> {
   };
 
   initCyclingFetch = async (): Promise<void> => {
+    let isFirstRequest = true;
+
     const cycling = async () => {
       try {
         if (this.fetchAttempts === this.maxFetchAttempts) return;
-        await delay(this.isError ? this.onErrorTimeout : this.timeout);
+        if (!isFirstRequest) await delay(this.isError ? this.onErrorTimeout : this.timeout);
         await this.getData();
+        if (isFirstRequest) isFirstRequest = false;
+        return cycling();
       } catch (e) {
         this.fetchAttempts += 1;
         if (this.fetchAttempts === this.maxFetchAttempts) {
           throw new Error(e);
         }
-        cycling();
-        throw new Error(e);
+        console.error(e, `${this.fetchAttempts} error of ${this.maxFetchAttempts} in cycle fetch`);
+        return cycling();
       }
     };
+
     await cycling();
   };
 
@@ -57,7 +62,6 @@ export class CycleDataFetch<T> {
   };
 
   public continueCycling = (): void => {
-    console.log("cont!!!");
     this.fetchAttempts = 0;
     this.initCyclingFetch();
   };

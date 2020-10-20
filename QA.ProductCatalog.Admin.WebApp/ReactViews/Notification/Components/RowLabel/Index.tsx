@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import cn from "classnames";
 import "./Style.scss";
 
-export const SelectRow = ({
+export const RowLabel = ({
   className,
   label,
   children
