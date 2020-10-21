@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import {
   GridHeadFilterTooltip,
   ProgressBarGridCell,
@@ -42,7 +42,8 @@ export interface ColumnModel {
   getClassNameByEnableSchedule?: (taskId: number) => string;
   truncate?: {
     onWidth?: number;
-    noTruncateElement?: (taskId: number) => Element | String;
+    noTruncateElementWidth?: number;
+    noTruncateElement?: (task: GridTask) => Element | String;
   };
 }
 export const Task = observer(() => {
@@ -79,7 +80,10 @@ export const Task = observer(() => {
           </GridHeadFilterTooltip>
         ),
         accessor: "StateId",
-        Cell: StatusTag
+        Cell: (cellProps: any) => {
+          const { State, StateId } = cellProps.data[cellProps.row.index] as GridTask;
+          return <StatusTag state={State} stateId={StateId} />;
+        }
       },
       {
         Header: (
@@ -111,6 +115,7 @@ export const Task = observer(() => {
         },
         truncate: {
           onWidth: 120,
+          noTruncateElementWidth: 30,
           noTruncateElement: (gridElement: GridTask) => {
             return (
               <ScheduleGridCellCalendar
@@ -140,15 +145,13 @@ export const Task = observer(() => {
         Header: l("created"),
         accessor: "CreatedTime",
         Cell: DateGridCell,
-        className: "grid__date-cell",
-        truncate: { onWidth: 110 }
+        truncate: { onWidth: 130 }
       },
       {
         Header: l("lastStatusChange"),
         accessor: "LastStatusChangeTime",
         Cell: DateGridCell,
-        className: "grid__date-cell",
-        truncate: { onWidth: 110 }
+        truncate: { onWidth: 130 }
       },
       {
         Header: l("message"),
@@ -160,7 +163,9 @@ export const Task = observer(() => {
         accessor: "IsCancellationRequested",
         className: "grid__rerun-cell",
         Cell: (cellProps: any) => {
-          const { Id, StateId, IsCancellationRequested } = cellProps.row.values;
+          const { Id, StateId, IsCancellationRequested } = cellProps.row.values as Partial<
+            GridTask
+          >;
           return (
             <RerunGridCell
               id={Id}
@@ -177,20 +182,18 @@ export const Task = observer(() => {
   );
 
   return (
-    <div className="task-wrapper">
+    <div className="task-wrapper" ref={gridWrap}>
       <ErrorBoundary>
         <MyLastTask task={store.lastTask} width={gridWidth} />
       </ErrorBoundary>
 
-      <div ref={gridWrap}>
-        <Grid
-          columns={gridColumns}
-          data={store.getGridData}
-          customPagination={store.pagination}
-          total={store.getTotal}
-          isLoading={store.isLoading}
-        />
-      </div>
+      <Grid
+        columns={gridColumns}
+        data={store.getGridData}
+        customPagination={store.pagination}
+        total={store.getTotal}
+        isLoading={store.isLoading}
+      />
     </div>
   );
 });

@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "module": "esNext",
     "moduleResolution": "node",
     "target": "es6",
@@ -22,7 +22,7 @@
     "skipLibCheck": true,
     "jsx": "react",
     "lib": [ "es6", "es2016.array.include", "es2017.object", "dom" ],
-    "types": [ "node", "webpack-env", "jest" ],
+    "types": [ "node", "webpack-env", "jest", "jquery" ],
     "baseUrl": ".",
     "rootDirs": [ "ClientApp", "ReactViews" ],
     "paths": {

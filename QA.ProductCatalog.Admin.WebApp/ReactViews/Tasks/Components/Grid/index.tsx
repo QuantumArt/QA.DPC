@@ -63,6 +63,10 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                 <tr {...row.getRowProps()} className="grid-body__tr">
                   {row.cells.map(cell => {
                     const gridElement = data.find(x => x.Id === cell.row.values.Id);
+                    const noTruncateElementWidth =
+                      (cell.column.truncate && cell.column.truncate.noTruncateElementWidth) || 0;
+                    const cellWrapperWidth =
+                      cell.column.truncate && cell.column.truncate.onWidth + noTruncateElementWidth;
 
                     const classNameByEnableSchedule = !!cell.column.getClassNameByEnableSchedule
                       ? cell.column.getClassNameByEnableSchedule(gridElement)
@@ -106,7 +110,7 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                           classNameByEnableSchedule
                         )}
                       >
-                        <div style={cell.column.fixedWidth && { width: cell.column.fixedWidth }}>
+                        <div style={cell.column.truncate && { minWidth: cellWrapperWidth }}>
                           {renderCell()}
                         </div>
                       </td>

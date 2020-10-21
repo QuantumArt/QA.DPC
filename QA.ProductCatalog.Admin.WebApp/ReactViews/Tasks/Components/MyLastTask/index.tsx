@@ -1,13 +1,15 @@
 import React, { memo } from "react";
 import { Callout, Icon, IProgressBarProps, Tooltip } from "@blueprintjs/core";
 import { Task } from "Tasks/ApiServices/DataContracts";
-import { DateGridCell, StatusTag } from "Tasks/Components";
+import { StatusTag } from "Tasks/Components";
 import { getTaskIntentDependsOnStatus } from "Shared/Utils";
 import ProgressBar from "Shared/Components/ProgressBar";
 import { TaskStatuses } from "Shared/Enums";
 import { getClassnameByIntent } from "Shared/Utils";
 import cn from "classnames";
+import { format, isValid } from "date-fns";
 import "./Style.scss";
+import { l } from "Tasks/Localization";
 
 interface IProps {
   task: Task;
@@ -16,30 +18,31 @@ interface IProps {
 
 export const MyLastTask = memo(({ task, width }: IProps) => {
   if (!task) return null;
+  const createdTime = new Date(task.CreatedTime);
+  const lastStatusChangeTime = new Date(task.LastStatusChangeTime);
   const intent = getTaskIntentDependsOnStatus(task.StateId);
   const TooltipContent = React.useMemo(() => {
     const progressBarProps: IProgressBarProps = {
       value: task.Progress,
       intent: getTaskIntentDependsOnStatus(task.StateId),
-      animate: false,
-      stripes: false
+      animate: task.StateId === TaskStatuses.Progress,
+      stripes: task.StateId === TaskStatuses.Progress
     };
-
-    if (task.StateId === TaskStatuses.Progress) {
-      progressBarProps.animate = true;
-      progressBarProps.stripes = true;
-    }
 
     return (
       <div className="last-task-tooltip__wrap">
         <div className="last-task-tooltip__row last-task-tooltip__row--margin-top">
-          Заказчик: {task.UserName}
+          {l("customer")}: {task.UserName}
         </div>
         <div className="last-task-tooltip__row">
-          Создано: {DateGridCell({ value: task.CreatedTime })}
+          {l("created")}:{" "}
+          {task.CreatedTime && isValid(createdTime) && format(createdTime, "DD.MM.YYYY HH:mm:ss")}
         </div>
         <div className="last-task-tooltip__row last-task-tooltip__row--margin-bottom">
-          Изменено: {DateGridCell({ value: task.LastStatusChangeTime })}
+          {l("changed")}:{" "}
+          {task.LastStatusChangeTime &&
+            isValid(lastStatusChangeTime) &&
+            format(lastStatusChangeTime, "DD.MM.YYYY HH:mm:ss")}
         </div>
         <div className="last-task-tooltip__bar-wrapper">
           <ProgressBar defaultBarProps={progressBarProps} withLabel={false} />
@@ -67,7 +70,11 @@ export const MyLastTask = memo(({ task, width }: IProps) => {
           >
             {task.Name}
           </span>
-          <StatusTag className="my-last-task__header-item" value={task.StateId} />
+          <StatusTag
+            className="my-last-task__header-item"
+            state={task.State}
+            stateId={task.StateId}
+          />
           <Tooltip
             className="last-task-tooltip my-last-task__header-item"
             popoverClassName="last-task-tooltip__wrap"

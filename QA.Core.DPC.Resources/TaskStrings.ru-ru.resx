@@ -442,5 +442,14 @@
   <data name="Dec">
     <value>Дек</value>
   </data>
+  <data name="Customer">
+    <value>Заказчик</value>
+  </data>
+  <data name="Create">
+    <value>Создано</value>
+  </data>
+  <data name="Changed">
+    <value>Изменено</value>
+  </data>
 </root>
 

@@ -417,12 +417,21 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 foreach (var task in result)
                 {
                     task.Message = MessageToDisplay(task.Message);
-                    task.TaskState.Name = _taskRm.GetString(task.TaskState.Name) ?? task.TaskState.Name;
+                    task.TaskState.Name = _taskRm.GetString(_taskStates[task.StateID]) ?? task.TaskState.Name;
                 }
 
                 return result;
             }              
         }
+
+        private readonly Dictionary<int, string> _taskStates = new Dictionary<int, string>
+        {
+            {1, "New"},
+            {2, "Running"},
+            {3, "Completed"},
+            {4, "Error"},
+            {5, "Cancelled"}
+        };
 
 
         private bool RequestCancellation(int id)

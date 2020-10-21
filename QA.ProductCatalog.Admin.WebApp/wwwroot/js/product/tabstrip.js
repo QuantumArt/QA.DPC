@@ -31,6 +31,7 @@ QA.Product.TabStrip =
       if (key) {
         var savedTabName = localStorage.getItem(key);
         var tabstrip = $tabstrip.data("kendoTabStrip");
+        console.log(tabstrip);
 
         if (tabstrip && savedTabName && savedTabName != "") {
           $tabstrip.find(".tabstrip-header-item").each(function(i, item) {

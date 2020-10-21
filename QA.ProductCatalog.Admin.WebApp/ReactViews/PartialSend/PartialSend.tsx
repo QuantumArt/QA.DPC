@@ -50,8 +50,7 @@ export default class PartialSend extends Component<Props> {
   }
 
   render(): ReactNode {
-    const { currentStep } = this.props.store;
-
+    let { currentStep } = this.props.store;
     if (currentStep === CurrentStep.Empty) {
       return (
         <div className="formLayout centered PartialSend">

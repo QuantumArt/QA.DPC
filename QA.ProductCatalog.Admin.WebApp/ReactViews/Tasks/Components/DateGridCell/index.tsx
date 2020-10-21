@@ -1,14 +1,8 @@
-import { getDateValueWithZeroAhead } from "Shared/Utils";
+import React from "react";
+import { format, isValid } from "date-fns";
 
-export const DateGridCell = ({ value }) => {
+export const DateGridCell = React.memo(({ value }: { value: string }) => {
   const date = new Date(value);
-  let dd: number | string = date.getDate();
-  let mm: number | string = date.getMonth() + 1;
-  if (mm < 10) {
-    mm = getDateValueWithZeroAhead(mm);
-  }
-  if (dd < 10) {
-    dd = getDateValueWithZeroAhead(dd);
-  }
-  return `${dd}.${mm}.${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`;
-};
+
+  return <>{isValid(date) && format(date, "DD.MM.YYYY HH:mm:ss")}</>;
+});

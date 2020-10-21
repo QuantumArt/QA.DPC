@@ -83,12 +83,15 @@
         state: "@Html.Raw(TaskStrings.State)",
         task: "@Html.Raw(TaskStrings.Task) ",
         proceed: "@Html.Raw(TaskStrings.Processed)",
+        customer: "@Html.Raw(TaskStrings.Customer)",
+        created: "@Html.Raw(TaskStrings.Create)",
+        changed: "@Html.Raw(TaskStrings.Changed)",
       },
       notify: {
         isNotifyActive: "@Model.Notify",
         runningStateId: "@((byte) QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)",
         img: '@Url.Content("~/images/TaskStates/")',
-        formRenderedServerTime: '@(DateTime.Now)'
+        formRenderedServerTime: '@Html.Raw(JsonConvert.SerializeObject(DateTime.Now.ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))))'
       }
     }
   </script>

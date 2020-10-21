@@ -9,16 +9,14 @@
 export declare function checkHost(
   hostUID: string,
   destination: Window,
-  callback: (
-    arg: {
-      /** результат проверки  */
-      success: boolean;
-      /** версия бекэнда в случае успешной проверки */
-      hostVersion?: string;
-      /** текст ошибки в случае неуспешной проверки */
-      error?: string;
-    }
-  ) => void
+  callback: (arg: {
+    /** результат проверки  */
+    success: boolean;
+    /** версия бекэнда в случае успешной проверки */
+    hostVersion?: string;
+    /** текст ошибки в случае неуспешной проверки */
+    error?: string;
+  }) => void
 ): void;
 
 /**
@@ -318,7 +316,7 @@ export declare const ExternalMessageTypes: {
   OpenFileLibrary: 7;
 };
 
-declare var Quantumart: {
+export declare interface Quantumart {
   QP8: {
     Interaction: {
       checkHost: typeof checkHost;
@@ -336,4 +334,4 @@ declare var Quantumart: {
       BackendEventTypes: typeof BackendEventTypes;
     };
   };
-};
+}

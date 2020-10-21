@@ -344,10 +344,12 @@
         // We use execScript on Internet Explorer
         // We use an anonymous function so that context is window
         // rather than jQuery in Firefox
-        (window.execScript ||
+        (
+          window.execScript ||
           function(data) {
             window["eval"].call(window, data);
-          })(data);
+          }
+        )(data);
       }
     },
 
@@ -5873,10 +5875,7 @@
       // element in IE9, the outerHTML strategy above is not sufficient.
       // If the src has innerHTML and the destination does not,
       // copy the src.innerHTML into the dest.innerHTML. #10324
-      if (
-        support.html5Clone &&
-        (src.innerHTML && !jQuery.trim(dest.innerHTML))
-      ) {
+      if (support.html5Clone && src.innerHTML && !jQuery.trim(dest.innerHTML)) {
         dest.innerHTML = src.innerHTML;
       }
     } else if (nodeName === "input" && rcheckableType.test(src.type)) {
@@ -10896,8 +10895,8 @@
 
         while (
           offsetParent &&
-          (!jQuery.nodeName(offsetParent, "html") &&
-            jQuery.css(offsetParent, "position") === "static")
+          !jQuery.nodeName(offsetParent, "html") &&
+            jQuery.css(offsetParent, "position") === "static"
         ) {
           offsetParent = offsetParent.offsetParent;
         }
