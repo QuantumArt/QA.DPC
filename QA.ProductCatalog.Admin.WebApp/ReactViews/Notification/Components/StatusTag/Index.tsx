@@ -1,22 +1,22 @@
 import { Tag, ITagProps } from "@blueprintjs/core";
 import React, { useMemo } from "react";
-import { getChannelTagIntentDependsOnStatus } from "Shared/Utils";
-import { ChannelStatuses } from "Shared/Enums";
+import { getPublishTagIntentDependsOnStatus } from "Shared/Utils";
+import { ChannelPublishStatuses } from "Shared/Enums";
 import cn from "classnames";
 import "./Style.scss";
+import { isNull, isUndefined } from "lodash";
 
 export const StatusTag = ({ value, className }) => {
+  if (isNull(value) || isUndefined(value)) return "";
   const statusTagProps = useMemo(() => {
     const props: ITagProps = {
       round: true,
       icon: false,
-      intent: getChannelTagIntentDependsOnStatus(value)
+      intent: getPublishTagIntentDependsOnStatus(value)
     };
 
-    switch (value) {
-      case ChannelStatuses.OK:
-        Object.assign(props, { icon: "tick-circle" });
-        break;
+    if (value === ChannelPublishStatuses.OK) {
+      Object.assign(props, { icon: "tick-circle" });
     }
     return props;
   }, [value]);

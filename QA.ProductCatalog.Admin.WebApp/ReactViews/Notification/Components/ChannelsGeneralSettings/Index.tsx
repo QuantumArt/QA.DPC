@@ -1,8 +1,9 @@
 import React from "react";
 import { IGeneralSettings } from "Notification/ApiServices/ApiInterfaces";
 import "./Style.scss";
-import { RowLabel } from "Notification/Components";
-import { Checkbox, InputGroup } from "@blueprintjs/core";
+import { RowLabel, StaticTextField } from "Notification/Components";
+import { Checkbox } from "@blueprintjs/core";
+import { l } from "Notification/Localization";
 
 interface IProps {
   settings: IGeneralSettings;
@@ -11,30 +12,33 @@ interface IProps {
 export const ChannelsGeneralSettings = React.memo(({ settings }: IProps) => {
   return (
     <>
-      <RowLabel label={"Autopublish"}>
-        <Checkbox checked={settings?.Autopublish || false}>
+      <RowLabel label={l("autoPublication")}>
+        <Checkbox disabled checked={settings?.Autopublish || false}>
           <strong>Автоматическая</strong>
         </Checkbox>
       </RowLabel>
 
-      <RowLabel label={"Send interval"}>
-        <InputGroup disabled={true} value={String(settings?.CheckInterval) || ""} />
+      <RowLabel label={l("sendInterval")}>
+        <StaticTextField text={String(settings?.CheckInterval) || ""} subtext={l("seconds")} />
       </RowLabel>
 
-      <RowLabel label={"Send interval while errors are occuring"}>
-        <InputGroup disabled={true} value={String(settings?.WaitIntervalAfterErrors) || ""} />
+      <RowLabel label={l("errorSendInterval")}>
+        <StaticTextField
+          text={String(settings?.WaitIntervalAfterErrors) || ""}
+          subtext={l("seconds")}
+        />
       </RowLabel>
 
-      <RowLabel label={"Number of errors"}>
-        <InputGroup disabled={true} value={String(settings?.ErrorCountBeforeWait) || ""} />
+      <RowLabel label={l("errNumBeforeWait")}>
+        <StaticTextField text={String(settings?.ErrorCountBeforeWait) || ""} />
       </RowLabel>
 
-      <RowLabel label={"Package size"}>
-        <InputGroup disabled={true} value={String(settings?.PackageSize) || ""} />
+      <RowLabel label={l("packageSize")}>
+        <StaticTextField text={String(settings?.PackageSize) || ""} />
       </RowLabel>
 
-      <RowLabel label={"Notification timeout"}>
-        <InputGroup disabled={true} value={String(settings?.TimeOut) || ""} />
+      <RowLabel label={l("notifyTimeout")}>
+        <StaticTextField text={String(settings?.TimeOut) || ""} subtext={l("seconds")} />
       </RowLabel>
     </>
   );

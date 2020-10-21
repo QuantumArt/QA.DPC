@@ -1,9 +1,9 @@
 import React from "react";
 import { ISystemSettings } from "Notification/ApiServices/ApiInterfaces";
 import "./Style.scss";
-import { RowLabel } from "Notification/Components";
-import { InputGroup } from "@blueprintjs/core";
+import { RowLabel, StaticTextField } from "Notification/Components";
 import { format, isValid } from "date-fns";
+import { l } from "Notification/Localization";
 
 interface IProps {
   settings: ISystemSettings;
@@ -11,17 +11,16 @@ interface IProps {
 
 export const ChannelsSystemSettings = React.memo(({ settings }: IProps) => {
   const date = new Date(settings?.Started);
+  const dd = isValid(date) ? format(date, "DD.MM.YYYY") : "";
+  const mm = isValid(date) ? format(date, "HH:mm:ss") : "";
 
   return (
     <>
-      <RowLabel label={"Channel provider"}>
-        <InputGroup disabled={true} value={settings?.NotificationProvider || ""} />
+      <RowLabel label={l("channelProvider")}>
+        <StaticTextField text={settings?.NotificationProvider || ""} />
       </RowLabel>
-      <RowLabel label={"Service start time"}>
-        <InputGroup
-          disabled={true}
-          value={(isValid(date) && format(date, "DD.MM.YYYY HH:mm:ss")) || ""}
-        />
+      <RowLabel label={l("startTime")}>
+        <StaticTextField text={dd} subtext={mm} />
       </RowLabel>
     </>
   );

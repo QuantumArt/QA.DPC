@@ -1,7 +1,12 @@
 import { createContext } from "react";
 import { action, computed, observable, runInAction } from "mobx";
 import { apiService } from "Notification/ApiServices";
-import { CycleDataFetch } from "Shared/Utils";
+import {
+  checkPermissions,
+  CycleDataFetch,
+  getChannelStatusDescription,
+  setBrowserNotifications
+} from "Shared/Utils";
 import {
   IChannel,
   IChannelsResponse,
@@ -18,6 +23,7 @@ export class NotificationStore {
       5000,
       15000
     );
+    checkPermissions();
   }
   private cycleFetch;
   @observable.ref private systemSettings: ISystemSettings;
@@ -28,7 +34,7 @@ export class NotificationStore {
     try {
       await this.cycleFetch.initCyclingFetch();
     } catch (e) {
-      console.error(e, "abvab");
+      console.error(e);
     }
   };
 
@@ -38,7 +44,6 @@ export class NotificationStore {
 
   @action
   setData = (data: IChannelsResponse) => {
-    console.log(data);
     this.setSystemSettings({
       NotificationProvider: data.NotificationProvider,
       Started: data.Started
@@ -51,7 +56,26 @@ export class NotificationStore {
   setChannels = (data: IChannel[]) => {
     const isSameData = differenceWith(data, this.channels, isEqual).length === 0;
     if (!isSameData) {
+      if (this.channels.length) setBrowserNotifications(() => this.notificationsSender(data));
       this.channels = data;
+    }
+  };
+
+  notificationsSender = (data: IChannel[]): void => {
+    if (!data) return;
+    const channelsWillBeNotify = data.filter(channel => {
+      const oldChannel = this.channels.find(x => x.LastId === channel.LastId);
+      return oldChannel.State !== channel.State;
+    });
+
+    if (channelsWillBeNotify.length) {
+      channelsWillBeNotify.forEach(channel => {
+        let body = `New state: ${getChannelStatusDescription(channel.State)}`;
+        body += "\r\n" + `Id product: ${channel.LastId}`;
+        new Notification(`state of product id ${channel.LastId} was changed`, {
+          body: body
+        });
+      });
     }
   };
 
@@ -73,7 +97,6 @@ export class NotificationStore {
   get getChannels(): IChannel[] {
     return this.channels;
   }
-
   @computed
   get getGeneralSettings(): IGeneralSettings {
     return this.generalSettings;

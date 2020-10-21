@@ -5,6 +5,8 @@ import "./Style.scss";
 import cn from "classnames";
 import { StatusTag } from "Notification/Components/StatusTag";
 import { format, isValid } from "date-fns";
+import { l } from "Notification/Localization";
+import { ChannelStatusTag } from "Notification/Components";
 
 interface IProps {
   gridData: IChannel[];
@@ -19,35 +21,36 @@ export const ChannelsGrid = React.memo(({ gridData }: IProps) => {
   const gridColumns = React.useMemo(
     () => [
       {
-        Header: "Channel",
+        Header: l("channel"),
         accessor: "Name"
       },
       {
-        Header: "Queue",
+        Header: l("queue"),
         accessor: "Count"
       },
       {
-        Header: "Enqueue time",
+        Header: l("enqueueTime"),
         accessor: "LastQueued",
         Cell: parseDate
       },
       {
-        Header: "Publication time",
+        Header: l("publishingTime"),
         accessor: "LastPublished",
         Cell: parseDate
       },
       {
-        Header: "Product Id",
+        Header: l("productId"),
         accessor: "LastId"
       },
       {
-        Header: "Publication status",
+        Header: l("publishingStatus"),
         accessor: "LastStatus",
         Cell: StatusTag
       },
       {
-        Header: "Channel status",
-        accessor: "State"
+        Header: l("channelStatus"),
+        accessor: "State",
+        Cell: ChannelStatusTag
       }
     ],
     []

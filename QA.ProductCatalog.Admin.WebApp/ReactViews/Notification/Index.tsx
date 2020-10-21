@@ -8,6 +8,7 @@ import {
   ChannelsSystemSettings
 } from "./Components";
 import "./Root.scss";
+import { l } from "Notification/Localization";
 
 export const Notification = observer(() => {
   const store = useStore();
@@ -16,19 +17,18 @@ export const Notification = observer(() => {
     store.initRequests();
     return store.breakRequests;
   }, []);
-  console.log("rerender");
 
   return (
     <div className="channels-wrap">
-      <ChannelsBlock header="System settings">
+      <ChannelsBlock header={l("sSettings")}>
         <ChannelsSystemSettings settings={store.getSystemSettings} />
       </ChannelsBlock>
 
-      <ChannelsBlock contentWithoutPadding header="Channels">
+      <ChannelsBlock contentWithoutPadding header={l("channels")}>
         <ChannelsGrid gridData={store.getChannels} />
       </ChannelsBlock>
 
-      <ChannelsBlock header="Settings">
+      <ChannelsBlock header={l("gSettings")}>
         <ChannelsGeneralSettings settings={store.getGeneralSettings} />
       </ChannelsBlock>
     </div>

@@ -1,3 +1,5 @@
+import { ChannelStatuses } from "Shared/Enums";
+
 export interface IChannelsResponse {
   Channels: IChannel[];
   CurrentSettings: IGeneralSettings;
@@ -13,7 +15,7 @@ export interface IChannel {
   LastQueued: string; //date
   LastStatus: string;
   Name: string;
-  State: number;
+  State: ChannelStatuses;
 }
 
 export interface IGeneralSettings {

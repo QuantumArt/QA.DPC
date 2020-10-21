@@ -1,4 +1,6 @@
 ﻿export enum ChannelStatuses {
-  OK = "OK",
-  NotFound = "NotFound"
+  New,
+  Actual,
+  Changed,
+  Deleted
 }
