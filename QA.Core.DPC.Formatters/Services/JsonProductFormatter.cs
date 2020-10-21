@@ -48,9 +48,11 @@ namespace QA.Core.DPC.Formatters.Services
             {
                 string line = await reader.ReadToEndAsync();
                 Content definition = null;
+                object slug = null;
+                object version = null;
 
-                _actionContext.RouteData.Values.TryGetValue("slug", out object slug);
-                _actionContext.RouteData.Values.TryGetValue("version", out object version);
+                _actionContext?.RouteData?.Values?.TryGetValue("slug", out slug);
+                _actionContext?.RouteData?.Values?.TryGetValue("version", out version);
 
                 if (slug == null && version == null)
                 {
