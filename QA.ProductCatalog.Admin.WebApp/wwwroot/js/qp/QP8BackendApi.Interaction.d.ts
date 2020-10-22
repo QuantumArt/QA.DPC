@@ -9,14 +9,16 @@
 export declare function checkHost(
   hostUID: string,
   destination: Window,
-  callback: (arg: {
-    /** результат проверки  */
-    success: boolean;
-    /** версия бекэнда в случае успешной проверки */
-    hostVersion?: string;
-    /** текст ошибки в случае неуспешной проверки */
-    error?: string;
-  }) => void
+  callback: (
+    arg: {
+      /** результат проверки  */
+      success: boolean;
+      /** версия бекэнда в случае успешной проверки */
+      hostVersion?: string;
+      /** текст ошибки в случае неуспешной проверки */
+      error?: string;
+    }
+  ) => void
 ): void;
 
 /**
@@ -181,6 +183,30 @@ export declare class OpenFileLibraryOptions {
 }
 
 /**
+ * Отправка Push-уведомления средствами QP, так как многие браузеры блокируют отправку через IFRAME.
+ * @param sendNotificationOptions
+ * @param hostUID Уникальный идентификатор текущей вкладки ГПИ.
+ * Генерируется бекэндом, передаётся в пользовательское действие в виде одноимённого параметра `QueryString`.
+ * @param destination Окно, содержащее основное приложение бекэнда.
+ * Обычно нужно передавать window.parent.
+ */
+export declare function sendNotification(
+    sendNotificationOptions: SendNotificationOptions,
+    hostUID: string,
+    destination: Window
+): void;
+
+/** Параметры сообщения на отправку уведомления */
+export declare class SendNotificationOptions {
+  /** Заголовок сообщения уведомления */
+  title: string;
+  /** Необязательная иконка уведомления */
+  icon?: string;
+  /** Необязательное тело сообщения */
+  body?: string;
+}
+
+/**
  * Предпросмотр изображения, содержащегося в поле статьи
  * @param previewImageOptions
  * @param hostUID Уникальный идентификатор текущей вкладки ГПИ.
@@ -314,9 +340,10 @@ export declare const ExternalMessageTypes: {
   PreviewImage: 5;
   DownloadFile: 6;
   OpenFileLibrary: 7;
+  SendNotification: 8;
 };
 
-export declare interface Quantumart {
+declare var Quantumart: {
   QP8: {
     Interaction: {
       checkHost: typeof checkHost;
@@ -326,6 +353,7 @@ export declare interface Quantumart {
       previewImage: typeof previewImage;
       downloadFile: typeof downloadFile;
       openFileLibrary: typeof openFileLibrary;
+      sendNotification: typeof sendNotification;
       ExecuteActionOptions: typeof ExecuteActionOptions;
       ArticleFormState: typeof ArticleFormState;
       OpenSelectWindowOptions: typeof OpenSelectWindowOptions;
@@ -334,4 +362,4 @@ export declare interface Quantumart {
       BackendEventTypes: typeof BackendEventTypes;
     };
   };
-}
+};
