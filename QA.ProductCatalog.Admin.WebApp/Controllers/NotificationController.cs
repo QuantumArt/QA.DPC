@@ -117,5 +117,22 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             
 			return RedirectToAction("Index");
 		}
+
+        public ActionResult UpdateConfigurationBeta()
+		{
+            var customerCode = _identityProvider.Identity.CustomerCode;
+            if (!String.IsNullOrEmpty(_restUrl))
+            {
+                var client = _factory.CreateClient();            
+                client.PostAsync(GetUrl(customerCode), null);
+
+            }
+            else
+            {
+                _service.UpdateConfiguration(customerCode);
+            }
+
+            return IndexBeta();
+		}
 	}
 }

@@ -13,9 +13,7 @@ export const ChannelsGeneralSettings = React.memo(({ settings }: IProps) => {
   return (
     <>
       <RowLabel label={l("autoPublication")}>
-        <Checkbox disabled checked={settings?.Autopublish || false}>
-          <strong>Автоматическая</strong>
-        </Checkbox>
+        <Checkbox disabled checked={settings?.Autopublish || false}></Checkbox>
       </RowLabel>
 
       <RowLabel label={l("sendInterval")}>

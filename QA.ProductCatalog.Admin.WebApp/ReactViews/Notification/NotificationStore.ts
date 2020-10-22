@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import { action, computed, observable, runInAction } from "mobx";
+import { action, computed, observable } from "mobx";
 import { apiService } from "Notification/ApiServices";
 import {
   checkPermissions,
@@ -18,17 +18,24 @@ import { differenceWith, isEqual } from "lodash";
 export class NotificationStore {
   constructor() {
     this.cycleFetch = new CycleDataFetch<IChannelsResponse>(
-      this.setData,
-      apiService.getModel.bind(apiService),
+      null,
+      async (): Promise<IChannelsResponse> => {
+        const data = await apiService.getModel();
+        if (!this.IsPriorityRequestAlreadyPending) this.setData(data);
+        return data;
+      },
       5000,
       15000
     );
     checkPermissions();
   }
+  private IsPriorityRequestAlreadyPending: boolean;
   private cycleFetch;
   @observable.ref private systemSettings: ISystemSettings;
   @observable.ref private channels: IChannel[] = [];
   @observable.ref private generalSettings: IGeneralSettings;
+  @observable private _isActual: boolean = true;
+  @observable isLoading: boolean = false;
 
   initRequests = async (): Promise<void> => {
     try {
@@ -42,8 +49,21 @@ export class NotificationStore {
     this.cycleFetch.breakCycling();
   };
 
+  priorityRequestInSameTime = async (cb: () => Promise<void>): Promise<void> => {
+    try {
+      this.IsPriorityRequestAlreadyPending = true;
+      await cb();
+    } catch (e) {
+      console.error(e);
+      throw e;
+    } finally {
+      this.IsPriorityRequestAlreadyPending = false;
+    }
+  };
+
   @action
   setData = (data: IChannelsResponse) => {
+    this._isActual = data.IsActual;
     this.setSystemSettings({
       NotificationProvider: data.NotificationProvider,
       Started: data.Started
@@ -61,11 +81,23 @@ export class NotificationStore {
     }
   };
 
+  @action
+  updateConfiguration = async () => {
+    try {
+      this.toggleLoading();
+      const data = await apiService.updateConfiguration();
+      this.setData(data);
+      this.toggleLoading();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   notificationsSender = (data: IChannel[]): void => {
     if (!data) return;
     const channelsWillBeNotify = data.filter(channel => {
       const oldChannel = this.channels.find(x => x.LastId === channel.LastId);
-      return oldChannel.State !== channel.State;
+      return oldChannel && oldChannel?.State !== channel?.State;
     });
 
     if (channelsWillBeNotify.length) {
@@ -77,6 +109,11 @@ export class NotificationStore {
         });
       });
     }
+  };
+
+  @action
+  toggleLoading = (val?: boolean): void => {
+    this.isLoading = val || !this.isLoading;
   };
 
   @action
@@ -96,6 +133,10 @@ export class NotificationStore {
   @computed
   get getChannels(): IChannel[] {
     return this.channels;
+  }
+  @computed
+  get isActual(): boolean {
+    return this._isActual;
   }
   @computed
   get getGeneralSettings(): IGeneralSettings {

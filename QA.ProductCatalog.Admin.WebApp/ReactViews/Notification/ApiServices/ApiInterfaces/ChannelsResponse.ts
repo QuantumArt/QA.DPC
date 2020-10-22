@@ -3,7 +3,7 @@ import { ChannelStatuses } from "Shared/Enums";
 export interface IChannelsResponse {
   Channels: IChannel[];
   CurrentSettings: IGeneralSettings;
-  IsActual: true;
+  IsActual: boolean;
   NotificationProvider: string;
   Started: string; //date
 }

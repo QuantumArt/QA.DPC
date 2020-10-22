@@ -15,7 +15,7 @@ declare interface NotificationWindowTypes {
     notConsolidated: string;
     unavailable: string;
     notificationSenderChanged: string;
-
+    update: string;
     autoPublication: string;
     sendInterval: string;
     errorSendInterval: string;

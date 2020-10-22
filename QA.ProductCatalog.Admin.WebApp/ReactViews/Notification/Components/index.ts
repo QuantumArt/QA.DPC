@@ -5,3 +5,4 @@ export * from "./ChannelsGeneralSettings";
 export * from "./ChannelsSystemSettings";
 export * from "./StaticTextField";
 export * from "./ChannelStatusTag";
+export * from "./ChannelsLoader";

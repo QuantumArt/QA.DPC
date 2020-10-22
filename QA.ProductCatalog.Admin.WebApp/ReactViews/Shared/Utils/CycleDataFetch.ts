@@ -4,8 +4,8 @@ function delay(ms) {
 
 export class CycleDataFetch<T> {
   constructor(
-    readonly onSuccess: (data: T) => void,
-    readonly getDataCb: () => T,
+    readonly onSuccess: null | ((data: T) => void) = null,
+    readonly getDataCb: () => Promise<T>,
     timeout,
     onErrorTimeout,
     maxFetchAttempts = 3
@@ -26,7 +26,7 @@ export class CycleDataFetch<T> {
   private readonly getData = async () => {
     try {
       const data = await this.getDataCb();
-      this.onSuccess(data);
+      if (this.onSuccess) this.onSuccess(data);
       this.isError = false;
     } catch (e) {
       this.isError = true;
