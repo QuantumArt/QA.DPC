@@ -37,7 +37,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
         }
         
-		public ActionResult Index()
+		public ActionResult Index(bool beta = false)
 		{
             try
             {
@@ -55,6 +55,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     model = _service.GetConfigurationInfo(customerCode);                    
                 }
+                if (beta)
+                {
+                    return View("Notification", model);
+                }
 
                 return View(model);
             }
@@ -63,6 +67,34 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 return View((object)null);
             }
 		}
+
+        [RequireCustomAction]
+        public ActionResult IndexBeta()
+        {
+            try
+            {
+                var customerCode = _identityProvider.Identity.CustomerCode;
+                object model;
+
+                if (!String.IsNullOrEmpty(_restUrl))
+                {
+                    var client = _factory.CreateClient();
+                    var result = client.GetAsync(GetUrl(customerCode)).Result.Content.ReadAsStringAsync().Result;
+                    model = JsonConvert.DeserializeObject<ConfigurationInfo>(result);
+
+                }
+                else
+                {
+                    model = _service.GetConfigurationInfo(customerCode);
+                }
+
+                return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(model) };
+            }
+            catch (EndpointNotFoundException)
+            {
+                return View((object)null);
+            }
+        }
 
         private string GetUrl(string customerCode)
         {
@@ -84,6 +116,23 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }            
             
 			return RedirectToAction("Index");
+		}
+
+        public ActionResult UpdateConfigurationBeta()
+		{
+            var customerCode = _identityProvider.Identity.CustomerCode;
+            if (!String.IsNullOrEmpty(_restUrl))
+            {
+                var client = _factory.CreateClient();            
+                client.PostAsync(GetUrl(customerCode), null);
+
+            }
+            else
+            {
+                _service.UpdateConfiguration(customerCode);
+            }
+
+            return IndexBeta();
 		}
 	}
 }

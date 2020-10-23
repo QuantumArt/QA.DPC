@@ -1,0 +1,47 @@
+$head-border-color: rgba(16, 22, 26, 0.15);
+$text-color: rgb(24, 32, 38);
+
+.channels-grid {
+  font-size: 14px;
+  //&__cell {
+  //  color: $text-color;
+  //  font-family: SFProText, sans-serif;
+  //  font-size: 14px;
+  //  line-height: 18px;
+  //}
+
+  .channels-table {
+    width: 100%;
+  }
+  .grid-head,
+  .grid-body {
+    &__th,
+    &__td {
+      padding: 0 10px;
+      text-align: left;
+      height: 40px;
+      vertical-align: middle;
+      font-weight: normal;
+    }
+  }
+
+  .grid-head {
+    border-top: 1px solid $head-border-color;
+    border-bottom: 1px solid $head-border-color;
+
+    &__th {
+      font-weight: 600;
+    }
+  }
+
+  .grid-body {
+    &__tr {
+      &:hover {
+        background: white;
+        .inside-cell {
+          display: inline-block;
+        }
+      }
+    }
+  }
+}

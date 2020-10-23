@@ -14,6 +14,7 @@ declare interface JQuery {
 declare interface Window {
   definitionEditor: DefinitionEditorSettings;
   task: TaskWindowTypes;
+  notification: NotificationWindowTypes;
   notificationPermissionRequested: boolean;
   pmrpc: any;
 
