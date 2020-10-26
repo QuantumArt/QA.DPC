@@ -172,7 +172,7 @@ export default class FormStore {
   };
 
   setModelTypeByFieldType = (fieldType: number | undefined): void => {
-    if (fieldType) {
+    if (!isNull(fieldType) && !isUndefined(fieldType)) {
       this.ModelType = ModelType.Field;
     } else {
       this.ModelType = ModelType.Content;
