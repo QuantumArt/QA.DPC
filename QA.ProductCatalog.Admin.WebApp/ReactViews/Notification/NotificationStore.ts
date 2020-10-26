@@ -146,22 +146,20 @@ export class NotificationStore {
     });
 
     /**
-     * Отправляем шаблонные уведомления
+     * Отправляем шаблонные уведомления в зависимости от измененных данных канала
      */
     for (let notificationType of channelsToNotify.keys()) {
       const channels = channelsToNotify.get(notificationType);
       let body: string;
       switch (notificationType) {
         case ChannelNotificationType.Add:
-          if (channels.length) {
-            channels.forEach(channel => {
-              body = `Channel state: ${getChannelStatusDescription(channel.State)}\n`;
-              body += `Channel status: ${channel.LastStatus}`;
-              new Notification(`New channel ${channel.Name} was added`, {
-                body: body
-              });
+          channels.forEach(channel => {
+            body = `Channel state: ${getChannelStatusDescription(channel.State)}\n`;
+            body += `Channel status: ${channel.LastStatus}`;
+            new Notification(`New channel ${channel.Name} was added`, {
+              body: body
             });
-          }
+          });
           break;
         case ChannelNotificationType.ChangeStatus:
         case ChannelNotificationType.ChangeCount:
@@ -174,21 +172,17 @@ export class NotificationStore {
           });
           break;
         case ChannelNotificationType.ChangeState:
-          if (channels.length) {
-            channels.forEach(channel => {
-              body = `New channel state: ${getChannelStatusDescription(channel.State)}`;
-              new Notification(`Channel ${channel.Name} state was changed`, {
-                body: body
-              });
+          channels.forEach(channel => {
+            body = `New channel state: ${getChannelStatusDescription(channel.State)}`;
+            new Notification(`Channel ${channel.Name} state was changed`, {
+              body: body
             });
-          }
+          });
           break;
         case ChannelNotificationType.Remove:
-          if (channels.length) {
-            channels.forEach(channel => {
-              new Notification(`Channel ${channel.Name} was removed`);
-            });
-          }
+          channels.forEach(channel => {
+            new Notification(`Channel ${channel.Name} was removed`);
+          });
           break;
       }
     }
