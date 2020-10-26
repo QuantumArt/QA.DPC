@@ -33,7 +33,7 @@ export class NotificationStore {
   private IsPriorityRequestAlreadyPending: boolean;
   private cycleFetch;
   @observable.ref private systemSettings: ISystemSettings;
-  @observable.ref private channels: IChannel[] = [];
+  @observable.ref private channels: IChannel[];
   @observable.ref private generalSettings: IGeneralSettings;
   @observable private _isActual: boolean = true;
   @observable isLoading: boolean = false;
@@ -75,9 +75,9 @@ export class NotificationStore {
 
   @action
   setChannels = (data: IChannel[]) => {
-    const isSameData = differenceWith(this.channels, data, isEqual).length === 0;
-    if (!isSameData || this.channels.length !== data.length) {
-      if (this.channels.length) setBrowserNotifications(() => this.notificationsSender(data));
+    const isSameData = differenceWith(this.channels || [], data, isEqual).length === 0;
+    if (!this.channels || !isSameData || this.channels.length !== data.length) {
+      if (this.channels) setBrowserNotifications(() => this.notificationsSender(data));
       this.channels = data;
     }
   };
@@ -96,7 +96,7 @@ export class NotificationStore {
 
   notificationsSender = (data: IChannel[]): void => {
     if (!data) return;
-    let batchedNotification: {
+    const batchedNotification: {
       body?: string;
       getHeader?: () => string;
       channelNames?: string[];
@@ -221,7 +221,7 @@ export class NotificationStore {
 
   @computed
   get getChannels(): IChannel[] {
-    return this.channels;
+    return this.channels || [];
   }
   @computed
   get isActual(): boolean {
