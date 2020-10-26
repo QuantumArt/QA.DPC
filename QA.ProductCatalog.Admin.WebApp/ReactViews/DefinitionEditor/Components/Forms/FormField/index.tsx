@@ -31,7 +31,12 @@ const FormField = observer(({ model }: IProps) => {
         );
       case FormFieldType.Input:
         return (
-          <Field name={model.name} value={model.value} defaultValue={model.value} allowNull>
+          <Field
+            name={model.name}
+            value={model.value}
+            defaultValue={model.value === null ? "" : model.value}
+            allowNull
+          >
             {({ input }) => {
               return (
                 <InputGroup
@@ -47,7 +52,7 @@ const FormField = observer(({ model }: IProps) => {
         return (
           <Field
             name={model.name}
-            defaultValue={model.value}
+            defaultValue={model.value === null ? "" : model.value}
             allowNull
             parse={parseEmptyStringToNull}
           >

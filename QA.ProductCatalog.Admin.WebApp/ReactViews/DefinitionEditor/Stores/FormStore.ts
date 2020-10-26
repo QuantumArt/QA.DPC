@@ -42,10 +42,11 @@ export default class FormStore {
   onChangeNodeIdReaction: IReactionDisposer;
   otherFieldReactions: IReactionDisposer[] = [];
 
-  @action
   resetErrorState = () => {
-    this.operationState = OperationState.Success;
-    this.errorText = null;
+    runInAction(() => {
+      this.operationState = OperationState.Success;
+      this.errorText = null;
+    });
   };
 
   setError = (errText?: string) => {
@@ -105,20 +106,20 @@ export default class FormStore {
   };
 
   parseEditFormDataToUIModel = (model: IEditFormModel): { [key in string]: ParsedModelType } => {
+    let exceptionFields = [];
     /**
      * исключение
      * если заполнено поле DefaultCachePeriod рендерим только поля exceptionFields
      * */
     if (model["DefaultCachePeriod"]) {
-      const exceptionFields = ["InDefinition", "DefaultCachePeriod"];
-      return this.getParsedUIModelFromApiFields(model, exceptionFields);
+      exceptionFields = ["InDefinition", "DefaultCachePeriod"];
     }
     /**
      * исключение
      * если поле FieldType равняется нулю рендерим только поля exceptionFields
      * */
     if (model["FieldType"] === 0) {
-      const exceptionFields = [
+      exceptionFields = [
         "InDefinition",
         "FieldId",
         "FieldName",
@@ -126,10 +127,9 @@ export default class FormStore {
         "SkipCData",
         "LoadLikeImage"
       ];
-      return this.getParsedUIModelFromApiFields(model, exceptionFields);
     }
 
-    return this.getParsedUIModelFromApiFields(model);
+    return this.getParsedUIModelFromApiFields(model, exceptionFields);
   };
 
   getXmlAndPathObj = (nodeId: string): { xml: string; path: string } => {
@@ -152,9 +152,9 @@ export default class FormStore {
   isEqualFormDataWithOriginalModel = (): boolean => {
     if (!this.finalFormData) return true;
     const comparableModel = assign({}, this.UIEditModel, this.getSubModelsFromCheckboxModels());
-
     const overlapFields = keys(this.finalFormData).reduce((acc, fieldKey) => {
-      const formDataValue = this.finalFormData[fieldKey];
+      const formDataValue =
+        this.finalFormData[fieldKey] === "" ? null : this.finalFormData[fieldKey];
       const modelValue = comparableModel[fieldKey]?.value;
       if (formDataValue !== modelValue) acc.push(fieldKey);
       return acc;
@@ -172,7 +172,7 @@ export default class FormStore {
   };
 
   setModelTypeByFieldType = (fieldType: number | undefined): void => {
-    if (fieldType) {
+    if (!isNull(fieldType) && !isUndefined(fieldType)) {
       this.ModelType = ModelType.Field;
     } else {
       this.ModelType = ModelType.Content;
@@ -203,7 +203,7 @@ export default class FormStore {
       this.operationState = OperationState.Success;
     } catch (e) {
       this.setError(l("FormLoadError"));
-      console.log(e);
+      console.error(e);
     }
   };
 
@@ -308,6 +308,9 @@ export default class FormStore {
         case "DefaultCachePeriod":
           acc[field] = new InputParsedModel(field, l(field), fieldValue);
           break;
+        case "VirtualPath":
+          acc[field] = new InputParsedModel(field, l("Path"), fieldValue);
+          break;
 
         case "FieldTitle":
           acc[field] = new InputParsedModel(
@@ -343,6 +346,7 @@ export default class FormStore {
          * textarea models
          * */
         case "RelationCondition":
+          if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
           acc[field] = new TextAreaParsedModel(field, l(field), fieldValue, {
             rows: 6,
             placeholder: l("RelationConditionDescription"),
@@ -351,6 +355,7 @@ export default class FormStore {
           break;
 
         case "ClonePrototypeCondition":
+          if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
           acc[field] = new TextAreaParsedModel(field, l(field), fieldValue, {
             rows: 6,
             placeholder: l("ClonePrototypeConditionDescription"),
