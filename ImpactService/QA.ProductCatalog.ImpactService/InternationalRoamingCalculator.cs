@@ -58,15 +58,18 @@ namespace QA.ProductCatalog.ImpactService
             var countryParams = zoneParameters.Where(n => n.SelectToken("Zone.Alias").ToString() == countryCode)
                 .ToDictionary(k => (int)k["Id"], p => p);
 
-            if (!countryParams.Any())
+            foreach (var zp in zoneParameters)
             {
-                foreach (var zp in zoneParameters)
+                var codes = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Country)].Country.Code")
+                    .Select(n => n.ToString()));
+                var aliases = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Alias)].Alias")
+                    .Select(n => n.ToString()));
+                if (codes.Contains(countryCode) || aliases.Contains(countryCode))
                 {
-                    var codes = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Country)].Country.Code").Select(n => n.ToString()));
-                    var aliases = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Alias)].Alias").Select(n => n.ToString()));
-                    if (codes.Contains(countryCode) || aliases.Contains(countryCode))
+                    var id = (int) zp["Id"];
+                    if (!countryParams.ContainsKey(id))
                     {
-                        countryParams.Add((int)zp["Id"], zp);
+                        countryParams.Add(id, zp);
                     }
                 }
             }
