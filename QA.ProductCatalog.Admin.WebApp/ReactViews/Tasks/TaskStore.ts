@@ -192,7 +192,7 @@ export class TaskStore {
 
   @action
   setGridData = (data: Task[]) => {
-    const isSameData = differenceWith(data, this.gridData, isEqual).length === 0;
+    const isSameData = differenceWith(this.gridData, data, isEqual).length === 0;
     if (!isSameData) {
       this.gridData = data;
     }
