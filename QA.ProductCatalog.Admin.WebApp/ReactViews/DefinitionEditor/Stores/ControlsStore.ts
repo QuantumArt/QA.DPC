@@ -77,6 +77,8 @@ export default class ControlsStore {
   refresh = async () => {
     this.xmlEditorStore.setXml(this.xmlEditorStore.origXml);
     this.treeStore.resetErrorState();
+    this.formStore.UIEditModel = undefined;
+    this.selectedNodeId = null;
     this.treeStore.openedNodes = [];
     await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
     await this.treeStore.onNodeExpand(this.treeStore.tree[0]);
