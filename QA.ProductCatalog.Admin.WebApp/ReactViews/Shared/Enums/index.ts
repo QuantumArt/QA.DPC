@@ -10,3 +10,4 @@ export * from "./ScheduleType";
 export * from "./OperationState";
 export * from "./ChannelPublishStatuses";
 export * from "./ChannelStatuses";
+export * from "./ChannelNotificationType";

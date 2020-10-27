@@ -10,7 +10,11 @@ import {
 } from "./Components";
 import "./Root.scss";
 import { l } from "Notification/Localization";
-import { Button, Intent } from "@blueprintjs/core";
+import { Callout, Intent } from "@blueprintjs/core";
+
+const srtWithUpperFirstLetter = function(str) {
+  return `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+};
 
 export const Notification = observer(() => {
   const store = useStore();
@@ -26,14 +30,12 @@ export const Notification = observer(() => {
 
       {!store.isActual && (
         <ChannelsBlock className={store.isLoading && "display-none"}>
-          {l("notificationSenderChanged")}{" "}
-          <Button
-            intent={Intent.WARNING}
-            onClick={() => store.priorityRequestInSameTime(store.updateConfiguration)}
-            icon="refresh"
-          >
-            {l("update")}
-          </Button>
+          <Callout intent={Intent.WARNING}>
+            {l("notificationSenderChanged")}.{" "}
+            <a onClick={() => store.priorityRequestInSameTime(store.updateConfiguration)}>
+              {srtWithUpperFirstLetter(l("update"))}
+            </a>
+          </Callout>
         </ChannelsBlock>
       )}
 
