@@ -56,21 +56,21 @@ export default class HighloadFrontStore {
           try {
             const taskMessage = (t.TaskMessage as unknown) as string;
             t.TaskMessage = JSON.parse(taskMessage);
-            if (t.TaskState === 3) {
-              const messages = t?.TaskMessage as TaskMessage;
-              messages.Messages.forEach(m => {
-                this.sendNoditifaction(t, m.Message);
-              });
-            } else if (t.TaskState === 4) {
-              if (isString(t.TaskMessage)) {
-                this.sendNoditifaction(t, `ERROR: ${t.TaskMessage}`);
-              } else {
-                t.TaskMessage.Messages.forEach(m => {
-                  this.sendNoditifaction(t, `ERROR: ${m.Message}`);
-                });
-              }
-            }
           } catch (e) {}
+          if (t.TaskState === TaskState.Done) {
+            const messages = t?.TaskMessage as TaskMessage;
+            messages.Messages.forEach(m => {
+              this.sendNoditifaction(t, m.Message);
+            });
+          } else if (t.TaskState === TaskState.Failed) {
+            if (isString(t.TaskMessage)) {
+              this.sendNoditifaction(t, `ERROR: ${t.TaskMessage}`);
+            } else {
+              t.TaskMessage.Messages.forEach(m => {
+                this.sendNoditifaction(t, `ERROR: ${m.Message}`);
+              });
+            }
+          }
           return t;
         });
         this.setTasks(tasks);

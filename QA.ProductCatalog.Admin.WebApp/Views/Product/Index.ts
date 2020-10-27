@@ -1,3 +1,5 @@
+import {SendNotificationOptions} from "../../wwwroot/js/qp/QP8BackendApi.Interaction";
+
 window.QA = window.QA || {};
 const QA = window.QA;
 QA.Product = QA.Product || {};
@@ -49,6 +51,9 @@ QA.Product.Index =
             fieldsToHide = [];
           }
         }
+
+        const options: SendNotificationOptions = { title: 'Form opened', icon: 'http://localhost:5250/images/TaskStates/Done48.png', body: 'Message body' };
+        window.Quantumart.QP8.Interaction.sendNotification(options, QA.Utils.hostId(), QA.Utils.getParent());
 
         QA.Integration.showQPForm(
           $this.data("entityid"),

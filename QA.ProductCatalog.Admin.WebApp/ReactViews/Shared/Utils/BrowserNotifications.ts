@@ -38,6 +38,7 @@ export const setBrowserNotifications = (sendNotifyCb: () => void) => {
 
 export const checkPermissions = async () => {
   const notificationPerm = await navigator.permissions.query({ name: "notifications" });
+  console.log(notificationPerm);
   if (notificationPerm.state !== "granted") {
     window.open("/AppInfo", "AppInfo", "resizable,location,width=500,height=150");
   }

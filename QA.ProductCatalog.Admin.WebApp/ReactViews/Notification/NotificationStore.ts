@@ -13,7 +13,8 @@ import {
   IGeneralSettings,
   ISystemSettings
 } from "Notification/ApiServices/ApiInterfaces";
-import { differenceWith, isEqual } from "lodash";
+import { differenceWith, isEqual, uniq } from "lodash";
+import { ChannelNotificationType } from "Shared/Enums";
 
 export class NotificationStore {
   constructor() {
@@ -32,7 +33,7 @@ export class NotificationStore {
   private IsPriorityRequestAlreadyPending: boolean;
   private cycleFetch;
   @observable.ref private systemSettings: ISystemSettings;
-  @observable.ref private channels: IChannel[] = [];
+  @observable.ref private channels: IChannel[];
   @observable.ref private generalSettings: IGeneralSettings;
   @observable private _isActual: boolean = true;
   @observable isLoading: boolean = false;
@@ -74,9 +75,9 @@ export class NotificationStore {
 
   @action
   setChannels = (data: IChannel[]) => {
-    const isSameData = differenceWith(data, this.channels, isEqual).length === 0;
-    if (!isSameData) {
-      if (this.channels.length) setBrowserNotifications(() => this.notificationsSender(data));
+    const isSameData = differenceWith(this.channels || [], data, isEqual).length === 0;
+    if (!this.channels || !isSameData || this.channels.length !== data.length) {
+      if (this.channels) setBrowserNotifications(() => this.notificationsSender(data));
       this.channels = data;
     }
   };
@@ -95,18 +96,100 @@ export class NotificationStore {
 
   notificationsSender = (data: IChannel[]): void => {
     if (!data) return;
-    const channelsWillBeNotify = data.filter(channel => {
-      const oldChannel = this.channels.find(x => x.LastId === channel.LastId);
-      return oldChannel && oldChannel?.State !== channel?.State;
+    const batchedNotification: {
+      body?: string;
+      getHeader?: () => string;
+      channelNames?: string[];
+    } = {
+      body: "",
+      getHeader: function() {
+        return `There are some changes in channels with names ${uniq(this.channelNames).join(
+          ", "
+        )}:`;
+      },
+      channelNames: []
+    };
+    const channelsToNotify = new Map<ChannelNotificationType, IChannel[]>([
+      [ChannelNotificationType.Add, []],
+      [ChannelNotificationType.ChangeCount, []],
+      [ChannelNotificationType.ChangeStatus, []],
+      [ChannelNotificationType.ChangeState, []],
+      [ChannelNotificationType.Remove, []]
+    ]);
+
+    /**
+     * собираем изменившиеся каналы
+     */
+    if (data.length > this.channels.length && this.channels.length) {
+      channelsToNotify
+        .get(ChannelNotificationType.Add)
+        .push(...data.filter(x => !this.channels.find(y => y.Name == x.Name)));
+    }
+
+    if (data.length < this.channels.length) {
+      channelsToNotify
+        .get(ChannelNotificationType.Remove)
+        .push(...this.channels.filter(x => !data.find(y => y.Name === x.Name)));
+    }
+
+    data.forEach(channel => {
+      const oldChannel = this.channels.find(x => x.Name === channel.Name);
+      if (oldChannel && oldChannel?.State !== channel?.State) {
+        channelsToNotify.get(ChannelNotificationType.ChangeState).push(channel);
+      }
+      if (oldChannel && oldChannel?.Count !== channel?.Count) {
+        channelsToNotify.get(ChannelNotificationType.ChangeCount).push(channel);
+      }
+      if (oldChannel && oldChannel?.LastStatus !== channel?.LastStatus) {
+        channelsToNotify.get(ChannelNotificationType.ChangeStatus).push(channel);
+      }
     });
 
-    if (channelsWillBeNotify.length) {
-      channelsWillBeNotify.forEach(channel => {
-        let body = `New state: ${getChannelStatusDescription(channel.State)}`;
-        body += "\r\n" + `Id product: ${channel.LastId}`;
-        new Notification(`state of product id ${channel.LastId} was changed`, {
-          body: body
-        });
+    /**
+     * Отправляем шаблонные уведомления в зависимости от измененных данных канала
+     */
+    for (let notificationType of channelsToNotify.keys()) {
+      const channels = channelsToNotify.get(notificationType);
+      let body: string;
+      switch (notificationType) {
+        case ChannelNotificationType.Add:
+          channels.forEach(channel => {
+            body = `Channel state: ${getChannelStatusDescription(channel.State)}\n`;
+            body += `Channel status: ${channel.LastStatus}`;
+            new Notification(`New channel ${channel.Name} was added`, {
+              body: body
+            });
+          });
+          break;
+        case ChannelNotificationType.ChangeStatus:
+        case ChannelNotificationType.ChangeCount:
+          channels.forEach(channel => {
+            batchedNotification.channelNames.push(channel.Name);
+            batchedNotification.body +=
+              notificationType === ChannelNotificationType.ChangeStatus
+                ? `Channel ${channel.Name} status was changed to ${channel.LastStatus}\n`
+                : `Channel ${channel.Name} queue was changed to ${channel.Count}\n`;
+          });
+          break;
+        case ChannelNotificationType.ChangeState:
+          channels.forEach(channel => {
+            body = `New channel state: ${getChannelStatusDescription(channel.State)}`;
+            new Notification(`Channel ${channel.Name} state was changed`, {
+              body: body
+            });
+          });
+          break;
+        case ChannelNotificationType.Remove:
+          channels.forEach(channel => {
+            new Notification(`Channel ${channel.Name} was removed`);
+          });
+          break;
+      }
+    }
+
+    if (batchedNotification.channelNames.length) {
+      new Notification(batchedNotification.getHeader(), {
+        body: batchedNotification.body
       });
     }
   };
@@ -132,7 +215,7 @@ export class NotificationStore {
 
   @computed
   get getChannels(): IChannel[] {
-    return this.channels;
+    return this.channels || [];
   }
   @computed
   get isActual(): boolean {
