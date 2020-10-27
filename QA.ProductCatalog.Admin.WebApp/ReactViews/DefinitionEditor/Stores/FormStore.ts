@@ -40,7 +40,6 @@ export default class FormStore {
   @observable errorText: string = null;
 
   onChangeNodeIdReaction: IReactionDisposer;
-  otherFieldReactions: IReactionDisposer[] = [];
 
   resetErrorState = () => {
     runInAction(() => {
@@ -75,7 +74,6 @@ export default class FormStore {
     ) => IReactionDisposer
   ) => {
     this.onChangeNodeIdReaction = onChangeNodeIdReaction(async (nodeId: string) => {
-      this.disposeOtherFieldReactions();
       if (!this.enumsModel) await this.initEnumsModel();
       await this.fetchFormFields(nodeId);
     });
@@ -226,15 +224,6 @@ export default class FormStore {
     }
   };
 
-  addFieldReaction = (reaction: IReactionDisposer) => this.otherFieldReactions.push(reaction);
-
-  disposeOtherFieldReactions = () => {
-    if (this.otherFieldReactions && this.otherFieldReactions.length) {
-      this.otherFieldReactions.forEach(reaction => reaction());
-      this.otherFieldReactions = [];
-    }
-  };
-
   getParsedUIModelFromApiFields = (
     fields: IEditFormModel,
     exceptionFields: string[] = []
@@ -243,8 +232,12 @@ export default class FormStore {
       model[field] = fields[field];
       return model;
     }, {});
-
     const fieldsModel = exceptionFields.length ? OnlyExceptionsFields : fields;
+    const hideIfInDefinition =
+      isUndefined(fieldsModel["InDefinition"]) || isNull(fieldsModel["InDefinition"])
+        ? false
+        : !fieldsModel["InDefinition"];
+
     return keys(fieldsModel).reduce((acc, field) => {
       const fieldValue = fields[field];
 
@@ -255,14 +248,6 @@ export default class FormStore {
         case "InDefinition":
           acc[field] = new CheckboxParsedModel(field, l(field), fieldValue, () =>
             this.hideUiFields([field])
-          );
-          this.addFieldReaction(
-            reaction(
-              () => this.UIEditModel,
-              () => {
-                if (fieldValue === false) this.hideUiFields([field]);
-              }
-            )
           );
           break;
         case "CacheEnabled":
@@ -275,7 +260,7 @@ export default class FormStore {
             },
             l("ProceedCaching"),
             null,
-            false,
+            hideIfInDefinition,
             true
           );
           const subComponentInput = new InputParsedModel(
@@ -291,25 +276,49 @@ export default class FormStore {
           break;
 
         case "SkipCData":
-          acc[field] = new CheckboxParsedModel(field, l("DontWrapInCData"), fieldValue);
+          acc[field] = new CheckboxParsedModel(
+            field,
+            l("DontWrapInCData"),
+            fieldValue,
+            null,
+            "",
+            null,
+            hideIfInDefinition
+          );
           break;
         case "LoadLikeImage":
-          acc[field] = new CheckboxParsedModel(field, l("LoadAsImage"), fieldValue);
+          acc[field] = new CheckboxParsedModel(
+            field,
+            l("LoadAsImage"),
+            fieldValue,
+            null,
+            "",
+            null,
+            hideIfInDefinition
+          );
           break;
 
         case "IsReadOnly":
         case "LoadAllPlainFields":
           if (fields["IsFromDictionaries"]) return acc;
-          acc[field] = new CheckboxParsedModel(field, l(field), fieldValue);
+          acc[field] = new CheckboxParsedModel(
+            field,
+            l(field),
+            fieldValue,
+            null,
+            "",
+            null,
+            hideIfInDefinition
+          );
           break;
 
         case "FieldName":
         case "ContentName":
         case "DefaultCachePeriod":
-          acc[field] = new InputParsedModel(field, l(field), fieldValue);
+          acc[field] = new InputParsedModel(field, l(field), fieldValue, "", hideIfInDefinition);
           break;
         case "VirtualPath":
-          acc[field] = new InputParsedModel(field, l("Path"), fieldValue);
+          acc[field] = new InputParsedModel(field, l("Path"), fieldValue, "", hideIfInDefinition);
           break;
 
         case "FieldTitle":
@@ -317,7 +326,8 @@ export default class FormStore {
             field,
             l("FieldNameForCard"),
             fieldValue,
-            l("LabelText")
+            l("LabelText"),
+            hideIfInDefinition
           );
           break;
 
@@ -329,17 +339,18 @@ export default class FormStore {
           acc[field] = new TextParsedModel(
             field,
             fieldValue,
-            `${fields["RelatedContentName"] || ""} ${fields["RelatedContentId"] || ""}`
+            `${fields["RelatedContentName"] || ""} ${fields["RelatedContentId"] || ""}`,
+            hideIfInDefinition
           );
           break;
 
         case "FieldId":
-          acc[field] = new TextParsedModel(field, l(field), fieldValue);
+          acc[field] = new TextParsedModel(field, l(field), fieldValue, hideIfInDefinition);
           break;
 
         case "IsClassifier":
         case "ContentId":
-          acc[field] = new TextParsedModel(field, field, fieldValue);
+          acc[field] = new TextParsedModel(field, field, fieldValue, hideIfInDefinition);
           break;
 
         /**
@@ -347,20 +358,32 @@ export default class FormStore {
          * */
         case "RelationCondition":
           if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
-          acc[field] = new TextAreaParsedModel(field, l(field), fieldValue, {
-            rows: 6,
-            placeholder: l("RelationConditionDescription"),
-            style: { resize: "none", fontFamily: "monospace" }
-          });
+          acc[field] = new TextAreaParsedModel(
+            field,
+            l(field),
+            fieldValue,
+            {
+              rows: 6,
+              placeholder: l("RelationConditionDescription"),
+              style: { resize: "none", fontFamily: "monospace" }
+            },
+            hideIfInDefinition
+          );
           break;
 
         case "ClonePrototypeCondition":
           if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
-          acc[field] = new TextAreaParsedModel(field, l(field), fieldValue, {
-            rows: 6,
-            placeholder: l("ClonePrototypeConditionDescription"),
-            style: { resize: "none", fontFamily: "monospace" }
-          });
+          acc[field] = new TextAreaParsedModel(
+            field,
+            l(field),
+            fieldValue,
+            {
+              rows: 6,
+              placeholder: l("ClonePrototypeConditionDescription"),
+              style: { resize: "none", fontFamily: "monospace" }
+            },
+            hideIfInDefinition
+          );
           break;
 
         /**
@@ -380,7 +403,8 @@ export default class FormStore {
                 label: option.title,
                 value: option.value
               };
-            })
+            }),
+            hideIfInDefinition
           );
           break;
         default:

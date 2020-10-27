@@ -96,15 +96,12 @@ export default class ControlsStore {
       return false;
     }
     await this.formStore.saveForm(this.selectedNodeId);
-    const singleNode = await this.treeStore.withLogError(
-      async () => await this.treeStore.getSingleNode(this.selectedNodeId)
-    );
-    await this.treeStore.setOpenedNodes(singleNode.Id);
+    await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
     return true;
   };
 
   applyOnOpenedXmlEditor = async (): Promise<boolean> => {
-    if (this.isSameDefinition()) {
+    if (this.isSameDefinition(false)) {
       this.treeStore.setError(l("SameDefinition"));
       return false;
     }
@@ -122,8 +119,8 @@ export default class ControlsStore {
     this.treeStore.setSelectedNodeIdInUI();
   };
 
-  updateFormWithNewData = () => {
-    if (this.selectedNodeId) this.formStore.fetchFormFields(this.selectedNodeId);
+  updateFormWithNewData = async () => {
+    if (this.selectedNodeId) await this.formStore.fetchFormFields(this.selectedNodeId);
   };
 
   doLocalSave = async (): Promise<boolean> => {
@@ -132,7 +129,7 @@ export default class ControlsStore {
       isLocalSaveWasCorrect = await this.applyOnOpenedForm();
     } else {
       isLocalSaveWasCorrect = await this.applyOnOpenedXmlEditor();
-      this.updateFormWithNewData();
+      await this.updateFormWithNewData();
     }
     return isLocalSaveWasCorrect;
   };
