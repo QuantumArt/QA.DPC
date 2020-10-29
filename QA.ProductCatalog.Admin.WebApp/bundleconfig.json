@@ -22,10 +22,16 @@
   },
 
   {
-    "outputFileName": "wwwroot/js/bundles/scripts.min.js",
+    "outputFileName": "wwwroot/js/bundles/jquery.min.js",
     "inputFiles": [
       "node_modules/jquery/dist/jquery.min.js",
       "node_modules/jquery.scrollto/jquery.scrollTo.min.js",
+    ]
+  },
+
+  {
+    "outputFileName": "wwwroot/js/bundles/scripts.min.js",
+    "inputFiles": [
       "wwwroot/js/pmrpc.js",
       "wwwroot/js/qp/QP8BackendApi.Interaction.js",
       "wwwroot/js/qp/QA.Utils.js",

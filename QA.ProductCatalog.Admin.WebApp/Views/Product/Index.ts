@@ -1,4 +1,4 @@
-import {SendNotificationOptions} from "../../wwwroot/js/qp/QP8BackendApi.Interaction";
+import { SendNotificationOptions } from "../../wwwroot/js/qp/QP8BackendApi.Interaction";
 
 window.QA = window.QA || {};
 const QA = window.QA;

@@ -62,10 +62,6 @@ module.exports = {
         configFile: path.resolve(__dirname, "tsconfig.json")
       })
     ]
-    // alias: {
-    //   app: path.resolve(__dirname, "src/app/"),
-    //   assets: path.resolve(__dirname, "src/assets/")
-    // }
   },
   output: {
     globalObject: "this",

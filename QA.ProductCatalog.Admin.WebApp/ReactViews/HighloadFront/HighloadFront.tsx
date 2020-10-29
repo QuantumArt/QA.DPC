@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { locale } from "moment";
 import { Checkbox, Button, Intent, Icon } from "@blueprintjs/core";
-import { IconNames } from "@blueprintjs/icons";
 import { getTaskIconDependsOnState, getTaskIntentDependsOnState } from "Shared/Utils";
 import Store from "./HighloadFrontStore";
 import { l } from "./Localization";
