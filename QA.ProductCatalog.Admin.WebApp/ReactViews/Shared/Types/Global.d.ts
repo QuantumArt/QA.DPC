@@ -18,21 +18,7 @@ declare interface Window {
   notificationPermissionRequested: boolean;
   pmrpc: any;
 
-  highloadFront?: {
-    CustomerCode: string;
-    Culture: string;
-    strings: {
-      Legend: string;
-      ProceedIndexing: string;
-      Default: string;
-      Language: string;
-      Type: string;
-      Date: string;
-      Processing: string;
-      Updating: string;
-      Progress: string;
-    };
-  };
+  highloadFront: HighloadFrontWindowTypes;
 
   partialSend?: {
     getActiveTaskIdUrl: string;

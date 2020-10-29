@@ -4,14 +4,9 @@ import { TaskItem, TaskMessage } from "Shared/Types";
 import { TaskState } from "Shared/Enums";
 import { isString } from "lodash";
 import { SendNotificationOptions, sendNotification } from "@quantumart/qp8backendapi-interaction";
-import { checkPermissions } from "Shared/Utils";
-import { Toaster } from "Shared/Components";
-import { IconNames } from "@blueprintjs/icons";
-import { Intent } from "@blueprintjs/core";
 
 export default class HighloadFrontStore {
   constructor() {
-    this.handleToast();
     this.clearLs();
   }
 
@@ -24,18 +19,6 @@ export default class HighloadFrontStore {
 
   @action setTimerId = (value: number): void => {
     this.timerId = value;
-  };
-
-  @action handleToast = async () => {
-    const showToast = await checkPermissions();
-    if (showToast) {
-      Toaster.show({
-        icon: IconNames.WARNING_SIGN,
-        message: "Please, enable Notifications in QP Settings",
-        intent: Intent.WARNING,
-        timeout: 5000
-      });
-    }
   };
 
   clearLs = () => {
@@ -51,12 +34,11 @@ export default class HighloadFrontStore {
   };
 
   sendNotification = (t: TaskItem, m: string, isSuccess: boolean = true) => {
+    const { imgPath } = window.highloadFront.notify;
     if (!localStorage.getItem(t.TaskStart)) {
       const options: SendNotificationOptions = {
         title: `Channel: ${t.ChannelState}`,
-        icon: `http://localhost:5250/images/TaskStates/${
-          isSuccess ? "Done48.png" : "Failed48.png"
-        }`,
+        icon: `${window.location.origin}${imgPath}${isSuccess ? "Done48.png" : "Failed48.png"}`,
         body: m
       };
       sendNotification(options, window.name, window.top);
