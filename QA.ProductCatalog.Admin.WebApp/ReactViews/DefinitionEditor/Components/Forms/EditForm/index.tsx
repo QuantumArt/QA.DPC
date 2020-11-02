@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useStores } from "DefinitionEditor";
 import { Form } from "react-final-form";
@@ -9,9 +9,27 @@ import FormErrorDialog from "DefinitionEditor/Components/Forms/FormErrorDialog";
 import { OperationState } from "Shared/Enums";
 import { keys } from "lodash";
 import { Loading } from "DefinitionEditor/Components";
+import { CheckboxParsedModel } from "Shared/Utils";
 
 const EditForm = observer(() => {
   const { formStore, controlsStore } = useStores();
+
+  useEffect(() => {
+    if (formStore.UIEditModel["InDefinition"])
+      formStore.hideUiFields(
+        ["InDefinition"],
+        false,
+        !Boolean(formStore.UIEditModel["InDefinition"].value)
+      );
+  }, [formStore.UIEditModel["InDefinition"]]);
+
+  useEffect(() => {
+    if (formStore.UIEditModel["CacheEnabled"]) {
+      const model = formStore.UIEditModel["CacheEnabled"] as CheckboxParsedModel;
+      model.subModel.toggleIsHide(!model.value);
+    }
+  }, [formStore.UIEditModel["CacheEnabled"]]);
+
   return (
     <div className="forms-wrapper">
       {formStore.UIEditModel &&
@@ -20,7 +38,7 @@ const EditForm = observer(() => {
           <Form
             onSubmit={formStore.setFormData}
             destroyOnUnregister
-            render={({ handleSubmit, form }) => {
+            render={({ handleSubmit }) => {
               controlsStore.submitFormSyntheticEvent = handleSubmit;
               return (
                 <form onSubmit={handleSubmit}>

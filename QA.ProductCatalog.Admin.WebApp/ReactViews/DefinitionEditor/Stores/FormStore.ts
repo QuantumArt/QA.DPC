@@ -57,7 +57,6 @@ export default class FormStore {
 
   setFormData = (newFormData: object | null = null): void => {
     const excludeFieldsFromNewFormData: string[] = ["RelateTo", "IsClassifier"];
-
     if (!newFormData) {
       this.finalFormData = newFormData;
       return;
@@ -91,14 +90,15 @@ export default class FormStore {
   /**
    * @param deps - массив зависимостей содержащий name полей, которые не будут скрыты
    * @param reverseLogic - массив deps работает наоборот,
+   * @param value - вместо противоположного значения будет установлено переданное,
    * */
-  hideUiFields = (deps: string[] = [], reverseLogic: boolean = false) => {
+  hideUiFields = (deps: string[] = [], reverseLogic: boolean = false, value?: boolean) => {
     forIn(this.UIEditModel, async model => {
       if (
         (!deps.includes(model.name) && !reverseLogic) ||
         (reverseLogic && deps.includes(model.name))
       ) {
-        model?.toggleIsHide();
+        model?.toggleIsHide(value);
       }
     });
   };
@@ -206,7 +206,7 @@ export default class FormStore {
   };
 
   @action
-  saveForm = async (nodeId): Promise<void> => {
+  saveForm = async (nodeId: string): Promise<void> => {
     try {
       this.operationState = OperationState.Pending;
       const newEditForm = await this.getApiMethodByModelType()(
@@ -237,7 +237,6 @@ export default class FormStore {
       isUndefined(fieldsModel["InDefinition"]) || isNull(fieldsModel["InDefinition"])
         ? false
         : !fieldsModel["InDefinition"];
-
     return keys(fieldsModel).reduce((acc, field) => {
       const fieldValue = fields[field];
 

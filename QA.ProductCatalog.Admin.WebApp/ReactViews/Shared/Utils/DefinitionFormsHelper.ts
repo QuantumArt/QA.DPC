@@ -2,6 +2,7 @@
 import React from "react";
 import { EnumBackendModel } from "DefinitionEditor/ApiService/ApiInterfaces";
 import { action, observable } from "mobx";
+import { isUndefined } from "lodash";
 
 export declare type ParsedModelType =
   | ICheckboxParsedModel
@@ -20,7 +21,7 @@ export interface IBaseParsedModel {
   name: string;
   value: string | boolean | number;
   isHide: boolean;
-  toggleIsHide: () => void;
+  toggleIsHide: (value?: boolean) => void;
   isInline: boolean;
 }
 interface IInputParsedModel extends IBaseParsedModel {
@@ -69,7 +70,7 @@ export abstract class BaseAbstractParsedModel implements IBaseParsedModel {
   readonly label: string;
   @observable isHide: boolean;
   @action
-  toggleIsHide = () => (this.isHide = !this.isHide);
+  toggleIsHide = (val?: boolean) => (this.isHide = isUndefined(val) ? !this.isHide : val);
   readonly isInline: boolean;
   value: string | boolean | number;
 }
