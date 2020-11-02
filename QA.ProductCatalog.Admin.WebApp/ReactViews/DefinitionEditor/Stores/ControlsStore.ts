@@ -101,7 +101,7 @@ export default class ControlsStore {
   };
 
   applyOnOpenedXmlEditor = async (): Promise<boolean> => {
-    if (this.isSameDefinition(false)) {
+    if (this.isSameDefinition(this.savingMode === SavingMode.Finish)) {
       this.treeStore.setError(l("SameDefinition"));
       return false;
     }
