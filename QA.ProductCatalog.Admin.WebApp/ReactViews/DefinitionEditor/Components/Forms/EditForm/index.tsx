@@ -21,14 +21,14 @@ const EditForm = observer(() => {
         false,
         !Boolean(formStore.UIEditModel["InDefinition"].value)
       );
-  }, [formStore.UIEditModel["InDefinition"]]);
+  }, [formStore?.UIEditModel["InDefinition"]]);
 
   useEffect(() => {
     if (formStore.UIEditModel["CacheEnabled"]) {
       const model = formStore.UIEditModel["CacheEnabled"] as CheckboxParsedModel;
       model.subModel.toggleIsHide(!model.value);
     }
-  }, [formStore.UIEditModel["CacheEnabled"]]);
+  }, [formStore?.UIEditModel["CacheEnabled"]]);
 
   return (
     <div className="forms-wrapper">
