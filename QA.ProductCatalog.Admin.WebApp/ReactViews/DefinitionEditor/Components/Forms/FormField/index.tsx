@@ -6,7 +6,6 @@ import { FormFieldType } from "DefinitionEditor/Enums";
 import { ParsedModelType } from "Shared/Utils";
 import "./Style.scss";
 import cn from "classnames";
-import { isUndefined } from "lodash";
 
 interface IProps {
   model?: ParsedModelType;
@@ -18,7 +17,6 @@ const FormField = observer(({ model }: IProps) => {
       "form-field-element--inline": model.isInline,
       "form-field-element--hide": model.isHide
     });
-    const parseEmptyStringToNull = value => (value === "" || isUndefined(value) ? null : value);
 
     switch (model.type) {
       case FormFieldType.Text:
@@ -35,6 +33,9 @@ const FormField = observer(({ model }: IProps) => {
             name={model.name}
             value={model.value}
             defaultValue={model.value === null ? "" : model.value}
+            parse={v => {
+              return v;
+            }}
             allowNull
           >
             {({ input }) => {
@@ -54,7 +55,9 @@ const FormField = observer(({ model }: IProps) => {
             name={model.name}
             defaultValue={model.value === null ? "" : model.value}
             allowNull
-            parse={parseEmptyStringToNull}
+            parse={v => {
+              return v;
+            }}
           >
             {({ input }) => {
               return <TextArea {...input} {...model.extraOptions} className={formFieldClassName} />;
