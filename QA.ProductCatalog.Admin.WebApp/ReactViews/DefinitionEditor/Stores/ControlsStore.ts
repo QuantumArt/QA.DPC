@@ -35,7 +35,10 @@ export default class ControlsStore {
 
   @action
   onChangeFormMode = () => {
-    if (this.formMode) {
+    if (this.formMode && !this.formStore.isEqualFormDataWithOriginalModel()) {
+      this.toggleUnsavedChangesDialog();
+      this.unsavedChangesDialogOnLeaveCb = () => this.toggleFormMode();
+      return;
     } else {
       if (!this.isSameDefinition(false)) {
         this.toggleUnsavedChangesDialog();
