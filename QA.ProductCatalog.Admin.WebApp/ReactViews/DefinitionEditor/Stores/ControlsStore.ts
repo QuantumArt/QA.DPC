@@ -94,12 +94,13 @@ export default class ControlsStore {
     );
   };
 
+  @action
   applyOnOpenedForm = async (): Promise<boolean> => {
     if (this.formStore.isFormTheSame()) {
       return false;
     }
     await this.formStore.saveForm(this.selectedNodeId);
-    await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
+    await this.treeStore.getSingleNode(this.selectedNodeId);
     return true;
   };
 

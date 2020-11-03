@@ -2,6 +2,7 @@ import { IconName } from "@blueprintjs/core/lib/esm/components/icon/icon";
 
 export interface IDefinitionNode {
   MissingInQp: boolean;
+  parentId: string;
   IsDictionaries: boolean;
   encoded: boolean;
   expanded: boolean;
