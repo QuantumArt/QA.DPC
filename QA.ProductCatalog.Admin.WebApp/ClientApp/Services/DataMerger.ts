@@ -6,10 +6,10 @@ import {
   TablesSnapshot,
   ArticleSnapshot,
   ArticleObject,
-  isExtensionDictionary,
-  isEntityObject,
   EntityObject
 } from "Models/EditorDataModels";
+import { isExtensionDictionary,
+  isEntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 
 export enum MergeStrategy {
@@ -48,6 +48,7 @@ export class DataMerger {
 
       if (name.endsWith(ArticleObject._Extension) && isExtensionDictionary(fieldValue)) {
         for (const [contentName, extensionSnapshot] of Object.entries(fieldSnapshot)) {
+          // @ts-ignore
           if (this.articleHasConfilcts(fieldValue[contentName], extensionSnapshot)) {
             return true;
           }
@@ -106,6 +107,7 @@ export class DataMerger {
         }
       } else if (name.endsWith(ArticleObject._Extension) && isExtensionDictionary(fieldValue)) {
         Object.entries(fieldSnapshot).forEach(([contentName, extensionSnapshot]) => {
+          // @ts-ignore
           this.mergeArticle(fieldValue[contentName], extensionSnapshot, strategy);
         });
       } else if (comparer.structural(articleSnapshot[name], fieldSnapshot)) {
