@@ -137,6 +137,10 @@ body,
   width: 100%;
 }
 
+.grid-view table table {
+  table-layout: auto;
+}
+
 .grid-view tr th {
   background-color: rgba(206, 217, 224, 0.8);
   padding: 0 5px;
