@@ -35,7 +35,10 @@ export default class ControlsStore {
 
   @action
   onChangeFormMode = () => {
-    if (this.formMode) {
+    if (this.formMode && !this.formStore.isEqualFormDataWithOriginalModel()) {
+      this.toggleUnsavedChangesDialog();
+      this.unsavedChangesDialogOnLeaveCb = () => this.toggleFormMode();
+      return;
     } else {
       if (!this.isSameDefinition(false)) {
         this.toggleUnsavedChangesDialog();
@@ -91,17 +94,18 @@ export default class ControlsStore {
     );
   };
 
+  @action
   applyOnOpenedForm = async (): Promise<boolean> => {
     if (this.formStore.isFormTheSame()) {
       return false;
     }
     await this.formStore.saveForm(this.selectedNodeId);
-    await this.treeStore.withLogError(async () => await this.treeStore.getDefinitionLevel());
+    await this.treeStore.getSingleNode(this.selectedNodeId);
     return true;
   };
 
   applyOnOpenedXmlEditor = async (): Promise<boolean> => {
-    if (this.isSameDefinition(false)) {
+    if (this.isSameDefinition(this.savingMode === SavingMode.Finish)) {
       this.treeStore.setError(l("SameDefinition"));
       return false;
     }
