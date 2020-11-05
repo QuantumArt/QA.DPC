@@ -56,14 +56,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 var filters = JsonConvert.DeserializeObject<KendoGridFilter[]>(filterJson);
 
-                foreach (var filter in filters)
+                foreach (var filter in filters.Where(n => n.value != null))
                 {
                     if (filter.field == "StateId")
-                        stateIdToFilterBy = (int)filter.value;
+                        stateIdToFilterBy = Convert.ToInt32(filter.value);
                     else if (filter.field == "DisplayName")
                         nameFillter = filter.value.ToString();
 					else if (filter.field == "HasSchedule")
-						hasSchedule = (bool) filter.value;
+						hasSchedule = Convert.ToBoolean(filter.value);
                 }
             }
 
