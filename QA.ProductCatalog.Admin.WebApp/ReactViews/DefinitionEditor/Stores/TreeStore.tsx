@@ -51,11 +51,13 @@ export default class TreeStore {
         (await this.withLogError(async () => await this.getDefinitionLevel(node.id.toString()))) ||
         [];
     }
-    node.isExpanded = true;
-    this.setOpenedNodes(node.id);
-    for (const el of node.childNodes) {
-      if (el.nodeData.expanded && el.nodeData.hasChildren) {
-        await this.onNodeExpand(el);
+    node.isExpanded = !node.nodeData.NotInDefinition;
+    if (node.isExpanded) {
+      this.setOpenedNodes(node.id);
+      for (const el of node.childNodes) {
+        if (el.nodeData.expanded && el.nodeData.hasChildren) {
+          await this.onNodeExpand(el);
+        }
       }
     }
   };
@@ -107,7 +109,7 @@ export default class TreeStore {
     const res = await ApiService.getDefinitionLevel(formData);
     this.xmlEditorStore.setLastLocalSavedXml(this.xmlEditorStore.xml);
     this.operationState = OperationState.Success;
-    return this.mapTree(res);
+    return this.mapTree(res, path);
   };
 
   @action
@@ -133,7 +135,7 @@ export default class TreeStore {
   };
 
   @action
-  getSingleNode = async (path: string): Promise<IDefinitionNode> => {
+  getSingleNode = async (path: string): Promise<ITreeNode<Partial<IDefinitionNode>>> => {
     const formData = new FormData();
     formData.append("path", path.charAt(0) === "/" ? path : `/${path}`);
     const validation = this.xmlEditorStore.validateXml();
@@ -145,7 +147,7 @@ export default class TreeStore {
     const singleNode = await ApiService.getSingleNode(formData);
     this.xmlEditorStore.setLastLocalSavedXml(this.xmlEditorStore.xml);
     this.operationState = OperationState.Success;
-    return singleNode;
+    return this.updateSingleNode(singleNode);
   };
 
   @action
@@ -196,18 +198,25 @@ export default class TreeStore {
 
     return {
       label: node.text,
-      icon: node.IconName as IconName
+      icon: node.IconName as IconName,
+      className: ""
     };
   };
 
-  private mapTree = (rawTree: IDefinitionNode[]): ITreeNode<Partial<IDefinitionNode>>[] => {
+  private mapTree = (
+    rawTree: IDefinitionNode[],
+    parentId: string
+  ): ITreeNode<Partial<IDefinitionNode>>[] => {
     return rawTree.map(node => {
-      return this.setSingleNode(node);
+      return this.setSingleNode(node, parentId);
     });
   };
 
   @action
-  setSingleNode = (node: IDefinitionNode): ITreeNode<Partial<IDefinitionNode>> => {
+  setSingleNode = (
+    node: IDefinitionNode,
+    parentId: string
+  ): ITreeNode<Partial<IDefinitionNode>> => {
     this.nodesMap.set(node.Id, {
       id: node.Id,
       label: "",
@@ -217,12 +226,27 @@ export default class TreeStore {
       isSelected: false,
       ...this.getNodeStatus(node),
       nodeData: {
+        parentId: parentId,
         expanded: node.expanded,
         hasChildren: node.hasChildren,
-        missingInQp: node.MissingInQp
+        missingInQp: node.MissingInQp,
+        NotInDefinition: node.NotInDefinition
       }
     });
     return this.nodesMap.get(node.Id);
+  };
+
+  @action
+  updateSingleNode = (node: IDefinitionNode): ITreeNode<Partial<IDefinitionNode>> => {
+    const nodeObj = this.nodesMap.get(node.Id);
+    Object.assign(nodeObj, this.getNodeStatus(node));
+    nodeObj.isSelected = false;
+    nodeObj.hasCaret = node.hasChildren;
+    nodeObj.isExpanded = !node.NotInDefinition && node.hasChildren;
+    nodeObj.nodeData.expanded = !node.NotInDefinition && node.hasChildren;
+    nodeObj.nodeData.hasChildren = !node.NotInDefinition && node.hasChildren;
+    nodeObj.nodeData.NotInDefinition = node.NotInDefinition;
+    return nodeObj;
   };
 
   private gatherSearchString = () => {
