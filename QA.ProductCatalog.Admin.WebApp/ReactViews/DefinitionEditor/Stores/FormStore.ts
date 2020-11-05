@@ -196,7 +196,10 @@ export default class FormStore {
       this.operationState = OperationState.Pending;
       const editForm = await ApiService.getEditForm(qs.stringify(this.getXmlAndPathObj(nodeId)));
       this.setModelTypeByFieldType(editForm?.FieldType);
-      this.setSubFieldsForSave({ FieldType: editForm?.FieldType });
+      this.setSubFieldsForSave({
+        FieldType: editForm?.FieldType,
+        IsFromDictionaries: editForm?.IsFromDictionaries
+      });
       this.UIEditModel = this.parseEditFormDataToUIModel(editForm);
       this.operationState = OperationState.Success;
     } catch (e) {
