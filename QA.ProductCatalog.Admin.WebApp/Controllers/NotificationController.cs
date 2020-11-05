@@ -37,7 +37,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
         }
         
-		public ActionResult Index(bool beta = false)
+		public ActionResult Index(bool old = false)
 		{
             try
             {
@@ -55,21 +55,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     model = _service.GetConfigurationInfo(customerCode);                    
                 }
-                if (beta)
-                {
-                    return View("Notification", model);
-                }
-
-                return View(model);
+                return old ? View(model) : View("Notification", model);
             }
             catch(EndpointNotFoundException)
             {
                 return View((object)null);
             }
 		}
-
+        
         [RequireCustomAction]
-        public ActionResult IndexBeta()
+        public ActionResult _Index()
         {
             try
             {
@@ -101,7 +96,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return _restUrl + "/notification/config?customerCode=" + customerCode;
         }
 
-        public ActionResult UpdateConfiguration()
+        public ActionResult UpdateConfigurationOld()
 		{
             var customerCode = _identityProvider.Identity.CustomerCode;
             if (!String.IsNullOrEmpty(_restUrl))
@@ -118,7 +113,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			return RedirectToAction("Index");
 		}
 
-        public ActionResult UpdateConfigurationBeta()
+        public ActionResult UpdateConfiguration()
 		{
             var customerCode = _identityProvider.Identity.CustomerCode;
             if (!String.IsNullOrEmpty(_restUrl))
@@ -132,7 +127,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 _service.UpdateConfiguration(customerCode);
             }
 
-            return IndexBeta();
+            return Index();
 		}
 	}
 }

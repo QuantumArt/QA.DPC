@@ -42,7 +42,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult Index([Bind("content_item_id")] int? contentItemId, int? contentId, bool beta = false)
+        public ActionResult Index([Bind("content_item_id")] int? contentItemId, int? contentId, bool old = false)
         {
             _cacheItemWatcher.TrackChanges();
 
@@ -52,12 +52,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 					? XamlConfigurationParser.Save(new Content {ContentId = contentId.Value})
 					: string.Empty;
 
-            if (beta)
-            {
-                return View("DefinitionEditor", new DefinitionEditor { ContentItemId = contentItemId, Xml = definitionXml });
-            }
-
-            return View(new DefinitionEditor { ContentItemId = contentItemId, Xml = definitionXml });
+            return old ? 
+                View(new DefinitionEditor {ContentItemId = contentItemId, Xml = definitionXml}) : 
+                View("DefinitionEditor", new DefinitionEditor { ContentItemId = contentItemId, Xml = definitionXml });
         }
 
         [RequireCustomAction]
@@ -113,7 +110,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult EditBeta(DefinitionPathInfo defInfo)
+        public ActionResult Edit(DefinitionPathInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
@@ -151,7 +148,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult Edit(DefinitionPathInfo defInfo)
+        public ActionResult EditOld(DefinitionPathInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
@@ -159,7 +156,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (objectToEdit is Field edit)
                 return
-                    PartialView(new DefinitionFieldInfo(edit)
+                    PartialView("Edit", new DefinitionFieldInfo(edit)
                     {
                         InDefinition = !notFoundInDef,
                         Path = defInfo.Path,
@@ -191,7 +188,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult SaveField(DefinitionFieldInfo defInfo)
+        public ActionResult SaveFieldOld(DefinitionFieldInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
@@ -212,7 +209,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult SaveFieldBeta(DefinitionFieldInfo defInfo)
+        public ActionResult SaveField(DefinitionFieldInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
@@ -237,7 +234,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult SaveContent(DefinitionContentInfo defInfo)
+        public ActionResult SaveContentOld(DefinitionContentInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
@@ -276,11 +273,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             ModelState.Clear();
 
-            return Edit(new DefinitionPathInfo { Xml = resultXml, Path = defInfo.Path });
+            return EditOld(new DefinitionPathInfo { Xml = resultXml, Path = defInfo.Path });
         }
     
         [RequireCustomAction]
-        public ActionResult SaveContentBeta(DefinitionContentInfo defInfo)
+        public ActionResult SaveContent(DefinitionContentInfo defInfo)
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 

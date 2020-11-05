@@ -28,15 +28,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false, bool beta = false)
+        public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false, bool old = false)
         {
             var tasksPageInfo = new TasksPageInfo { ShowOnlyMine = showOnlyMine == true, Notify = notify == true, States = _taskService.GetAllStates(), AllowSchedule = allowSchedule };
 
-            if (beta) {
-                return View("Task", tasksPageInfo);
-            }
-
-            return View(tasksPageInfo);
+            return old ? View(tasksPageInfo) : View("Task", tasksPageInfo);
         }
 
         /// <summary>
@@ -60,14 +56,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 var filters = JsonConvert.DeserializeObject<KendoGridFilter[]>(filterJson);
 
-                foreach (var filter in filters)
+                foreach (var filter in filters.Where(n => n.value != null))
                 {
                     if (filter.field == "StateId")
-                        stateIdToFilterBy = (int)filter.value;
+                        stateIdToFilterBy = Convert.ToInt32(filter.value);
                     else if (filter.field == "DisplayName")
                         nameFillter = filter.value.ToString();
 					else if (filter.field == "HasSchedule")
-						hasSchedule = (bool) filter.value;
+						hasSchedule = Convert.ToBoolean(filter.value);
                 }
             }
 

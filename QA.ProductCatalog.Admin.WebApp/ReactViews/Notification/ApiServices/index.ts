@@ -6,11 +6,11 @@ class ApiService extends BaseApiService {
    * GET /Notification/IndexBeta
    */
   public async getModel(): Promise<IChannelsResponse> {
-    const response = await fetch(`${this.rootUrl}/Notification/IndexBeta`);
+    const response = await fetch(`${this.rootUrl}/Notification/_Index`);
     return await this.mapResponse<IChannelsResponse, IChannelsResponse>(response, x => x);
   }
   public async updateConfiguration(): Promise<IChannelsResponse> {
-    const response = await fetch(`${this.rootUrl}/Notification/UpdateConfigurationBeta`);
+    const response = await fetch(`${this.rootUrl}/Notification/UpdateConfiguration`);
     return await this.mapResponse<IChannelsResponse, IChannelsResponse>(response, x => x);
   }
 }
