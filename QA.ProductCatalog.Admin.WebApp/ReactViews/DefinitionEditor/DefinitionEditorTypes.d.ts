@@ -4,11 +4,11 @@
   saveDefinitionUrl: string;
   getSingleNodeUrl: string;
   getDefinitionLevelUrl: string;
-  editBetaUrl: string;
   editUrl: string;
+  editOldUrl: string;
+  saveFieldOldUrl: string;
   saveFieldUrl: string;
-  saveFieldBetaUrl: string;
-  saveContentBetaUrl: string;
+  saveContentUrl: string;
   strings: {
     DictionaryCachingSettings: string;
     MissingInQP: string;

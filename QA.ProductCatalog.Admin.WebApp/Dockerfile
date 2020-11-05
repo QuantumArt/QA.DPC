@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
 RUN apt-get install -y \
-    && curl -sL https://deb.nodesource.com/setup_10.x | bash \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash \
     && apt-get install -y nodejs
 
 WORKDIR /app
@@ -10,7 +10,7 @@ COPY QA.DPC ./
 
 WORKDIR /app/QA.ProductCatalog.Admin.WebApp
 RUN npm ci
-#RUN npm run-script build-prod
+RUN npm run-script components:build-dev
 
 RUN dotnet publish /app/QA.ProductCatalog.Admin.WebApp/QA.ProductCatalog.Admin.WebApp.csproj -c Release -o out -f netcoreapp3.1
 

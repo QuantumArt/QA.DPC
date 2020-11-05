@@ -2,9 +2,6 @@
 @using QA.Core.DPC.Resources
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
-@section jquery{
-  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
-}
 
 @section head{
 
@@ -57,7 +54,7 @@
             '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
             '@Url.Action("GetSingleNode")',
             '@Url.Action("GetDefinitionLevel")',
-            '@Url.Action("Edit")',
+            '@Url.Action("EditOld")',
             '@ControlStrings.Save',
             '@ControlStrings.EditXml',
             '@ControlStrings.EndEditXml',

@@ -37,7 +37,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
         }
         
-		public ActionResult Index(bool beta = false)
+		public ActionResult Index(bool old = false)
 		{
             try
             {
@@ -55,12 +55,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     model = _service.GetConfigurationInfo(customerCode);                    
                 }
-                if (beta)
-                {
-                    return View("Notification", model);
-                }
-
-                return View(model);
+                return old ? View(model) : View("Notification", model);
             }
             catch(EndpointNotFoundException)
             {
@@ -68,40 +63,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
 		}
 
-        [RequireCustomAction]
-        public ActionResult IndexBeta()
-        {
-            try
-            {
-                var customerCode = _identityProvider.Identity.CustomerCode;
-                object model;
-
-                if (!String.IsNullOrEmpty(_restUrl))
-                {
-                    var client = _factory.CreateClient();
-                    var result = client.GetAsync(GetUrl(customerCode)).Result.Content.ReadAsStringAsync().Result;
-                    model = JsonConvert.DeserializeObject<ConfigurationInfo>(result);
-
-                }
-                else
-                {
-                    model = _service.GetConfigurationInfo(customerCode);
-                }
-
-                return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(model) };
-            }
-            catch (EndpointNotFoundException)
-            {
-                return View((object)null);
-            }
-        }
-
         private string GetUrl(string customerCode)
         {
             return _restUrl + "/notification/config?customerCode=" + customerCode;
         }
 
-        public ActionResult UpdateConfiguration()
+        public ActionResult UpdateConfigurationOld()
 		{
             var customerCode = _identityProvider.Identity.CustomerCode;
             if (!String.IsNullOrEmpty(_restUrl))
@@ -118,7 +85,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			return RedirectToAction("Index");
 		}
 
-        public ActionResult UpdateConfigurationBeta()
+        public ActionResult UpdateConfiguration()
 		{
             var customerCode = _identityProvider.Identity.CustomerCode;
             if (!String.IsNullOrEmpty(_restUrl))
@@ -132,7 +99,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 _service.UpdateConfiguration(customerCode);
             }
 
-            return IndexBeta();
+            return Index();
 		}
 	}
 }
