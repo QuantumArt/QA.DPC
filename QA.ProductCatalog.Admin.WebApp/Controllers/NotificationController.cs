@@ -62,6 +62,34 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 return View((object)null);
             }
 		}
+        
+        [RequireCustomAction]
+        public ActionResult _Index()
+        {
+            try
+            {
+                var customerCode = _identityProvider.Identity.CustomerCode;
+                object model;
+
+                if (!String.IsNullOrEmpty(_restUrl))
+                {
+                    var client = _factory.CreateClient();
+                    var result = client.GetAsync(GetUrl(customerCode)).Result.Content.ReadAsStringAsync().Result;
+                    model = JsonConvert.DeserializeObject<ConfigurationInfo>(result);
+
+                }
+                else
+                {
+                    model = _service.GetConfigurationInfo(customerCode);
+                }
+
+                return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(model) };
+            }
+            catch (EndpointNotFoundException)
+            {
+                return View((object)null);
+            }
+        }
 
         private string GetUrl(string customerCode)
         {
