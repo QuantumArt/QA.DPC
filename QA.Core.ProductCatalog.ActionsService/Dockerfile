@@ -2,7 +2,7 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 
 WORKDIR /app
-COPY QA.DPC ./
+COPY . ./
 
 RUN dotnet publish /app/QA.Core.ProductCatalog.ActionsService/QA.Core.ProductCatalog.ActionsService.csproj -c Release -o out -f netcoreapp3.1
 

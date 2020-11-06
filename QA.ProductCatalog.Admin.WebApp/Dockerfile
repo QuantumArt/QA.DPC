@@ -6,7 +6,7 @@ RUN apt-get install -y \
     && apt-get install -y nodejs
 
 WORKDIR /app
-COPY QA.DPC ./
+COPY . ./
 
 WORKDIR /app/QA.ProductCatalog.Admin.WebApp
 RUN npm ci
