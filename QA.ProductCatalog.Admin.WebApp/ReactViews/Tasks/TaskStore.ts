@@ -12,6 +12,7 @@ import {
 import { checkPermissions, setBrowserNotifications } from "Shared/Utils";
 import { l } from "Tasks/Localization";
 import { differenceWith, isEqual } from "lodash";
+import { SendNotificationOptions, sendNotification } from "@quantumart/qp8backendapi-interaction";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
@@ -180,12 +181,13 @@ export class TaskStore {
     if (tasksShouldNotify.length) {
       tasksShouldNotify.forEach(task => {
         this.alreadyNotifiedTaskIds[task.Id] = task;
-        let body = `${l("state")}: ${task.State}`;
-        if (task.Message) body += "\r\n" + task.Message;
-        new Notification(`${l("task")}${task.DisplayName} ${l("proceed")}`, {
-          body: body,
-          icon: `${img}${task.IconName}48.png`
-        });
+        const nOptions: SendNotificationOptions = {
+          title: `${l("task")}${task.DisplayName} ${l("proceed")}`,
+          body: `${l("state")}: ${task.State}`,
+          icon: `${window.location.origin}${img}Done48.png`
+        };
+        if (task.Message) nOptions.body += "\r\n" + task.Message;
+        sendNotification(nOptions, window.name, window.top);
       });
     }
   };

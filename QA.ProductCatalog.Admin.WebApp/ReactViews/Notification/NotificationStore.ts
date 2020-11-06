@@ -15,6 +15,11 @@ import {
 } from "Notification/ApiServices/ApiInterfaces";
 import { differenceWith, isEqual, uniq } from "lodash";
 import { ChannelNotificationType } from "Shared/Enums";
+import { SendNotificationOptions, sendNotification } from "@quantumart/qp8backendapi-interaction";
+
+interface IChannelNotify extends IChannel {
+  oldCount?: number;
+}
 
 export class NotificationStore {
   constructor() {
@@ -109,7 +114,7 @@ export class NotificationStore {
       },
       channelNames: []
     };
-    const channelsToNotify = new Map<ChannelNotificationType, IChannel[]>([
+    const channelsToNotify = new Map<ChannelNotificationType, IChannelNotify[]>([
       [ChannelNotificationType.Add, []],
       [ChannelNotificationType.ChangeCount, []],
       [ChannelNotificationType.ChangeStatus, []],
@@ -138,7 +143,9 @@ export class NotificationStore {
         channelsToNotify.get(ChannelNotificationType.ChangeState).push(channel);
       }
       if (oldChannel && oldChannel?.Count !== channel?.Count) {
-        channelsToNotify.get(ChannelNotificationType.ChangeCount).push(channel);
+        channelsToNotify
+          .get(ChannelNotificationType.ChangeCount)
+          .push({ ...channel, oldCount: oldChannel.Count });
       }
       if (oldChannel && oldChannel?.LastStatus !== channel?.LastStatus) {
         channelsToNotify.get(ChannelNotificationType.ChangeStatus).push(channel);
@@ -150,15 +157,18 @@ export class NotificationStore {
      */
     for (let notificationType of channelsToNotify.keys()) {
       const channels = channelsToNotify.get(notificationType);
-      let body: string;
+      const nOptions: SendNotificationOptions = {
+        title: "",
+        body: ""
+      };
+
       switch (notificationType) {
         case ChannelNotificationType.Add:
           channels.forEach(channel => {
-            body = `Channel state: ${getChannelStatusDescription(channel.State)}\n`;
-            body += `Channel status: ${channel.LastStatus}`;
-            new Notification(`New channel ${channel.Name} was added`, {
-              body: body
-            });
+            nOptions.body = `Channel state: ${getChannelStatusDescription(channel.State)}\n`;
+            nOptions.body += `Channel status: ${channel.LastStatus}`;
+            nOptions.title = `New channel ${channel.Name} was added`;
+            sendNotification(nOptions, window.name, window.top);
           });
           break;
         case ChannelNotificationType.ChangeStatus:
@@ -168,29 +178,32 @@ export class NotificationStore {
             batchedNotification.body +=
               notificationType === ChannelNotificationType.ChangeStatus
                 ? `Channel ${channel.Name} status was changed to ${channel.LastStatus}\n`
-                : `Channel ${channel.Name} queue was changed to ${channel.Count}\n`;
+                : `Channel ${channel.Name} queue was changed to ${channel.Count} from ${channel.oldCount}\n`;
           });
           break;
         case ChannelNotificationType.ChangeState:
           channels.forEach(channel => {
-            body = `New channel state: ${getChannelStatusDescription(channel.State)}`;
-            new Notification(`Channel ${channel.Name} state was changed`, {
-              body: body
-            });
+            nOptions.body = `New channel state: ${getChannelStatusDescription(channel.State)}`;
+            nOptions.title = `Channel ${channel.Name} state was changed`;
+            sendNotification(nOptions, window.name, window.top);
           });
           break;
         case ChannelNotificationType.Remove:
           channels.forEach(channel => {
-            new Notification(`Channel ${channel.Name} was removed`);
+            nOptions.body = ``;
+            nOptions.title = `Channel ${channel.Name} was removed`;
+            sendNotification(nOptions, window.name, window.top);
           });
           break;
       }
     }
 
     if (batchedNotification.channelNames.length) {
-      new Notification(batchedNotification.getHeader(), {
+      const options: SendNotificationOptions = {
+        title: batchedNotification.getHeader(),
         body: batchedNotification.body
-      });
+      };
+      sendNotification(options, window.name, window.top);
     }
   };
 
