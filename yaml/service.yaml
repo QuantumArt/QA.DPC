@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-admin
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-admin
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-api
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-api
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-notification-sender
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-notification-sender
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-actions-service
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-actions-service
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-front
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-front
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-search-api
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-search-api
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-sync-api
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-sync-api
+  ports:
+  - port: 80
+    targetPort: 80
