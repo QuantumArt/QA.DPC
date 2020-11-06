@@ -1,5 +1,5 @@
 import { ObservableMap, IObservableArray } from "mobx";
-import { IStateTreeNode } from "mobx-state-tree";
+import { IStateTreeNode, IType } from "mobx-state-tree";
 import { isObject } from "Utils/TypeChecks";
 import { ValidatableObject } from "mst-validation-mixin";
 
@@ -14,10 +14,7 @@ export interface TablesObject {
 }
 
 /** Объект, содержащий поля нормальной статьи или статьи-расширения */
-export interface ArticleObject
-  extends ValidatableObject,
-    // @ts-ignore
-    IStateTreeNode<ArticleSnapshot, ArticleSnapshot> {
+export interface ArticleObject extends ValidatableObject, IStateTreeNode<ArticleSnapshot> {
   [field: string]: any;
   /** Серверный Id статьи, полученный при сохранении в БД */
   _ServerId?: number;
@@ -86,7 +83,7 @@ export interface TablesSnapshot {
   };
 }
 
-export interface ArticleSnapshot {
+export interface ArticleSnapshot extends IType<any, any, any> {
   readonly [field: string]: any;
   /** Серверный Id статьи, полученный при сохранении в БД */
   readonly _ServerId?: number;
@@ -103,13 +100,13 @@ export interface EntitySnapshot extends ArticleSnapshot {
    * Является отрицательным для статей созданных на клиенте.
    */
   readonly _ClientId: number;
-  /** Признак того, что объект не является статьей-расшиернием */
+  /** Признак того, что объект не является статьей-расширением */
   readonly _IsExtension?: false;
   /** Признак того, что объект не должен быть сохранен на сервере */
   readonly _IsVirtual?: boolean;
 }
 
 export interface ExtensionSnapshot extends ArticleSnapshot {
-  /** Признак того, что объект является статьей-расшиернием */
+  /** Признак того, что объект является статьей-расширением */
   readonly _IsExtension?: true;
 }

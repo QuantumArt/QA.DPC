@@ -36,9 +36,15 @@ export type Validator = (value: any) => string | undefined;
 /**
  * Объект, имеющий состояние редактирования и валидации.
  * При первом изменении поля его значение сохраняется во внутренних структурах,
- * и доступно с помощью методов @see getBaseValue @see restoreBaseValue @see restoreBaseValues
+ * и доступно с помощью методов
+ * @see getBaseValue
+ * @see restoreBaseValue
+ * @see restoreBaseValues
  * Ошибка, привязанная к полю, считается видимой, если поле ранее было выбрано
- * в фокус @see isTouched и изменено @see isChanged
+ * в фокус
+ * @see isTouched
+ * и изменено
+ * @see isChanged
  */
 export interface ValidatableObject {
   /** Поле объекта (или любое из полей объекта) ранее было выбрано в фокус и изменено @see isTouched @see isChanged */
