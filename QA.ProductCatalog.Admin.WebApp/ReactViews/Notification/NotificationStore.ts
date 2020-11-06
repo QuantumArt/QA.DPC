@@ -16,6 +16,8 @@ import {
 import { differenceWith, isEqual, uniq } from "lodash";
 import { ChannelNotificationType } from "Shared/Enums";
 import { SendNotificationOptions, sendNotification } from "@quantumart/qp8backendapi-interaction";
+import { l } from "./Localization";
+import { firstLetterUp, firstLetterLow } from "Shared/Utils";
 
 interface IChannelNotify extends IChannel {
   oldCount?: number;
@@ -108,9 +110,7 @@ export class NotificationStore {
     } = {
       body: "",
       getHeader: function() {
-        return `There are some changes in channels with names ${uniq(this.channelNames).join(
-          ", "
-        )}:`;
+        return `${l("channelsChanged")} ${uniq(this.channelNames).join(", ")}:`;
       },
       channelNames: []
     };
@@ -165,9 +165,13 @@ export class NotificationStore {
       switch (notificationType) {
         case ChannelNotificationType.Add:
           channels.forEach(channel => {
-            nOptions.body = `Channel state: ${getChannelStatusDescription(channel.State)}\n`;
-            nOptions.body += `Channel status: ${channel.LastStatus}`;
-            nOptions.title = `New channel ${channel.Name} was added`;
+            nOptions.body = `${l("stateOfChannel")}: ${getChannelStatusDescription(
+              channel.State
+            )}\n`;
+            nOptions.body += `${l("statusOfChannel")}: ${channel.LastStatus}`;
+            nOptions.title = `${firstLetterUp(l("new"))} ${firstLetterLow(l("channel"))} ${
+              channel.Name
+            } ${l("added")}`;
             sendNotification(nOptions, window.name, window.top);
           });
           break;
@@ -177,21 +181,27 @@ export class NotificationStore {
             batchedNotification.channelNames.push(channel.Name);
             batchedNotification.body +=
               notificationType === ChannelNotificationType.ChangeStatus
-                ? `Channel ${channel.Name} status was changed to ${channel.LastStatus}\n`
-                : `Channel ${channel.Name} queue was changed to ${channel.Count} from ${channel.oldCount}\n`;
+                ? `${l("statusOfChannel")} ${channel.Name} ${l("changed")} ${l("to")} ${
+                    channel.LastStatus
+                  }\n`
+                : `${l("queue")} ${channel.Name} ${l("changed")} ${l("to")} ${channel.Count} ${l(
+                    "from"
+                  )} ${channel.oldCount}\n`;
           });
           break;
         case ChannelNotificationType.ChangeState:
           channels.forEach(channel => {
-            nOptions.body = `New channel state: ${getChannelStatusDescription(channel.State)}`;
-            nOptions.title = `Channel ${channel.Name} state was changed`;
+            nOptions.body = `${firstLetterUp(l("new"))} ${firstLetterLow(
+              l("channelState")
+            )} ${getChannelStatusDescription(channel.State)}`;
+            nOptions.title = `${l("stateOfChannel")} ${channel.Name} ${l("changed")}`;
             sendNotification(nOptions, window.name, window.top);
           });
           break;
         case ChannelNotificationType.Remove:
           channels.forEach(channel => {
             nOptions.body = ``;
-            nOptions.title = `Channel ${channel.Name} was removed`;
+            nOptions.title = `${l("channel")} ${channel.Name} ${l("removed")}`;
             sendNotification(nOptions, window.name, window.top);
           });
           break;

@@ -213,5 +213,38 @@
   <data name="Important" xml:space="preserve">
     <value>Important</value>
   </data>
-  
+
+  <data name="ChannelState" xml:space="preserve">
+    <value>Channel state</value>
+  </data>
+  <data name="StatusOfChannel" xml:space="preserve">
+    <value>Status of channel</value>
+  </data>
+  <data name="StateOfChannel" xml:space="preserve">
+    <value>State of channel</value>
+  </data>
+  <data name="ChannelQueue" xml:space="preserve">
+    <value>Queue of channel</value>
+  </data>
+  <data name="Removed" xml:space="preserve">
+    <value>was removed</value>
+  </data>
+  <data name="Changed" xml:space="preserve">
+    <value>was changed</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>to</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>from</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>new</value>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>was added</value>
+  </data>
+  <data name="ChannelsChanged" xml:space="preserve">
+    <value>There are some changes in channels with names</value>
+  </data>
 </root>
