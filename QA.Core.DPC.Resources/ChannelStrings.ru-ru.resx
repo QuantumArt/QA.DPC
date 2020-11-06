@@ -213,6 +213,40 @@
   <data name="YourLastTask" xml:space="preserve">
     <value>Задача</value>
   </data>
+
+  <data name="StatusOfChannel" xml:space="preserve">
+    <value>Статус канала</value>
+  </data>
+  <data name="StateOfChannel" xml:space="preserve">
+    <value>Состояние канала</value>
+  </data>
+  <data name="ChannelQueue" xml:space="preserve">
+    <value>Очередь канала</value>
+  </data>
+  <data name="Removed" xml:space="preserve">
+    <value>был удален</value>
+  </data>
+  <data name="Changed" xml:space="preserve">
+    <value>был изменен</value>
+  </data>
+  <data name="To" xml:space="preserve">
+    <value>на</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>вместо</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>новый</value>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>был добавлен</value>
+  </data>
+  <data name="ChannelState" xml:space="preserve">
+    <value>Состояние канала</value>
+  </data>
+  <data name="ChannelsChanged" xml:space="preserve">
+    <value>Произошли некоторые изменения в каналах с названиями</value>
+  </data>
 </root>
 
         
