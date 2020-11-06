@@ -1,8 +1,9 @@
 # Build temp image
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+LABEL stage=intermediate
 
 WORKDIR /app
-COPY QA.DPC ./
+COPY . ./
 
 RUN dotnet publish /app/QA.ProductCatalog.HighloadFront.Core.API/QA.ProductCatalog.HighloadFront.Core.API.csproj -c Development -o out -f netcoreapp3.1
 
