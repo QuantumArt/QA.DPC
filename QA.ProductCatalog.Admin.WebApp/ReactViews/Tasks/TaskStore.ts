@@ -53,10 +53,16 @@ export class Pagination {
 }
 
 export class Filter {
-  constructor(onChangeFilter: () => Promise<void>, field: string, getMappedValue?: () => boolean) {
+  constructor(
+    initialValue: string,
+    onChangeFilter: () => Promise<void>,
+    field: string,
+    getMappedValue?: () => boolean
+  ) {
     this.onChangeFilter = onChangeFilter;
     this.field = field;
     this.getMappedValue = getMappedValue;
+    this.value = initialValue;
   }
   @observable isActive: boolean = false;
   private readonly field: string;
@@ -102,11 +108,16 @@ export class TaskStore {
   @observable filters: Map<TaskGridFilterType, Filter> = new Map([
     [
       TaskGridFilterType.StatusFilter,
-      new Filter(() => this.withLoader(() => this.fetchGridData()), "StateId")
+      new Filter(
+        String(window.task.statusValues[0].value),
+        () => this.withLoader(() => this.fetchGridData()),
+        "StateId"
+      )
     ],
     [
       TaskGridFilterType.ScheduleFilter,
       new Filter(
+        ScheduleFilterValues.YES,
         () => this.withLoader(() => this.fetchGridData()),
         "HasSchedule",
         function() {
@@ -194,8 +205,8 @@ export class TaskStore {
 
   @action
   setGridData = (data: Task[]) => {
-    const isSameData = differenceWith(data, this.gridData, isEqual).length === 0;
-    if (!isSameData) {
+    const isSameData = differenceWith(this.gridData, data, isEqual).length === 0;
+    if (!isSameData || this.gridData.length !== data.length) {
       this.gridData = data;
     }
   };
