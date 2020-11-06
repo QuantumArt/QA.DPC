@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Filters;
 using QA.ProductCatalog.Integration;
 
@@ -20,14 +21,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IHttpClientFactory _factory;
         private readonly string _restUrl;
         private readonly string _wcfUrl;
+        private readonly QPHelper _qpHelper;
        
 
-        public NotificationController(IIdentityProvider identityProvider, IOptions<IntegrationProperties> props, IHttpClientFactory factory)
+        public NotificationController(IIdentityProvider identityProvider, IOptions<IntegrationProperties> props, IHttpClientFactory factory, QPHelper helper)
 		{
             _identityProvider = identityProvider;            
             _factory = factory;
             _restUrl = props.Value.RestNotificationUrl;
             _wcfUrl = props.Value.WcfNotificationUrl;
+            _qpHelper = helper;
 
             if (String.IsNullOrEmpty(_restUrl) && !String.IsNullOrEmpty(_wcfUrl))
             {
@@ -55,6 +58,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     model = _service.GetConfigurationInfo(customerCode);                    
                 }
+                ViewBag.HostId = _qpHelper.HostId;
                 return old ? View(model) : View("Notification", model);
             }
             catch(EndpointNotFoundException)

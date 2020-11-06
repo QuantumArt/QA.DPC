@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.DPC.Core.Helpers;
 using M = QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
@@ -19,19 +20,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly ITaskService _taskService;
         private readonly IUserProvider _userProvider;
         private readonly ICompositeViewEngine _viewEngine;
+        private readonly QPHelper _qpHelper;
 
-        public TaskController(ITaskService taskService, IUserProvider userProvider, ICompositeViewEngine viewEngine)
+        public TaskController(ITaskService taskService, IUserProvider userProvider, ICompositeViewEngine viewEngine, QPHelper helper)
         {
             _taskService = taskService;
             _viewEngine = viewEngine;
             _userProvider = userProvider;
+            _qpHelper = helper;
         }
 
         [HttpGet]
         public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false, bool old = false)
         {
             var tasksPageInfo = new TasksPageInfo { ShowOnlyMine = showOnlyMine == true, Notify = notify == true, States = _taskService.GetAllStates(), AllowSchedule = allowSchedule };
-
+            ViewBag.HostId = _qpHelper.HostId;
             return old ? View(tasksPageInfo) : View("Task", tasksPageInfo);
         }
 

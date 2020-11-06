@@ -2,10 +2,8 @@ import { createContext } from "react";
 import { action, computed, observable } from "mobx";
 import { apiService } from "Notification/ApiServices";
 import {
-  checkPermissions,
   CycleDataFetch,
-  getChannelStatusDescription,
-  setBrowserNotifications
+  getChannelStatusDescription
 } from "Shared/Utils";
 import {
   IChannel,
@@ -35,7 +33,6 @@ export class NotificationStore {
       5000,
       15000
     );
-    checkPermissions();
   }
   private IsPriorityRequestAlreadyPending: boolean;
   private cycleFetch;
@@ -84,7 +81,9 @@ export class NotificationStore {
   setChannels = (data: IChannel[]) => {
     const isSameData = differenceWith(this.channels || [], data, isEqual).length === 0;
     if (!this.channels || !isSameData || this.channels.length !== data.length) {
-      if (this.channels) setBrowserNotifications(() => this.notificationsSender(data));
+      if (this.channels) {
+        this.notificationsSender(data);
+      }
       this.channels = data;
     }
   };

@@ -9,7 +9,6 @@ import {
   INIT_PAGINATION_OPTIONS,
   SESSION_EXPIRED
 } from "Tasks/Constants";
-import { checkPermissions, setBrowserNotifications } from "Shared/Utils";
 import { l } from "Tasks/Localization";
 import { differenceWith, isEqual } from "lodash";
 import { SendNotificationOptions, sendNotification } from "@quantumart/qp8backendapi-interaction";
@@ -92,7 +91,6 @@ export class Filter {
 
 export class TaskStore {
   constructor() {
-    checkPermissions();
     onBecomeObserved(this, "gridData", this.init);
   }
   private IsPriorityRequestPending: boolean = false;
@@ -154,9 +152,7 @@ export class TaskStore {
       this.setMyLastTask(response.myLastTask);
 
       if (isNotifyActive) {
-        setBrowserNotifications(() =>
-          this.tasksNotificationsSender(response.tasks, runningStateId)
-        );
+        this.tasksNotificationsSender(response.tasks, runningStateId);
       }
 
       setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
