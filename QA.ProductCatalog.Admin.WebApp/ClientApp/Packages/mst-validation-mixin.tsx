@@ -10,7 +10,8 @@ import {
   extendObservable,
   isObservableArray,
   isObservableMap,
-  Lambda
+  Lambda,
+  IObservableArray
 } from "mobx";
 import {
   getSnapshot,
@@ -18,7 +19,9 @@ import {
   getChildType,
   resolveIdentifier,
   isReferenceType,
-  clone, IAnyModelType
+  clone,
+  IAnyModelType,
+  IStateTreeNode
 } from "mobx-state-tree";
 import { isArray } from "Utils/TypeChecks";
 
@@ -187,17 +190,14 @@ export const validationMixin = (self: Object) => {
 
       if (isCollectionChange) {
         if (isStateTreeNode(oldValue)) {
-          // @ts-ignore
           const elementType = getChildType(oldValue) as IAnyModelType;
           if (isReferenceType(elementType)) {
             if (isObservableArray(oldValue)) {
-              // @ts-ignore
-              fieldState.baseValue = getSnapshot(oldValue).map(id =>
+              fieldState.baseValue = getSnapshot(oldValue as IStateTreeNode).map(id =>
                 resolveIdentifier(elementType, self, id)
               );
             } else if (isObservableMap(oldValue)) {
-              // @ts-ignore
-              const mapSnapshot = getSnapshot(oldValue);
+              const mapSnapshot = getSnapshot(oldValue as IStateTreeNode);
               fieldState.baseValue = new Map(
                 Object.keys(mapSnapshot).map(
                   key =>
@@ -656,7 +656,11 @@ export class Validate extends Component<ValidateProps> {
       return renderErrors ? (
         renderErrors(...errors)
       ) : (
-        <div className={errorClassName}>{errors.map((error, i) => <div key={i}>{error}</div>)}</div>
+        <div className={errorClassName}>
+          {errors.map((error, i) => (
+            <div key={i}>{error}</div>
+          ))}
+        </div>
       );
     }
     return null;

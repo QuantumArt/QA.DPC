@@ -183,7 +183,7 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
   }
 
   private prepareFieldBlock(fieldSchema: FieldSchema) {
-    const { model, fieldEditors } = this.props;
+    const { model, fieldEditors }: ArticleEditorProps = this.props;
     const fieldName = fieldSchema.FieldName;
 
     if (fieldEditors && fieldEditors.hasOwnProperty(fieldName)) {
@@ -195,7 +195,6 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
           FieldEditor: field
         });
       } else if (field !== IGNORE) {
-        // @ts-ignore
         model[fieldName] = field;
       }
       return;
@@ -214,7 +213,6 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
             FieldEditor: field
           });
         } else if (field !== IGNORE) {
-          // @ts-ignore
           model[fieldName] = field;
         }
         return;

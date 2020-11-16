@@ -17,16 +17,4 @@
 
 <div class="wrap">
   <div class="info">@Html.Raw(System.IO.File.GetLastWriteTime(typeof(AppInfoController).Assembly.Location).ToString())</div>
-  <button role="button" class="bp3-button bp3-intent-primary bp3-large" onclick="allowNotifications()">Allow Notifications</button>
 </div>
-<script>
-  function allowNotifications() {
-    Notification.requestPermission().then(function (result) {
-      if (result === "granted") {
-        window.close();
-      } else if (confirm("You won't be able to get notifications")) {
-        window.close();
-      }
-    });
-  }
-</script>

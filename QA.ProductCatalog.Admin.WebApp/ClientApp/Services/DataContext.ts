@@ -29,8 +29,7 @@ import {
   isEnumField
 } from "Models/EditorSchemaModels";
 
-// @ts-ignore
-type ModelType<S, T> = IModelType<ModelProperties, any, S, S, T>;
+type ModelType<S, T> = IModelType<ModelProperties, any, S, T>;
 
 export class DataContext<TTables extends TablesObject = TablesObject> {
   private _nextId = -1;
@@ -82,7 +81,7 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
       _ClientId: this._nextId,
       ...this._defaultSnapshots[contentName],
       ...properties
-    }) as T;
+    } as EntitySnapshot);
 
     this.tables[contentName].put(entity);
     return entity;
@@ -177,7 +176,10 @@ function compileTablesType(
     } else if (isEnumField(field)) {
       // создаем nullable строковое поле в виде enum
       fieldModels[field.FieldName] = t.maybeNull(
-        t.enumeration(field.FieldName, field.Items.map(item => item.Value))
+        t.enumeration(
+          field.FieldName,
+          field.Items.map(item => item.Value)
+        )
       );
     } else if (isPlainField(field)) {
       switch (field.FieldType) {
