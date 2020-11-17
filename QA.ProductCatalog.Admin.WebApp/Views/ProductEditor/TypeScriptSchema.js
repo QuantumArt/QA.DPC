@@ -10,14 +10,10 @@ import {
 } from "Models/EditorSchemaModels";
 import { ArticleObject } from "Models/EditorDataModels";
 
-const dataInterfaces = compileEditorDataInterfaces(
-  // @ts-ignore
-  window.mergedSchema
-);
+const dataInterfaces = compileEditorDataInterfaces(window.mergedSchema);
 
 download("TypeScriptSchema.ts", dataInterfaces);
 
-// @ts-ignore
 document.querySelector("#typeScriptCode").innerText = dataInterfaces;
 
 /**

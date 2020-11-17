@@ -1,6 +1,6 @@
 import { inject } from "react-ioc";
 import { action, comparer } from "mobx";
-import {getSnapshot, isStateTreeNode, IStateTreeNode} from "mobx-state-tree";
+import { getSnapshot, isStateTreeNode, IStateTreeNode } from "mobx-state-tree";
 import { isArray } from "Utils/TypeChecks";
 import {
   TablesSnapshot,
@@ -8,8 +8,7 @@ import {
   ArticleObject,
   EntityObject
 } from "Models/EditorDataModels";
-import { isExtensionDictionary,
-  isEntityObject } from "Models/EditorDataModels";
+import { isExtensionDictionary, isEntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 
 export enum MergeStrategy {
@@ -48,8 +47,9 @@ export class DataMerger {
 
       if (name.endsWith(ArticleObject._Extension) && isExtensionDictionary(fieldValue)) {
         for (const [contentName, extensionSnapshot] of Object.entries(fieldSnapshot)) {
-          // @ts-ignore
-          if (this.articleHasConfilcts(fieldValue[contentName], extensionSnapshot)) {
+          if (
+            this.articleHasConfilcts(fieldValue[contentName], extensionSnapshot as ArticleSnapshot)
+          ) {
             return true;
           }
         }
@@ -107,8 +107,11 @@ export class DataMerger {
         }
       } else if (name.endsWith(ArticleObject._Extension) && isExtensionDictionary(fieldValue)) {
         Object.entries(fieldSnapshot).forEach(([contentName, extensionSnapshot]) => {
-          // @ts-ignore
-          this.mergeArticle(fieldValue[contentName], extensionSnapshot, strategy);
+          this.mergeArticle(
+            fieldValue[contentName],
+            extensionSnapshot as ArticleSnapshot,
+            strategy
+          );
         });
       } else if (comparer.structural(articleSnapshot[name], fieldSnapshot)) {
         article.setChanged(name, false);

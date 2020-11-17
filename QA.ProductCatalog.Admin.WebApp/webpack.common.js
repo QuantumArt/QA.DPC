@@ -68,6 +68,9 @@ module.exports = {
     filename: "[name].js",
     path: outPath
   },
+  stats: {
+    warningsFilter: /export .* was not found in/
+  },
   optimization: {
     minimizer: [
       new TerserPlugin({

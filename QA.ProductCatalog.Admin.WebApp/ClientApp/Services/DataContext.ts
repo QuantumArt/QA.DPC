@@ -6,7 +6,8 @@ import {
   onPatch,
   ModelProperties,
   getType,
-  getSnapshot
+  getSnapshot,
+  IAnyType
 } from "mobx-state-tree";
 import { validationMixin } from "mst-validation-mixin";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
@@ -39,7 +40,6 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
   public tables: TTables = null;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
-    // @ts-ignore
     this._tablesType = compileTablesType(mergedSchemas, () => this._nextId--);
     this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
   }
@@ -98,12 +98,18 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
   }
 
   private getContentType(contentName: string): ModelType<EntitySnapshot, EntityObject> {
-    const optionalType = this._tablesType.properties[contentName];
+    // Локальный хак для синхронизации рантайм структуры данных. Может поменяться в будущем.
+    interface AnyType extends IAnyType {
+      _subtype?: ModelType<any, any> & {
+        _subType?: ModelType<any, any>;
+      };
+    }
+    const optionalType: AnyType = this._tablesType.properties[contentName];
     if (!optionalType) {
       throw new TypeError(`Content "${contentName}" is not defined in this Tables schema`);
     }
-    // @ts-ignore
-    return optionalType.type.subType;
+
+    return optionalType._subtype._subType;
   }
 }
 
@@ -237,7 +243,7 @@ function compileTablesType(
     collectionModels[name] = t.optional(t.map(model), {});
   });
   // создаем модель хранилища
-  return t.model(collectionModels);
+  return t.model(collectionModels) as ModelType<TablesSnapshot, TablesObject>;
 }
 
 /** словарь со снапшотами-по умолчанию для создания новых статей */
