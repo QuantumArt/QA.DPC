@@ -1,10 +1,7 @@
 import { createContext } from "react";
 import { action, computed, observable } from "mobx";
 import { apiService } from "Notification/ApiServices";
-import {
-  CycleDataFetch,
-  getChannelStatusDescription
-} from "Shared/Utils";
+import { CycleDataFetch, getChannelStatusDescription } from "Shared/Utils";
 import {
   IChannel,
   IChannelsResponse,
@@ -127,7 +124,7 @@ export class NotificationStore {
     if (data.length > this.channels.length && this.channels.length) {
       channelsToNotify
         .get(ChannelNotificationType.Add)
-        .push(...data.filter(x => !this.channels.find(y => y.Name == x.Name)));
+        .push(...data.filter(x => !this.channels.find(y => y.Name === x.Name)));
     }
 
     if (data.length < this.channels.length) {
