@@ -1,4 +1,4 @@
-import { setEquals } from "Utils/Array";
+import { setEquals } from "ProductEditor/Utils/Array";
 import { ProductParameter, LinkParameter } from "../TypeScriptSchema";
 
 type Parameter = ProductParameter | LinkParameter;

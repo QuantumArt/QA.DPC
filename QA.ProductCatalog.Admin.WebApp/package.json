@@ -5,11 +5,8 @@
   "description": "DPC Admin Web App",
   "scripts": {
     "components:build-dev": "webpack --config webpack.dev.js",
+    "components:build-prod": "webpack --config webpack.prod.js",
     "components:start": "webpack --config webpack.dev.js --watch",
-    "editor:build-dev": "webpack --config webpack.editor.config.js --mode development",
-    "editor:build-prod": "webpack --config webpack.editor.config.js --mode production",
-    "editor:start": "webpack --config webpack.editor.config.js --mode development --watch",
-    "webpack-analyze": "webpack --config webpack.editor.config.js --mode production --profile --json > stats.json && webpack-bundle-analyzer stats.json",
     "test": "jest"
   },
   "husky": {

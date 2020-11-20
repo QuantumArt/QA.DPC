@@ -1,15 +1,15 @@
 import React, { Component } from "react";
 import { action } from "mobx";
 import { Button, Intent } from "@blueprintjs/core";
-import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
+import { ArticleEditor, FieldEditorProps, IGNORE } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
 import {
   RelationFieldAccordion,
   MultiRelationFieldTable,
   HighlightMode,
   MultiRelationFieldTags
-} from "Components/FieldEditors/FieldEditors";
-import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { by, desc, asc } from "Utils/Array";
+} from "ProductEditor/Components/FieldEditors/FieldEditors";
+import { RelationFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
+import { by, desc, asc } from "ProductEditor/Utils/Array";
 import { DeviceOnTariffs, ProductRelation, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import {

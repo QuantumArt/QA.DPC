@@ -22,7 +22,7 @@ module.exports = merge(common, {
       {
         test: /\.(tsx?|jsx?)$/,
         exclude: /node_modules/,
-        include: /(ClientApp|Views|ReactViews)/,
+        include: /(Views|ReactViews)/,
         use: [
           {
             loader: "thread-loader",

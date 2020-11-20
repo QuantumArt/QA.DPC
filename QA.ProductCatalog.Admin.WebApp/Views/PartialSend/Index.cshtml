@@ -1,6 +1,10 @@
 ﻿@using QA.Core.DPC.Resources
 @using System.Globalization
 
+@section head {
+  <link href="~/css/PartialSend/Index.css" rel="stylesheet" />
+}
+
 @{
   var ignoredStatusesList = new string[ViewBag.IgnoredStatus.Length];
   for (var i = 0; i < ViewBag.IgnoredStatus.Length; i++)

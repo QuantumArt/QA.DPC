@@ -2,16 +2,16 @@ import React, { Component } from "react";
 import { inject } from "react-ioc";
 import { action } from "mobx";
 import { Intent, Icon, MenuItem } from "@blueprintjs/core";
-import { FieldEditorProps, ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
-import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
+import { FieldEditorProps, ArticleEditor } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
+import { PublicationStatusIcons } from "ProductEditor/Components/PublicationStatusIcons/PublicationStatusIcons";
 import {
   RelationFieldAccordion,
   MultiRelationFieldTags
-} from "Components/FieldEditors/FieldEditors";
-import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { PublicationContext } from "Services/PublicationContext";
-import { EntityController } from "Services/EntityController";
-import { by, asc } from "Utils/Array";
+} from "ProductEditor/Components/FieldEditors/FieldEditors";
+import { RelationFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
+import { PublicationContext } from "ProductEditor/Services/PublicationContext";
+import { EntityController } from "ProductEditor/Services/EntityController";
+import { by, asc } from "ProductEditor/Utils/Array";
 import { Product, FixConnectAction, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { onlyOneItemPerRegionHasDevices } from "../Utils/ActionDeviceValidators";

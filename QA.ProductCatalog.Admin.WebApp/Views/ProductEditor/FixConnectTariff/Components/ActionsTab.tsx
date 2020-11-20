@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { observer } from "mobx-react";
 import { inject } from "react-ioc";
 import { Divider, Button, Intent } from "@blueprintjs/core";
-import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
-import { PublicationContext } from "Services/PublicationContext";
-import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
+import { ContentSchema, RelationFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
+import { PublicationContext } from "ProductEditor/Services/PublicationContext";
+import { ArticleEditor, FieldEditorProps, IGNORE } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
 import {
   RelationFieldAccordion,
   MultiRelationFieldTable,
@@ -12,9 +12,9 @@ import {
   SingleRelationFieldTags,
   HighlightMode,
   MultiRelationFieldTags
-} from "Components/FieldEditors/FieldEditors";
-import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
-import { by, asc, desc } from "Utils/Array";
+} from "ProductEditor/Components/FieldEditors/FieldEditors";
+import { PublicationStatusIcons } from "ProductEditor/Components/PublicationStatusIcons/PublicationStatusIcons";
+import { by, asc, desc } from "ProductEditor/Utils/Array";
 import {
   Product,
   FixConnectAction,

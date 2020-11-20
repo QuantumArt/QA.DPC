@@ -5,9 +5,9 @@ import { observer } from "mobx-react";
 import { Intent, Checkbox, Alignment } from "@blueprintjs/core";
 import { Col, Row } from "react-flexbox-grid";
 import { Options } from "react-select";
-import { Validate } from "mst-validation-mixin";
-import { InputNumber, Select } from "Components/FormControls/FormControls";
-import { NumericFieldSchema } from "Models/EditorSchemaModels";
+import { Validate } from "ProductEditor/Packages/mst-validation-mixin";
+import { InputNumber, Select } from "ProductEditor/Components/FormControls";
+import { NumericFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
 import { LinkParameter, ProductParameter, BaseParameterModifier } from "../TypeScriptSchema";
 import { hasUniqueTariffDirection } from "../Utils/ParameterValidators";
 

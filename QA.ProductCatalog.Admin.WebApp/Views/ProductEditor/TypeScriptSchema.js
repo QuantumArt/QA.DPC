@@ -1,4 +1,4 @@
-﻿import { download } from "Utils/Download";
+﻿import { download } from "ProductEditor/Utils/Download";
 import {
   ContentSchema,
   FieldExactTypes,
@@ -7,8 +7,8 @@ import {
   isMultiRelationField,
   isPlainField,
   isEnumField
-} from "Models/EditorSchemaModels";
-import { ArticleObject } from "Models/EditorDataModels";
+} from "ProductEditor/Models/EditorSchemaModels";
+import { ArticleObject } from "ProductEditor/Models/EditorDataModels";
 
 const dataInterfaces = compileEditorDataInterfaces(window.mergedSchema);
 
@@ -44,7 +44,7 @@ function compileEditorDataInterfaces(mergedSchemas) {
  * @see ProductEditorController.TypeScriptSchema()
  */
 // @ts-ignore
-import { EntityObject, ExtensionObject, TablesObject, IArray, IMap } from "Models/EditorDataModels";
+import { EntityObject, ExtensionObject, TablesObject, IArray, IMap } from "ProductEditor/Models/EditorDataModels";
 
 /** Типизация хранилища данных */
 export interface Tables extends TablesObject {${

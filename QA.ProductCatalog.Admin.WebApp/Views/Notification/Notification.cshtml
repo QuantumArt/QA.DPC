@@ -1,7 +1,12 @@
 @using QA.ProductCatalog.Integration.Notifications
 @using QA.Core.DPC.Resources
 @model ConfigurationInfo
-  <div id="notification"></div>
+
+@section head {
+  <link href="~/css/Notification/Notification.css" rel="stylesheet" />
+}
+
+<div id="notification"></div>
 
 @section scripts{
   <script type="text/javascript" defer>

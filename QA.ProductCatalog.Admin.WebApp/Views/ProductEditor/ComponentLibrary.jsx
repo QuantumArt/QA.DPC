@@ -1,4 +1,4 @@
-﻿import "Environment";
+﻿import "ProductEditor/Environment";
 import React from "react";
 import ReactDOM from "react-dom";
 import cn from "classnames";
@@ -7,7 +7,7 @@ import { Grid, Row, Col } from "react-flexbox-grid";
 import { types as t, unprotect } from "mobx-state-tree";
 import { toJS, configure } from "mobx";
 import { observer } from "mobx-react";
-import { validationMixin, Validate } from "mst-validation-mixin";
+import { validationMixin, Validate } from "ProductEditor/Packages/mst-validation-mixin";
 import {
   LocaleContext,
   Translation,
@@ -15,7 +15,7 @@ import {
   Translate
   // TODO: uncomment when React Hooks will be released
   // useTranslate
-} from "react-lazy-i18n";
+} from "ProductEditor/Packages/react-lazy-i18n";
 import {
   InputText,
   InputNumber,
@@ -26,8 +26,8 @@ import {
   DatePicker,
   Select,
   RadioGroup
-} from "Components/FormControls/FormControls";
-import { required, pattern, maxCount } from "Utils/Validators";
+} from "ProductEditor/Components/FormControls";
+import { required, pattern, maxCount } from "ProductEditor/Utils/Validators";
 
 class App extends React.Component {
   state = { lang: "eng" };

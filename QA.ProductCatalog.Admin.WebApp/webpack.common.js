@@ -93,19 +93,6 @@ module.exports = {
         test: /\.(jpg|jpeg|png|gif)?$/,
         use: assetProcessing("images")
       },
-      // {
-      //   test: /\.svg?$/,
-      //   oneOf: [
-      //     {
-      //       issuer: /\.(scss|css)?$/,
-      //       use: assetProcessing("images")
-      //     },
-      //     {
-      //       issuer: /\.tsx?$/,
-      //       use: "@svgr/webpack"
-      //     }
-      //   ]
-      // },
       {
         test: /\.(woff|woff2|eot|ttf|otf)?$/,
         use: assetProcessing("fonts")
@@ -115,6 +102,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin([outPath]),
     new ForkTsCheckerWebpackPlugin(),
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru|kk/),
     new ForkTsCheckerNotifierWebpackPlugin({
       title: "TypeScript",
       excludeWarnings: true,

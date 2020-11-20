@@ -31,9 +31,9 @@
     "baseUrl": ".",
     "rootDirs": [ "ClientApp", "ReactViews" ],
     "paths": {
-      "*": [ "ClientApp/*", "ClientApp/Packages/*", "ReactViews/*" ]
+      "*": [ "ReactViews/*" ]
     },
     "outDir": "wwwroot/js/Bundles"
   },
-  "include": ["ClientApp/**/*", "Views/**/*", "ReactViews/**/*"]
+  "include": ["Views/**/*", "ReactViews/**/*"]
 }

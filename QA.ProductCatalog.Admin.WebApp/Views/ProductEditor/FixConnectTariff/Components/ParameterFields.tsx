@@ -10,12 +10,12 @@ import {
 } from "mobx";
 import { observer } from "mobx-react";
 import { Options } from "react-select";
-import { WeakCache, ComputedCache } from "Utils/WeakCache";
-import { asc } from "Utils/Array";
-import { setEquals } from "Utils/Array";
-import { DataContext } from "Services/DataContext";
-import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
-import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
+import { WeakCache, ComputedCache } from "ProductEditor/Utils/WeakCache";
+import { asc } from "ProductEditor/Utils/Array";
+import { setEquals } from "ProductEditor/Utils/Array";
+import { DataContext } from "ProductEditor/Services/DataContext";
+import { FieldEditorProps } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
+import { RelationFieldSchema, NumericFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
 import {
   Tables,
   LinkParameter,

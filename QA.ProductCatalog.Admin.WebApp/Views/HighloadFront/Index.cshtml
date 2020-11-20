@@ -1,6 +1,10 @@
 ﻿@using System.Globalization
 @using QA.Core.DPC.Resources
 
+@section head {
+  <link href="~/css/HighloadFront/Index.css" rel="stylesheet" />
+}
+
 <script>
   window.highloadFront = {
     CustomerCode: "@Html.Raw(@ViewBag.CustomerCode)",

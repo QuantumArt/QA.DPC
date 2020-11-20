@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 import { Tabs, Tab, Icon, TabId } from "@blueprintjs/core";
-import { ContentSchema } from "Models/EditorSchemaModels";
+import { ContentSchema } from "ProductEditor/Models/EditorSchemaModels";
 import { Product } from "../TypeScriptSchema";
 import { FederalTab } from "./FederalTab";
 import { RegionalTab } from "./RegionalTab";

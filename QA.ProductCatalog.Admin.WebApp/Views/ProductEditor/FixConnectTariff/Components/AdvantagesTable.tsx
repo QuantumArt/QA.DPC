@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { Checkbox, Button, Intent, Icon } from "@blueprintjs/core";
-import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
-import { MultiRelationFieldTable } from "Components/FieldEditors/FieldEditors";
+import { FieldEditorProps } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
+import { MultiRelationFieldTable } from "ProductEditor/Components/FieldEditors/FieldEditors";
 import { Advantage } from "../TypeScriptSchema";
-import { RelationFieldSchema, FileFieldSchema } from "Models/EditorSchemaModels";
+import { RelationFieldSchema, FileFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
 import { inject } from "react-ioc";
-import { FileController } from "Services/FileController";
+import { FileController } from "ProductEditor/Services/FileController";
 
 export class AdvantagesTable extends Component<FieldEditorProps> {
   @inject private _fileController: FileController;

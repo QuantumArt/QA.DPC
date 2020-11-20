@@ -3,7 +3,12 @@
 @using QA.Core.DPC.Resources
 @using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.ProductCatalog.Admin.WebApp.Models.TasksPageInfo
-  <div id="task"></div>
+
+@section head {
+  <link href="~/css/Task/Task.css" rel="stylesheet" />
+}
+
+<div id="task"></div>
 
 @section scripts{
   <script type="text/javascript" defer>
@@ -95,6 +100,6 @@
       }
     }
   </script>
-  <script src="~/js/pmrpc.js"></script>  
+  <script src="~/js/pmrpc.js"></script>
   <script src="~/js/bundles/Task/Task.js" defer></script>
 }

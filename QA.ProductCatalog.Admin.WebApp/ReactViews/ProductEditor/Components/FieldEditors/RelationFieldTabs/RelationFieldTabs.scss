@@ -1,0 +1,66 @@
+@import "../../../../../node_modules/@blueprintjs/core/lib/scss/variables";
+
+.relation-field-tabs {
+  &--empty,
+  &--hidden {
+    display: none !important;
+  }
+
+  &__controls {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    > .bp3-button,
+    > .bp3-button-group {
+      flex: none;
+    }
+
+    > .bp3-button {
+      min-width: 110px;
+      justify-content: space-between;
+    }
+  }
+
+  &__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--edited {
+      color: $blue2;
+      text-shadow: 0 0 0 $blue2;
+      text-decoration-line: underline;
+      text-underline-position: under;
+    }
+
+    &--invalid {
+      color: $red2;
+      text-shadow: 0 0 0 $red2;
+      text-decoration-line: underline;
+      text-underline-position: under;
+    }
+  }
+
+  &:not(.bp3-vertical) > .bp3-tab-list {
+    > .bp3-tab {
+      max-width: 33%;
+    }
+  }
+
+  &.bp3-vertical > .bp3-tab-list {
+    > .bp3-tab {
+      max-width: 33vw;
+    }
+
+    > .bp3-tab-indicator-wrapper {
+      min-width: calc(100% - 20px);
+      min-height: 30px;
+    }
+  }
+
+  &--single.bp3-vertical > .bp3-tab-list {
+    > .bp3-tab-indicator-wrapper {
+      min-width: 100%;
+    }
+  }
+}

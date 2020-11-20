@@ -244,8 +244,6 @@ _Pvt_Extensions
 .idea/
 *.sln.iml
 
-!**/ClientApp/**/Packages/**
-QA.ProductCatalog.Admin.WebApp/Scripts/bundles
 QA.ProductCatalog.Admin.WebApp/wwwroot/js/bundles
 
 HighloadAPI/src

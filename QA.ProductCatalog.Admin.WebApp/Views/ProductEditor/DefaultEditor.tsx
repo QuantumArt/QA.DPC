@@ -1,9 +1,9 @@
-﻿import "Environment";
+﻿import "ProductEditor/Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
-import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
+import { EntityEditor } from 'ProductEditor/Components/ArticleEditor/EntityEditor';
+import { ProductEditor } from 'ProductEditor/Components/ProductEditor/ProductEditor';
+import { RelationFieldTags } from 'ProductEditor/Components/FieldEditors/FieldEditors';
 
 const App = () => (
   <ProductEditor

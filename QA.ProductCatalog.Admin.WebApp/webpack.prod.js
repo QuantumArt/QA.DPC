@@ -1,10 +1,10 @@
 /* eslint-disable */
 const { merge } = require("webpack-merge");
+const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const threadLoader = require("thread-loader");
 const common = require("./webpack.common");
 
@@ -20,18 +20,15 @@ threadLoader.warmup(poolOptions, ["ts-loader", "url-loader"]);
 module.exports = merge(common, {
   mode: "production",
   devtool: "cheap-source-map",
-  output: {
-    filename: "bundle.[hash].js",
-    path: path.join(__dirname, "dist/app")
-  },
   optimization: {
     minimize: true
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.(tsx?|jsx?)$/,
         exclude: /node_modules/,
+        include: /(Views|ReactViews)/,
         use: [
           {
             loader: "thread-loader",
@@ -41,7 +38,9 @@ module.exports = merge(common, {
             loader: "ts-loader",
             options: {
               transpileOnly: true,
-              happyPackMode: true
+              happyPackMode: true,
+              configFile: path.resolve(__dirname, "tsconfig.json"),
+              logLevel: "error"
             }
           }
         ]
@@ -64,19 +63,18 @@ module.exports = merge(common, {
     ]
   },
   plugins: [
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify("production"),
+      DEBUG: false
+    }),
     new MiniCssExtractPlugin({
-      filename: "[name].[hash].css",
-      chunkFilename: "[id].[hash].css"
+      filename: "../../css/[name].css",
+      chunkFilename: "[id].[hash].css",
     }),
     new OptimizeCssAssetsPlugin({}),
     new BundleAnalyzerPlugin({
       analyzerMode: "static",
       openAnalyzer: false
     }),
-    new HtmlWebpackPlugin({
-      title: "Beeline IoT",
-      baseHref: "/",
-      template: "./src/assets/index.html"
-    })
   ]
 });

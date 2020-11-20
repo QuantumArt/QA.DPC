@@ -1,12 +1,12 @@
 import React from "react";
 import { Callout, Intent } from "@blueprintjs/core";
-import { IGNORE } from "Components/ArticleEditor/ArticleEditor";
-import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
+import { IGNORE } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "ProductEditor/Components/ArticleEditor/EntityEditor";
 import {
   MultiRelationFieldTable,
   SingleRelationFieldTable
-} from "Components/FieldEditors/FieldEditors";
-import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
+} from "ProductEditor/Components/FieldEditors/FieldEditors";
+import { ContentSchema, RelationFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
 import { Product } from "../TypeScriptSchema";
 
 interface FederalTabProps {
