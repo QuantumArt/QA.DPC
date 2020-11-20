@@ -11,7 +11,7 @@ COPY . ./
 
 WORKDIR /app/QA.ProductCatalog.Admin.WebApp
 RUN npm ci
-RUN npm run-script components:build-dev
+RUN npm run-script components:build-prod
 
 RUN dotnet publish /app/QA.ProductCatalog.Admin.WebApp/QA.ProductCatalog.Admin.WebApp.csproj -c Release -o out -f netcoreapp3.1
 
