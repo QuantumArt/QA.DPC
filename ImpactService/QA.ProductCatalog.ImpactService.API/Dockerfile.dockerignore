@@ -1,9 +1,0 @@
-*
-!QA.DPC/nuget.config
-!QA.DPC/ImpactService
-!QA.DPC/QA.DPC.Core.Helpers
-!QA.DPC/QA.Core.DPC.QP
-!QA.DPC/QA.Core.ProductCatalog.ActionsRunner
-!QA.DPC/QA.ProductCatalog.ContentProviders
-!QA.DPC/QA.Core.ProductCatalog.ActionsRunnerModel
-!QA.DPC/QA.Core.DPC.Resources
