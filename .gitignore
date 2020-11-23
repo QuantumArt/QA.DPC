@@ -248,3 +248,5 @@ QA.ProductCatalog.Admin.WebApp/wwwroot/js/bundles
 
 HighloadAPI/src
 **/appsettings.*.json
+**/docker-compose.*.yml
+projectfiles.tar

@@ -7,17 +7,19 @@ RUN apt-get install -y \
     && apt-get install -y nodejs
 
 WORKDIR /app
-COPY nuget.config ./
+COPY QA.Core.ProductCatalog.sln nuget.config ./
 ADD projectfiles.tar .
 RUN dotnet restore
 
 WORKDIR /app/QA.ProductCatalog.Admin.WebApp
 COPY QA.ProductCatalog.Admin.WebApp/package*.json ./
 RUN npm ci
-RUN npm run-script components:build-prod
 
 WORKDIR /app
 COPY . ./
+
+WORKDIR /app/QA.ProductCatalog.Admin.WebApp
+RUN npm run-script components:build-prod
 
 RUN dotnet publish /app/QA.ProductCatalog.Admin.WebApp/QA.ProductCatalog.Admin.WebApp.csproj -c Release -o out -f netcoreapp3.1
 
@@ -32,5 +34,4 @@ ENV SERVICE_VERSION=${SERVICE_VERSION:-0.0.0.0}
 
 WORKDIR /app
 COPY --from=build-env /app/QA.ProductCatalog.Admin.WebApp/out .
-RUN rm -rf /app/hosting.json
 ENTRYPOINT ["dotnet", "QA.ProductCatalog.Admin.WebApp.dll"]

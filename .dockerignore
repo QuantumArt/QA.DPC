@@ -1,0 +1,15 @@
+.git
+.gitignore
+.dockerignore
+*.Dockerfile
+*.sh
+*.md
+**/hosting.json
+**/appsettings.*.json
+**/node_modules
+**/bin
+**/obj
+global.json
+yaml
+install
+*.yml
