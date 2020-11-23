@@ -31,11 +31,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [HttpGet]
-        public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false, bool old = false)
+        public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false)
         {
             var tasksPageInfo = new TasksPageInfo { ShowOnlyMine = showOnlyMine == true, Notify = notify == true, States = _taskService.GetAllStates(), AllowSchedule = allowSchedule };
             ViewBag.HostId = _qpHelper.HostId;
-            return old ? View(tasksPageInfo) : View("Task", tasksPageInfo);
+            return View(tasksPageInfo);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     tasks = tasks.Select(x => new TaskModel(x)),
                     totalTasks = totalCount,
                     myLastTaskHtml = myLastTask == null ? null : await this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask),
-                    myLastTask = myLastTask == null ? null : myLastTask
+                    myLastTask = myLastTask ?? null
                 });
 
             return new ContentResult() { 

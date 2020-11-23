@@ -9,7 +9,6 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Filters;
-using QA.ProductCatalog.Integration;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -40,7 +39,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
         }
         
-		public ActionResult Index(bool old = false)
+		public ActionResult Index()
 		{
             try
             {
@@ -59,7 +58,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     model = _service.GetConfigurationInfo(customerCode);                    
                 }
                 ViewBag.HostId = _qpHelper.HostId;
-                return old ? View(model) : View("Notification", model);
+                return View(model);
             }
             catch(EndpointNotFoundException)
             {

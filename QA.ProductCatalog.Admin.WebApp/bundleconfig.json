@@ -51,15 +51,6 @@
       "wwwroot/js/codemirror/addon/fold/foldcode.js",
       "wwwroot/js/codemirror/addon/fold/foldgutter.js"
     ]
-  },
-
-  {
-    "outputFileName": "wwwroot/js/bundles/schedule.min.js",
-    "inputFiles": [
-      "wwwroot/js/Schedule/jqcron.js",
-      "wwwroot/js/Schedule/jqcron.en.js",
-      "wwwroot/js/Schedule/Schedule.js"
-    ]
   }
 ]
 
