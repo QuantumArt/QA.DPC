@@ -398,9 +398,11 @@ namespace QA.Core.DPC.Loader
         {
             var products = new List<Article>();
             var items = GetProductsInfo(ids);
-            var existingItems = items.Where(itm => itm.ContentName != null).ToArray();
-            var missingIds = items.Where(itm => itm.ContentName == null).Select(itm => itm.ProductId).ToArray();
-
+            var missingSet = items
+                .Where(item => string.IsNullOrEmpty(item.TypeAttributeName) && string.IsNullOrEmpty(item.ExtensionName))
+                .Select(itm => itm.ProductId).ToHashSet();
+            var existingItems = items.Where(itm => !missingSet.Contains(itm.ProductId)).ToArray();
+            var missingIds = missingSet.ToArray();
             if (missingIds.Any())
             {
                 foreach (var consumerMonitoringService in _consumerMonitoringServices)

@@ -45,7 +45,10 @@ namespace QA.Core.DPC.Front.DAL
         public Product GetProduct(ProductLocator locator, int id)
         {
             var p = GetProducts(locator).FirstOrDefault(m => id == m.DpcId);
-            p.ProductRegions = GetProductRegions(p).ToList();
+            if (p != null)
+            {
+                p.ProductRegions = GetProductRegions(p).ToList();
+            }
             return p;
         }
 
