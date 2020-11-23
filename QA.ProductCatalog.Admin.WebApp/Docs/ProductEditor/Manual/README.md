@@ -139,7 +139,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 5.  Добавляем поля-связи:
 
-- `При клонировании родительской сущности` **CloningMode** — Что делать со cвязью, когда клонируется родительская статья.
+- `При клонировании родительской сущности` **CloningMode** — Что делать со связью, когда клонируется родительская статья.
 - `При удалении родительской сущности или удалении связи` **DeletingMode** — Удалять )архивировать) ли статьи-связи вместе с родительской статьей
 - `При создании\обновлении` **UpdatingMode** — Применять ли изменения в статьях-связях при сохранении изменений родительской статьи (см. [Сохранение подграфа статей](#Сохранение-подграфа-статей)).
 - `PreloadingMode` — Загружать ли все возможные значения поля-связи заранее. Возможные варианты:
@@ -159,7 +159,8 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 Так же можно добавить обратное поле-связь для уже включенного в описание прямого поля. Но при этом, контент, который содержится в обратном поле обязательно должен иметь флаг `Только для чтения`.
 
-![](./Images/DefinitionEditorBackRelationCircular.png)
+![](./Images/DefinitionEditorBackRelationCircular.png)
+
 ![](./Images/DefinitionEditorBackRelationContent.png)
 
 ### Поля-расширения
@@ -194,7 +195,8 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 11. Сохраняем сначала изменения в XML, а потом статью с описанием продукта:
 
-![](./Images/DefinitionEditorSave.png)
+![](./Images/DefinitionEditorSave.png)
+
 ![](./Images/ProductDefinitionSave.png)
 
 <br><hr><br>
@@ -255,7 +257,7 @@ const App = () => (
 
 Данные продукта представлены в виде графа моделей [mobx-state-tree](https://github.com/mobxjs/mobx-state-tree).
 Поля статей QP являются простыми полями объектов JavaScript, а связи — массивами объектов.
-См. `~/ClientApp/Models/EditorDataModels.ts`.
+См. `~/ReactViews/ProductEditor/Models/EditorDataModels.ts`.
 
 Каждый объект статья имеет служебные поля:
 
@@ -309,7 +311,7 @@ interface PhoneTariff extends ExtensionObject {
 
 #### Предыдущие значения полей
 
-Каждый объект статьи реализует интерфейс `ValidatableObject`. См. `~/ClientApp/Packages/mst-validation-mixin.tsx`.
+Каждый объект статьи реализует интерфейс `ValidatableObject`. См. `~/ReactViews/ProductEditor/Packages/mst-validation-mixin.tsx`.
 
 Для получения значения поля, каким оно было до первого редактирования есть метод `getBaseValue(name: string)`.
 Пример:
@@ -328,7 +330,7 @@ region.getBaseValue("Children");
 #### DataContext
 
 DataContext — это класс, который хранит в себе все статьи продукта в виде таблиц по названиям контентов.
-См. `~/ClientApp/Services/DataContext.ts`.
+См. `~/ReactViews/ProductEditor/Services/DataContext.ts`.
 
 ```ts
 class DataContext {
@@ -370,7 +372,7 @@ class MyComponent extends Component {
 
 ### Схема
 
-См. `~\ClientApp\Models\EditorSchemaModels.ts`. Схема представлена двумя интерфейсами: `ContentSchema` и `FieldSchema`.
+См. `~\ReactViews/ProductEditor\Models\EditorSchemaModels.ts`. Схема представлена двумя интерфейсами: `ContentSchema` и `FieldSchema`.
 Концептуально они связаны следующим образом:
 
 ```ts
@@ -410,7 +412,7 @@ interface ExtensionFieldSchema extends FieldSchema {
 ## Форма редактирования статьи
 
 Для отображения и редактрования статьи в виде формы нужно использовать компонент `<EntityEditor>` для статьи-сущности,
-или `<ExtensionEditor>` для статьи-связи. См. `~\ClientApp\Components\ArticleEditor\`.
+или `<ExtensionEditor>` для статьи-связи. См. `~\ReactViews/ProductEditor\Components\ArticleEditor\`.
 
 ![](./Images/EntityEditorForm.png)
 
@@ -502,7 +504,7 @@ import {
 
 Также существует флаг `skipOtherFields`, который убирает отображение полей, не описанных в свойстве `fieldEditors`.
 
-В модуле `~/ClientApp/Components/FieldEditors/FieldEditors` реализованы стандартные редакторы для простых полей
+В модуле `~/ReactViews/ProductEditor/Components/FieldEditors/FieldEditors` реализованы стандартные редакторы для простых полей
 и полей связей, такие как `StringFieldEditor`, `FileFieldEditor`, `RelationFieldTable`, `RelationFieldAccordion`, etc.
 Если нас не удовлетворяют стандартные редакторы полей, мы можем написать свой, или переопределитиь свойства по-умолчанию для существующих редакторов.
 
@@ -523,7 +525,7 @@ import { RelationFieldForm } from "Components/FieldEditors/FieldEditors";
 
 ### Form Controls
 
-Для разработки кастомных редакторов полей в модуле `~/ClientApp/Components/FormControls/FormControls` доступны стандартные компоненты, работающие с реактивными объектами MobX:
+Для разработки кастомных редакторов полей в модуле `~/ReactViews/ProductEditor/Components/FormControls/FormControls` доступны стандартные компоненты, работающие с реактивными объектами MobX:
 
 - `<InputText>`
 - `<InputNumber>`
@@ -614,7 +616,7 @@ const region: Region;
 а флаг `canReloadRelation` за доступность кнопки перезагрузки всего поля связи с сервера. Также принимаются коллбеки,
 выполняемые при нажатии на кнопку вместо стандартных действий, например `onCloneEntity` — вместо реального клонирования статьи.
 `***Entity` относятся к кнопкам в выпадающем меню формы редактирования статьи, а `***Relaton` к кнопкам поля-связи.
-Полный список доступен в интерфейсе `ExpandableFieldEditorProps` в `~/ClientApp/FieldEditors/AbstractFieldEditor`.
+Полный список доступен в интерфейсе `ExpandableFieldEditorProps` в `~/ReactViews/ProductEditor/FieldEditors/AbstractFieldEditor`.
 
 ```jsx
 <RelationFieldAccordion
@@ -700,7 +702,7 @@ A также содержат Render Callback-и:
   - `reloadEntity()` — Перезагрузка статьи с сервера (несохраненные изменения отбрасываются).
   - `editEntity()` — Открытие модального окна QP для редактирования статьи.
   - `publishEntity()` — Опубликовать продграф статей начиная с заданной, согласно XML ProductDefinition.
-  - `removeRelatedEntity()` — Удаление с статьи с сервера.
+  - `removeRelatedEntity()` — Удаление статьи с сервера.
   - `cloneRelatedEntity()` — Клонирование подграфа статей начиная с заданной, согласно XML ProductDefinition.
   - `saveEntity()` — Сохранение подграфа статей начиная с заданной, согласно XML ProductDefinition.
 
@@ -884,7 +886,7 @@ fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
 
 ## Валидация
 
-Каждый объект статьи реализует интерфейс `ValidatableObject`. См. `~/ClientApp/Packages/mst-validation-mixin.tsx`.
+Каждый объект статьи реализует интерфейс `ValidatableObject`. См. `~/ReactViews/ProductEditor/Packages/mst-validation-mixin.tsx`.
 Он содержит группы методов:
 
 - `isTouched()` / `setTouched()` / `setUntouched()` — Пробовал ли пользователь редактировать данное поле.
@@ -933,7 +935,8 @@ const AnotherFieldEditor = props => (
 
 Стандартные редакторы подсвечивают измененные поля синим цветом, а невалидные — красным:
 
-![](./Images/EditedField.png)
+![](./Images/EditedField.png)
+
 ![](./Images/InvalidField.png)
 
 А если мы разрабатываем свой тип редактора полей, то мы можем использовать обобщенный компонент `<Validate>`:
@@ -1028,7 +1031,7 @@ productContentSchema.hasErrors(product) === true;
 
 Локаль пользователя автоматически пробрасывается из настроек пользователя в QP
 в формате RFC 3066 (`en-US`, `ru-RU`, `kk-KZ`, etc.). Она автоматически пробрасывается в `<DatePicker>`,
-а также доступна с помощью React Context `LocaleContext` (см. `~/ClientApp/Packages/react-lazy-i18n.tsx`).
+а также доступна с помощью React Context `LocaleContext` (см. `~/ReactViews/ProductEditor/Packages/react-lazy-i18n.tsx`).
 
 ```jsx
 import { LocaleContext } from "react-lazy-i18n";
