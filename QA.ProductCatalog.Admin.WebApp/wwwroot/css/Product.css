@@ -184,6 +184,20 @@ body,
   padding: 12px 5px 10px 5px;
 }
 
+.inner-groupping-table td:nth-child(2) {
+  min-width: 128px;
+}
+
+.inner-groupping-table td:nth-child(3) {
+  max-width: 300px;
+  text-overflow: ellipsis;
+}
+
+.inner-groupping-table td:nth-child(4) {
+  max-width: 360px;
+  text-overflow: ellipsis;
+}
+
 .grid-view-header {
   position: relative;
   margin-bottom: 5px;
