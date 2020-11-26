@@ -1,4 +1,7 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect } from "react";
+import { Intent } from "@blueprintjs/core";
+import { Column, Accessor } from "react-table";
+import { observer } from "mobx-react-lite";
 import {
   GridHeadFilterTooltip,
   ProgressBarGridCell,
@@ -16,22 +19,19 @@ import {
   ScheduleFilterContent,
   FilterButtonsWrapper
 } from "./Components/GridHeadFilterTooltip/Subcomponents";
-import { observer } from "mobx-react-lite";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { getClassnameByIntent } from "Shared/Utils";
-import { Column, Accessor } from "react-table";
 import { Task as GridTask } from "Tasks/ApiServices/DataContracts";
-import { Intent } from "@blueprintjs/core";
-import "./Root.scss";
 import { l } from "Tasks/Localization";
+import "./Root.scss";
 
 /**
  * ColumnModel
  * getClassNameByEnableSchedule: параметр для EnableSchedule
  * truncate: {
- * onWidth: схлопывать при указананой ширине
- * noTruncateElement возвращает реакт элемент который не будет схлопываться
+ *   onWidth: схлопывать при указананой ширине
+ *   noTruncateElement возвращает реакт элемент который не будет схлопываться
  * }
  */
 export interface ColumnModel {
@@ -117,11 +117,13 @@ export const Task = observer(() => {
           onWidth: 120,
           noTruncateElementWidth: 30,
           noTruncateElement: (gridElement: GridTask) => {
+            const { allowSchedule } = window.task;
+            const showSchedule = (allowSchedule && gridElement.ScheduledFromTaskId === null) || gridElement.HasSchedule;
             return (
               <ScheduleGridCellCalendar
                 taskIdNumber={gridElement.Id}
                 scheduleCronExpression={gridElement.ScheduleCronExpression}
-                hasSchedule={gridElement.HasSchedule}
+                hasSchedule={showSchedule}
                 isScheduleEnabled={gridElement.ScheduleEnabled}
               />
             );

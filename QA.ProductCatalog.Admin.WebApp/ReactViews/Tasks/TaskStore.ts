@@ -20,7 +20,7 @@ export class Pagination {
   }
   @observable private skip: number = 0;
   private readonly take: number = 10;
-  @observable private showOnlyMine: boolean = true;
+  @observable private showOnlyMine: boolean;
   readonly changePage: (operation: PaginationActions) => void;
 
   @computed

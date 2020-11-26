@@ -1,4 +1,6 @@
 declare interface TaskWindowTypes {
+  showOnlyMine: boolean;
+  allowSchedule: boolean;
   statusValues: { label: string; value: number }[];
   strings: {
     userName: string;

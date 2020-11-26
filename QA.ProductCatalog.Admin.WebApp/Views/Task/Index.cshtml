@@ -13,8 +13,10 @@
 @section scripts{
   <script type="text/javascript" defer>
     window.task = {
+      showOnlyMine: "@(Context.Request.Query["showOnlyMine"])" === "true",
+      allowSchedule: "@(Context.Request.Query["allowSchedule"])" === "true",
       statusValues: [
-      @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
+        @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
       ],
       strings: {
         userName: '@Html.Raw(TaskStrings.UserName)',

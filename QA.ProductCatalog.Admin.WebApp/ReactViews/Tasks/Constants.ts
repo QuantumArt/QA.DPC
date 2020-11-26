@@ -6,5 +6,5 @@ export const FETCH_ON_ERROR_TIMEOUT: number = 10000;
 export const INIT_PAGINATION_OPTIONS: PaginationOptions = {
   skip: 0,
   take: 10,
-  showOnlyMine: true
+  showOnlyMine: window.task.showOnlyMine,
 };
