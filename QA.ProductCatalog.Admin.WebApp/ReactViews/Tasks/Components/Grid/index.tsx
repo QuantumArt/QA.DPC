@@ -68,9 +68,9 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                     const cellWrapperWidth =
                       cell.column.truncate && cell.column.truncate.onWidth + noTruncateElementWidth;
 
-                    const classNameByEnableSchedule = !!cell.column.getClassNameByEnableSchedule
-                      ? cell.column.getClassNameByEnableSchedule(gridElement)
-                      : "";
+                    const classNameByEnableSchedule =
+                      !!cell.column.getClassNameByEnableSchedule &&
+                      cell.column.getClassNameByEnableSchedule(gridElement);
 
                     const renderCell = () => {
                       if (!!cell.column.truncate) {

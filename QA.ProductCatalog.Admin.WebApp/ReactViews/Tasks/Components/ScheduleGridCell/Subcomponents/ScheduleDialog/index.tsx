@@ -1,3 +1,4 @@
+import React, { useEffect, useMemo, useState } from "react";
 import {
   AnchorButton,
   Button,
@@ -9,9 +10,11 @@ import {
   Switch
 } from "@blueprintjs/core";
 import { DateInput, TimePicker } from "@blueprintjs/datetime";
-import React, { useEffect, useMemo, useState } from "react";
-import cn from "classnames";
 import { Position } from "@blueprintjs/core/lib/esm/common/position";
+import _ from "lodash";
+import moment from "moment";
+import MomentLocaleUtils from "react-day-picker/moment";
+import cn from "classnames";
 import { IMultiSelectForm, MultiSelectFormGroup, SelectRow } from "../";
 import {
   ICronsTagModel,
@@ -22,8 +25,6 @@ import {
 } from "Tasks/Utils";
 import { useStore } from "Tasks/UseStore";
 import { CronPeriodType, CronUnitType, ScheduleType } from "Shared/Enums";
-import "@blueprintjs/datetime/lib/css/blueprint-datetime.css";
-import _ from "lodash";
 import { l } from "Tasks/Localization";
 import "./Style.scss";
 
@@ -343,16 +344,23 @@ export const ScheduleDialog = ({
 
         {taskSetType === ScheduleType.Single && (
           <SelectRow>
-            <>
               <DateInput
                 className="schedule-popup__select--inline"
-                formatDate={date => (date == null ? "" : date.toLocaleDateString())}
-                parseDate={str => new Date(Date.parse(str))}
+                formatDate={date => moment(date).locale(window.task.locale).format("DD.MM.YYYY")}
+                parseDate={str => moment(str, "DD.MM.YYYY").locale(window.task.locale).toDate()}
                 popoverProps={{ position: Position.BOTTOM }}
                 value={singleDate}
+                highlightCurrentDay
                 onChange={(selectedDate: Date) => {
                   setSingleDate(selectedDate);
                 }}
+                dayPickerProps={{
+
+                }}
+                minDate={moment().subtract(3, "month").toDate()}
+                maxDate={moment().add(3, "month").toDate()}
+                locale={window.task.locale}
+                localeUtils={MomentLocaleUtils}
               />
               <TimePicker
                 value={singleTime}
@@ -361,7 +369,6 @@ export const ScheduleDialog = ({
                 }}
                 className="schedule-popup__select--inline"
               />
-            </>
           </SelectRow>
         )}
       </>
@@ -382,24 +389,20 @@ export const ScheduleDialog = ({
   };
 
   return (
-    <div>
-      <Dialog
-        className="schedule-popup"
-        icon="calendar"
-        onClose={closeDialogCb}
-        title={l("taskRecurrenceSchedule")}
-        isOpen={isOpen}
-      >
-        <div className={cn(Classes.DIALOG_BODY, "schedule-popup__body")}>
-          <SelectRow label={l("taskId")}>
-            <InputGroup disabled={true} value={String(taskIdNumber)} />
-          </SelectRow>
-
-          {renderSelectsUiPart()}
-        </div>
-
-        <div className={Classes.DIALOG_FOOTER}>{renderDialogButtons()}</div>
-      </Dialog>
-    </div>
+    <Dialog
+      className="schedule-popup"
+      icon="calendar"
+      onClose={closeDialogCb}
+      title={l("taskRecurrenceSchedule")}
+      isOpen={isOpen}
+    >
+      <div className={cn(Classes.DIALOG_BODY, "schedule-popup__body")}>
+        <SelectRow label={l("taskId")}>
+          <InputGroup disabled={true} value={String(taskIdNumber)} />
+        </SelectRow>
+        {renderSelectsUiPart()}
+      </div>
+      <div className={Classes.DIALOG_FOOTER}>{renderDialogButtons()}</div>
+    </Dialog>
   );
 };

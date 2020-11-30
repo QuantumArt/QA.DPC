@@ -15,6 +15,7 @@
     window.task = {
       showOnlyMine: "@(Context.Request.Query["showOnlyMine"])" === "true",
       allowSchedule: "@(Context.Request.Query["allowSchedule"])" === "true",
+      locale: "@CultureInfo.CurrentUICulture".split("-")[0],
       statusValues: [
         @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
       ],

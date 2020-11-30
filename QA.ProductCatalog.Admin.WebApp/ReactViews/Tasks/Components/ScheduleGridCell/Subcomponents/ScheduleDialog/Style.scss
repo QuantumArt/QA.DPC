@@ -2,12 +2,12 @@
   width: 400px;
   font-family: SFProText, sans-serif;
 
-  &__body {
-  }
-
   &__select {
     &--inline {
       display: inline-block;
+      .bp3-input {
+        font-size: 16px;
+      }
     }
     &--minute-select {
       width: 50px;
@@ -18,32 +18,11 @@
     margin-bottom: 0;
   }
 
-  &__row {
-    .just-label {
-      color: rgb(48, 54, 64);
-      font-size: 14px;
-    }
-  }
-
-  &__select-wrap {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: left;
-
-    &:first-child {
-      padding-top: 8px;
-    }
-  }
-  &__label-row {
-    font-size: 12px;
+  .just-label {
     color: rgb(48, 54, 64);
-    display: inline-flex;
-    align-items: center;
-    width: 22%;
-    line-height: 12px;
+    font-size: 14px;
   }
+
   &__select-row {
     max-width: 78%;
   }

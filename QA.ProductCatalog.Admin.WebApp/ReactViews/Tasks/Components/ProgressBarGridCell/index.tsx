@@ -31,13 +31,10 @@ export const ProgressBarGridCell = React.memo(({ value, stateId }: IProps) => {
   }
 
   return (
-    <div className="progress-bar-cell">
-      <ProgressBar
-        defaultBarProps={progressBarProps}
-        barWidth="110px"
-        labelWidth="30px"
-        labelClassName="progress-bar-cell__label"
-      />
-    </div>
+    <ProgressBar
+      defaultBarProps={progressBarProps}
+      barWidth="110px"
+      labelWidth="30px"
+    />
   );
 });

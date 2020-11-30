@@ -125,6 +125,7 @@ export const Task = observer(() => {
                 scheduleCronExpression={gridElement.ScheduleCronExpression}
                 hasSchedule={showSchedule}
                 isScheduleEnabled={gridElement.ScheduleEnabled}
+                intent={gridElement.ScheduleEnabled ? Intent.SUCCESS : Intent.PRIMARY}
               />
             );
           }

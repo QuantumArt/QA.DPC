@@ -136,7 +136,7 @@ export const CronsMultiselect = ({
 
   return (
     <MultiSelect<ISelectItem | ICronsTagModel>
-      placeholder="Поиск..."
+      placeholder="Выбрать..."
       itemPredicate={filterItems}
       itemRenderer={(x: ISelectItem, { modifiers, handleClick }) => {
         if (!modifiers.matchesPredicate) {
