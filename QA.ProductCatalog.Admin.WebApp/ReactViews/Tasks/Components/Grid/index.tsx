@@ -122,7 +122,6 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
           </tbody>
         </ErrorBoundary>
       </table>
-
       <ErrorBoundary>
         <GridPagination
           paginationOptions={{

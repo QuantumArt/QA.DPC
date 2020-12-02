@@ -2,6 +2,7 @@
 const path = require("path");
 const { merge } = require("webpack-merge");
 const webpack = require("webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const common = require("./webpack.common");
 const threadLoader = require("thread-loader");
 
@@ -42,7 +43,7 @@ module.exports = merge(common, {
       {
         test: /\.(scss|css)?$/,
         use: [
-          { loader: "style-loader" },
+          { loader: MiniCssExtractPlugin.loader },
           {
             loader: "css-loader",
             options: {
@@ -60,6 +61,10 @@ module.exports = merge(common, {
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("development"),
       DEBUG: true
+    }),
+    new MiniCssExtractPlugin({
+      filename: "../../css/[name].css",
+      chunkFilename: "[id].[hash].css"
     }),
     new webpack.WatchIgnorePlugin([/\.js$/, /\.d\.ts$/])
   ]

@@ -5,9 +5,9 @@ import "./Style.scss";
 import { ScheduleFilterValues } from "Shared/Enums";
 
 interface IProps {
-  setValue?: (val: any) => void;
+  setValue?: (val: string) => void;
   options: IOptionProps[];
-  value?: number;
+  value?: string;
 }
 
 export const ScheduleFilterContent = ({ setValue, options, value }: IProps) => {

@@ -4,7 +4,7 @@ import { IOptionProps } from "@blueprintjs/core/src/common/props";
 import "./Style.scss";
 
 interface IProps {
-  setValue?: (val: any) => void;
+  setValue?: (val: string) => void;
   options: Array<string | number | IOptionProps>;
   value?: number;
 }

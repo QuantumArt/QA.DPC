@@ -35,5 +35,6 @@
     },
     "outDir": "wwwroot/js/Bundles"
   },
-  "include": ["Views/**/*", "ReactViews/**/*"]
+  "include": ["Views/**/*", "ReactViews/**/*"],
+  "exclude": ["node_modules"]
 }

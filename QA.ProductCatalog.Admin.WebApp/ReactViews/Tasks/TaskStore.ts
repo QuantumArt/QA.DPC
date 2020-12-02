@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction, onBecomeObserved } from "mobx";
+import { action, computed, observable, runInAction, onBecomeObserved, toJS } from "mobx";
 import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { apiService } from "Tasks/ApiServices";
@@ -51,28 +51,33 @@ export class Pagination {
   };
 }
 
+export interface ValidationResult {
+  hasError: boolean;
+  message: string;
+}
+
 export class Filter {
   constructor(
     initialValue: string,
     onChangeFilter: () => Promise<void>,
     field: string,
-    getMappedValue?: () => boolean
+    getMappedValue?: () => boolean,
+    validationFunc?: (val: string) => ValidationResult
   ) {
+    this.value = initialValue;
     this.onChangeFilter = onChangeFilter;
     this.field = field;
+    this.validationFunc = validationFunc;
     this.getMappedValue = getMappedValue;
-    this.value = initialValue;
   }
-  @observable isActive: boolean = false;
-  private readonly field: string;
-  private operator: string = "eq";
-  value: string;
-  private readonly getMappedValue: () => boolean;
-  onChangeFilter: () => Promise<void>;
 
-  setValue = (value: string) => {
-    this.value = value;
-  };
+  @observable isActive: boolean = false;
+
+  validationFunc?: (val: string) => ValidationResult;
+  @observable validationResult: ValidationResult = { hasError: false, message: "" };
+
+  @observable value: string;
+  onChangeFilter: () => Promise<void>;
 
   get filterOptionsForRequest(): FilterOptions {
     return {
@@ -83,10 +88,28 @@ export class Filter {
   }
 
   @action
-  toggleActive = (val: boolean) => {
-    this.isActive = val || !this.isActive;
-    this.onChangeFilter();
+  setValue = (value: string) => {
+    if (this.validationFunc) {
+      this.validationResult = this.validationFunc(value);
+      if (!this.validationResult.hasError) {
+        this.value = value;
+      }
+    } else {
+      this.value = value;
+    }
   };
+
+  @action
+  toggleActive = (val: boolean) => {
+    if (!this.validationResult.hasError) {
+      this.isActive = val;
+      this.onChangeFilter();
+    }
+  };
+
+  private readonly field: string;
+  private operator: string = "eq";
+  private readonly getMappedValue: () => boolean;
 }
 
 export class TaskStore {
@@ -122,12 +145,29 @@ export class TaskStore {
           return this.value === ScheduleFilterValues.YES;
         }
       )
+    ],
+    [
+      TaskGridFilterType.NameFilter,
+      new Filter(
+        "",
+        () => this.withLoader(() => this.fetchGridData()),
+        "DisplayName",
+        null,
+        val => {
+          if (val === null) {
+            return { message: "", hasError: false };
+          } else if (val.length <= 3) {
+            return { message: "At least 3 characters", hasError: true };
+          }
+          return { message: "", hasError: false };
+        }
+      )
     ]
   ]);
 
   init = async () => {
     await this.withLoader(() => this.fetchGridData());
-    setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
+    // setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
   };
 
   @action

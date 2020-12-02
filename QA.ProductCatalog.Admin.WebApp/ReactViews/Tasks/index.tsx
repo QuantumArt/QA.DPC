@@ -17,7 +17,8 @@ import {
 import {
   StatusFilterContent,
   ScheduleFilterContent,
-  FilterButtonsWrapper
+  FilterButtonsWrapper,
+  NameFilterContent
 } from "./Components/GridHeadFilterTooltip/Subcomponents";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
@@ -69,12 +70,11 @@ export const Task = observer(() => {
       },
       {
         Header: (
-          <GridHeadFilterTooltip label={l("status")}>
-            <FilterButtonsWrapper
-              acceptLabel={l("filter")}
-              revokeLabel={l("clear")}
-              filter={store.filters.get(TaskGridFilterType.StatusFilter)}
-            >
+          <GridHeadFilterTooltip
+            label={l("status")}
+            filter={store.filters.get(TaskGridFilterType.StatusFilter)}
+          >
+            <FilterButtonsWrapper acceptLabel={l("filter")} revokeLabel={l("clear")}>
               <StatusFilterContent options={statusValues} />
             </FilterButtonsWrapper>
           </GridHeadFilterTooltip>
@@ -87,12 +87,11 @@ export const Task = observer(() => {
       },
       {
         Header: (
-          <GridHeadFilterTooltip label={l("schedule")}>
-            <FilterButtonsWrapper
-              acceptLabel={l("filter")}
-              revokeLabel={l("clear")}
-              filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
-            >
+          <GridHeadFilterTooltip
+            label={l("schedule")}
+            filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
+          >
+            <FilterButtonsWrapper acceptLabel={l("filter")} revokeLabel={l("clear")}>
               <ScheduleFilterContent
                 options={[
                   { label: l("isTrue"), value: ScheduleFilterValues.YES },
@@ -109,16 +108,18 @@ export const Task = observer(() => {
         },
         getClassNameByEnableSchedule: (gridElement: GridTask) => {
           if (gridElement.ScheduleEnabled) {
-            return getClassnameByIntent("color", Intent.SUCCESS, "-");
+            return getClassnameByIntent("color", Intent.SUCCESS);
           }
-          return getClassnameByIntent("color", Intent.NONE, "-");
+          return getClassnameByIntent("color", Intent.NONE);
         },
         truncate: {
           onWidth: 120,
           noTruncateElementWidth: 30,
           noTruncateElement: (gridElement: GridTask) => {
             const { allowSchedule } = window.task;
-            const showSchedule = (allowSchedule && gridElement.ScheduledFromTaskId === null) || gridElement.HasSchedule;
+            const showSchedule =
+              (allowSchedule && gridElement.ScheduledFromTaskId === null) ||
+              gridElement.HasSchedule;
             return (
               <ScheduleGridCellCalendar
                 taskIdNumber={gridElement.Id}
@@ -140,7 +141,16 @@ export const Task = observer(() => {
         }
       },
       {
-        Header: l("name"),
+        Header: (
+          <GridHeadFilterTooltip
+            label={l("name")}
+            filter={store.filters.get(TaskGridFilterType.NameFilter)}
+          >
+            <FilterButtonsWrapper acceptLabel={l("filter")} revokeLabel={l("clear")}>
+              <NameFilterContent />
+            </FilterButtonsWrapper>
+          </GridHeadFilterTooltip>
+        ),
         accessor: "DisplayName",
         truncate: { onWidth: 120 }
       },

@@ -1,30 +1,35 @@
-import { Button, Intent } from "@blueprintjs/core";
+import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import React, { useState } from "react";
-import { Filter } from "Tasks/TaskStore";
 import { observer } from "mobx-react-lite";
-import "./style.scss";
+import { IconNames } from "@blueprintjs/icons";
+import { Filter } from "Tasks/TaskStore";
+import "./Style.scss";
 
 interface Props {
-  filter: Filter;
-  children: React.ReactElement<any>;
+  filter?: Filter;
+  children: React.ReactElement;
   acceptLabel?: string;
   revokeLabel?: string;
 }
 
 export const FilterButtonsWrapper = observer(
   ({ filter, children, acceptLabel, revokeLabel }: Props) => {
-    const [value, setValue] = useState(filter.value);
+    const [value, setValue] = useState<string>(filter.value);
     return (
       <div className="filter-options-wrap">
         {React.Children.map(children, child => {
-          return React.cloneElement(child, { setValue, value });
+          return React.cloneElement(child, {
+            setValue,
+            value,
+            validationResult: filter.validationResult
+          });
         })}
 
-        <div className="filter-options-wrap__buttons-wrap">
+        <ButtonGroup className="filter-options-wrap__buttons-wrap" fill>
           <Button
             intent={Intent.PRIMARY}
+            icon={IconNames.CONFIRM}
             outlined
-            className="filter-options-wrap__button"
             onClick={() => {
               filter.setValue(value);
               filter.toggleActive(true);
@@ -32,11 +37,11 @@ export const FilterButtonsWrapper = observer(
           >
             {acceptLabel || "Применить"}
           </Button>
-
           <Button
-            outlined
+            intent={Intent.PRIMARY}
             disabled={!filter.isActive}
-            className="filter-options-wrap__button"
+            outlined
+            icon={IconNames.REMOVE}
             onClick={() => {
               filter.setValue(null);
               filter.toggleActive(false);
@@ -44,7 +49,7 @@ export const FilterButtonsWrapper = observer(
           >
             {revokeLabel || "Отключить"}
           </Button>
-        </div>
+        </ButtonGroup>
       </div>
     );
   }
