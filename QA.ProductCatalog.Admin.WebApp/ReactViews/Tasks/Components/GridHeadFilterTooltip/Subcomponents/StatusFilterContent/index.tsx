@@ -13,7 +13,7 @@ export const StatusFilterContent = ({ setValue, options, value }: IProps) => {
   return (
     <HTMLSelect
       className="filter-options-select"
-      iconProps={{ icon: "caret-down", style: { top: "10px" } }}
+      iconProps={{ icon: "caret-down" }}
       value={value}
       onChange={event => {
         setValue(event.currentTarget.value);

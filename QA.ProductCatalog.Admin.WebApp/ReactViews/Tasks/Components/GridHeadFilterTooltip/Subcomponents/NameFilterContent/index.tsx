@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { Button, FormGroup, InputGroup, Intent } from "@blueprintjs/core";
 import { ValidationResult } from "Tasks/TaskStore";
 import { IconNames } from "@blueprintjs/icons";
+import "./Style.scss";
 
 interface Props {
   setValue?: (val: string) => void;
@@ -12,10 +13,13 @@ interface Props {
 
 export const NameFilterContent = observer(({ setValue, value, validationResult }: Props) => {
   return (
-    <FormGroup labelFor="name-filter" helperText={validationResult?.message}>
+    <FormGroup
+      className="filter-options-input"
+      labelFor="name-filter"
+      helperText={validationResult?.message}
+    >
       <InputGroup
         id="name-filter"
-        className="filter-options-input"
         value={value === null ? "" : value}
         intent={validationResult?.hasError ? Intent.DANGER : Intent.NONE}
         onChange={event => {

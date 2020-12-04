@@ -37,16 +37,17 @@ import "./Root.scss";
  */
 export interface ColumnModel {
   Header: any;
-  accessor: Accessor;
+  accessor: Accessor<GridTask> | string;
   Cell?: any;
   fixedWidth?: number;
-  getClassNameByEnableSchedule?: (taskId: number) => string;
+  getClassNameByEnableSchedule?: (task: GridTask) => string;
   truncate?: {
     onWidth?: number;
     noTruncateElementWidth?: number;
-    noTruncateElement?: (task: GridTask) => Element | String;
+    noTruncateElement?: (task: GridTask) => JSX.Element;
   };
 }
+
 export const Task = observer(() => {
   const store = useStore();
   const gridWrap = React.useRef(null);
@@ -57,7 +58,7 @@ export const Task = observer(() => {
     if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
   }, [gridWrap, store.isLoading]);
 
-  const gridColumns = React.useMemo<Column<ColumnModel>[]>(
+  const gridColumns = React.useMemo(
     () => [
       {
         Header: "Id",

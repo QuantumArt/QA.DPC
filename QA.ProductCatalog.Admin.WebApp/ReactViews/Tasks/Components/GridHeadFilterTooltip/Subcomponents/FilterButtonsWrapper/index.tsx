@@ -24,7 +24,6 @@ export const FilterButtonsWrapper = observer(
             validationResult: filter.validationResult
           });
         })}
-
         <ButtonGroup className="filter-options-wrap__buttons-wrap" fill>
           <Button
             intent={Intent.PRIMARY}

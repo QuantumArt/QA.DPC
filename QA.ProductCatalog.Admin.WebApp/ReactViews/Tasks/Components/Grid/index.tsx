@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import { useTable, usePagination } from "react-table";
+import { isString } from "lodash";
 import cn from "classnames";
 import { PaginationActions } from "Shared/Enums";
-import { ErrorBoundary, GridPagination, GridTruncatedCellContent } from "../";
+import { ErrorBoundary, GridPagination, GridTruncatedCellContent, LongTextCellContent } from "../";
 import "./Style.scss";
 import { Pagination } from "Tasks/TaskStore";
 import { Task } from "Tasks/ApiServices/DataContracts";
@@ -73,6 +74,9 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                       cell.column.getClassNameByEnableSchedule(gridElement);
 
                     const renderCell = () => {
+                      if (isString(cell.value) && cell.value.length > 1000) {
+                        return <LongTextCellContent value={cell.value} isLoading={isLoading} />;
+                      }
                       if (!!cell.column.truncate) {
                         const cellElement = cell.render("Cell");
                         return (
@@ -109,10 +113,9 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                           cell.column.className,
                           classNameByEnableSchedule
                         )}
+                        style={cell.column.truncate && { minWidth: cellWrapperWidth }}
                       >
-                        <div style={cell.column.truncate && { minWidth: cellWrapperWidth }}>
-                          {renderCell()}
-                        </div>
+                        <div>{renderCell()}</div>
                       </td>
                     );
                   })}

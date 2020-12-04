@@ -1144,7 +1144,16 @@
 }
 
 .filter-options-radio {
-  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.filter-options-input {
+  margin: 0;
 }
 
 .bp3-datepicker {

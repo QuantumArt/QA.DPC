@@ -156,7 +156,7 @@ export class TaskStore {
         val => {
           if (val === null) {
             return { message: "", hasError: false };
-          } else if (val.length <= 3) {
+          } else if (val.length < 3) {
             return { message: "At least 3 characters", hasError: true };
           }
           return { message: "", hasError: false };
@@ -167,7 +167,7 @@ export class TaskStore {
 
   init = async () => {
     await this.withLoader(() => this.fetchGridData());
-    // setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
+    setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
   };
 
   @action
