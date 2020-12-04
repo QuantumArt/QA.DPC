@@ -9,6 +9,7 @@
   saveFieldOldUrl: string;
   saveFieldUrl: string;
   saveContentUrl: string;
+  locale: string;
   strings: {
     DictionaryCachingSettings: string;
     MissingInQP: string;

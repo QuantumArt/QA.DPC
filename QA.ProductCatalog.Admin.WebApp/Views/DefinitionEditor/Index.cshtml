@@ -19,6 +19,7 @@ window.definitionEditor = {
   saveFieldUrl: '@Url.Action("SaveField")',
   saveContentUrl: '@Url.Action("SaveContent")',
   editOldUrl: '@Url.Action("EditOld")',
+  locale: "@CultureInfo.CurrentUICulture".split("-")[0],
   strings: {
     DictionaryCachingSettings: '@Html.Raw(ControlStrings.DictionaryCachingSettings)',
     MissingInQP: '@Html.Raw(ControlStrings.MissingInQp)',

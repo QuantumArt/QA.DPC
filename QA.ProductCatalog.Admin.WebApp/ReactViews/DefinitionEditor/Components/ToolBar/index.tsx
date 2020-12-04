@@ -17,24 +17,50 @@ const ToolBar = observer(() => {
       this.opened = !this.opened;
     }
   }));
-  const infoContent = () => (
-    <Card>
-      <h4 className="bp3-heading">"Query on click" Guide:</h4>
-      <ol className="bp3-list">
-        <li>Turn on "Query on click" setting</li>
-        <li>Click on node in the tree</li>
-        <li>
-          Open Search in the XML editor <b>(Ctrl+F)</b>
-        </li>
-        <li>
-          Turn on <i>Regexp mode</i> <b>(Alt+R)</b>
-        </li>
-        <li>
-          Insert generated query <b>(Ctrl+V)</b>
-        </li>
-      </ol>
-    </Card>
-  );
+  const infoContent = () => {
+    const {
+      definitionEditor: { locale }
+    } = window;
+    return (
+      <Card>
+        {locale === "ru" ? (
+          <>
+            <h4 className="bp3-heading">"Поисковая строка по клику" инструкция:</h4>
+            <ol className="bp3-list">
+              <li>Включите настройку "Поисковая строка по клику"</li>
+              <li>Кликните по элементу в дереве</li>
+              <li>
+                Откройте <i>Поиск</i> в редакторе XML <b>(Ctrl+F)</b>
+              </li>
+              <li>
+                Переключите в режим <i>Регулярных выражений</i> <b>(Alt+R)</b>
+              </li>
+              <li>
+                Вставьте сгенерированный запрос <b>(Ctrl+V)</b>
+              </li>
+            </ol>
+          </>
+        ) : (
+          <>
+            <h4 className="bp3-heading">"Query on click" Guide:</h4>
+            <ol className="bp3-list">
+              <li>Turn on "Query on click" setting</li>
+              <li>Click on node in the tree</li>
+              <li>
+                Open <i>Search</i> in the XML editor <b>(Ctrl+F)</b>
+              </li>
+              <li>
+                Turn on <i>Regexp mode</i> <b>(Alt+R)</b>
+              </li>
+              <li>
+                Insert generated query <b>(Ctrl+V)</b>
+              </li>
+            </ol>
+          </>
+        )}
+      </Card>
+    );
+  };
 
   return (
     <div className="editor-toolbar">

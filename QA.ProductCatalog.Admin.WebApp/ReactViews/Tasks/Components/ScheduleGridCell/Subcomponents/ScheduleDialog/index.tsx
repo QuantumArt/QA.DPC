@@ -344,31 +344,38 @@ export const ScheduleDialog = ({
 
         {taskSetType === ScheduleType.Single && (
           <SelectRow>
-              <DateInput
-                className="schedule-popup__select--inline"
-                formatDate={date => moment(date).locale(window.task.locale).format("DD.MM.YYYY")}
-                parseDate={str => moment(str, "DD.MM.YYYY").locale(window.task.locale).toDate()}
-                popoverProps={{ position: Position.BOTTOM }}
-                value={singleDate}
-                highlightCurrentDay
-                onChange={(selectedDate: Date) => {
-                  setSingleDate(selectedDate);
-                }}
-                dayPickerProps={{
-
-                }}
-                minDate={moment().subtract(3, "month").toDate()}
-                maxDate={moment().add(3, "month").toDate()}
-                locale={window.task.locale}
-                localeUtils={MomentLocaleUtils}
-              />
-              <TimePicker
-                value={singleTime}
-                onChange={(newTime: Date) => {
-                  setSingleTime(newTime);
-                }}
-                className="schedule-popup__select--inline"
-              />
+            <DateInput
+              className="schedule-popup__select--inline"
+              formatDate={date =>
+                moment(date)
+                  .locale(window.task.locale)
+                  .format("DD.MM.YYYY")
+              }
+              parseDate={str =>
+                moment(str, "DD.MM.YYYY")
+                  .locale(window.task.locale)
+                  .toDate()
+              }
+              popoverProps={{ position: Position.BOTTOM }}
+              value={singleDate}
+              highlightCurrentDay
+              onChange={(selectedDate: Date) => {
+                setSingleDate(selectedDate);
+              }}
+              minDate={moment().toDate()}
+              maxDate={moment()
+                .add(6, "month")
+                .toDate()}
+              locale={window.task.locale}
+              localeUtils={MomentLocaleUtils}
+            />
+            <TimePicker
+              value={singleTime}
+              onChange={(newTime: Date) => {
+                setSingleTime(newTime);
+              }}
+              className="schedule-popup__select--inline"
+            />
           </SelectRow>
         )}
       </>

@@ -15,7 +15,7 @@ interface Props {
 export const GridHeadFilterTooltip = observer(({ label, filter, children }: Props) => {
   const intent = filter.isActive ? Intent.SUCCESS : Intent.PRIMARY;
   return (
-    <Popover position={Position.BOTTOM} usePortal lazy portalClassName="grid-body">
+    <Popover position={Position.BOTTOM} minimal>
       <span className={cn("filter-cell", getClassnameByIntent("color", intent))}>
         {label} <Icon className="filter-cell__icon" iconSize={14} icon="filter" intent={intent} />
       </span>

@@ -157,7 +157,7 @@ export class TaskStore {
           if (val === null) {
             return { message: "", hasError: false };
           } else if (val.length < 3) {
-            return { message: "At least 3 characters", hasError: true };
+            return { message: l("nameFilterValidation"), hasError: true };
           }
           return { message: "", hasError: false };
         }

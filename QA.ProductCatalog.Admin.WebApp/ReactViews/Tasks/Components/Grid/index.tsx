@@ -113,9 +113,10 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                           cell.column.className,
                           classNameByEnableSchedule
                         )}
-                        style={cell.column.truncate && { minWidth: cellWrapperWidth }}
                       >
-                        <div>{renderCell()}</div>
+                        <div style={cell.column.truncate && { minWidth: cellWrapperWidth }}>
+                          {renderCell()}
+                        </div>
                       </td>
                     );
                   })}
