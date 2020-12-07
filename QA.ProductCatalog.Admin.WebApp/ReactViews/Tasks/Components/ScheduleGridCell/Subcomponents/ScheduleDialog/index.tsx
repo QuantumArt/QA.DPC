@@ -266,13 +266,15 @@ export const ScheduleDialog = ({
       1} ? ${singleDate.getFullYear()}`;
   };
 
-  const acceptSchedule = (): void => {
+  const acceptSchedule = async (): Promise<void> => {
+    store.toggleLoading(true);
     if (taskSetType === ScheduleType.Repeat) {
-      store.setSchedule(taskIdNumber, isEnable, parsedCronsMultiSelectsModel(), "on");
+      await store.setSchedule(taskIdNumber, isEnable, parsedCronsMultiSelectsModel(), "on");
     } else {
-      store.setSchedule(taskIdNumber, isEnable, parseCronsSingleModel(), "on");
+      await store.setSchedule(taskIdNumber, isEnable, parseCronsSingleModel(), "on");
     }
     closeDialogCb();
+    store.toggleLoading(false);
   };
 
   const clearValues = (): void => {

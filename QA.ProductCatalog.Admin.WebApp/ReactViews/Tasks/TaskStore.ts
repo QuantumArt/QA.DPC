@@ -249,7 +249,7 @@ export class TaskStore {
 
   @action
   toggleLoading = (val: boolean): void => {
-    this.isLoading = val || !this.isLoading;
+    this.isLoading = val;
   };
 
   @action
