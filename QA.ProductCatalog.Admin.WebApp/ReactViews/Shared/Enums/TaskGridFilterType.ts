@@ -2,5 +2,7 @@ export enum TaskGridFilterType {
   StatusFilter,
   ScheduleFilter,
   ProgressFilter,
-  NameFilter
+  NameFilter,
+  DateFilterFrom,
+  DateFilterTo
 }

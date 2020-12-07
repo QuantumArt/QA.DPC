@@ -56,19 +56,23 @@ export interface ValidationResult {
   message: string;
 }
 
+type Operator = "eq" | "gt" | "gte" | "lt" | "lte";
+
 export class Filter {
   constructor(
     initialValue: string,
     onChangeFilter: () => Promise<void>,
     field: string,
     getMappedValue?: () => boolean,
-    validationFunc?: (val: string) => ValidationResult
+    validationFunc?: (val: string) => ValidationResult,
+    operator: Operator = "eq"
   ) {
     this.value = initialValue;
     this.onChangeFilter = onChangeFilter;
     this.field = field;
     this.validationFunc = validationFunc;
-    this.getMappedValue = getMappedValue;
+    this.getFilteredValue = getMappedValue;
+    this.operator = operator;
   }
 
   @observable isActive: boolean = false;
@@ -83,7 +87,7 @@ export class Filter {
     return {
       field: this.field,
       operator: this.operator,
-      value: this.getMappedValue ? this.getMappedValue() : this.value
+      value: this.getFilteredValue ? this.getFilteredValue() : this.value
     };
   }
 
@@ -103,13 +107,15 @@ export class Filter {
   toggleActive = (val: boolean) => {
     if (!this.validationResult.hasError) {
       this.isActive = val;
-      this.onChangeFilter();
+      if (this.onChangeFilter) {
+        this.onChangeFilter();
+      }
     }
   };
 
   private readonly field: string;
-  private operator: string = "eq";
-  private readonly getMappedValue: () => boolean;
+  private readonly operator: Operator;
+  private readonly getFilteredValue: () => boolean;
 }
 
 export class TaskStore {
@@ -162,7 +168,9 @@ export class TaskStore {
           return { message: "", hasError: false };
         }
       )
-    ]
+    ],
+    [TaskGridFilterType.DateFilterFrom, new Filter("", null, "CreatedTime", null, null, "gte")],
+    [TaskGridFilterType.DateFilterTo, new Filter("", null, "CreatedTime", null, null, "lte")]
   ]);
 
   init = async () => {

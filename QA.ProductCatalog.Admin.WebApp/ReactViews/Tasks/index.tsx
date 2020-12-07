@@ -18,7 +18,8 @@ import {
   StatusFilterContent,
   ScheduleFilterContent,
   FilterButtonsWrapper,
-  NameFilterContent
+  NameFilterContent,
+  DateFilter
 } from "./Components/GridHeadFilterTooltip/Subcomponents";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
@@ -156,7 +157,15 @@ export const Task = observer(() => {
         truncate: { onWidth: 120 }
       },
       {
-        Header: l("created"),
+        Header: (
+          <DateFilter
+            label={l("created")}
+            acceptLabel={l("filter")}
+            revokeLabel={l("clear")}
+            filterFrom={store.filters.get(TaskGridFilterType.DateFilterFrom)}
+            filterTo={store.filters.get(TaskGridFilterType.DateFilterTo)}
+          />
+        ),
         accessor: "CreatedTime",
         Cell: DateGridCell,
         truncate: { onWidth: 130 }
