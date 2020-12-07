@@ -31,6 +31,6 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
 		Dictionary<int, string> GetAllStates();
 
-		Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter, bool? hasSchedule, out int totalCount);
+		Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFilter, bool? hasSchedule, DateTime? createdLower, DateTime? createdUpper, out int totalCount);
 	}
 }

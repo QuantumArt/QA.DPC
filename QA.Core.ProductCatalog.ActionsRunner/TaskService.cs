@@ -379,8 +379,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             }
         }
 
-        public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter,
-            bool? hasSchedule, out int totalCount)
+        public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFilter,
+            bool? hasSchedule, DateTime? createdLower, DateTime? createdUpper, out int totalCount)
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
@@ -395,10 +395,20 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 {
                     tasksFiltered = tasksFiltered.Where(x => x.StateID == stateIdToFilterBy);
                 }
-
-                if (nameFillter != null)
+                
+                if (createdLower.HasValue)
                 {
-                    tasksFiltered = tasksFiltered.Where(x => x.DisplayName.Contains(nameFillter));
+                    tasksFiltered = tasksFiltered.Where(x => x.CreatedTime >= createdLower);
+                }
+                
+                if (createdUpper.HasValue)
+                {
+                    tasksFiltered = tasksFiltered.Where(x => x.CreatedTime <= createdLower);
+                }
+
+                if (nameFilter != null)
+                {
+                    tasksFiltered = tasksFiltered.Where(x => x.DisplayName.Contains(nameFilter));
                 }
 
                 if (hasSchedule.HasValue)

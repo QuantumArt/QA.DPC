@@ -55,18 +55,25 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
 	        bool? hasSchedule = null;
 
+            DateTime? createdLower = null, createdUpper = null;
+
             if (filterJson != null)
             {
-                var filters = JsonConvert.DeserializeObject<KendoGridFilter[]>(filterJson);
+                var filters = JsonConvert.DeserializeObject<GridFilter[]>(filterJson);
 
-                foreach (var filter in filters.Where(n => n.value != null))
+                foreach (var filter in filters.Where(n => n.Value != null))
                 {
-                    if (filter.field == "StateId")
-                        stateIdToFilterBy = Convert.ToInt32(filter.value);
-                    else if (filter.field == "DisplayName")
-                        nameFillter = filter.value.ToString();
-					else if (filter.field == "HasSchedule")
-						hasSchedule = Convert.ToBoolean(filter.value);
+                    if (filter.Field == "StateId")
+                        stateIdToFilterBy = Convert.ToInt32(filter.Value);
+                    else if (filter.Field == "DisplayName")
+                        nameFillter = filter.Value.ToString();
+					else if (filter.Field == "HasSchedule")
+						hasSchedule = Convert.ToBoolean(filter.Value);
+                    else if (filter.Field == "CreatedTime" && filter.Operator == "gte")
+                        createdLower = Convert.ToDateTime(filter.Value);
+                    else if (filter.Field == "CreatedTime" && filter.Operator == "lte")
+                        createdUpper = Convert.ToDateTime(filter.Value);
+                    
                 }
             }
 
@@ -76,7 +83,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             int totalCount;
 
-            var tasks = _taskService.GetTasks(skip, take, userIdToFilterBy, stateIdToFilterBy, nameFillter, hasSchedule,out totalCount);
+            var tasks = _taskService.GetTasks(skip, take, userIdToFilterBy, stateIdToFilterBy, nameFillter, hasSchedule, createdLower, createdUpper, out totalCount);
 
             TaskModel myLastTask = null;
 

@@ -95,7 +95,7 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
             return _tasks[taskId];
         }
 
-        public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter, bool? hasSchedule, out int totalCount)
+        public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFilter, bool? hasSchedule, DateTime? createdLower, DateTime? createdUpper, out int totalCount)
         {
             totalCount = _tasks.Count();
             return _tasks.Values.Skip(skip).Take(take).ToArray();
