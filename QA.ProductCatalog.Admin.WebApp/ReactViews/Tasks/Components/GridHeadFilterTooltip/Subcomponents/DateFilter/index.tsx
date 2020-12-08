@@ -9,13 +9,14 @@ import { DateRange, DateRangeInput } from "@blueprintjs/datetime";
 import moment from "moment";
 import MomentLocaleUtils from "react-day-picker/moment";
 import { useStore } from "Tasks/UseStore";
+import { l } from "Tasks/Localization";
 
 interface Props {
   label: string | number;
   filterFrom: Filter;
   filterTo: Filter;
-  acceptLabel?: string;
-  revokeLabel?: string;
+  acceptLabel: string;
+  revokeLabel: string;
 }
 
 export const DateFilter = observer(
@@ -52,10 +53,10 @@ export const DateFilter = observer(
             highlightCurrentDay
             shortcuts={false}
             startInputProps={{
-              placeholder: "От"
+              placeholder: l("fromDate")
             }}
             endInputProps={{
-              placeholder: "До"
+              placeholder: l("toDate")
             }}
             value={dates}
           />

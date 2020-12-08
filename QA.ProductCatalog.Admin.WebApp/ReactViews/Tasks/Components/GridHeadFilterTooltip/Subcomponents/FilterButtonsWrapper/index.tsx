@@ -8,8 +8,8 @@ import "./Style.scss";
 interface Props {
   filter?: Filter;
   children: React.ReactElement;
-  acceptLabel?: string;
-  revokeLabel?: string;
+  acceptLabel: string;
+  revokeLabel: string;
 }
 
 export const FilterButtonsWrapper = observer(
@@ -34,7 +34,7 @@ export const FilterButtonsWrapper = observer(
               filter.toggleActive(true);
             }}
           >
-            {acceptLabel || "Применить"}
+            {acceptLabel}
           </Button>
           <Button
             intent={Intent.PRIMARY}
@@ -46,7 +46,7 @@ export const FilterButtonsWrapper = observer(
               filter.toggleActive(false);
             }}
           >
-            {revokeLabel || "Отключить"}
+            {revokeLabel}
           </Button>
         </ButtonGroup>
       </div>

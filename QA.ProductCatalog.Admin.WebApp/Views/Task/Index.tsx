@@ -1,5 +1,10 @@
 ﻿import React from "react";
 import { render } from "react-dom";
 import { Task } from "Tasks";
+import { Stub } from "Shared/Components";
 
-render(<Task />, document.getElementById("task"));
+if (!window.task) {
+  render(<Stub />, document.getElementById("task"));
+} else {
+  render(<Task />, document.getElementById("task"));
+}

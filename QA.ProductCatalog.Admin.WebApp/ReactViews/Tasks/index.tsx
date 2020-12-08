@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Intent } from "@blueprintjs/core";
 import { Column, Accessor } from "react-table";
 import { observer } from "mobx-react-lite";
@@ -51,8 +51,8 @@ export interface ColumnModel {
 
 export const Task = observer(() => {
   const store = useStore();
-  const gridWrap = React.useRef(null);
-  const [gridWidth, setGridWidth] = React.useState(1000);
+  const gridWrap = useRef(null);
+  const [gridWidth, setGridWidth] = useState(1000);
   const { statusValues } = window.task;
 
   useEffect(() => {

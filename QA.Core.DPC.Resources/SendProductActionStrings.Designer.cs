@@ -10,8 +10,8 @@
 
 namespace QA.Core.DPC.Resources {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace QA.Core.DPC.Resources {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class SendProductActionStrings {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal SendProductActionStrings() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -45,7 +45,7 @@ namespace QA.Core.DPC.Resources {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ namespace QA.Core.DPC.Resources {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Action cancelled.
         /// </summary>
@@ -68,7 +68,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Cancelled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Errors.
         /// </summary>
@@ -77,7 +77,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Errors", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products excluded by status.
         /// </summary>
@@ -86,7 +86,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ExcludedByStatus", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products excluded because of freezing.
         /// </summary>
@@ -95,7 +95,25 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ExcludedWithFreezing", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Ids list should not be empty.
+        /// </summary>
+        public static string IdListEmpty {
+            get {
+                return ResourceManager.GetString("IdListEmpty", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Incorrect Ids list.
+        /// </summary>
+        public static string IdListIncorrect {
+            get {
+                return ResourceManager.GetString("IdListIncorrect", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to There is no relation access to the following articles.
         /// </summary>
@@ -104,7 +122,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NoRelationAccess", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products not found.
         /// </summary>
@@ -113,7 +131,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NotFound", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Product not found in DPC.
         /// </summary>
@@ -122,7 +140,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NotFoundInDpc", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products not passed filtration by Live channels.
         /// </summary>
@@ -131,7 +149,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NotPassedByLiveFiltration", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products not passed filtration by Stage channels.
         /// </summary>
@@ -140,7 +158,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NotPassedByStageFiltration", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products not passed validation.
         /// </summary>
@@ -149,7 +167,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NotValidated", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Processed {0} from {1}, Unprocessed products.
         /// </summary>
@@ -158,7 +176,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PartiallySucceededResult", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products removed from fronts.
         /// </summary>
@@ -167,7 +185,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RemovedFromFronts", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Send new package.
         /// </summary>
@@ -176,7 +194,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SendNewPackage", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to All {0} products has been successfully processed.
         /// </summary>
@@ -185,7 +203,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SucceededResult", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Your partial send task.
         /// </summary>

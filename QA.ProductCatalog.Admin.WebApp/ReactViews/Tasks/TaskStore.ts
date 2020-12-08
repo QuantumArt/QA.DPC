@@ -18,8 +18,8 @@ export class Pagination {
     this.setPagination(INIT_PAGINATION_OPTIONS);
     this.changePage = onChangePage;
   }
-  @observable private skip: number = 0;
-  private readonly take: number = 10;
+  @observable private skip: number;
+  @observable private take: number;
   @observable private showOnlyMine: boolean;
   readonly changePage: (operation: PaginationActions) => void;
 
@@ -35,6 +35,7 @@ export class Pagination {
   setPagination = (props: PaginationOptions) => {
     runInAction(() => {
       this.skip = props.skip;
+      this.take = props.take;
       this.showOnlyMine = props.showOnlyMine;
     });
   };

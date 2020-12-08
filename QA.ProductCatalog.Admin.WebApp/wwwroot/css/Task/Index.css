@@ -1994,3 +1994,14 @@ body {
 .color-none {
   color: #182026;
 }
+
+.Chip {
+  padding: 4px 7px 4px 4px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 16px;
+  color: white;
+}
+.Chip__icon {
+  margin-right: 4px;
+}

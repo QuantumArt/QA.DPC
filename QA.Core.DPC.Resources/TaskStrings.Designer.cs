@@ -10,8 +10,8 @@
 
 namespace QA.Core.DPC.Resources {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace QA.Core.DPC.Resources {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class TaskStrings {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal TaskStrings() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -45,7 +45,7 @@ namespace QA.Core.DPC.Resources {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ namespace QA.Core.DPC.Resources {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Action has been enqueued.
         /// </summary>
@@ -68,7 +68,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ActionEnqueued", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Can&apos;t process action.
         /// </summary>
@@ -77,7 +77,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ActionErrorMessage", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0} is already running.
         /// </summary>
@@ -86,7 +86,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ActionRunning", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
@@ -95,7 +95,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("All", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Apply.
         /// </summary>
@@ -104,7 +104,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Apply", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Apr.
         /// </summary>
@@ -113,7 +113,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Apr", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Articles processed: {0}.
         /// </summary>
@@ -122,7 +122,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ArticlesProcessed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to at.
         /// </summary>
@@ -131,7 +131,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("At", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Aug.
         /// </summary>
@@ -140,7 +140,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Aug", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
@@ -149,7 +149,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Cancel", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cancellation is already requested.
         /// </summary>
@@ -158,7 +158,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CancellationRequested", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cancelled.
         /// </summary>
@@ -167,7 +167,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Cancelled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot cancel task because of status.
         /// </summary>
@@ -176,7 +176,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CannotCancelTask", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot repeat task because of status.
         /// </summary>
@@ -185,7 +185,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CannotRepeatTask", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Changed.
         /// </summary>
@@ -194,7 +194,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Changed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Clear.
         /// </summary>
@@ -203,7 +203,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Clear", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to click to open.
         /// </summary>
@@ -212,7 +212,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ClickToOpen", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
@@ -221,7 +221,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Close", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Completed.
         /// </summary>
@@ -230,7 +230,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Completed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Created.
         /// </summary>
@@ -239,7 +239,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Create", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Created.
         /// </summary>
@@ -248,7 +248,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Created", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cron expression parse error.
         /// </summary>
@@ -257,7 +257,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CronParseError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Customer.
         /// </summary>
@@ -266,7 +266,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Customer", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to day.
         /// </summary>
@@ -275,7 +275,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Day", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to .
         /// </summary>
@@ -284,7 +284,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DayOfMonth", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Dec.
         /// </summary>
@@ -293,7 +293,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Dec", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cannot edit recurrence schedule because task already created by schedule.
         /// </summary>
@@ -302,7 +302,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("EditNotAllowed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Edit recurrence schedule.
         /// </summary>
@@ -311,7 +311,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("EditRecurrenceSchedule", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Error.
         /// </summary>
@@ -320,7 +320,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Error", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to an error occurs while enqueuing action.
         /// </summary>
@@ -329,7 +329,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ErrorActionEnqueue", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to {0} : articles {1}.
         /// </summary>
@@ -338,7 +338,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ErrorTemplate", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to every.
         /// </summary>
@@ -347,7 +347,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Every", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to every day of the month.
         /// </summary>
@@ -356,7 +356,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("EveryDayOfMonth", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to every day of the week.
         /// </summary>
@@ -365,7 +365,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("EveryDayOfWeek", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Feb.
         /// </summary>
@@ -374,7 +374,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Feb", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products [{0}] have status {1}, which doesn&apos;t allow publication or they are archived or invisible..
         /// </summary>
@@ -383,7 +383,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("FilteredProducts", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Fri.
         /// </summary>
@@ -392,7 +392,16 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Fri", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to From.
+        /// </summary>
+        public static string FromDate {
+            get {
+                return ResourceManager.GetString("FromDate", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to hour.
         /// </summary>
@@ -401,7 +410,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Hour", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Hours.
         /// </summary>
@@ -410,7 +419,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Hours", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to JAN.
         /// </summary>
@@ -419,7 +428,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Jan", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jul.
         /// </summary>
@@ -428,7 +437,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Jul", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Jun.
         /// </summary>
@@ -437,7 +446,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Jun", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to LastStatusChange.
         /// </summary>
@@ -446,7 +455,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("LastStatusChange", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Mar.
         /// </summary>
@@ -455,7 +464,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Mar", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to May.
         /// </summary>
@@ -464,7 +473,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("May", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Message.
         /// </summary>
@@ -473,7 +482,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Message", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to minute.
         /// </summary>
@@ -482,7 +491,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Minute", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Minutes.
         /// </summary>
@@ -491,7 +500,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Minutes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to minute(s) past the hour.
         /// </summary>
@@ -500,7 +509,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("MinutesPastHour", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to One Time.
         /// </summary>
@@ -509,7 +518,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ModeOneTime", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Repeat.
         /// </summary>
@@ -518,7 +527,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ModeRepeat", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Mon.
         /// </summary>
@@ -527,7 +536,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Mon", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to month.
         /// </summary>
@@ -536,7 +545,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Month", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Days of the month.
         /// </summary>
@@ -545,7 +554,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("MonthDays", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Months.
         /// </summary>
@@ -554,7 +563,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Months", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
@@ -563,7 +572,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Name", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to At least 3 characters.
         /// </summary>
@@ -572,7 +581,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NameFilterValidation", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to New.
         /// </summary>
@@ -581,7 +590,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("New", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to No.
         /// </summary>
@@ -590,7 +599,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("No", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to There is no available products to publish..
         /// </summary>
@@ -599,7 +608,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NoProductsToPublish", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products to unfreeze not found.
         /// </summary>
@@ -608,7 +617,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NoProductsToUnfreeze", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Not enough access to relations: {0}.
         /// </summary>
@@ -617,7 +626,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NoRelationAccess", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to An error occurs while appending messages into NotificationSender queue: {0}.
         /// </summary>
@@ -626,7 +635,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NotificationSenderError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Nov.
         /// </summary>
@@ -635,7 +644,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Nov", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Oct.
         /// </summary>
@@ -644,7 +653,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Oct", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to off.
         /// </summary>
@@ -653,7 +662,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("off", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to on.
         /// </summary>
@@ -662,7 +671,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("on", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Partial Send.
         /// </summary>
@@ -671,7 +680,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PartialSend", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Days.
         /// </summary>
@@ -680,7 +689,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PeriodDay", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Hours.
         /// </summary>
@@ -689,7 +698,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PeriodHour", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Minutes.
         /// </summary>
@@ -698,7 +707,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PeriodMinute", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Months.
         /// </summary>
@@ -707,7 +716,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PeriodMonth", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Weeks.
         /// </summary>
@@ -716,7 +725,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PeriodWeek", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Years.
         /// </summary>
@@ -725,7 +734,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PeriodYear", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to processed.
         /// </summary>
@@ -734,7 +743,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Processed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products excluded by status: {0}.
         /// </summary>
@@ -743,7 +752,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductsExcludedByStatus", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products are freezed: {0}.
         /// </summary>
@@ -752,7 +761,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductsFreezed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products not found: {0}.
         /// </summary>
@@ -761,7 +770,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductsNotFound", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Some products have not been processed.
         /// </summary>
@@ -770,7 +779,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductsNotProcessed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products are not going to be published: {0}.
         /// </summary>
@@ -779,7 +788,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductsNotToPublish", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unfreezed products has been send to publication.
         /// </summary>
@@ -788,7 +797,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductsUnfreezed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Progress.
         /// </summary>
@@ -797,7 +806,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Progress", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Recurrence Mode.
         /// </summary>
@@ -806,7 +815,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RecurrenceMode", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Recurrence Period.
         /// </summary>
@@ -815,7 +824,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RecurrencePeriod", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Task recurrence schedule.
         /// </summary>
@@ -824,7 +833,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RecurrenceSchedule", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Rerun.
         /// </summary>
@@ -833,7 +842,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Rerun", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Running.
         /// </summary>
@@ -842,7 +851,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Running", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Sat.
         /// </summary>
@@ -851,7 +860,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Sat", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Schedule.
         /// </summary>
@@ -860,7 +869,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Schedule", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Schedule Enabled.
         /// </summary>
@@ -869,7 +878,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ScheduleEnabled", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Search....
         /// </summary>
@@ -878,7 +887,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Search", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Sep.
         /// </summary>
@@ -887,7 +896,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Sep", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Server Error.
         /// </summary>
@@ -896,7 +905,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ServerError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to State.
         /// </summary>
@@ -905,7 +914,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("State", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Status.
         /// </summary>
@@ -914,7 +923,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Status", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Product statuses of {0} products successfully updated.
         /// </summary>
@@ -923,7 +932,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("StatusesUpdated", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Sun.
         /// </summary>
@@ -932,7 +941,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Sun", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Task.
         /// </summary>
@@ -941,7 +950,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Task", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Task ID.
         /// </summary>
@@ -950,7 +959,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("TaskId", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Task Recurrence Schedule.
         /// </summary>
@@ -959,7 +968,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("TaskRecurrenceSchedule", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Thu.
         /// </summary>
@@ -968,7 +977,16 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Thu", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to To.
+        /// </summary>
+        public static string ToDate {
+            get {
+                return ResourceManager.GetString("ToDate", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Tue.
         /// </summary>
@@ -977,7 +995,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Tue", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Something went wrong. Try to reload the page..
         /// </summary>
@@ -986,7 +1004,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("TypicalError", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Unfreezing.
         /// </summary>
@@ -995,7 +1013,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Unfreezing", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to User Name.
         /// </summary>
@@ -1004,7 +1022,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("UserName", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Products: {0}. Updated: {1}, Validated: {2}, Invalid: {3}, Errors {4}.
         /// </summary>
@@ -1013,7 +1031,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ValidationResult", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Cleaned {0} product versions earlier than {1} with chunk size = {2}.
         /// </summary>
@@ -1022,7 +1040,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("VersionsCleaned", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Wed.
         /// </summary>
@@ -1031,7 +1049,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Wed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to week.
         /// </summary>
@@ -1040,7 +1058,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Week", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Days of the week.
         /// </summary>
@@ -1049,7 +1067,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("WeekDays", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to year.
         /// </summary>
@@ -1058,7 +1076,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Year", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
@@ -1067,7 +1085,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Yes", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Your Last Task.
         /// </summary>

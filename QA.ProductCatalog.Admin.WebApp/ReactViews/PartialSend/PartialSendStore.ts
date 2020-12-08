@@ -5,6 +5,7 @@ import { MAX_FETCH_COUNT } from "Shared/Constants";
 import { FetchStatus } from "Shared/Enums";
 
 import { CurrentStep } from "./Enums";
+import { l } from "PartialSend/Localization";
 
 type TaskResponse = {
   taskProcessingFinished: boolean;
@@ -107,17 +108,17 @@ export default class PartialSendStore {
 
       if (notNumbers.length > 0) {
         this.setIsValidForm(false);
-        this.setIdsValidationError("Incorrect Ids list");
+        this.setIdsValidationError(l("idListIncorrect"));
       } else if (uniqueIds.length > 0) {
         this.setIsValidForm(true);
         this.setIdsValidationError(null);
       } else {
         this.setIsValidForm(false);
-        this.setIdsValidationError("Ids list should not be empty");
+        this.setIdsValidationError(l("idListEmpty"));
       }
     } else {
       this.setIsValidForm(false);
-      this.setIdsValidationError("Incorrect Ids list");
+      this.setIdsValidationError(l("idListIncorrect"));
     }
   };
 
@@ -136,9 +137,9 @@ export default class PartialSendStore {
     } else {
       this.setFetchStatus(FetchStatus.Failure);
       if (this.fetchStatus === 401) {
-        this.setFetchError("Сессия устарела. Переоткройте или обновите вкладку.");
+        this.setFetchError(l("sessionExpired"));
       } else {
-        this.setFetchError("Сервер недоступен. Переоткройте или обновите вкладку.");
+        this.setFetchError(l("serverNotAvalaible"));
       }
       this.setFailureFetchCount(this.failureFetchCount + 1);
     }
@@ -179,9 +180,9 @@ export default class PartialSendStore {
     } else {
       this.setFetchStatus(FetchStatus.Failure);
       if (this.fetchStatus === 401) {
-        this.setFetchError("Сессия устарела. Переоткройте или обновите вкладку.");
+        this.setFetchError(l("sessionExpired"));
       } else {
-        this.setFetchError("Сервер недоступен. Переоткройте или обновите вкладку.");
+        this.setFetchError(l("serverNotAvalaible"));
       }
       this.setFailureFetchCount(this.failureFetchCount + 1);
     }
