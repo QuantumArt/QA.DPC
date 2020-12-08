@@ -403,7 +403,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 
                 if (createdUpper.HasValue)
                 {
-                    tasksFiltered = tasksFiltered.Where(x => x.CreatedTime <= createdLower);
+                    tasksFiltered = tasksFiltered.Where(x => x.CreatedTime <= createdUpper);
                 }
 
                 if (nameFilter != null)
