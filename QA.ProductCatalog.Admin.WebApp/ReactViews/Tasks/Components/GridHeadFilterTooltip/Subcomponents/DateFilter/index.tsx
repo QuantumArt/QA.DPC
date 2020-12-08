@@ -65,9 +65,8 @@ export const DateFilter = observer(
               icon={IconNames.CONFIRM}
               outlined
               onClick={() => {
-                filterFrom.setValue(dates[0].toString());
-                filterTo.setValue(dates[1].toString());
-                console.log(dates);
+                filterFrom.setValue(dates[0].toLocaleDateString(window.task.locale));
+                filterTo.setValue(dates[1].toLocaleDateString(window.task.locale));
                 filterFrom.toggleActive(true);
                 filterTo.toggleActive(true);
                 withLoader(() => fetchGridData());
