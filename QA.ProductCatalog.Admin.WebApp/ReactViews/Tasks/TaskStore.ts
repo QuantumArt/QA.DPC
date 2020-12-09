@@ -1,4 +1,4 @@
-import { action, computed, observable, runInAction, onBecomeObserved, toJS } from "mobx";
+import { action, computed, observable, onBecomeObserved, runInAction } from "mobx";
 import { createContext } from "react";
 import { PaginationActions, ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { apiService } from "Tasks/ApiServices";
@@ -11,7 +11,7 @@ import {
 } from "Tasks/Constants";
 import { l } from "Tasks/Localization";
 import { differenceWith, isEqual } from "lodash";
-import { SendNotificationOptions, sendNotification } from "@quantumart/qp8backendapi-interaction";
+import { sendNotification, SendNotificationOptions } from "@quantumart/qp8backendapi-interaction";
 
 export class Pagination {
   constructor(onChangePage: (operation: PaginationActions) => void) {
@@ -40,15 +40,32 @@ export class Pagination {
     });
   };
 
-  calcPaginationOptionsOnOperation = (operation: PaginationActions): PaginationOptions => {
+  calcPaginationOptionsOnOperation = (
+    operation: PaginationActions,
+    total: number = null
+  ): PaginationOptions => {
     const paginationOptions = this.getPaginationOptions;
-    if (operation === PaginationActions.None) return this.getPaginationOptions;
-    return Object.assign(this.getPaginationOptions, {
-      skip:
-        operation === PaginationActions.IncrementPage
-          ? (paginationOptions.skip += INIT_PAGINATION_OPTIONS.take)
-          : (paginationOptions.skip -= INIT_PAGINATION_OPTIONS.take)
-    });
+    let skip = paginationOptions.skip;
+    switch (operation) {
+      case PaginationActions.FirstPage:
+        skip = 0;
+        break;
+      case PaginationActions.IncrementPage:
+        skip = paginationOptions.skip + INIT_PAGINATION_OPTIONS.take;
+        break;
+      case PaginationActions.DecrementPage:
+        skip = paginationOptions.skip - INIT_PAGINATION_OPTIONS.take;
+        break;
+      case PaginationActions.LastPage: {
+        if (total !== null) {
+          skip = total - INIT_PAGINATION_OPTIONS.take;
+        }
+        break;
+      }
+      default:
+      // use already defined skip, equivalent for PaginationActions.None
+    }
+    return { ...this.getPaginationOptions, skip };
   };
 }
 
@@ -105,11 +122,11 @@ export class Filter {
   };
 
   @action
-  toggleActive = (val: boolean) => {
+  toggleActive = async (val: boolean) => {
     if (!this.validationResult.hasError) {
       this.isActive = val;
       if (this.onChangeFilter) {
-        this.onChangeFilter();
+        await this.onChangeFilter();
       }
     }
   };
@@ -177,40 +194,6 @@ export class TaskStore {
   init = async () => {
     await this.withLoader(() => this.fetchGridData());
     setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
-  };
-
-  @action
-  cyclicFetchGrid = async (): Promise<void> => {
-    try {
-      const { isNotifyActive, runningStateId } = window.task.notify;
-
-      const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(
-        PaginationActions.None
-      );
-      const filtersOptions = this.getFiltersOptions();
-
-      const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
-      if (
-        this.IsPriorityRequestPending ||
-        paginationOptions.skip !== this.pagination.getPaginationOptions.skip
-      ) {
-        throw "the request already have sent and new response from cyclic fetch will not accept in grid";
-      }
-      this.setGridData(response.tasks);
-      this.setTotal(response.totalTasks);
-      this.setMyLastTask(response.myLastTask);
-
-      if (isNotifyActive) {
-        this.tasksNotificationsSender(response.tasks, runningStateId);
-      }
-
-      setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
-    } catch (e) {
-      if (typeof e === "string" && e === SESSION_EXPIRED) {
-        return;
-      }
-      setTimeout(this.cyclicFetchGrid, FETCH_ON_ERROR_TIMEOUT);
-    }
   };
 
   tasksNotificationsSender = (tasks: Task[], runningStateId: number) => {
@@ -323,8 +306,15 @@ export class TaskStore {
   fetchGridData = async (operation: PaginationActions = PaginationActions.None): Promise<void> =>
     this.priorityRequestInSameTime(async () => {
       try {
-        const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(operation);
         const filtersOptions = this.getFiltersOptions();
+        const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(
+          operation,
+          this.total
+        );
+        // const paginationOptions =
+        //   filtersOptions === null
+        //     ? this.pagination.calcPaginationOptionsOnOperation(operation, this.total)
+        //     : this.pagination.calcPaginationOptionsOnOperation(PaginationActions.FirstPage);
         const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
         this.setGridData(response.tasks);
         this.setTotal(response.totalTasks);
@@ -334,6 +324,40 @@ export class TaskStore {
         console.error(e);
       }
     });
+
+  @action
+  cyclicFetchGrid = async (): Promise<void> => {
+    try {
+      const { isNotifyActive, runningStateId } = window.task.notify;
+
+      const paginationOptions = this.pagination.calcPaginationOptionsOnOperation(
+        PaginationActions.None
+      );
+      const filtersOptions = this.getFiltersOptions();
+
+      const response = await apiService.getTasksGrid(paginationOptions, filtersOptions);
+      if (
+        this.IsPriorityRequestPending ||
+        paginationOptions.skip !== this.pagination.getPaginationOptions.skip
+      ) {
+        throw "the request already have sent and new response from cyclic fetch will not accept in grid";
+      }
+      this.setGridData(response.tasks);
+      this.setTotal(response.totalTasks);
+      this.setMyLastTask(response.myLastTask);
+
+      if (isNotifyActive) {
+        this.tasksNotificationsSender(response.tasks, runningStateId);
+      }
+
+      setTimeout(this.cyclicFetchGrid, FETCH_TIMEOUT);
+    } catch (e) {
+      if (typeof e === "string" && e === SESSION_EXPIRED) {
+        return;
+      }
+      setTimeout(this.cyclicFetchGrid, FETCH_ON_ERROR_TIMEOUT);
+    }
+  };
 
   fetchRerunTask = async (taskId: number): Promise<void> => {
     try {

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useTable, usePagination } from "react-table";
+import { useTable } from "react-table";
 import { isString } from "lodash";
 import cn from "classnames";
 import { PaginationActions } from "Shared/Enums";
@@ -20,28 +20,17 @@ interface IProps {
 
 export const Grid = React.memo(({ columns, data, customPagination, total, isLoading }: IProps) => {
   const gridBody = useRef(null);
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page, // Instead of using 'rows', we'll use page,
-    nextPage,
-    previousPage
-  } = useTable<ColumnModel>(
-    {
-      columns,
-      data,
-      initialState: {
-        pageIndex: 0,
-        pageSize: INIT_PAGINATION_OPTIONS.take
-      }
-    },
-    usePagination
-  );
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } = useTable<
+    ColumnModel
+  >({
+    columns,
+    data,
+    initialState: {
+      pageIndex: 0,
+      pageSize: INIT_PAGINATION_OPTIONS.take
+    }
+  });
   const { skip } = customPagination.getPaginationOptions;
-  const canNextPage = () => data.length + skip !== total;
-  const canPreviousPage = () => skip !== 0;
   return (
     <>
       <table {...getTableProps()} className="grid">
@@ -58,7 +47,7 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
         </thead>
         <ErrorBoundary>
           <tbody {...getTableBodyProps()} className="grid-body" ref={gridBody}>
-            {page.map(row => {
+            {rows.map(row => {
               prepareRow(row);
               return (
                 <tr {...row.getRowProps()} className="grid-body__tr">
@@ -131,14 +120,18 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
           paginationOptions={{
             previousPage: () => {
               customPagination.changePage(PaginationActions.DecrementPage);
-              previousPage();
             },
             nextPage: () => {
-              nextPage();
               customPagination.changePage(PaginationActions.IncrementPage);
             },
-            canNextPage: canNextPage(),
-            canPreviousPage: canPreviousPage(),
+            gotoLastPage: () => {
+              customPagination.changePage(PaginationActions.LastPage);
+            },
+            gotoFirstPage: () => {
+              customPagination.changePage(PaginationActions.FirstPage);
+            },
+            canNextPage: data.length + skip !== total,
+            canPreviousPage: skip !== 0,
             total: total,
             showFrom: skip,
             showTo: data.length + skip

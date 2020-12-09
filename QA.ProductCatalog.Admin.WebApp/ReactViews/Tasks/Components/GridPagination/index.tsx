@@ -1,5 +1,7 @@
 import React from "react";
-import { Button } from "@blueprintjs/core";
+import { Button, ButtonGroup, Spinner } from "@blueprintjs/core";
+import { IconNames } from "@blueprintjs/icons";
+import { l } from "Tasks/Localization";
 import "./Style.scss";
 
 interface IPaginationOptions {
@@ -7,6 +9,8 @@ interface IPaginationOptions {
   canPreviousPage: boolean;
   nextPage: () => void;
   canNextPage: boolean;
+  gotoLastPage: () => void;
+  gotoFirstPage: () => void;
   total: number;
   showFrom: number;
   showTo: number;
@@ -26,32 +30,49 @@ export const GridPagination = ({
     showFrom,
     showTo,
     canPreviousPage,
-    canNextPage
+    canNextPage,
+    gotoFirstPage,
+    gotoLastPage
   } = paginationOptions;
 
   return (
     <div className="pagination">
-      <div className="pagination__info-container">
-        <span className="pagination__info">
-          {showFrom === 0 ? 1 : showFrom} - {showTo} из {total}
-        </span>
-      </div>
-      <div className="pagination__buttons-container">
+      <ButtonGroup className="pagination__buttons-container">
         <Button
           className="pagination__button"
-          icon="chevron-left"
-          onClick={previousPage}
+          icon={IconNames.CHEVRON_BACKWARD}
+          onClick={gotoFirstPage}
           disabled={!canPreviousPage || isLoading}
-          outlined
         />
         <Button
-          className="pagination__button pagination__button--with-left-margin"
-          icon="chevron-right"
+          className="pagination__button"
+          style={{ marginRight: 10 }}
+          icon={IconNames.CHEVRON_LEFT}
+          onClick={previousPage}
+          disabled={!canPreviousPage || isLoading}
+        />
+        <div className="pagination__info-container">
+          {isLoading ? (
+            <Spinner size={Spinner.SIZE_SMALL} />
+          ) : (
+            <span className="pagination__info">
+              {showFrom === 0 ? 1 : showFrom} - {showTo} {l("paginationOf")} {total}
+            </span>
+          )}
+        </div>
+        <Button
+          className="pagination__button"
+          icon={IconNames.CHEVRON_RIGHT}
           onClick={nextPage}
           disabled={!canNextPage || isLoading}
-          outlined
         />
-      </div>
+        <Button
+          className="pagination__button"
+          icon={IconNames.CHEVRON_FORWARD}
+          onClick={gotoLastPage}
+          disabled={!canNextPage || isLoading}
+        />
+      </ButtonGroup>
     </div>
   );
 };

@@ -75,6 +75,7 @@ export const Task = observer(() => {
           <GridHeadFilterTooltip
             label={l("status")}
             filter={store.filters.get(TaskGridFilterType.StatusFilter)}
+            pagination={store.pagination}
           >
             <FilterButtonsWrapper acceptLabel={l("filter")} revokeLabel={l("clear")}>
               <StatusFilterContent options={statusValues} />
@@ -92,6 +93,7 @@ export const Task = observer(() => {
           <GridHeadFilterTooltip
             label={l("schedule")}
             filter={store.filters.get(TaskGridFilterType.ScheduleFilter)}
+            pagination={store.pagination}
           >
             <FilterButtonsWrapper acceptLabel={l("filter")} revokeLabel={l("clear")}>
               <ScheduleFilterContent
@@ -147,6 +149,7 @@ export const Task = observer(() => {
           <GridHeadFilterTooltip
             label={l("name")}
             filter={store.filters.get(TaskGridFilterType.NameFilter)}
+            pagination={store.pagination}
           >
             <FilterButtonsWrapper acceptLabel={l("filter")} revokeLabel={l("clear")}>
               <NameFilterContent />
@@ -164,6 +167,7 @@ export const Task = observer(() => {
             revokeLabel={l("clear")}
             filterFrom={store.filters.get(TaskGridFilterType.DateFilterFrom)}
             filterTo={store.filters.get(TaskGridFilterType.DateFilterTo)}
+            pagination={store.pagination}
           />
         ),
         accessor: "CreatedTime",

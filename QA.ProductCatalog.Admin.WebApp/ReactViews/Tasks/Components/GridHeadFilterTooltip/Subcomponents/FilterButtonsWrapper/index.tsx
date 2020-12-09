@@ -2,18 +2,20 @@ import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import React, { useState } from "react";
 import { observer } from "mobx-react-lite";
 import { IconNames } from "@blueprintjs/icons";
-import { Filter } from "Tasks/TaskStore";
+import { Filter, Pagination } from "Tasks/TaskStore";
 import "./Style.scss";
+import { PaginationActions } from "Shared/Enums";
 
 interface Props {
   filter?: Filter;
+  pagination?: Pagination;
   children: React.ReactElement;
   acceptLabel: string;
   revokeLabel: string;
 }
 
 export const FilterButtonsWrapper = observer(
-  ({ filter, children, acceptLabel, revokeLabel }: Props) => {
+  ({ filter, pagination, children, acceptLabel, revokeLabel }: Props) => {
     const [value, setValue] = useState<string>(filter.value);
     return (
       <div className="filter-options-wrap">
@@ -29,9 +31,10 @@ export const FilterButtonsWrapper = observer(
             intent={Intent.PRIMARY}
             icon={IconNames.CONFIRM}
             outlined
-            onClick={() => {
+            onClick={async () => {
               filter.setValue(value);
-              filter.toggleActive(true);
+              await filter.toggleActive(true);
+              pagination.changePage(PaginationActions.FirstPage);
             }}
           >
             {acceptLabel}
@@ -41,9 +44,10 @@ export const FilterButtonsWrapper = observer(
             disabled={!filter.isActive}
             outlined
             icon={IconNames.REMOVE}
-            onClick={() => {
+            onClick={async () => {
               filter.setValue(null);
-              filter.toggleActive(false);
+              await filter.toggleActive(false);
+              pagination.changePage(PaginationActions.FirstPage);
             }}
           >
             {revokeLabel}
