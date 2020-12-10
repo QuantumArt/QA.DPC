@@ -25,6 +25,7 @@
   -ms-flex-align: center;
   align-items: center;
   margin-right: 10px;
+  margin-left: 10px;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
   justify-content: center;
@@ -94,12 +95,6 @@
 .grid .grid-head__th {
   font-weight: 600;
 }
-.grid .grid-body__tr:hover {
-  background: white;
-}
-.grid .grid-body__tr:hover .inside-cell {
-  display: inline-block;
-}
 
 .truncate-cell {
   overflow: hidden;
@@ -140,10 +135,6 @@
 }
 .ProgressBar__label {
   margin-left: 5px;
-}
-
-.inside-cell .ProgressBar {
-  margin: 1px;
 }
 
 .rerun-container__icon {

@@ -54,12 +54,6 @@
 .channels-grid .grid-head__th {
   font-weight: 600;
 }
-.channels-grid .grid-body__tr:hover {
-  background: white;
-}
-.channels-grid .grid-body__tr:hover .inside-cell {
-  display: inline-block;
-}
 
 .status-cell-tag {
   padding: 4px 8px 4px 8px;

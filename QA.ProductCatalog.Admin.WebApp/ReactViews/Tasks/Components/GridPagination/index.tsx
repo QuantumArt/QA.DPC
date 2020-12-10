@@ -46,7 +46,6 @@ export const GridPagination = ({
         />
         <Button
           className="pagination__button"
-          style={{ marginRight: 10 }}
           icon={IconNames.CHEVRON_LEFT}
           onClick={previousPage}
           disabled={!canPreviousPage || isLoading}
@@ -72,6 +71,9 @@ export const GridPagination = ({
           onClick={gotoLastPage}
           disabled={!canNextPage || isLoading}
         />
+        {/*<Button onClick={() => store.toggleLoading()}>Loading</Button>*/}
+        {/*<Button onClick={() => store.setGridData([])}>Empty</Button>*/}
+        {/*<Button onClick={() => store.fetchGridData()}>Load</Button>*/}
       </ButtonGroup>
     </div>
   );

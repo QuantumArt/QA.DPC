@@ -86,7 +86,7 @@ export const Grid = React.memo(({ columns, data, customPagination, total, isLoad
                       return (
                         <div
                           className={cn("inside-cell", {
-                            "bp3-skeleton truncate-cell": isLoading
+                            "bp3-skeleton": isLoading
                           })}
                         >
                           {cell.render("Cell")}

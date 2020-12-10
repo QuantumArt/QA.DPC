@@ -117,7 +117,7 @@ export const Task = observer(() => {
           return getClassnameByIntent("color", Intent.NONE);
         },
         truncate: {
-          onWidth: 120,
+          onWidth: 100,
           noTruncateElementWidth: 30,
           noTruncateElement: (gridElement: GridTask) => {
             const { allowSchedule } = window.task;

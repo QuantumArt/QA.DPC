@@ -33,15 +33,4 @@ $text-color: rgb(24, 32, 38);
       font-weight: 600;
     }
   }
-
-  .grid-body {
-    &__tr {
-      &:hover {
-        background: white;
-        .inside-cell {
-          display: inline-block;
-        }
-      }
-    }
-  }
 }

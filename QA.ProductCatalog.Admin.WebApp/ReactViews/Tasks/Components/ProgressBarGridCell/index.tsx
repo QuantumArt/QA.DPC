@@ -3,7 +3,6 @@ import React from "react";
 import ProgressBar from "Shared/Components/ProgressBar";
 import { TaskStatuses } from "Shared/Enums";
 import { getTaskIntentDependsOnStatus } from "Shared/Utils";
-import "./Style.scss";
 
 interface IProgressBarProps {
   value: number;
@@ -30,11 +29,5 @@ export const ProgressBarGridCell = React.memo(({ value, stateId }: IProps) => {
     progressBarProps.stripes = true;
   }
 
-  return (
-    <ProgressBar
-      defaultBarProps={progressBarProps}
-      barWidth="110px"
-      labelWidth="30px"
-    />
-  );
+  return <ProgressBar defaultBarProps={progressBarProps} barWidth="110px" labelWidth="30px" />;
 });
