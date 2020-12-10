@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, memo } from "react";
 import {
   AnchorButton,
   Button,
@@ -11,6 +11,7 @@ import {
 } from "@blueprintjs/core";
 import { DateInput, TimePicker } from "@blueprintjs/datetime";
 import { Position } from "@blueprintjs/core/lib/esm/common/position";
+import { IconNames } from "@blueprintjs/icons";
 import _ from "lodash";
 import moment from "moment";
 import MomentLocaleUtils from "react-day-picker/moment";
@@ -27,10 +28,10 @@ import { useStore } from "Tasks/UseStore";
 import { CronPeriodType, CronUnitType, ScheduleType } from "Shared/Enums";
 import { l } from "Tasks/Localization";
 import "./Style.scss";
+import { ConfirmationDialog } from "./ConfirmationDialog";
 
 interface IProps {
   taskIdNumber: number;
-  hasSchedule: boolean;
   scheduleCronExpression: string;
   isOpen: boolean;
   closeDialogCb: () => void;
@@ -74,6 +75,8 @@ export const ScheduleDialog = ({
 
   const [singleDate, setSingleDate] = useState<Date | undefined>(new Date());
   const [singleTime, setSingleTime] = useState<Date | undefined>(new Date());
+
+  const [confirmationDialog, setConfirmationDialog] = useState<boolean>(false);
 
   useEffect(() => {
     if (scheduleCronExpression && isOpen) {
@@ -364,7 +367,6 @@ export const ScheduleDialog = ({
               onChange={(selectedDate: Date) => {
                 setSingleDate(selectedDate);
               }}
-              minDate={moment().toDate()}
               maxDate={moment()
                 .add(6, "month")
                 .toDate()}
@@ -384,23 +386,10 @@ export const ScheduleDialog = ({
     );
   };
 
-  const renderDialogButtons = () => {
-    return (
-      <div className={Classes.DIALOG_FOOTER_ACTIONS}>
-        <Button onClick={closeDialogCb}>{l("close")}</Button>
-        {!isCronsParseError && (
-          <AnchorButton intent={Intent.PRIMARY} onClick={acceptSchedule}>
-            {l("apply")}
-          </AnchorButton>
-        )}
-      </div>
-    );
-  };
-
   return (
     <Dialog
       className="schedule-popup"
-      icon="calendar"
+      icon={IconNames.CALENDAR}
       onClose={closeDialogCb}
       title={l("taskRecurrenceSchedule")}
       isOpen={isOpen}
@@ -411,7 +400,30 @@ export const ScheduleDialog = ({
         </SelectRow>
         {renderSelectsUiPart()}
       </div>
-      <div className={Classes.DIALOG_FOOTER}>{renderDialogButtons()}</div>
+      <div className={Classes.DIALOG_FOOTER}>
+        <div className={Classes.DIALOG_FOOTER_ACTIONS}>
+          {scheduleCronExpression !== null && (
+            <Button
+              style={{ marginLeft: 0, marginRight: "auto" }}
+              intent={Intent.DANGER}
+              icon={IconNames.REMOVE}
+              onClick={() => setConfirmationDialog(true)}
+            >
+              Delete
+            </Button>
+          )}
+          {!isCronsParseError && (
+            <Button intent={Intent.PRIMARY} onClick={acceptSchedule} icon={IconNames.CONFIRM}>
+              {l("apply")}
+            </Button>
+          )}
+          <ConfirmationDialog
+            isOpen={confirmationDialog}
+            confirmAction={store.deleteSchedule}
+            declineAction={() => setConfirmationDialog(false)}
+          />
+        </div>
+      </div>
     </Dialog>
   );
 };

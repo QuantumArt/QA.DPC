@@ -97,7 +97,6 @@
 }
 
 .truncate-cell {
-  overflow: hidden;
   max-width: 100%;
 }
 

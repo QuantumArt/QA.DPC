@@ -13,13 +13,13 @@ interface IProps {
 
 export const ScheduleGridCellCalendar = React.memo((props: IProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { hasSchedule, className, intent } = props;
+  const { hasSchedule, intent, className, ...rest } = props;
   return (
     hasSchedule && (
-      <span className={className}>
+      <div className={className}>
         <Button intent={intent} icon="calendar" onClick={() => setIsOpen(true)} minimal />
         <ScheduleDialog {...props} isOpen={isOpen} closeDialogCb={() => setIsOpen(false)} />
-      </span>
+      </div>
     )
   );
 });

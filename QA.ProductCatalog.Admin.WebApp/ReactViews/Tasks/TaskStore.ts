@@ -397,6 +397,10 @@ export class TaskStore {
         console.error(e);
       }
     });
+
+  deleteSchedule = async () => {
+    console.log("delete");
+  };
 }
 
 export const TaskStoreContext = createContext(new TaskStore());

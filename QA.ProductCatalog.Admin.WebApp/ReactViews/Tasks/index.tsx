@@ -1,25 +1,25 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Intent } from "@blueprintjs/core";
-import { Column, Accessor } from "react-table";
+import { Accessor } from "react-table";
 import { observer } from "mobx-react-lite";
 import {
-  GridHeadFilterTooltip,
-  ProgressBarGridCell,
-  StatusTag,
-  Grid,
-  MyLastTask,
-  ScheduleGridCellCalendar,
   DateGridCell,
+  ErrorBoundary,
+  Grid,
+  GridHeadFilterTooltip,
+  MyLastTask,
+  ProgressBarGridCell,
   RerunGridCell,
+  ScheduleGridCellCalendar,
   ScheduleGridCellDescription,
-  ErrorBoundary
+  StatusTag
 } from "./Components";
 import {
-  StatusFilterContent,
-  ScheduleFilterContent,
+  DateFilter,
   FilterButtonsWrapper,
   NameFilterContent,
-  DateFilter
+  ScheduleFilterContent,
+  StatusFilterContent
 } from "./Components/GridHeadFilterTooltip/Subcomponents";
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";

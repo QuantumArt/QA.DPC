@@ -3,6 +3,7 @@ import { Button, ButtonGroup, Spinner } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { l } from "Tasks/Localization";
 import "./Style.scss";
+import { useStore } from "Tasks/UseStore";
 
 interface IPaginationOptions {
   previousPage: () => void;
@@ -34,6 +35,7 @@ export const GridPagination = ({
     gotoFirstPage,
     gotoLastPage
   } = paginationOptions;
+  const store = useStore();
 
   return (
     <div className="pagination">
@@ -71,9 +73,9 @@ export const GridPagination = ({
           onClick={gotoLastPage}
           disabled={!canNextPage || isLoading}
         />
-        {/*<Button onClick={() => store.toggleLoading()}>Loading</Button>*/}
-        {/*<Button onClick={() => store.setGridData([])}>Empty</Button>*/}
-        {/*<Button onClick={() => store.fetchGridData()}>Load</Button>*/}
+        <Button onClick={() => store.toggleLoading()}>Loading</Button>
+        <Button onClick={() => store.setGridData([])}>Empty</Button>
+        <Button onClick={() => store.fetchGridData()}>Load</Button>
       </ButtonGroup>
     </div>
   );
