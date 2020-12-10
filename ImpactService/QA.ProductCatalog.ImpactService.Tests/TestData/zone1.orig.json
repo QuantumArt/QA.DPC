@@ -381,7 +381,7 @@
     }
   ],
   "Type": "RoamingScale",
-  "ServicesOnRoamingScale": [
+  "ServicesOnTariff": [
     {
       "Id": 1893691,
       "Service": {
@@ -411,7 +411,7 @@
           {
             "Id": 1838315,
             "Title": "Участвует в калькуляторе роуминга",
-            "Alias": "CalculateInRoaming"
+            "Alias": "Calculate"
           }
         ]
       }
@@ -445,7 +445,7 @@
           {
             "Id": 1838315,
             "Title": "Участвует в калькуляторе роуминга",
-            "Alias": "CalculateInRoaming"
+            "Alias": "Calculate"
           }
         ]
       }
@@ -479,7 +479,7 @@
           {
             "Id": 1838315,
             "Title": "Участвует в калькуляторе роуминга",
-            "Alias": "CalculateInRoaming"
+            "Alias": "Calculate"
           }
         ]
       }
@@ -514,7 +514,7 @@
           {
             "Id": 1838315,
             "Title": "Участвует в калькуляторе роуминга",
-            "Alias": "CalculateInRoaming"
+            "Alias": "Calculate"
           }
         ]
       }

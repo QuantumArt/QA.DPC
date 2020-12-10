@@ -36,7 +36,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.ImpactService.API\QA.ProductCatalog.ImpactService.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>
