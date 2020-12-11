@@ -409,7 +409,7 @@ export const ScheduleDialog = ({
               icon={IconNames.REMOVE}
               onClick={() => setConfirmationDialog(true)}
             >
-              Delete
+              {l("deleteSchedule")}
             </Button>
           )}
           {!isCronsParseError && (

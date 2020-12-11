@@ -1,6 +1,7 @@
 import React from "react";
 import { IconNames } from "@blueprintjs/icons";
 import { Button, Classes, Dialog, Intent } from "@blueprintjs/core";
+import { l } from "Tasks/Localization";
 
 interface Props {
   isOpen: boolean;
@@ -17,15 +18,15 @@ export const ConfirmationDialog = React.memo(({ isOpen, declineAction, confirmAc
       canEscapeKeyClose={false}
     >
       <div className={Classes.DIALOG_BODY}>
-        <p>Are you sure?</p>
+        <p>{l("prompt")}</p>
       </div>
       <div className={Classes.DIALOG_FOOTER}>
         <div className={Classes.DIALOG_FOOTER_ACTIONS}>
           <Button intent={Intent.DANGER} icon={IconNames.REMOVE} onClick={confirmAction}>
-            Yes
+            {l("yes")}
           </Button>
           <Button intent={Intent.PRIMARY} icon={IconNames.REMOVE} onClick={declineAction}>
-            No
+            {l("no")}
           </Button>
         </div>
       </div>

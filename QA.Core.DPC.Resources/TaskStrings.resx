@@ -465,4 +465,10 @@
   <data name="PaginationOf" xml:space="preserve">
     <value>of</value>
   </data>
+  <data name="DeleteSchedule" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Prompt" xml:space="preserve">
+    <value>Are your sure?</value>
+  </data>
 </root>

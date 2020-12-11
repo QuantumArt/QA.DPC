@@ -5,11 +5,13 @@ declare interface TaskWindowTypes {
   statusValues: { label: string; value: number }[];
   strings: {
     userName: string;
-    status: number;
+    status: string;
     schedule: string;
     progress: number;
     name: string;
     created: string;
+    changed: string;
+    customer: string;
     lastStatusChange: string;
     message: string;
     isFalse: string;
@@ -75,6 +77,14 @@ declare interface TaskWindowTypes {
     state: string;
     task: string;
     proceed: string;
+    yes: string;
+    no: string;
+    nameFilterValidation: string;
+    paginationOf: string;
+    fromDate: string;
+    toDate: string;
+    prompt: string;
+    deleteSchedule: string;
   };
   notify: {
     isNotifyActive: boolean;

@@ -295,6 +295,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string DeleteSchedule {
+            get {
+                return ResourceManager.GetString("DeleteSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot edit recurrence schedule because task already created by schedule.
         /// </summary>
         public static string EditNotAllowed {
@@ -813,6 +822,15 @@ namespace QA.Core.DPC.Resources {
         public static string Progress {
             get {
                 return ResourceManager.GetString("Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Are your sure?.
+        /// </summary>
+        public static string Prompt {
+            get {
+                return ResourceManager.GetString("Prompt", resourceCulture);
             }
         }
         
