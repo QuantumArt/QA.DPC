@@ -76,7 +76,7 @@ export const ChannelsGrid = React.memo(({ gridData }: IProps) => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()} className="grid-body">
-          {rows.map((row, i) => {
+          {rows.map(row => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()} className="grid-body__tr">

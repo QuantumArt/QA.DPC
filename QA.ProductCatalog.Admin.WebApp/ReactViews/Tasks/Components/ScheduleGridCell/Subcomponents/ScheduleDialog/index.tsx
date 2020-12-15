@@ -269,13 +269,21 @@ export const ScheduleDialog = ({
       1} ? ${singleDate.getFullYear()}`;
   };
 
-  const acceptSchedule = async (): Promise<void> => {
+  const acceptSchedule = async () => {
     store.toggleLoading(true);
     if (taskSetType === ScheduleType.Repeat) {
       await store.setSchedule(taskIdNumber, isEnable, parsedCronsMultiSelectsModel(), "on");
     } else {
       await store.setSchedule(taskIdNumber, isEnable, parseCronsSingleModel(), "on");
     }
+    closeDialogCb();
+    store.toggleLoading(false);
+  };
+
+  const deleteSchedule = async () => {
+    store.toggleLoading(true);
+    await store.setSchedule(taskIdNumber, false, "", "off");
+    setConfirmationDialog(false);
     closeDialogCb();
     store.toggleLoading(false);
   };
@@ -408,18 +416,25 @@ export const ScheduleDialog = ({
               intent={Intent.DANGER}
               icon={IconNames.REMOVE}
               onClick={() => setConfirmationDialog(true)}
+              loading={store.isLoading}
             >
               {l("deleteSchedule")}
             </Button>
           )}
           {!isCronsParseError && (
-            <Button intent={Intent.PRIMARY} onClick={acceptSchedule} icon={IconNames.CONFIRM}>
+            <Button
+              intent={Intent.PRIMARY}
+              onClick={acceptSchedule}
+              icon={IconNames.CONFIRM}
+              loading={store.isLoading}
+            >
               {l("apply")}
             </Button>
           )}
           <ConfirmationDialog
             isOpen={confirmationDialog}
-            confirmAction={store.deleteSchedule}
+            isLoading={store.isLoading}
+            confirmAction={deleteSchedule}
             declineAction={() => setConfirmationDialog(false)}
           />
         </div>

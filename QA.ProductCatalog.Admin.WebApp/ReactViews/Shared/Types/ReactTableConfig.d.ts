@@ -1,5 +1,4 @@
 import { Task } from "Tasks/ApiServices/DataContracts";
-
 declare module "react-table" {
   export interface ColumnModel {
     fixedWidth?: number;
