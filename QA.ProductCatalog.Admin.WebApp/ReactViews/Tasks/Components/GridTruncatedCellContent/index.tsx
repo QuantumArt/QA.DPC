@@ -1,16 +1,16 @@
-import React, { RefObject, useLayoutEffect, useRef, useState } from "react";
-import { Tooltip } from "@blueprintjs/core";
+import React, { ReactNode, RefObject, useLayoutEffect, useRef, useState, memo } from "react";
+import { Tooltip, Position } from "@blueprintjs/core";
 import { IUntruncatedElementProps, UntruncatedElementWrap } from "./Subcomponents";
 import "./Style.scss";
 
 interface IProps extends IUntruncatedElementProps {
-  value: JSX.Element | string;
+  value: ReactNode;
   refBody: RefObject<any>;
   isLoading: boolean;
   truncateOnWidth: number;
 }
 
-export const GridTruncatedCellContent = React.memo(
+export const GridTruncatedCellContent = memo(
   ({ refBody, isLoading, truncateOnWidth, untruncatedElement, value }: IProps) => {
     const cellRef = useRef(null);
     const [isTruncate, setIsTruncate] = useState(false);
@@ -34,7 +34,12 @@ export const GridTruncatedCellContent = React.memo(
           isLoading={isLoading}
           width={truncateOnWidth}
         >
-          <Tooltip position={"left"} usePortal content={value} portalContainer={refBody.current}>
+          <Tooltip
+            position={Position.LEFT}
+            usePortal
+            content={value as string}
+            portalContainer={refBody.current}
+          >
             <div
               style={truncateOnWidth && { width: truncateOnWidth }}
               className="truncate-cell truncate-string"

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Intent } from "@blueprintjs/core";
-import { Accessor } from "react-table";
+import { Column } from "react-table";
 import { observer } from "mobx-react-lite";
 import {
   DateGridCell,
@@ -24,32 +24,11 @@ import {
 import { useStore } from "./UseStore";
 import { ScheduleFilterValues, TaskGridFilterType } from "Shared/Enums";
 import { getClassnameByIntent } from "Shared/Utils";
-import { Task as GridTask } from "Tasks/ApiServices/DataContracts";
+import { Task } from "Tasks/ApiServices/DataContracts";
 import { l } from "Tasks/Localization";
 import "./Root.scss";
 
-/**
- * ColumnModel
- * getClassNameByEnableSchedule: параметр для EnableSchedule
- * truncate: {
- *   onWidth: схлопывать при указананой ширине
- *   noTruncateElement возвращает реакт элемент который не будет схлопываться
- * }
- */
-export interface ColumnModel {
-  Header: any;
-  accessor: Accessor<GridTask> | string;
-  Cell?: any;
-  fixedWidth?: number;
-  getClassNameByEnableSchedule?: (task: GridTask) => string;
-  truncate?: {
-    onWidth?: number;
-    noTruncateElementWidth?: number;
-    noTruncateElement?: (task: GridTask) => JSX.Element;
-  };
-}
-
-export const Task = observer(() => {
+export const Tasks = observer(() => {
   const store = useStore();
   const gridWrap = useRef(null);
   const [gridWidth, setGridWidth] = useState(1000);
@@ -59,7 +38,7 @@ export const Task = observer(() => {
     if (!store.isLoading) setGridWidth(gridWrap.current.scrollWidth);
   }, [gridWrap, store.isLoading]);
 
-  const gridColumns = React.useMemo(
+  const gridColumns = React.useMemo<Column<Task>[]>(
     () => [
       {
         Header: "Id",
@@ -84,7 +63,7 @@ export const Task = observer(() => {
         ),
         accessor: "StateId",
         Cell: (cellProps: any) => {
-          const { State, StateId } = cellProps.data[cellProps.row.index] as GridTask;
+          const { State, StateId } = cellProps.data[cellProps.row.index] as Task;
           return <StatusTag state={State} stateId={StateId} />;
         }
       },
@@ -110,7 +89,7 @@ export const Task = observer(() => {
           const cronExpression = cellProps.data[cellProps.row.index].ScheduleCronExpression;
           return <ScheduleGridCellDescription cronExpression={cronExpression} />;
         },
-        getClassNameByEnableSchedule: (gridElement: GridTask) => {
+        getClassNameByEnableSchedule: (gridElement: Task) => {
           if (gridElement.ScheduleEnabled) {
             return getClassnameByIntent("color", Intent.SUCCESS);
           }
@@ -119,7 +98,7 @@ export const Task = observer(() => {
         truncate: {
           onWidth: 100,
           noTruncateElementWidth: 30,
-          noTruncateElement: (gridElement: GridTask) => {
+          noTruncateElement: (gridElement: Task) => {
             const { allowSchedule } = window.task;
             const showSchedule =
               (allowSchedule && gridElement.ScheduledFromTaskId === null) ||
@@ -190,9 +169,7 @@ export const Task = observer(() => {
         accessor: "IsCancellationRequested",
         className: "grid__rerun-cell",
         Cell: (cellProps: any) => {
-          const { Id, StateId, IsCancellationRequested } = cellProps.row.values as Partial<
-            GridTask
-          >;
+          const { Id, StateId, IsCancellationRequested } = cellProps.row.values as Partial<Task>;
           return (
             <RerunGridCell
               id={Id}

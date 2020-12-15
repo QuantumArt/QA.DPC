@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { useTable } from "react-table";
+import React, { useRef, memo } from "react";
+import { Column, TableOptions, useTable } from "react-table";
 import { isString } from "lodash";
 import cn from "classnames";
 import { PaginationActions } from "Shared/Enums";
@@ -7,22 +7,20 @@ import { ErrorBoundary, GridPagination, GridTruncatedCellContent, LongTextCellCo
 import "./Style.scss";
 import { Pagination } from "Tasks/TaskStore";
 import { Task } from "Tasks/ApiServices/DataContracts";
-import { ColumnModel } from "Tasks";
 import { INIT_PAGINATION_OPTIONS } from "Tasks/Constants";
 
-interface IProps {
+interface IProps extends TableOptions<Task> {
   isLoading: boolean;
   total: number;
   customPagination: Pagination;
   data: Task[];
-  columns: ColumnModel[];
+  columns: Column<Task>[];
 }
 
-export const Grid = React.memo(({ columns, data, customPagination, total, isLoading }: IProps) => {
+export const Grid = memo((props: IProps) => {
+  const { columns, data, customPagination, total, isLoading } = props;
   const gridBody = useRef(null);
-  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } = useTable<
-    ColumnModel
-  >({
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } = useTable<Task>({
     columns,
     data,
     initialState: {

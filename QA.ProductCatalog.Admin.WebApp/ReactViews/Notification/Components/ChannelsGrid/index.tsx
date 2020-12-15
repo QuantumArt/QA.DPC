@@ -1,6 +1,6 @@
 import React from "react";
 import { IChannel } from "Notification/ApiServices/ApiInterfaces";
-import { useTable } from "react-table";
+import { Column, useTable } from "react-table";
 import "./Style.scss";
 import cn from "classnames";
 import { StatusTag } from "Notification/Components/StatusTag";
@@ -18,7 +18,7 @@ const parseDate = ({ value }: { value: string }): string => {
 };
 
 export const ChannelsGrid = React.memo(({ gridData }: IProps) => {
-  const gridColumns = React.useMemo(
+  const gridColumns = React.useMemo<Column<IChannel>[]>(
     () => [
       {
         Header: l("channel"),
@@ -56,7 +56,7 @@ export const ChannelsGrid = React.memo(({ gridData }: IProps) => {
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<IChannel>({
     columns: gridColumns,
     data: gridData
   });
