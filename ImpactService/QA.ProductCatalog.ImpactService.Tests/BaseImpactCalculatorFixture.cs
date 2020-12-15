@@ -19,7 +19,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         public void ChangeParameters_MixedOrder_Reordered()
         {
             var tariff = GetJsonFromFile("simple_tariff_order.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
 
             calculator.Calculate(tariff, new JObject[] {}, null);
 
@@ -36,7 +36,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
 
             calculator.Calculate(tariff, option);
 
@@ -57,7 +57,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple2_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
 
             calculator.Calculate(tariff, option);
 
@@ -76,7 +76,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var parameter = calculator.FindByKey(optionRoot, direction.GetKey()).First();
@@ -98,7 +98,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
             var optionId = (decimal)option.SelectToken("Id");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var modifier = tariff.SelectTokens($"{calculator.LinkName}.[?(@.Service)]")
                 .Single(n => (decimal)n["Service"]["Id"] == optionId)
@@ -120,7 +120,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             calculator.FindByKey(optionRoot, direction.GetKey()).First()["NumValue"] = 95;
@@ -140,7 +140,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var obj = new JObject
@@ -169,7 +169,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var obj = new JObject
@@ -194,7 +194,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple2_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = tariff.SelectTokens($"{calculator.LinkName}.[?(@.Id)].Parent.Parameters").First();
             var obj = new JObject
@@ -221,7 +221,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var obj = new JObject
@@ -252,7 +252,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple2_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = tariff.SelectTokens($"{calculator.LinkName}.[?(@.Id)].Parent.Parameters").First();
             var obj = new JObject
@@ -283,7 +283,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var obj = new JObject
@@ -329,7 +329,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var obj = new JObject
@@ -361,7 +361,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var obj = new JObject
@@ -391,7 +391,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple1_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var optionRoot = option.SelectToken("Parameters");
             var obj = new JObject
@@ -523,7 +523,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("package_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
 
             calculator.Calculate(tariff, option);
 
@@ -545,7 +545,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
             var option = GetJsonFromFile("simple3_option.json");
-            var calculator = new InternationalRoamingCalculator();
+            var calculator = new TariffOptionCalculator();
 
             calculator.Calculate(tariff, option);
 
@@ -567,102 +567,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(3);
 
         }
-
-        [Fact]
-        public void FilterByCountryCode_ExistingFilter_Filtered()
-        {
-            var tariff = GetJsonFromFile("simple1_tariff.json");
-            var option = GetJsonFromFile("simple4_option.json");
-            var calculator = new InternationalRoamingCalculator();
-            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
-            var cntOption = option.SelectTokens(feeQuery).Count();
-            calculator.Calculate(tariff, null, new [] { option }, "UA", null);
-
-
-            var cnt = tariff.SelectTokens(feeQuery).Count();
-
-            var changedCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true)]").Count();
-
-            cnt.Should().BeLessThan(cntOption);
-            cnt.Should().Be(2);
-            changedCnt.Should().Be(3);
-
-        }
-
-        [Fact]
-        public void FilterByCountryCode_ExistingFilterWithMissingWorldExceptRussia_Filtered()
-        {
-            var tariff = GetJsonFromFile("simple1_tariff.json");
-            var option = GetJsonFromFile("simple4_option.json");
-            var calculator = new InternationalRoamingCalculator();
-
-            var dir = new TariffDirection("SubscriptionFee", "WorldExceptRussia", null, null);
-            var toRemove = calculator.FindByKey(option.SelectToken("Parameters"), dir.GetKey()).ToArray();
-            foreach (JToken jToken in toRemove)
-            {
-                jToken.Remove();
-            }
-            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
-            var cntOption = option.SelectTokens(feeQuery).Count();
-
-            
-            calculator.Calculate(tariff, null, new[] { option }, "UA", null);
-
-
-            var cnt = tariff.SelectTokens(feeQuery).Count();
-
-            var changedCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true)]").Count();
-
-            cnt.Should().BeLessThan(cntOption);
-            cnt.Should().Be(2);
-            changedCnt.Should().Be(3);
-        }
-
-        [Fact]
-        public void FilterByCountryCode_PartialExistingFilter_Filtered()
-        {
-            var tariff = GetJsonFromFile("simple1_tariff.json");
-            var option = GetJsonFromFile("simple4_option.json");
-            var calculator = new InternationalRoamingCalculator();
-            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
-            var cntOption = option.SelectTokens(feeQuery).Count();
-            calculator.Calculate(tariff, null, new[] { option }, "HU", null);
-
-
-            var cnt = tariff.SelectTokens(feeQuery).Count();
-            var changed = tariff.SelectTokens("Parameters.[?(@.Changed == true)]");
-            var changedCnt = changed.Count();
-
-            cnt.Should().BeLessThan(cntOption);
-            cnt.Should().Be(2);
-            changedCnt.Should().Be(3);
-            var parameter = changed.Single(n =>
-                n.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray()
-                    .Contains("Unlimited"));
-            ((string) parameter["Value"]).Should().Be("безлимитный");
-        }
-
-        [Fact]
-        public void FilterByCountryCode_NonExistingFilter_Filtered()
-        {
-            var tariff = GetJsonFromFile("simple1_tariff.json");
-            var option = GetJsonFromFile("simple4_option.json");
-            var calculator = new InternationalRoamingCalculator();
-            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
-            var cntOption = option.SelectTokens(feeQuery).Count();
-            calculator.Calculate(tariff, null, new[] { option }, "LT", null);
-
-
-            var cnt = tariff.SelectTokens(feeQuery).Count();
-            var changedCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true)]").Count();
-
-
-            cnt.Should().BeLessThan(cntOption);
-            cnt.Should().Be(2);
-            changedCnt.Should().Be(3);
-        }
-
-
+        
         [Fact]
         public void FindByKey_DirectionWithMissedElements_Found()
         {
@@ -671,7 +576,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var keys = root.SelectTokens("[?(@.BaseParameter)]").Select(n => n.ExtractDirection().GetKey());
 
-            var result = new InternationalRoamingCalculator().FindByKey(root, direction.GetKey()).ToArray();
+            var result = new TariffOptionCalculator().FindByKey(root, direction.GetKey()).ToArray();
 
             result.Length.Should().Be(1);
         }

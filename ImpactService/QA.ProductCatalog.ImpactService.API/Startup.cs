@@ -1,7 +1,10 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -32,16 +35,28 @@ namespace QA.ProductCatalog.ImpactService.API
 
             services.Configure<ConfigurationOptions>(Configuration);
             
+            var props = new ConfigurationOptions();
+            Configuration.Bind(props);
+            
             services.AddSingleton(new PolicyRegistry());
 
-            services.AddMvc();
+
+            services.AddMvc().ConfigureApplicationPartManager(apm =>
+            {
+                foreach (var library in props.ExtraLibraries ?? new string[] {})
+                {
+                    var assembly = Assembly.LoadFile(Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory ?? string.Empty,library + ".dll"
+                    ));
+                    apm.ApplicationParts.Add(new AssemblyPart(assembly));
+                }
+            });
 
             services.AddMemoryCache();
 
             services.AddHttpClient();
 
             services.AddScoped(typeof(ISearchRepository), typeof(ElasticSearchRepository));
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

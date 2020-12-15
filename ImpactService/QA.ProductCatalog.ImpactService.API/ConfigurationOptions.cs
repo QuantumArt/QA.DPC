@@ -18,7 +18,8 @@ namespace QA.ProductCatalog.ImpactService.API
 
         private string[] _elasticUrls;
 
-
+        public string[] ExtraLibraries { get; set; }
+        
         public ElasticIndex[] ElasticIndexes { get; set; }
 
         public bool ConsolidateCallGroupsForIcin { get; set; }
