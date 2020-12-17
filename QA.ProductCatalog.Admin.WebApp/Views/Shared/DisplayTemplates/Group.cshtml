@@ -5,28 +5,31 @@
 
 @model Group
 @{
-	if (Model == null || (Model.Hidden ?? false) || Model.Title == null)
-	{
-		return;
-	}
-
-	var title = Model.Title is DependencyObject ? Html.DisplayFor(x => Model.Title) : Model.ReplaceNotesIfNeeded(Model.Title.ToString());
-
-	string titleStr = title.ToString();
-	
-	if (string.IsNullOrEmpty(titleStr))
+    if (Model == null || (Model.Hidden ?? false) || Model.Title == null)
     {
-        return;
+      return;
     }
 
-	var hash = Html.GetUniqueId(titleStr);
+    var title = Model.Title is DependencyObject ? Html.DisplayFor(x => Model.Title) : Model.ReplaceNotesIfNeeded(Model.Title.ToString());
+
+    string titleStr = title.ToString();
+
+    if (string.IsNullOrEmpty(titleStr))
+    {
+      return;
+    }
+
+    var hash = Html.GetUniqueId(titleStr);
 }
-<div id="@hash" class="group-panel collapsible @Model.ClassName @(Model.IsHorizontal ? "is-horizontal" : "") @((Model.Collapsible && Model.Collapsed) ? "collapsed" : "") ">
+<div 
+  id="@hash"
+  class="group-panel collapsible @Model.ClassName @(Model.IsHorizontal ? "is-horizontal" : "") @((Model.Collapsible && Model.Collapsed) ? "collapsed" : "") "
+  >
     <fieldset>
-        <legend>@title</legend>
+        <h3 class="bp3-heading">@title</h3>
         @if (Model.Collapsible)
         {
-            <span class="handle">+-</span>
+            <button type="button" class="bp3-button bp3-outlined bp3-intent-primary handle">+/-</button>
         }
         <div class="gr-wrapper">
 

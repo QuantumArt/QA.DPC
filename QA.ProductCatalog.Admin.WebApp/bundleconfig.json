@@ -1,19 +1,14 @@
 [
   {
-    "outputFileName": "wwwroot/css/site.min.css",
+    "outputFileName": "wwwroot/css/blueprint.min.css",
     "inputFiles": [
-      "wwwroot/css/site.css"
-    ]
-  },
-
-  {
-    "outputFileName": "wwwroot/css/kendo.min.css",
-    "inputFiles": [
-      "wwwroot/css/KendoUI/kendo.common.min.css",
-      "wwwroot/css/KendoUI/kendo.default.min.css"
+      "node_modules/normalize.css/normalize.css",
+      "node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css",
+      "node_modules/@blueprintjs/core/lib/css/blueprint.css",
+      "wwwroot/resources/fa.css"
     ],
     "minify": {
-      "enabled": false
+      "enabled": true
     }
   },
 
@@ -25,37 +20,25 @@
       "wwwroot/css/XmlViewer.css"
     ]
   },
-  
-  
-  {
-    "outputFileName": "wwwroot/js/jquery.min.js",
-    "inputFiles": [
-      "wwwroot/js/jquery/jquery-1.11.1.js"
-    ]
-  },
 
   {
-    "outputFileName": "wwwroot/js/knockout.min.js",
+    "outputFileName": "wwwroot/js/bundles/jquery.min.js",
     "inputFiles": [
-      "wwwroot/js/knockout/knockout-3.4.1.js"
+      "node_modules/jquery/dist/jquery.min.js",
+      "node_modules/jquery.scrollto/jquery.scrollTo.min.js",
     ]
   },
 
   {
     "outputFileName": "wwwroot/js/bundles/scripts.min.js",
     "inputFiles": [
-      "wwwroot/js/scripts.min.js",
-      "wwwroot/js/vanilla.helpers.js",
-      "wwwroot/js/jq.trottle.js",
-      "wwwroot/js/jquery.scrollto.js",
-      "wwwroot/js/json2.js",
       "wwwroot/js/pmrpc.js",
       "wwwroot/js/qp/QP8BackendApi.Interaction.js",
       "wwwroot/js/qp/QA.Utils.js",
-      "wwwroot/js/qp/QA.Integration.js"      
+      "wwwroot/js/qp/QA.Integration.js"
     ]
   },
-  
+
   {
     "outputFileName": "wwwroot/js/bundles/codemirror.min.js",
     "inputFiles": [
@@ -67,42 +50,6 @@
       "wwwroot/js/codemirror/mode/javascript/javascript.js",
       "wwwroot/js/codemirror/addon/fold/foldcode.js",
       "wwwroot/js/codemirror/addon/fold/foldgutter.js"
-    ]
-  },
-
-  {
-    "outputFileName": "wwwroot/js/bundles/product.min.js",
-    "inputFiles": [
-      "wwwroot/js/product/index.js",
-      "wwwroot/js/product/tabstrip.js"
-    ]
-  },
-  {
-    "outputFileName": "wwwroot/js/bundles/kendo.ru-RU.min.js",
-    "inputFiles": [
-      "wwwroot/js/KendoUI/jquery.min.js",
-      "wwwroot/js/KendoUI/kendo.web.min.js",
-      "wwwroot/js/KendoUI/kendo.culture.ru-RU.min.js",
-      "wwwroot/js/KendoUI/kendo.messages.ru-RU.min.js"
-    ]
-  },
-
-  {
-    "outputFileName": "wwwroot/js/bundles/kendo.en-US.min.js",
-    "inputFiles": [
-      "wwwroot/js/KendoUI/jquery.min.js",
-      "wwwroot/js/KendoUI/kendo.web.min.js",
-      "wwwroot/js/KendoUI/kendo.culture.en-US.min.js",
-      "wwwroot/js/KendoUI/kendo.messages.en-US.min.js"
-    ]
-  },
-
-  {
-    "outputFileName": "wwwroot/js/bundles/schedule.min.js",
-    "inputFiles": [
-      "wwwroot/js/jqcron.js",
-      "wwwroot/js/jqcron.en.js",
-      "wwwroot/js/Schedule.js"
     ]
   }
 ]

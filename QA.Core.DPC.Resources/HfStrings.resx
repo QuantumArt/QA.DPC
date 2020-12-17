@@ -127,7 +127,7 @@
     <value>Language</value>
   </data>
   <data name="Type" xml:space="preserve">
-    <value>Тип</value>
+    <value>Type</value>
   </data>
   <data name="Date" xml:space="preserve">
     <value>Date</value>
@@ -140,5 +140,11 @@
   </data>
   <data name="ProceedIndexing" xml:space="preserve">
     <value>proceed indexing</value>
-  </data>  
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Progress</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
 </root>

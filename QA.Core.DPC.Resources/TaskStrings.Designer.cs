@@ -19,7 +19,7 @@ namespace QA.Core.DPC.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class TaskStrings {
@@ -88,6 +88,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string All {
+            get {
+                return ResourceManager.GetString("All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply.
         /// </summary>
         public static string Apply {
@@ -97,11 +106,38 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Apr.
+        /// </summary>
+        public static string Apr {
+            get {
+                return ResourceManager.GetString("Apr", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Articles processed: {0}.
         /// </summary>
         public static string ArticlesProcessed {
             get {
                 return ResourceManager.GetString("ArticlesProcessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to at.
+        /// </summary>
+        public static string At {
+            get {
+                return ResourceManager.GetString("At", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Aug.
+        /// </summary>
+        public static string Aug {
+            get {
+                return ResourceManager.GetString("Aug", resourceCulture);
             }
         }
         
@@ -124,6 +160,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        public static string Cancelled {
+            get {
+                return ResourceManager.GetString("Cancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot cancel task because of status.
         /// </summary>
         public static string CannotCancelTask {
@@ -138,6 +183,15 @@ namespace QA.Core.DPC.Resources {
         public static string CannotRepeatTask {
             get {
                 return ResourceManager.GetString("CannotRepeatTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Changed.
+        /// </summary>
+        public static string Changed {
+            get {
+                return ResourceManager.GetString("Changed", resourceCulture);
             }
         }
         
@@ -160,11 +214,92 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Close.
+        /// </summary>
+        public static string Close {
+            get {
+                return ResourceManager.GetString("Close", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string Completed {
+            get {
+                return ResourceManager.GetString("Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Created.
+        /// </summary>
+        public static string Create {
+            get {
+                return ResourceManager.GetString("Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Created.
         /// </summary>
         public static string Created {
             get {
                 return ResourceManager.GetString("Created", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cron expression parse error.
+        /// </summary>
+        public static string CronParseError {
+            get {
+                return ResourceManager.GetString("CronParseError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Customer.
+        /// </summary>
+        public static string Customer {
+            get {
+                return ResourceManager.GetString("Customer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to day.
+        /// </summary>
+        public static string Day {
+            get {
+                return ResourceManager.GetString("Day", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to .
+        /// </summary>
+        public static string DayOfMonth {
+            get {
+                return ResourceManager.GetString("DayOfMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dec.
+        /// </summary>
+        public static string Dec {
+            get {
+                return ResourceManager.GetString("Dec", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string DeleteSchedule {
+            get {
+                return ResourceManager.GetString("DeleteSchedule", resourceCulture);
             }
         }
         
@@ -187,6 +322,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to an error occurs while enqueuing action.
         /// </summary>
         public static string ErrorActionEnqueue {
@@ -205,11 +349,110 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to every.
+        /// </summary>
+        public static string Every {
+            get {
+                return ResourceManager.GetString("Every", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to every day of the month.
+        /// </summary>
+        public static string EveryDayOfMonth {
+            get {
+                return ResourceManager.GetString("EveryDayOfMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to every day of the week.
+        /// </summary>
+        public static string EveryDayOfWeek {
+            get {
+                return ResourceManager.GetString("EveryDayOfWeek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feb.
+        /// </summary>
+        public static string Feb {
+            get {
+                return ResourceManager.GetString("Feb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Products [{0}] have status {1}, which doesn&apos;t allow publication or they are archived or invisible..
         /// </summary>
         public static string FilteredProducts {
             get {
                 return ResourceManager.GetString("FilteredProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fri.
+        /// </summary>
+        public static string Fri {
+            get {
+                return ResourceManager.GetString("Fri", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From.
+        /// </summary>
+        public static string FromDate {
+            get {
+                return ResourceManager.GetString("FromDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to hour.
+        /// </summary>
+        public static string Hour {
+            get {
+                return ResourceManager.GetString("Hour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hours.
+        /// </summary>
+        public static string Hours {
+            get {
+                return ResourceManager.GetString("Hours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to JAN.
+        /// </summary>
+        public static string Jan {
+            get {
+                return ResourceManager.GetString("Jan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jul.
+        /// </summary>
+        public static string Jul {
+            get {
+                return ResourceManager.GetString("Jul", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jun.
+        /// </summary>
+        public static string Jun {
+            get {
+                return ResourceManager.GetString("Jun", resourceCulture);
             }
         }
         
@@ -223,6 +466,24 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Mar.
+        /// </summary>
+        public static string Mar {
+            get {
+                return ResourceManager.GetString("Mar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to May.
+        /// </summary>
+        public static string May {
+            get {
+                return ResourceManager.GetString("May", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Message.
         /// </summary>
         public static string Message {
@@ -232,11 +493,110 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to minute.
+        /// </summary>
+        public static string Minute {
+            get {
+                return ResourceManager.GetString("Minute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minutes.
+        /// </summary>
+        public static string Minutes {
+            get {
+                return ResourceManager.GetString("Minutes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to minute(s) past the hour.
+        /// </summary>
+        public static string MinutesPastHour {
+            get {
+                return ResourceManager.GetString("MinutesPastHour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One Time.
+        /// </summary>
+        public static string ModeOneTime {
+            get {
+                return ResourceManager.GetString("ModeOneTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repeat.
+        /// </summary>
+        public static string ModeRepeat {
+            get {
+                return ResourceManager.GetString("ModeRepeat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mon.
+        /// </summary>
+        public static string Mon {
+            get {
+                return ResourceManager.GetString("Mon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to month.
+        /// </summary>
+        public static string Month {
+            get {
+                return ResourceManager.GetString("Month", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Days of the month.
+        /// </summary>
+        public static string MonthDays {
+            get {
+                return ResourceManager.GetString("MonthDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Months.
+        /// </summary>
+        public static string Months {
+            get {
+                return ResourceManager.GetString("Months", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
         public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to At least 3 characters.
+        /// </summary>
+        public static string NameFilterValidation {
+            get {
+                return ResourceManager.GetString("NameFilterValidation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string New {
+            get {
+                return ResourceManager.GetString("New", resourceCulture);
             }
         }
         
@@ -286,11 +646,110 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nov.
+        /// </summary>
+        public static string Nov {
+            get {
+                return ResourceManager.GetString("Nov", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Oct.
+        /// </summary>
+        public static string Oct {
+            get {
+                return ResourceManager.GetString("Oct", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to off.
+        /// </summary>
+        public static string off {
+            get {
+                return ResourceManager.GetString("off", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to on.
+        /// </summary>
+        public static string on {
+            get {
+                return ResourceManager.GetString("on", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to of.
+        /// </summary>
+        public static string PaginationOf {
+            get {
+                return ResourceManager.GetString("PaginationOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Partial Send.
         /// </summary>
         public static string PartialSend {
             get {
                 return ResourceManager.GetString("PartialSend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Days.
+        /// </summary>
+        public static string PeriodDay {
+            get {
+                return ResourceManager.GetString("PeriodDay", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hours.
+        /// </summary>
+        public static string PeriodHour {
+            get {
+                return ResourceManager.GetString("PeriodHour", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minutes.
+        /// </summary>
+        public static string PeriodMinute {
+            get {
+                return ResourceManager.GetString("PeriodMinute", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Months.
+        /// </summary>
+        public static string PeriodMonth {
+            get {
+                return ResourceManager.GetString("PeriodMonth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weeks.
+        /// </summary>
+        public static string PeriodWeek {
+            get {
+                return ResourceManager.GetString("PeriodWeek", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Years.
+        /// </summary>
+        public static string PeriodYear {
+            get {
+                return ResourceManager.GetString("PeriodYear", resourceCulture);
             }
         }
         
@@ -367,6 +826,33 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are your sure?.
+        /// </summary>
+        public static string Prompt {
+            get {
+                return ResourceManager.GetString("Prompt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recurrence Mode.
+        /// </summary>
+        public static string RecurrenceMode {
+            get {
+                return ResourceManager.GetString("RecurrenceMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recurrence Period.
+        /// </summary>
+        public static string RecurrencePeriod {
+            get {
+                return ResourceManager.GetString("RecurrencePeriod", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Task recurrence schedule.
         /// </summary>
         public static string RecurrenceSchedule {
@@ -385,11 +871,56 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Running.
+        /// </summary>
+        public static string Running {
+            get {
+                return ResourceManager.GetString("Running", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sat.
+        /// </summary>
+        public static string Sat {
+            get {
+                return ResourceManager.GetString("Sat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Schedule.
         /// </summary>
         public static string Schedule {
             get {
                 return ResourceManager.GetString("Schedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schedule Enabled.
+        /// </summary>
+        public static string ScheduleEnabled {
+            get {
+                return ResourceManager.GetString("ScheduleEnabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Search....
+        /// </summary>
+        public static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sep.
+        /// </summary>
+        public static string Sep {
+            get {
+                return ResourceManager.GetString("Sep", resourceCulture);
             }
         }
         
@@ -430,11 +961,74 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sun.
+        /// </summary>
+        public static string Sun {
+            get {
+                return ResourceManager.GetString("Sun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Task.
         /// </summary>
         public static string Task {
             get {
                 return ResourceManager.GetString("Task", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task ID.
+        /// </summary>
+        public static string TaskId {
+            get {
+                return ResourceManager.GetString("TaskId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Task Recurrence Schedule.
+        /// </summary>
+        public static string TaskRecurrenceSchedule {
+            get {
+                return ResourceManager.GetString("TaskRecurrenceSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Thu.
+        /// </summary>
+        public static string Thu {
+            get {
+                return ResourceManager.GetString("Thu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to To.
+        /// </summary>
+        public static string ToDate {
+            get {
+                return ResourceManager.GetString("ToDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tue.
+        /// </summary>
+        public static string Tue {
+            get {
+                return ResourceManager.GetString("Tue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Something went wrong. Try to reload the page..
+        /// </summary>
+        public static string TypicalError {
+            get {
+                return ResourceManager.GetString("TypicalError", resourceCulture);
             }
         }
         
@@ -475,6 +1069,42 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Wed.
+        /// </summary>
+        public static string Wed {
+            get {
+                return ResourceManager.GetString("Wed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to week.
+        /// </summary>
+        public static string Week {
+            get {
+                return ResourceManager.GetString("Week", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Days of the week.
+        /// </summary>
+        public static string WeekDays {
+            get {
+                return ResourceManager.GetString("WeekDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to year.
+        /// </summary>
+        public static string Year {
+            get {
+                return ResourceManager.GetString("Year", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Yes.
         /// </summary>
         public static string Yes {
@@ -489,51 +1119,6 @@ namespace QA.Core.DPC.Resources {
         public static string YourLastTask {
             get {
                 return ResourceManager.GetString("YourLastTask", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Running.
-        /// </summary>
-        public static string Выполняется {
-            get {
-                return ResourceManager.GetString("Выполняется", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Completed.
-        /// </summary>
-        public static string Завершена {
-            get {
-                return ResourceManager.GetString("Завершена", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to New.
-        /// </summary>
-        public static string Новая {
-            get {
-                return ResourceManager.GetString("Новая", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Cancelled.
-        /// </summary>
-        public static string Отменена {
-            get {
-                return ResourceManager.GetString("Отменена", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Error.
-        /// </summary>
-        public static string Ошибка {
-            get {
-                return ResourceManager.GetString("Ошибка", resourceCulture);
             }
         }
     }

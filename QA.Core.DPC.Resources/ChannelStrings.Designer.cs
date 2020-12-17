@@ -19,7 +19,7 @@ namespace QA.Core.DPC.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ChannelStrings {
@@ -346,6 +346,94 @@ namespace QA.Core.DPC.Resources {
             get {
                 return ResourceManager.GetString("YourLastTask", resourceCulture);
             }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to StatusOfChannel.
+        /// </summary>
+        public static string StatusOfChannel {
+           get {
+               return ResourceManager.GetString("StatusOfChannel", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to StateOfChannel.
+        /// </summary>
+        public static string StateOfChannel {
+           get {
+               return ResourceManager.GetString("StateOfChannel", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to ChannelQueue.
+        /// </summary>
+        public static string ChannelQueue {
+           get {
+               return ResourceManager.GetString("ChannelQueue", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Removed.
+        /// </summary>
+        public static string Removed {
+           get {
+               return ResourceManager.GetString("Removed", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Changed.
+        /// </summary>
+        public static string Changed {
+           get {
+               return ResourceManager.GetString("Changed", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to To.
+        /// </summary>
+        public static string To {
+           get {
+               return ResourceManager.GetString("To", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to From.
+        /// </summary>
+        public static string From {
+           get {
+               return ResourceManager.GetString("From", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string New {
+           get {
+               return ResourceManager.GetString("New", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to Added.
+        /// </summary>
+        public static string Added {
+           get {
+               return ResourceManager.GetString("Added", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to ChannelState.
+        /// </summary>
+        public static string ChannelState {
+           get {
+               return ResourceManager.GetString("ChannelState", resourceCulture);
+           }
+        }
+        /// <summary>
+        ///   Looks up a localized string similar to ChannelsChanged.
+        /// </summary>
+        public static string ChannelsChanged {
+           get {
+               return ResourceManager.GetString("ChannelsChanged", resourceCulture);
+           }
         }
     }
 }

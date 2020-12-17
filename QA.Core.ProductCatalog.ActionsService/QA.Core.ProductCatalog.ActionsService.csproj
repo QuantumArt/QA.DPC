@@ -33,8 +33,7 @@
 
   <ItemGroup>
     <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <None Include="appsettings*.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <None Include="hosting.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <None Include="*.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>

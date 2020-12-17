@@ -1,0 +1,20 @@
+﻿@using System;
+@using QA.ProductCatalog.Admin.WebApp.Controllers;
+@section head {
+  <style>
+    .wrap {
+      margin: 30px 10px 10px;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: center;
+      align-items: center;
+    }
+    .info {
+      margin-bottom: 10px;
+    }
+  </style>
+}
+
+<div class="wrap">
+  <div class="info">@Html.Raw(System.IO.File.GetLastWriteTime(typeof(AppInfoController).Assembly.Location).ToString())</div>
+</div>

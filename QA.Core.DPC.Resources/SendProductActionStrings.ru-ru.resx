@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-   <data name="NotFound" xml:space="preserve">
+  <data name="NotFound" xml:space="preserve">
     <value>Не найдено ни одного продукта</value>
   </data>
   <data name="NoRelationAccess" xml:space="preserve">
@@ -162,5 +162,10 @@
   <data name="SendNewPackage" xml:space="preserve">
     <value>Отправить новый пакет</value>
   </data>
+  <data name="IdListEmpty" xml:space="preserve">
+    <value>Список Id не должен быть пустым</value>
+  </data>
+  <data name="IdListIncorrect" xml:space="preserve">
+    <value>Некорректный список Id</value>
+  </data>
 </root>
-

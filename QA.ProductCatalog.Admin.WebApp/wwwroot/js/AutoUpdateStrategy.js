@@ -1,4 +1,4 @@
-﻿AutoUpdateStrategy = {
+AutoUpdateStrategy = {
   timeoutId: null,
 
   updateRequestFunction: null,

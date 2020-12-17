@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-  <!--
-    Microsoft ResX Schema
-
+  <!-- 
+    Microsoft ResX Schema 
+    
     Version 2.0
-
-    The primary goals of this format is to allow a simple XML format
-    that is mostly human readable. The generation and parsing of the
-    various data types are done through the TypeConverter classes
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
     associated with the data types.
-
+    
     Example:
-
+    
     ... ado.net/XML headers & schema ...
     <resheader name="resmimetype">text/microsoft-resx</resheader>
     <resheader name="version">2.0</resheader>
@@ -26,36 +26,36 @@
         <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
-
-    There are any number of "resheader" rows that contain simple
+                
+    There are any number of "resheader" rows that contain simple 
     name/value pairs.
-
-    Each data row contains a name, and value. The row also contains a
-    type or mimetype. Type corresponds to a .NET class that support
-    text/value conversion through the TypeConverter architecture.
-    Classes that don't support this are serialized and stored with the
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
     mimetype set.
-
-    The mimetype is used for serialized objects, and tells the
-    ResXResourceReader how to depersist the object. This is currently not
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
     extensible. For a given mimetype the value must be set accordingly:
-
-    Note - application/x-microsoft.net.object.binary.base64 is the format
-    that the ResXResourceWriter will generate, however the reader can
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
     read any of the formats listed below.
-
+    
     mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
             : and then encoded with base64 encoding.
-
+    
     mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with
+    value   : The object must be serialized with 
             : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
             : and then encoded with base64 encoding.
 
     mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array
+    value   : The object must be serialized into a byte array 
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
@@ -222,59 +222,250 @@
   <data name="NoProductsToUnfreeze" xml:space="preserve">
     <value>Продуктов для разморозки не найдено</value>
   </data>
-  <data name="ErrorTemplate">
+  <data name="ErrorTemplate" xml:space="preserve">
     <value>{0} : статьи {1}</value>
   </data>
-  <data name="ProductsFreezed">
+  <data name="ProductsFreezed" xml:space="preserve">
     <value>Продукты заморожены: {0}</value>
   </data>
-  <data name="ProductsNotToPublish">
+  <data name="ProductsNotToPublish" xml:space="preserve">
     <value>Продукты не подлежат обработке: {0}</value>
   </data>
-  <data name="ProductsExcludedByStatus">
+  <data name="ProductsExcludedByStatus" xml:space="preserve">
     <value>Продукты исключены по статусу: {0}</value>
   </data>
-  <data name="ArticlesProcessed">
+  <data name="ArticlesProcessed" xml:space="preserve">
     <value>Обработаны статьи: {0}</value>
   </data>
-  <data name="ProductsNotProcessed">
+  <data name="ProductsNotProcessed" xml:space="preserve">
     <value>Не были обработаны некоторые продукты</value>
   </data>
-  <data name="Новая">
+  <data name="New" xml:space="preserve">
     <value>Новая</value>
   </data>
-  <data name="Выполняется">
+  <data name="Running" xml:space="preserve">
     <value>Выполняется</value>
   </data>
-  <data name="Завершена">
+  <data name="Completed" xml:space="preserve">
     <value>Завершена</value>
   </data>
-  <data name="Ошибка">
+  <data name="Error" xml:space="preserve">
     <value>Ошибка</value>
   </data>
-  <data name="Отменена">
+  <data name="Cancelled" xml:space="preserve">
     <value>Отменена</value>
   </data>
-  <data name="ProductsNotFound">
+  <data name="ProductsNotFound" xml:space="preserve">
     <value>Продукты не найдены: {0}</value>
   </data>
-  <data name="NoRelationAccess">
+  <data name="NoRelationAccess" xml:space="preserve">
     <value>Недостаточно прав доступа по связям: {0}</value>
   </data>
-  <data name="ValidationResult">
+  <data name="ValidationResult" xml:space="preserve">
     <value>Продуктов: {0}. Обновлено: {1}. Провалидировано: {2}. Невалидно: {3}. Ошибок: {4}</value>
   </data>
-  <data name="StatusesUpdated">
+  <data name="StatusesUpdated" xml:space="preserve">
     <value>Статусы {0} продуктов успешно обновлены</value>
   </data>
-  <data name="ActionRunning">
+  <data name="ActionRunning" xml:space="preserve">
     <value>{0} уже запущено</value>
   </data>
-  <data name="VersionsCleaned">
+  <data name="VersionsCleaned" xml:space="preserve">
     <value>Очищено {0} версий продуктов, созданных ранее чем {1} с размером пакета = {2}</value>
   </data>
-  <data name="NotificationSenderError">
+  <data name="NotificationSenderError" xml:space="preserve">
     <value>Возникла ошибка при постановке сообщений в очередь NotificationSender: {0}</value>
   </data>
+  <data name="Every" xml:space="preserve">
+    <value>каждый(ую)</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>год</value>
+  </data>
+  <data name="Hour" xml:space="preserve">
+    <value>час</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>день</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>месяц</value>
+  </data>
+  <data name="Minute" xml:space="preserve">
+    <value>минуту</value>
+  </data>
+  <data name="on" xml:space="preserve">
+    <value />
+  </data>
+  <data name="off" xml:space="preserve">
+    <value />
+  </data>
+  <data name="DayOfMonth" xml:space="preserve">
+    <value>числа</value>
+  </data>
+  <data name="At" xml:space="preserve">
+    <value>в</value>
+  </data>
+  <data name="EveryDayOfMonth" xml:space="preserve">
+    <value>каждый день месяца</value>
+  </data>
+  <data name="EveryDayOfWeek" xml:space="preserve">
+    <value>каждый день недели</value>
+  </data>
+  <data name="MinutesPastHour" xml:space="preserve">
+    <value>минут(ы) после этого часа</value>
+  </data>
+  <data name="TaskRecurrenceSchedule" xml:space="preserve">
+    <value>Расписание повторения задачи</value>
+  </data>
+  <data name="TaskId" xml:space="preserve">
+    <value>ID задачи</value>
+  </data>
+  <data name="ScheduleEnabled" xml:space="preserve">
+    <value>Расписание активно</value>
+  </data>
+  <data name="RecurrenceMode" xml:space="preserve">
+    <value>Режим повторения</value>
+  </data>
+  <data name="ModeRepeat" xml:space="preserve">
+    <value>Повторять</value>
+  </data>
+  <data name="ModeOneTime" xml:space="preserve">
+    <value>Одноразовое</value>
+  </data>
+  <data name="RecurrencePeriod" xml:space="preserve">
+    <value>Период повторения</value>
+  </data>
+  <data name="PeriodMinute" xml:space="preserve">
+    <value>Минут</value>
+  </data>
+  <data name="PeriodHour" xml:space="preserve">
+    <value>Часов</value>
+  </data>
+  <data name="PeriodDay" xml:space="preserve">
+    <value>Дней</value>
+  </data>
+  <data name="PeriodWeek" xml:space="preserve">
+    <value>Недель</value>
+  </data>
+  <data name="PeriodMonth" xml:space="preserve">
+    <value>Месяцев</value>
+  </data>
+  <data name="PeriodYear" xml:space="preserve">
+    <value>Лет</value>
+  </data>
+  <data name="MonthDays" xml:space="preserve">
+    <value>Дни месяца</value>
+  </data>
+  <data name="Months" xml:space="preserve">
+    <value>Месяцы</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>Часы</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>Минуты</value>
+  </data>
+  <data name="WeekDays" xml:space="preserve">
+    <value>Дни недели</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>неделю</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Все</value>
+  </data>
+  <data name="CronParseError" xml:space="preserve">
+    <value>Ошибка обработки cron expression</value>
+  </data>
+  <data name="TypicalError" xml:space="preserve">
+    <value>Что-то пошло не так. Поробуйте обновить страницу.</value>
+  </data>
+  <data name="Sun" xml:space="preserve">
+    <value>Вс</value>
+  </data>
+  <data name="Mon" xml:space="preserve">
+    <value>Пон</value>
+  </data>
+  <data name="Tue" xml:space="preserve">
+    <value>Вт</value>
+  </data>
+  <data name="Wed" xml:space="preserve">
+    <value>Ср</value>
+  </data>
+  <data name="Thu" xml:space="preserve">
+    <value>Чт</value>
+  </data>
+  <data name="Fri" xml:space="preserve">
+    <value>Пт</value>
+  </data>
+  <data name="Sat" xml:space="preserve">
+    <value>Сб</value>
+  </data>
+  <data name="Jan" xml:space="preserve">
+    <value>Янв</value>
+  </data>
+  <data name="Feb" xml:space="preserve">
+    <value>Фев</value>
+  </data>
+  <data name="Mar" xml:space="preserve">
+    <value>Март</value>
+  </data>
+  <data name="Apr" xml:space="preserve">
+    <value>Апр</value>
+  </data>
+  <data name="May" xml:space="preserve">
+    <value>Май</value>
+  </data>
+  <data name="Jun" xml:space="preserve">
+    <value>Июнь</value>
+  </data>
+  <data name="Jul" xml:space="preserve">
+    <value>Июль</value>
+  </data>
+  <data name="Aug" xml:space="preserve">
+    <value>Авг</value>
+  </data>
+  <data name="Sep" xml:space="preserve">
+    <value>Сент</value>
+  </data>
+  <data name="Oct" xml:space="preserve">
+    <value>Окт</value>
+  </data>
+  <data name="Nov" xml:space="preserve">
+    <value>Нояб</value>
+  </data>
+  <data name="Dec" xml:space="preserve">
+    <value>Дек</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Заказчик</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Создано</value>
+  </data>
+  <data name="Changed" xml:space="preserve">
+    <value>Изменено</value>
+  </data>
+  <data name="NameFilterValidation" xml:space="preserve">
+    <value>Минимум 3 символа</value>
+  </data>
+  <data name="FromDate" xml:space="preserve">
+    <value>От</value>
+  </data>
+  <data name="ToDate" xml:space="preserve">
+    <value>До</value>
+  </data>
+  <data name="PaginationOf" xml:space="preserve">
+    <value>из</value>
+  </data>
+  <data name="DeleteSchedule" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="Prompt" xml:space="preserve">
+    <value>Вы уверены?</value>
+  </data>
 </root>
-

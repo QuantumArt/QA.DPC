@@ -2,38 +2,37 @@
 
 ## NPM-scripts
 
-- `npm run build-prod` сборка для релиза
-- `npm run build-dev` сборка для отладки
-- `npm run webpack` сборка для отладки с пересборкой при сохранении
+- `npm run components:build-prod` сборка для релиза
+- `npm run components:build-dev` сборка для разработки
 - `precommit` git-hook для форматирования измененных файлов при коммите
   с помощью [Prettier](https://prettier.io/)
 
 ## Webpack
 
-см. `webpack.config.js` и `tsconfg.json`
+см. `webpack.*.js` и `tsconfg.json`
 
 - Webpack рекурсивно обходит каталог `~/Views` и находит все пары файлов
   вида (`[ViewName].cshtml`, `[ViewName].js`) у которых совпадает имя файла.
   Каждая такая пара является отдельной точкой входа (entry) для Webpack.
   Для JavaScript-точек входа также допускаются расширения `.jsx`, `.ts` и `.tsx`.
 
-- Затем Webpack создает бандлы в папке `~/js/Bundles`. Именем каждого бандла является
+- Затем Webpack создает бандлы в папке `~/js/bundles`. Именем каждого бандла является
   путь к его точке входа `[ViewName].js` относительно папки `~/Views`.
 
-- На странице `[ViewName].cshtml` вручную прописывается путь к созданному бандлу
-  и скрипт загрузки полифиллов из CDN `cdn.polyfill.io`. Она предоставляет полифиллы
+- На странице `[ViewName].cshtml` вручную прописывается путь к созданному бандлу, стилям
+  и скрипт загрузки полифиллов из CDN `cdn.polyfill.io` (если необходимо). Он предоставляет полифиллы
   специфичные для каждого браузера на основе его `User-Agent`. Также в `<head>` страницы
   вручную добавляется атрибут `root-url`, содержащий `@Url.Content("~")`.
 
 - Webpack обрабатывает JavaScript, TypeScript и JSX код, CSS и Sass стили, а также
   статические картинки и шрифты.
 
-- Каждая JavaScript точка входа должна импортировать файл `~/ClientApp/Environment.ts`,
+- **ProductEditor** - JavaScript точка входа должна импортировать файл `~/ClientApp/Environment.ts`,
   который содержит настройки `__webpack_public_path__` (для динамической загрузки модулей Webpack),
   TypeScript runtime и общие CSS-стили.
 
-- Исходный Javascript-код должен находиться в папках `~/ClientApp` или `~/Views`. При этом локальные
-  JS-модули можно импортировать не только по отнисительному пути, но и по абсолютному пути начиная от `~/ClientApp`.
+- Исходный Javascript-код должен находиться в папках `~/ReactViews` или `~/Views`. При этом локальные
+  JS-модули можно импортировать не только по относительному пути, но и по абсолютному пути начиная от `~/ReactViews`.
   https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
 
 - В скриптах доступны пременные `process.env.NODE_ENV: "development" | "productiuon"`
@@ -63,9 +62,10 @@
 #### Index.cshtml
 
 ```html
-<html>
+<link>
 <head root-url="@Url.Content("~")">
   <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries,Element.prototype.closest"></script>
+  <link href="~/css/Home/Index.css" rel="stylesheet" />
 </head>
 <body>
   <div id="container"></div>
@@ -77,10 +77,10 @@
 #### Index.tsx
 
 ```js
-import "Environment"; // ~/ClientApp/Environment.ts
+import "DefinitionEditor/Environment"; // ~/ClientApp/Environment.ts
 import React from "react";
 import ReactDOM from "react-dom";
-import { MyComponent } from "Components/MyComponent"; // ~/ClientApp/Components/MyComponent.tsx
+import { MyComponent } from "DefinitionEditor/Components/MyComponent"; // ~/ClientApp/Components/MyComponent.tsx
 
 ReactDOM.render(<MyComponent />, document.getElementById("container"));
 ```

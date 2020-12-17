@@ -1,0 +1,39 @@
+﻿.editor-toolbar {
+  &__buttons {
+    display: flex;
+    justify-content: left;
+    padding: 10px 15px;
+    position: relative;
+    height: 50px;
+  }
+  &__info-btn {
+    margin-top: -6px;
+  }
+  &__xml-controls {
+    display: flex;
+    margin-left: auto;
+    margin-right: 100px;
+    .bp3-switch {
+      margin: 0 10px;
+    }
+  }
+  &__slider {
+    width: 150px;
+    margin: 0 30px;
+  }
+  &__loading.sk-circle {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    margin-left: 20px;
+  }
+  &__form-btn {
+    position: absolute;
+    right: 0;
+  }
+  &__divider {
+    border-left: 1px solid rgba(16, 22, 26, 0.15);
+    height: 20px;
+    margin: 5px 20px 0;
+  }
+}

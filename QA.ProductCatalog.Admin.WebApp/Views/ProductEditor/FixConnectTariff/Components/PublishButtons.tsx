@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { inject } from "react-ioc";
 import { MenuItem, Icon, Intent } from "@blueprintjs/core";
-import { ValidationSummay } from "Components/ValidationSummary/ValidationSummary";
-import { DataValidator } from "Services/DataValidator";
-import { OverlayPresenter } from "Services/OverlayPresenter";
-import { ActionController } from "Services/ActionController";
-import { ContentSchema } from "Models/EditorSchemaModels";
+import { ValidationSummay } from "ProductEditor/Components/ValidationSummary/ValidationSummary";
+import { DataValidator } from "ProductEditor/Services/DataValidator";
+import { OverlayPresenter } from "ProductEditor/Services/OverlayPresenter";
+import { ActionController } from "ProductEditor/Services/ActionController";
+import { ContentSchema } from "ProductEditor/Models/EditorSchemaModels";
 import { Product } from "../TypeScriptSchema";
 
 interface PublishButtonsProps {

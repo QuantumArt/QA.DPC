@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.DPC.Core.Helpers;
 using M = QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
@@ -19,19 +20,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly ITaskService _taskService;
         private readonly IUserProvider _userProvider;
         private readonly ICompositeViewEngine _viewEngine;
+        private readonly QPHelper _qpHelper;
 
-        public TaskController(ITaskService taskService, IUserProvider userProvider, ICompositeViewEngine viewEngine)
+        public TaskController(ITaskService taskService, IUserProvider userProvider, ICompositeViewEngine viewEngine, QPHelper helper)
         {
             _taskService = taskService;
             _viewEngine = viewEngine;
             _userProvider = userProvider;
+            _qpHelper = helper;
         }
 
         [HttpGet]
         public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false)
         {
             var tasksPageInfo = new TasksPageInfo { ShowOnlyMine = showOnlyMine == true, Notify = notify == true, States = _taskService.GetAllStates(), AllowSchedule = allowSchedule };
-
+            ViewBag.HostId = _qpHelper.HostId;
             return View(tasksPageInfo);
         }
 
@@ -52,18 +55,25 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
 	        bool? hasSchedule = null;
 
+            DateTime? createdLower = null, createdUpper = null;
+
             if (filterJson != null)
             {
-                var filters = JsonConvert.DeserializeObject<KendoGridFilter[]>(filterJson);
+                var filters = JsonConvert.DeserializeObject<GridFilter[]>(filterJson);
 
-                foreach (var filter in filters)
+                foreach (var filter in filters.Where(n => n.Value != null))
                 {
-                    if (filter.field == "StateId")
-                        stateIdToFilterBy = (int)filter.value;
-                    else if (filter.field == "DisplayName")
-                        nameFillter = filter.value.ToString();
-					else if (filter.field == "HasSchedule")
-						hasSchedule = (bool) filter.value;
+                    if (filter.Field == "StateId")
+                        stateIdToFilterBy = Convert.ToInt32(filter.Value);
+                    else if (filter.Field == "DisplayName")
+                        nameFillter = filter.Value.ToString();
+					else if (filter.Field == "HasSchedule")
+						hasSchedule = Convert.ToBoolean(filter.Value);
+                    else if (filter.Field == "CreatedTime" && filter.Operator == "gte")
+                        createdLower = Convert.ToDateTime(filter.Value);
+                    else if (filter.Field == "CreatedTime" && filter.Operator == "lte")
+                        createdUpper = Convert.ToDateTime(filter.Value);
+                    
                 }
             }
 
@@ -73,7 +83,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             int totalCount;
 
-            var tasks = _taskService.GetTasks(skip, take, userIdToFilterBy, stateIdToFilterBy, nameFillter, hasSchedule,out totalCount);
+            var tasks = _taskService.GetTasks(skip, take, userIdToFilterBy, stateIdToFilterBy, nameFillter, hasSchedule, createdLower, createdUpper, out totalCount);
 
             TaskModel myLastTask = null;
 
@@ -91,7 +101,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     tasks = tasks.Select(x => new TaskModel(x)),
                     totalTasks = totalCount,
-                    myLastTaskHtml = myLastTask == null ? null : await this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask)
+                    myLastTaskHtml = myLastTask == null ? null : await this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask),
+                    myLastTask = myLastTask ?? null
                 });
 
             return new ContentResult() { 

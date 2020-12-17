@@ -1,62 +1,63 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <TypeScriptToolsVersion>3.2</TypeScriptToolsVersion>
-    <TypeScriptBuildMode>true</TypeScriptBuildMode>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DocumentationFile>bin\Debug\QA.ProductCatalog.WebApi.xml</DocumentationFile>
-    <NoWarn>1701;1702;1591</NoWarn>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DocumentationFile>bin\Release\QA.ProductCatalog.WebApi.xml</DocumentationFile>
-    <NoWarn>1701;1702;1591</NoWarn>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="NLog" Version="4.7.4" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.5" />
-    <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.3" />
-    <PackageReference Include="Unity.Abstractions" Version="5.11.6" />
-    <PackageReference Include="Unity.Configuration" Version="5.11.2" />
-    <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5" />
-    <PackageReference Include="QA.Validation.Xaml" Version="1.3.0-portable8" />
-    <PackageReference Include="QA.Validation.Xaml.Extensions" Version="1.3.0-portable8" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />
-    <ProjectReference Include="..\QA.Core.DPC.API\QA.Core.DPC.API.csproj" />
-    <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj" />
-    <ProjectReference Include="..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj" />
-    <ProjectReference Include="..\QA.Core.DPC.QP.Autopublish\QA.Core.DPC.QP.Autopublish.csproj" />
-    <ProjectReference Include="..\QA.Core.DPC.UI\QA.Core.DPC.UI.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.Validation\QA.ProductCatalog.Validation.csproj" />
-    
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <None Include="appsettings*.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
-    <None Remove="Content\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Content\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Remove="Content\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Content\**" />
-  </ItemGroup>
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<LangVersion>latest</LangVersion>
+		<TypeScriptToolsVersion>3.9</TypeScriptToolsVersion>
+		<TypeScriptBuildMode>true</TypeScriptBuildMode>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<DocumentationFile>bin\Debug\QA.ProductCatalog.WebApi.xml</DocumentationFile>
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DocumentationFile>bin\Release\QA.ProductCatalog.WebApi.xml</DocumentationFile>
+		<NoWarn>1701;1702;1591</NoWarn>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="BuildBundlerMinifier" Version="2.8.391" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.8" />
+		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+		<PackageReference Include="NLog" Version="4.7.4" />
+		<PackageReference Include="Quantumart.QP8.BLL" Version="3.1.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.5.1" />
+		<PackageReference Include="System.Net.Http" Version="4.3.4" />
+		<PackageReference Include="NLog.Extensions.Logging" Version="1.6.5" />
+		<PackageReference Include="NLog.Web.AspNetCore" Version="4.9.3" />
+		<PackageReference Include="Unity.Abstractions" Version="5.11.6" />
+		<PackageReference Include="Unity.Configuration" Version="5.11.2" />
+		<PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5" />
+		<PackageReference Include="QA.Validation.Xaml" Version="1.3.0-portable8" />
+		<PackageReference Include="QA.Validation.Xaml.Extensions" Version="1.3.0-portable8" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />
+		<ProjectReference Include="..\QA.Core.DPC.API\QA.Core.DPC.API.csproj" />
+		<ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj" />
+		<ProjectReference Include="..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj" />
+		<ProjectReference Include="..\QA.Core.DPC.QP.Autopublish\QA.Core.DPC.QP.Autopublish.csproj" />
+		<ProjectReference Include="..\QA.Core.DPC.UI\QA.Core.DPC.UI.csproj" />
+		<ProjectReference Include="..\QA.ProductCatalog.Validation\QA.ProductCatalog.Validation.csproj" />
+
+	</ItemGroup>
+	<ItemGroup>
+		<Folder Include="Properties" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+		<None Include="appsettings*.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+		<None Remove="Content\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="Content\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Remove="Content\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<Content Remove="Content\**" />
+	</ItemGroup>
 </Project>
 
 

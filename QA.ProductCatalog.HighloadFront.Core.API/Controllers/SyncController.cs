@@ -131,7 +131,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public TaskItem[] Settings()
         {
             int count;
-            var tasks = _taskService.GetTasks(0, int.MaxValue, null, null, null, null, out count);
+            var tasks = _taskService.GetTasks(0, int.MaxValue, null, null, null, null, null, null, out count);
             var lastTasks = tasks.GroupBy(t => t.Data).Select(g => g.OrderByDescending(t => t.ID).First()).ToArray();
 
             var r =

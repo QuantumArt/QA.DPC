@@ -58,12 +58,12 @@
         "ImageSvg": {
           "Name": "b-icon_mobile-roaming.svg",
           "FileSizeBytes": 1341,
-          "AbsoluteUrl": "http://static.mts.ru/dpc_upload/contents/378/b-icon_mobile-roaming.svg"
+          "AbsoluteUrl": "http://static/dpc_upload/contents/378/b-icon_mobile-roaming.svg"
         }
       }
     }
   ],
-  "ServicesOnRoamingScale": [
+  "ServicesOnTariff": [
     {
       "Id": 1893691,
       "Service": {
@@ -121,7 +121,7 @@
               {
                 "Id": 1852272,
                 "Title": "Использовать для калькулятора роуминга",
-                "Alias": "UseForRoamingCalculator"
+                "Alias": "UseForCalculator"
               }
             ]
           }
@@ -131,7 +131,7 @@
           {
             "Id": 1838315,
             "Title": "Участвует в калькуляторе роуминга",
-            "Alias": "CalculateInRoaming"
+            "Alias": "Calculate"
           }
         ]
       }

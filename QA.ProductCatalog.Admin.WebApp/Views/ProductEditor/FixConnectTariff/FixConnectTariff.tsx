@@ -1,8 +1,8 @@
-﻿import "Environment";
+﻿import "ProductEditor/Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { MultiRelationFieldTags } from "Components/FieldEditors/FieldEditors";
+import { ProductEditor } from 'ProductEditor/Components/ProductEditor/ProductEditor';
+import { MultiRelationFieldTags } from 'ProductEditor/Components/FieldEditors/FieldEditors';
 import { EditorTabs } from "./Components/EditorTabs";
 import { Product } from "./TypeScriptSchema";
 import { AdvantagesTable } from "./Components/AdvantagesTable";

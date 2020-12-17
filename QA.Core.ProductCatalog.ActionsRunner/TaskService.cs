@@ -379,8 +379,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             }
         }
 
-        public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter,
-            bool? hasSchedule, out int totalCount)
+        public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFilter,
+            bool? hasSchedule, DateTime? createdLower, DateTime? createdUpper, out int totalCount)
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
@@ -395,22 +395,25 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 {
                     tasksFiltered = tasksFiltered.Where(x => x.StateID == stateIdToFilterBy);
                 }
-
-                if (nameFillter != null)
+                
+                if (createdLower.HasValue)
                 {
-                    tasksFiltered = tasksFiltered.Where(x => x.DisplayName.Contains(nameFillter));
+                    tasksFiltered = tasksFiltered.Where(x => x.CreatedTime >= createdLower);
+                }
+                
+                if (createdUpper.HasValue)
+                {
+                    tasksFiltered = tasksFiltered.Where(x => x.CreatedTime <= createdUpper);
+                }
+
+                if (nameFilter != null)
+                {
+                    tasksFiltered = tasksFiltered.Where(x => x.DisplayName.Contains(nameFilter));
                 }
 
                 if (hasSchedule.HasValue)
                 {
-                    if (hasSchedule.Value)
-                    {
-                        tasksFiltered = tasksFiltered.Where(x => x.Schedule.Enabled == true);
-                    }
-                    else
-                    {
-                        tasksFiltered = tasksFiltered.Where(x => x.Schedule == null || x.Schedule.Enabled == false);
-                    }
+                    tasksFiltered = hasSchedule.Value ? tasksFiltered.Where(x => x.Schedule != null) : tasksFiltered.Where(x => x.Schedule == null);
                 }
 
                 totalCount = tasksFiltered.Count();
@@ -424,12 +427,21 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 foreach (var task in result)
                 {
                     task.Message = MessageToDisplay(task.Message);
-                    task.TaskState.Name = _taskRm.GetString(task.TaskState.Name) ?? task.TaskState.Name;
+                    task.TaskState.Name = _taskRm.GetString(_taskStates[task.StateID]) ?? task.TaskState.Name;
                 }
 
                 return result;
             }              
         }
+
+        private readonly Dictionary<int, string> _taskStates = new Dictionary<int, string>
+        {
+            {1, "New"},
+            {2, "Running"},
+            {3, "Completed"},
+            {4, "Error"},
+            {5, "Cancelled"}
+        };
 
 
         private bool RequestCancellation(int id)

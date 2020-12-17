@@ -1,408 +1,116 @@
-﻿@using System.Globalization
+@using System.Globalization
 @using Newtonsoft.Json
 @using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.ProductCatalog.Admin.WebApp.Models.TasksPageInfo
 
-@*переопределяем секцию с jquery*@
-@section jquery{
-  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
+@section head {
+  <link href="~/css/Task/Index.css" rel="stylesheet" />
 }
 
-@*добавляем в head  свои стили*@
-@section head{
-  <link href="~/css/kendo.min.css" rel="stylesheet"/>
-  <script src="~/js/bundles/schedule.min.js"></script>
-  <link href="~/css/jqCron.css" rel="stylesheet"/>
-	<style type="text/css">
-		#TasksGrid .k-loading-mask, .k-filter-menu .k-filter-help-text, .k-filter-menu .k-filter-help-text + span.k-dropdown  {
-			display: none !important;
-		}
+<div id="task"></div>
 
-		.HasSchedule {
-			background-color: greenyellow;
-		}
-
-		.SheduleDiv {
-			float: left;
-			width: 122px;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-
-		.EditScheduleButton {
-			float: right
-		}
-
-         .k-grid .message{
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-		@if (!Model.AllowSchedule)
-		{
-		 @:.EditScheduleButton{display:none !important}
-		}
-
-	</style>
-
-
-}
-
-@if (Model.ShowOnlyMine)
-{
-	<div id="TaskContainerDiv" class="formLayout" style="display: none">
-		<fieldset>
-			<legend>@TaskStrings.YourLastTask</legend>
-			<div id="TaskPropsDiv">
-			</div>
-		</fieldset>
-	</div>
-}
-<div id="SchedulerWindow">
-</div>
-<div id="TasksGrid">
-</div>
-
-<script id="gridButtonsTemplate" type="text/x-kendo-template">
-	#if(StateId <= @((byte)QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)){#
-	  @Html.Raw(@"<a class='CancelButton' onclick=""cancel(#=Id#)""></a>")
-	#}else{#
-	  @Html.Raw(@"<a class='RerunButton' onclick=""rerun(#=Id#)""></a>")
-	#}#
-</script>
-
-@*скрипты добавляются в конец страницы в секцию scripts*@
 @section scripts{
-  <script src="~/js/AutoUpdateStrategy.js"></script>
-
-	<script type="text/javascript">
-
-		function updatePage() {
-			$("#TasksGrid").data("kendoGrid").dataSource.query();
-		}
-
-		function rerun(id) {
-			$.ajax({
-				url: "@Url.Action("Rerun")" + "?taskId=" + id,
-				type: "POST"
-			}).done(function(res) {
-				if (!res)
-					alert("@TaskStrings.CannotRepeatTask");
-
-				updatePage();
-			});
-		}
-
-		function cancel(id) {
-			$.ajax({
-				url: "@Url.Action("Cancel")" + "?taskId=" + id,
-				type: "POST"
-			}).done(function(res) {
-				if (!res)
-					alert("@TaskStrings.CannotCancelTask");
-
-				updatePage();
-			});
-		}
-
-		function openScheduler(taskId) {
-
-			var schedulerWindowDiv = $("#SchedulerWindow");
-
-			var wnd = schedulerWindowDiv.data("kendoWindow");
-
-			if (!wnd) {
-				wnd = schedulerWindowDiv.kendoWindow(
-				{
-					modal: true,
-					actions: ["Refresh", "Close"],
-					title: '@TaskStrings.RecurrenceSchedule',
-					width: 550,
-					height: 350,
-					close: function () { this.element.empty();}
-				}).data("kendoWindow");
-			}
-
-			wnd.refresh('@Url.Action("Schedule")' + "?taskId=" + taskId);
-
-			wnd.center();
-
-			wnd.open();
-		}
-
-		function scheduleSaved() {
-			$("#SchedulerWindow").data("kendoWindow").close();
-
-			updatePage();
-		}
-
-		$(document).ready(function() {
-
-
-			window.FormRenderedServerTime = kendo.parseDate(@Html.Raw(JsonConvert.SerializeObject(DateTime.Now)));
-
-			AutoUpdateStrategy.updateRequestFunction = updatePage;
-
-			$("#TasksGrid").kendoGrid(
-				{
-					columns: [
-						{ template: $("#gridButtonsTemplate").html(), width: 40 },
-						{ field: "Id", width: 60, filterable: false },
-						{ title: '@TaskStrings.UserName', field: "UserName", filterable: false },
-						{
-							title: '@TaskStrings.Status',
-							template: "<img src='@Url.Content("~/images/TaskStates/")#=IconName#16.png' alt='#=State#'/> #=State#",
-							width: 112,
-							field: "StateId",
-							values: [
-								@(Html.Raw(string.Join(",", Model.States.Select(x => "{text:'" + x.Value + "',value:" + x.Key + "}"))))
-							]
-						},
-						{ title: '@TaskStrings.Schedule', template: "<div class='SheduleDiv'><input class='SheduleInput' type='hidden' value='#=ScheduleCronExpression#' /></div><a class='EditScheduleButton'></a>", width: 167, field: "HasSchedule" },
-						{ title: '@TaskStrings.Progress', template: "<div style='width:155px' class='progress'></div>", width: 167 },
-						{ title: '@TaskStrings.Name', field: "DisplayName" },
-						{ title: '@TaskStrings.Created', template: "#= kendo.toString(kendo.parseDate(CreatedTime), 'dd.MM.yy HH:mm') #", width: 121 },
-						{ title: '@TaskStrings.LastStatusChange', width: 169, template: "#= LastStatusChangeTime == null ? '': kendo.toString(kendo.parseDate(LastStatusChangeTime), 'dd.MM.yy HH:mm') #" },
-						{ title: '@TaskStrings.Message', filterable: false, template: "<div class='message-details message' title='@Html.Raw(TaskStrings.ClickToOpen)'>#=Message == null ? '' : Message#</div>" }
-					],
-					dataSource: new kendo.data.DataSource({
-						transport: {
-							read: function(options) {
-
-								window.clearTimeout(AutoUpdateStrategy.timeoutId);
-
-								var filterPart = "";
-
-								if (options.data.filter)
-									filterPart = "&filterJson=" + encodeURIComponent(JSON.stringify(options.data.filter.filters));
-
-								var requestUrl = "@Url.Action("TasksData", new {showOnlyMine = Model.ShowOnlyMine})" + "&skip=" + options.data.skip + "&take=" + options.data.take + filterPart;
-
-								//если применяют фильтры и url меняется то надо обновлять грид даже если хеш данных совпадает, стираем старый хеш для этого
-								if (window.PreviousRequestUrl != requestUrl) {
-
-									window.PreviousRequestUrl = requestUrl;
-
-									window.LastUpdateHashCode = null;
-								}
-
-								$.ajax({
-									url: requestUrl,
-									dataType: "json",
-									cache: false,
-									success: function(result) {
-
-										window.clearTimeout(AutoUpdateStrategy.timeoutId);
-
-										AutoUpdateStrategy.notifyUpdateRequestEnded();
-
-										if (window.LastUpdateHashCode == result.hashCode) {
-
-											options.error(result);
-
-											return;
-										}
-
-										window.LastUpdateHashCode = result.hashCode;
-
-										var myLastTaskHtml = result.data.myLastTaskHtml;
-
-										if (myLastTaskHtml == null)
-											$("#TaskContainerDiv").hide();
-										else {
-											$("#TaskContainerDiv").show();
-
-											$("#TaskPropsDiv").html(myLastTaskHtml);
-										}
-
-										@if (Model.Notify)
-										{
-											@:notifyTasksChanged(result.data.tasks, @((byte) QA.Core.ProductCatalog.ActionsRunnerModel.State.Running));
-										}
-
-										options.success(result);
-									},
-									error: function(jqXHR) {
-
-										window.clearTimeout(AutoUpdateStrategy.timeoutId);
-
-										AutoUpdateStrategy.notifyUpdateRequestFailed(jqXHR.status);
-
-										options.error(jqXHR);
-									}
-								});
-							}
-						},
-						schema: {
-							data: "data.tasks",
-							total: "data.totalTasks",
-							model: {
-								fields: {
-									StateId: { type: "number" },
-									HasSchedule: { type: "boolean" }
-								}
-							}
-						},
-						serverPaging: true,
-						pageSize: 20,
-						serverFiltering: true
-					}),
-					pageable: true,
-					resizable: true,
-					filterable: {
-						extra: false,
-						messages: {
-							isFalse: '@TaskStrings.No',
-							isTrue: '@TaskStrings.Yes',
-							filter: '@TaskStrings.Apply',
-							clear: '@TaskStrings.Clear'
-						}
-					},
-					dataBound: function() {
-
-						var grid = this;
-
-						$(".progress", this.element).each(function() {
-							var row = $(this).closest("tr");
-							var model = grid.dataItem(row);
-
-							$(this).kendoProgressBar({
-								value: model.Progress,
-								type: "percent"
-							});
-						});
-
-						$(".message-details", this.element).on('click', function(event) {
-							$(event.target).toggleClass("message");
-						});
-
-
-						$(".CancelButton", this.element).each(function() {
-							var row = $(this).closest("tr");
-							var model = grid.dataItem(row);
-
-							$(this).kendoButton(
-							{
-								icon: "cancel",
-								enable: !model.IsCancellationRequested
-							});
-
-							$(this).kendoTooltip({ content: model.IsCancellationRequested ? "@TaskStrings.CancellationRequested" : "@TaskStrings.Cancel" });
-						});
-
-						$(".RerunButton", this.element).each(function() {
-							$(this).kendoButton(
-							{
-								icon: "refresh"
-							});
-
-							$(this).kendoTooltip({ content: "@TaskStrings.Rerun" });
-						});
-
-						$(".SheduleDiv", this.element).each(function() {
-
-							var row = $(this).closest("tr");
-							var model = grid.dataItem(row);
-
-							if (model.HasSchedule) {
-
-								var friendlyCronText = model.ScheduleCronExpression[model.ScheduleCronExpression.length - 1] == "*" ?
-									$(".SheduleInput", this).jqCron({ no_reset_button: true }).jqCronGetInstance().getHumanText() :
-									kendo.toString(GetDateFromCron(model.ScheduleCronExpression), "dd.MM.yyyy HH:mm");
-
-								$(this).text(friendlyCronText).attr("title", friendlyCronText);
-							}
-						});
-
-						$(".EditScheduleButton", this.element).each(function() {
-
-							var row = $(this).closest("tr");
-							var model = grid.dataItem(row);
-
-							$(this).kendoButton(
-							{
-								icon: "calendar",
-								enable: model.ScheduledFromTaskId == null,
-								click: function() { openScheduler(model.Id); }
-							});
-
-							if (model.HasSchedule)
-								$(this).addClass("HasSchedule");
-
-							$(this).kendoTooltip(
-							{
-								content: model.ScheduledFromTaskId == null ?
-									"@TaskStrings.EditRecurrenceSchedule" :
-									"@TaskStrings.EditNotAllowed " + model.ScheduledFromTaskId,
-								position: "right"
-							});
-						});
-					}
-				}
-			);
-		});
-
-		function notifyTasksChanged(tasks, runningStateId) {
-
-			if (!("Notification" in window)) {
-
-				if (window.navigator.userAgent.indexOf("MSIE ") > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
-
-					var sessionStorageIeAlertedKey = "IeAlerted";
-
-					if (!window.sessionStorage.getItem(sessionStorageIeAlertedKey)) {
-						window.setTimeout(function() { alert("Браузер Internet Explorer не поддерживает html5 уведомления. Рекомендуется использовать любой из браузеров: Chrome, Firefox, Safari или Opera."); }, 10);
-
-						window.sessionStorage.setItem(sessionStorageIeAlertedKey, "1");
-					}
-				}
-
-				return;
-			}
-
-			if (Notification.permission == 'denied')
-				return;
-
-			if (Notification.permission != "granted") {
-
-				if (!window.NotificationPermissionRequested)
-					Notification.requestPermission(function() { notifyTasksChanged(tasks, runningStateId); });
-
-				window.NotificationPermissionRequested = true;
-
-				return;
-			}
-
-			if (!window.AlreadyNotifiedTaskIds) {
-				window.AlreadyNotifiedTaskIds = new Object();
-
-				return;
-			}
-
-			for (var i = 0; i < tasks.length; i++) {
-
-				var task = tasks[i];
-
-				var lastStatusChangeTime = task.LastStatusChangeTime == null ? null : kendo.parseDate(task.LastStatusChangeTime);
-
-				if (task.StateId > runningStateId && lastStatusChangeTime != null && lastStatusChangeTime > window.FormRenderedServerTime && !window.AlreadyNotifiedTaskIds[task.Id]) {
-					window.AlreadyNotifiedTaskIds[task.Id] = true;
-
-					var body = "@(TaskStrings.State): " + task.State;
-
-					if (task.Message)
-						body += "\r\n" + task.Message;
-
-					new Notification("@(TaskStrings.Task) " + task.DisplayName + " @(TaskStrings.Processed)",
-					{
-						body: body,
-						icon: '@Url.Content("~/images/TaskStates/")' + task.IconName + '48.png'
-					});
-				}
-			}
-		}
-
-	</script>
+  <script type="text/javascript" defer>
+    window.task = {
+      showOnlyMine: "@(Context.Request.Query["showOnlyMine"])" === "true",
+      allowSchedule: "@(Context.Request.Query["allowSchedule"])" === "true",
+      locale: "@CultureInfo.CurrentUICulture".split("-")[0],
+      statusValues: [
+        @(Html.Raw(string.Join(",", Model.States.Select(x => "{label:'" + x.Value + "',value:" + x.Key + "}"))))
+      ],
+      strings: {
+        userName: '@Html.Raw(TaskStrings.UserName)',
+        status: '@Html.Raw(TaskStrings.Status)',
+        schedule: '@Html.Raw(TaskStrings.Schedule)',
+        progress: '@Html.Raw(TaskStrings.Progress)',
+        name: '@Html.Raw(TaskStrings.Name)',
+        created: '@Html.Raw(TaskStrings.Created)',
+        lastStatusChange: '@Html.Raw(TaskStrings.LastStatusChange)',
+        message: '@Html.Raw(TaskStrings.Message)',
+        isFalse: '@Html.Raw(TaskStrings.No)',
+        isTrue: '@Html.Raw(TaskStrings.Yes)',
+        filter: '@Html.Raw(TaskStrings.Apply)',
+        clear: '@Html.Raw(TaskStrings.Clear)',
+        every: '@Html.Raw(TaskStrings.Every)',
+        year: '@Html.Raw(TaskStrings.Year)',
+        hour: '@Html.Raw(TaskStrings.Hour)',
+        day: '@Html.Raw(TaskStrings.Day)',
+        week: '@Html.Raw(TaskStrings.Week)',
+        month: '@Html.Raw(TaskStrings.Month)',
+        minute: '@Html.Raw(TaskStrings.Minute)',
+        on: '@Html.Raw(TaskStrings.on)',
+        off: '@Html.Raw(TaskStrings.off)',
+        dayOfMonth: '@Html.Raw(TaskStrings.DayOfMonth)',
+        at: '@Html.Raw(TaskStrings.At)',
+        everyDayOfMonth: '@Html.Raw(TaskStrings.EveryDayOfMonth)',
+        everyDayOfWeek: '@Html.Raw(TaskStrings.EveryDayOfWeek)',
+        minutesPastHour: '@Html.Raw(TaskStrings.MinutesPastHour)',
+        taskRecurrenceSchedule: '@Html.Raw(TaskStrings.TaskRecurrenceSchedule)',
+        taskId: '@Html.Raw(TaskStrings.TaskId)',
+        scheduleEnabled: '@Html.Raw(TaskStrings.ScheduleEnabled)',
+        recurrenceMode: '@Html.Raw(TaskStrings.RecurrenceMode)',
+        modeRepeat: '@Html.Raw(TaskStrings.ModeRepeat)',
+        modeOneTime: '@Html.Raw(TaskStrings.ModeOneTime)',
+        recurrencePeriod: '@Html.Raw(TaskStrings.RecurrencePeriod)',
+        periodMinute: '@Html.Raw(TaskStrings.PeriodMinute)',
+        periodHour: '@Html.Raw(TaskStrings.PeriodHour)',
+        periodDay: '@Html.Raw(TaskStrings.PeriodDay)',
+        periodWeek: '@Html.Raw(TaskStrings.PeriodWeek)',
+        periodMonth: '@Html.Raw(TaskStrings.PeriodMonth)',
+        periodYear: '@Html.Raw(TaskStrings.PeriodYear)',
+        monthDays: '@Html.Raw(TaskStrings.MonthDays)',
+        months: '@Html.Raw(TaskStrings.Months)',
+        hours: '@Html.Raw(TaskStrings.Hours)',
+        minutes: '@Html.Raw(TaskStrings.Minutes)',
+        weekDays: '@Html.Raw(TaskStrings.WeekDays)',
+        close: '@Html.Raw(TaskStrings.Close)',
+        apply: '@Html.Raw(TaskStrings.Apply)',
+        cronParseError: '@Html.Raw(TaskStrings.CronParseError)',
+        typicalError: '@Html.Raw(TaskStrings.TypicalError)',
+        all: '@Html.Raw(TaskStrings.All)',
+        sun: '@Html.Raw(TaskStrings.Sun)',
+        mon: '@Html.Raw(TaskStrings.Mon)',
+        tue: '@Html.Raw(TaskStrings.Tue)',
+        wed: '@Html.Raw(TaskStrings.Wed)',
+        thu: '@Html.Raw(TaskStrings.Thu)',
+        fri: '@Html.Raw(TaskStrings.Fri)',
+        sat: '@Html.Raw(TaskStrings.Sat)',
+        jan: '@Html.Raw(TaskStrings.Jan)',
+        feb: '@Html.Raw(TaskStrings.Feb)',
+        mar: '@Html.Raw(TaskStrings.Mar)',
+        apr: '@Html.Raw(TaskStrings.Apr)',
+        may: '@Html.Raw(TaskStrings.May)',
+        jun: '@Html.Raw(TaskStrings.Jun)',
+        jul: '@Html.Raw(TaskStrings.Jul)',
+        aug: '@Html.Raw(TaskStrings.Aug)',
+        sep: '@Html.Raw(TaskStrings.Sep)',
+        oct: '@Html.Raw(TaskStrings.Oct)',
+        nov: '@Html.Raw(TaskStrings.Nov)',
+        dec: '@Html.Raw(TaskStrings.Dec)',
+        state: "@Html.Raw(TaskStrings.State)",
+        task: "@Html.Raw(TaskStrings.Task) ",
+        proceed: "@Html.Raw(TaskStrings.Processed)",
+        customer: "@Html.Raw(TaskStrings.Customer)",
+        created: "@Html.Raw(TaskStrings.Create)",
+        changed: "@Html.Raw(TaskStrings.Changed)",
+        nameFilterValidation: "@Html.Raw(TaskStrings.NameFilterValidation)",
+        fromDate: "@Html.Raw(TaskStrings.FromDate)",
+        toDate: "@Html.Raw(TaskStrings.ToDate)",
+        paginationOf: "@Html.Raw(TaskStrings.PaginationOf)",
+        yes: "@Html.Raw(TaskStrings.Yes)",
+        no: "@Html.Raw(TaskStrings.No)",
+        prompt: "@Html.Raw(TaskStrings.Prompt)",
+        deleteSchedule: "@Html.Raw(TaskStrings.DeleteSchedule)",
+      },
+      notify: {
+        isNotifyActive: "@Model.Notify",
+        runningStateId: "@((byte) QA.Core.ProductCatalog.ActionsRunnerModel.State.Running)",
+        img: '@Url.Content("~/images/TaskStates/")',
+        formRenderedServerTime: "@DateTime.Now.ToString(System.Globalization.CultureInfo.CreateSpecificCulture("en-US"))"
+      }
+    }
+  </script>
+  <script src="~/js/pmrpc.js"></script>
+  <script src="~/js/bundles/Task/Index.js" defer></script>
 }

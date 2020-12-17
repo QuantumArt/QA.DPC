@@ -1,0 +1,9 @@
+$padding-chn-block: 10px;
+
+.channels-block {
+  padding: $padding-chn-block;
+}
+.remove-content-pd > div {
+  margin-left: -$padding-chn-block;
+  margin-right: -$padding-chn-block;
+}

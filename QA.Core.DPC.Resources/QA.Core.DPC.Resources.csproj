@@ -5,18 +5,73 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Compile Update="ControlStrings.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ControlStrings.resx</DependentUpon>
-      </Compile>
+        <Compile Update="ControlStrings.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ControlStrings.resx</DependentUpon>
+        </Compile>
+        <Compile Update="TaskStrings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>TaskStrings.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
+        <Compile Update="HfStrings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>HfStrings.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
+        <Compile Update="ChannelStrings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ChannelStrings.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
+        <Compile Update="ProductCardStrings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>ProductCardStrings.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
+        <Compile Update="SendProductActionStrings.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>SendProductActionStrings.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
+        <Compile Update="RemoteValidationMessages.Designer.cs">
+            <AutoGen>True</AutoGen>
+            <DependentUpon>RemoteValidationMessages.resx</DependentUpon>
+            <DesignTime>True</DesignTime>
+        </Compile>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="ControlStrings.resx">
-        <Generator>PublicResXFileCodeGenerator</Generator>
-        <LastGenOutput>ControlStrings.Designer.cs</LastGenOutput>
-      </EmbeddedResource>
+        <EmbeddedResource Update="ChannelStrings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>ChannelStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="ControlStrings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>ControlStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="HfStrings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>HfStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="TaskStrings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>TaskStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="ProductCardStrings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>ProductCardStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="SendProductActionStrings.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>SendProductActionStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="RemoteValidationMessages.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>RemoteValidationMessages.Designer.cs</LastGenOutput>
+        </EmbeddedResource>        
+
     </ItemGroup>
 
 </Project>

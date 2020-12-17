@@ -54,6 +54,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         public int StateId { get; set; }
 	    public bool HasSchedule { get; set; }
+        public bool ScheduleEnabled { get; set; }
 	    public string ScheduleCronExpression { get; set; }
 
 	    public TaskModel()
@@ -86,9 +87,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			ScheduledFromTaskId = efTask.ScheduledFromTaskID;
 
-	        HasSchedule = efTask.ScheduleID.HasValue && efTask.Schedule.Enabled;
+	        HasSchedule = efTask.ScheduleID.HasValue;
+            
+            ScheduleEnabled = HasSchedule && (efTask.Schedule?.Enabled ?? false);
 
-	        ScheduleCronExpression = HasSchedule ? efTask.Schedule.CronExpression : null;
+	        ScheduleCronExpression = HasSchedule ? efTask.Schedule?.CronExpression : null;
         }
     }
 }

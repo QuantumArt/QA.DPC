@@ -1,0 +1,17 @@
+.field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 5px 10px 5px 0;
+  &__label {
+    width: 18%;
+  }
+}
+.field__element {
+  width: 76%;
+  .bp3-control {
+    margin-bottom: 0;
+  }
+}

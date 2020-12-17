@@ -48,8 +48,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [RequireCustomAction]
         public ActionResult Index(string customerCode)
         {
-            ViewBag.HostId = _qpHelper.HostId;            
+            ViewBag.HostId = _qpHelper.HostId;
             ViewBag.CustomerCode = customerCode;
+
             return View();
 		}
 

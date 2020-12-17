@@ -227,7 +227,7 @@
   </data>
   <data name="UpdateOrCreate" xml:space="preserve">
     <value>обновлять/создавать</value>
-  </data>  
+  </data>
   <data name="DontRemove" xml:space="preserve">
     <value>не удалять</value>
   </data>
@@ -253,10 +253,7 @@
     <value>Отправка продуктов на все витрины (live и stage)</value>
   </data>
   <data name="PartialSendDescription" xml:space="preserve">
-    <value>Данная утилита позволяет публиковать и отправлять продукты на витрины, &lt;br /&gt;
-      а также удалять с витрин архивные, невидимые или по ошибке не удаленные продукты. &lt;br /&gt;
-      В поле следует вводить список Id региональных продуктов (возможные разделители: &quot;,&quot;, &quot;;&quot;, пробел, новая строчка)
-    </value>
+    <value>Данная утилита позволяет публиковать и отправлять продукты на витрины, а также удалять с витрин архивные, невидимые или по ошибке не удаленные продукты. В поле следует вводить список Id региональных продуктов (возможные разделители: &lt;span class="highlighted"&gt;,&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;пробел&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class="highlighted"&gt;новая строчка&lt;/span&gt;)</value>
   </data>
   <data name="SendProducts" xml:space="preserve">
     <value>Отправить продукты</value>
@@ -286,7 +283,7 @@
     <value>Часть продуктов требует публикации перед отправкой на витрины</value>
   </data>
   <data name="ClickPublishAndSendButton" xml:space="preserve">
-    <value>Чтобы опубликовать эти продукты, нажмите кнопку &quot;Публиковать и отправить&quot;</value>
+    <value>Чтобы опубликовать эти продукты, нажмите кнопку "Публиковать и отправить"</value>
   </data>
   <data name="JsonFieldName" xml:space="preserve">
     <value>Имя поля в JSON</value>
@@ -319,32 +316,75 @@
     <value>Настройки кеширования</value>
   </data>
   <data name="ProceedCaching" xml:space="preserve">
-    <value>Кешировать</value>  
+    <value>Кешировать</value>
   </data>
   <data name="DictionaryCachingSettings" xml:space="preserve">
-    <value>Настройки кеширования словарей</value>  
+    <value>Настройки кеширования словарей</value>
   </data>
   <data name="MissingInQp" xml:space="preserve">
-    <value>поля не существует в QP!</value>  
+    <value>Поля не существует в QP!</value>
   </data>
   <data name="EditXml" xml:space="preserve">
-    <value>Править XML</value>  
+    <value>Править XML</value>
   </data>
   <data name="EndEditXml" xml:space="preserve">
-    <value>Завершить правку XML</value>  
+    <value>Завершить правку XML</value>
+  </data>
+  <data name="Seconds" xml:space="preserve">
+    <value>сек</value>
+  </data>
+  <data name="BackToEditing" xml:space="preserve">
+    <value>Обратно к редактированию</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Закрыть</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Выйти</value>
+  </data>
+  <data name="ExitAnyway" xml:space="preserve">
+    <value>Выйти всё равно</value>
+  </data>
+  <data name="HideLog" xml:space="preserve">
+    <value>Спрятать лог</value>
+  </data>
+  <data name="NotInDefinition" xml:space="preserve">
+    <value>Нет в описании</value>
+  </data>
+  <data name="QueryOnClick" xml:space="preserve">
+    <value>Поисковая строка по клику</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="SameDefinition" xml:space="preserve">
+    <value>В описании нет изменений. </value>
+  </data>
+  <data name="SaveAndExit" xml:space="preserve">
+    <value>Сохранить и выйти</value>
+  </data>
+  <data name="ShowLog" xml:space="preserve">
+    <value>Показать лог</value>
+  </data>
+  <data name="WrapLines" xml:space="preserve">
+    <value>Перенос строк</value>
+  </data>
+  <data name="UnsavedChanges" xml:space="preserve">
+    <value>Внесенные изменения не сохранятся. Вы уверены, что хотите выйти?</value>
+  </data>
+  <data name="FormLoadError" xml:space="preserve">
+    <value>Ошибка загрузки формы</value>
+  </data>
+  <data name="FormSaveError" xml:space="preserve">
+    <value>Ошибка сохранения формы</value>
+  </data>
+  <data name="SameForm" xml:space="preserve">
+    <value>Форма не была изменена</value>
+  </data>
+  <data name="ServerNotAvalaible" xml:space="preserve">
+    <value>Сервер недоступен. Переоткройте или обновите вкладку.</value>
+  </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Сессия устарела. Переоткройте или обновите страницу.</value>
   </data>
 </root>
-
-
-        
-        
-
-        
-
-        
-
-        
-
-
-
-        

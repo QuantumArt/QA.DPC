@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -59,11 +56,11 @@ namespace QA.ProductCatalog.Admin.WebApp
             
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
-            
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.Secure = CookieSecurePolicy.SameAsRequest;
-                options.MinimumSameSitePolicy = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax; 
+                options.MinimumSameSitePolicy = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax;
             }); 
             
             services.AddSession(options =>

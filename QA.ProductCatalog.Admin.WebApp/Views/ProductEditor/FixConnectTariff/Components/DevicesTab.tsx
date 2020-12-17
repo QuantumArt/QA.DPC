@@ -1,20 +1,20 @@
 import React, { Component } from "react";
 import { inject } from "react-ioc";
 import { Divider } from "@blueprintjs/core";
-import { FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
-import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
-import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
+import { FieldEditorProps, IGNORE } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
+import { ExtensionEditor } from "ProductEditor/Components/ArticleEditor/ExtensionEditor";
+import { PublicationStatusIcons } from "ProductEditor/Components/PublicationStatusIcons/PublicationStatusIcons";
 import {
   RelationFieldTabs,
   RelationFieldAccordion,
   MultiRelationFieldTags
-} from "Components/FieldEditors/FieldEditors";
+} from "ProductEditor/Components/FieldEditors/FieldEditors";
 import {
   ContentSchema,
   RelationFieldSchema,
   ExtensionFieldSchema
-} from "Models/EditorSchemaModels";
-import { PublicationContext } from "Services/PublicationContext";
+} from "ProductEditor/Models/EditorSchemaModels";
+import { PublicationContext } from "ProductEditor/Services/PublicationContext";
 import { Product, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions, isUniqueRegion } from "../Utils/ProductValidators";

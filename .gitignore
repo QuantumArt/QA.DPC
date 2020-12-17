@@ -244,9 +244,9 @@ _Pvt_Extensions
 .idea/
 *.sln.iml
 
-!**/ClientApp/**/Packages/**
-QA.ProductCatalog.Admin.WebApp/Scripts/Bundles
-QA.ProductCatalog.Admin.WebApp/wwwroot/js/Bundles
+QA.ProductCatalog.Admin.WebApp/wwwroot/js/bundles
 
 HighloadAPI/src
 **/appsettings.*.json
+**/docker-compose.*.yml
+projectfiles.tar

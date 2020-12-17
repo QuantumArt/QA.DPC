@@ -6,16 +6,16 @@ import {
   ContentSchema,
   ExtensionFieldSchema,
   RelationFieldSchema
-} from "Models/EditorSchemaModels";
-import { PublicationContext } from "Services/PublicationContext";
-import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
-import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
+} from "ProductEditor/Models/EditorSchemaModels";
+import { PublicationContext } from "ProductEditor/Services/PublicationContext";
+import { EntityEditor } from "ProductEditor/Components/ArticleEditor/EntityEditor";
+import { ArticleEditor, FieldEditorProps, IGNORE } from "ProductEditor/Components/ArticleEditor/ArticleEditor";
 import {
   RelationFieldAccordion,
   FileFieldEditor,
   MultiRelationFieldTags
-} from "Components/FieldEditors/FieldEditors";
-import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
+} from "ProductEditor/Components/FieldEditors/FieldEditors";
+import { PublicationStatusIcons } from "ProductEditor/Components/PublicationStatusIcons/PublicationStatusIcons";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions, isUniqueRegion } from "../Utils/ProductValidators";

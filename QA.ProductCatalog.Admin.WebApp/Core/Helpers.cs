@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -29,16 +30,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
     {
         public static HtmlString LinkButton(this IHtmlHelper helper, string text, string id, string @class = "")
         {
-            var template = @"<span id='{2}' class='linkButton actionLink'>
+            var template = @"<span id='{2}' class='linkButton actionlink'>
+                <i class='icon fas fa-{1}'></i>
                 <a href='javascript:void(0);'>
-                    <span class='icon {1}'>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                     <span class='text'>{3}</span>
                 </a>
             </span>";
-            return new HtmlString(string.Format(template, "/images/icons/0.gif",
-                @class,
-                id,
-                text));
+            return new HtmlString(string.Format(template, "/images/icons/0.gif", @class, id, text));
         }
 
         public static string GetUniqueId(this IHtmlHelper helper, string key)
@@ -155,6 +153,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
             {
                 case ActionLink actionLink:
                     return helper.DisplayFor(x => actionLink);
+                case FileLink fileLink:
+                    return helper.DisplayFor(x => fileLink);
                 case Label label:
                     return helper.DisplayFor(x => label);
                 case DisplayField df:

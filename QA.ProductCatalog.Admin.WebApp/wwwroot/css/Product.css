@@ -1,0 +1,242 @@
+html,
+body,
+.tabstrip_fullsized {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Links */
+.actionlink {
+  cursor: pointer;
+}
+
+.Ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  display: inline-block;
+  width: 100%;
+  text-overflow: ellipsis;
+}
+
+.Clip a {
+  display: none;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.InlineBlock {
+  display: inline-block;
+}
+
+/* Tabs */
+.tabstrip {
+  outline: none;
+}
+
+.tab-list {
+  padding: 10px 19px 0;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 2px 0;
+}
+
+/* Form Layout */
+.formLayout fieldset {
+  margin: 0 0 1.875rem 0;
+  padding: 10px 5px 0 20px;
+  border: none;
+}
+
+.row-container {
+  padding: 10px 20px;
+}
+
+.formLayout fieldset:first-child {
+  margin-top: 0.625rem;
+}
+
+.formLayout fieldset > legend {
+  padding: 0;
+  font-size: 1.375rem;
+  font-weight: bold;
+}
+
+.formLayout .row {
+  display: flex;
+  align-items: center;
+  min-height: 1em;
+  margin: 0;
+}
+
+.formLayout dt.label {
+  margin: 0;
+  padding: 0 1.625rem 0 20px;
+  width: 13.125rem;
+  font-style: normal;
+  flex-shrink: 0;
+}
+
+.formLayout dd.field {
+  margin: 10px 0;
+  padding: 10px;
+  flex-grow: 1;
+  background-color: rgba(206, 217, 224, 0.2);
+  border-radius: 3px;
+  min-height: 38px;
+}
+
+.formLayout dd.transparent {
+  background-color: initial;
+}
+
+.formLayout input.textbox,
+.formLayout textarea.textbox,
+.formLayout select.dropDownList,
+.formLayout select.listBox {
+  width: 100%;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+/* Panel */
+.is-horizontal > .stack-panel-item {
+  display: inline-block;
+}
+
+/* Icons */
+.icon.fas {
+  color: #106ba3;
+}
+
+.fa-delete::before {
+  content: "\f2ed";
+  color: #c23030;
+}
+
+.fa-add::before {
+  content: "\f055";
+  color: #0d8050;
+}
+
+.inner-groupping-table .is-horizontal .icon {
+  padding: 0 3px;
+}
+
+/* Table */
+.grid-view table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.grid-view table table {
+  table-layout: auto;
+}
+
+.grid-view tr th {
+  background-color: rgba(206, 217, 224, 0.8);
+  padding: 0 5px;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid-view tr th a,
+.grid-view tr th a:hover {
+  text-decoration: none;
+  color: inherit;
+  cursor: auto;
+}
+
+.grid-view .group-row td {
+  padding: 10px 25px;
+  background-color: rgba(206, 217, 224, 0.4);
+}
+
+.inner-groupping-table {
+  border-collapse: collapse;
+}
+
+.inner-groupping-table tbody tr:nth-child(odd) {
+  background-color: rgba(206, 217, 224, 0.2);
+}
+
+.inner-groupping-table tr th:first-child,
+.inner-groupping-table tr td:first-child {
+  padding-left: 20px;
+}
+
+.inner-groupping-table th {
+  text-align: left;
+  font-weight: 500;
+}
+
+.inner-groupping-table th,
+.inner-groupping-table td {
+  padding: 12px 5px 10px 5px;
+}
+
+.inner-groupping-table td:nth-child(2) {
+  min-width: 128px;
+}
+
+.inner-groupping-table td:nth-child(3) {
+  max-width: 300px;
+  text-overflow: ellipsis;
+}
+
+.inner-groupping-table td:nth-child(4) {
+  max-width: 360px;
+  text-overflow: ellipsis;
+}
+
+.grid-view-header {
+  position: relative;
+  margin-bottom: 5px;
+}
+
+.grid-view-header > .toggle-all {
+  display: flex;
+  margin-left: auto;
+}
+
+.label:empty {
+  display: none;
+}
+
+/* Collapsible */
+.collapsible {
+  position: relative;
+}
+
+.collapsible .handle {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+}
+
+.collapsed .handle,
+.collapsed .click-handle {
+  background: rgba(19, 124, 189, 0.3);
+}
+
+.collapsed > fieldset > .gr-wrapper {
+  display: none;
+}
+
+.collapsed > fieldset:after {
+  content: ". . .";
+  margin-left: 2px;
+}
+
+.collapsed.group-row + tr.collapsible-row {
+  display: none;
+}

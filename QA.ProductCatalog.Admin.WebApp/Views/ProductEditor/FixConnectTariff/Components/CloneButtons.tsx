@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { inject } from "react-ioc";
 import { MenuItem, Icon, Intent } from "@blueprintjs/core";
-import { ActionController } from "Services/ActionController";
-import { EntityController } from "Services/EntityController";
-import { RelationController } from "Services/RelationController";
-import { RelationFieldSchema } from "Models/EditorSchemaModels";
+import { ActionController } from "ProductEditor/Services/ActionController";
+import { EntityController } from "ProductEditor/Services/EntityController";
+import { RelationController } from "ProductEditor/Services/RelationController";
+import { RelationFieldSchema } from "ProductEditor/Models/EditorSchemaModels";
 import { Product, MarketingProduct } from "../TypeScriptSchema";
 
 interface CloneButtonsProps {

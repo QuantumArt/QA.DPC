@@ -9,7 +9,11 @@ namespace QA.ProductCatalog.Admin.WebApp
             UserId = 1;
             WatcherInterval = TimeSpan.FromMinutes(1);
         }
-        
+
+        public string Version { get; set; }
+
+        public string BuildVersion { get; set; }
+
         public int UserId { get; set; }
         
         public bool UseAuthorization { get; set; }

@@ -1,0 +1,14 @@
+.form-field-element {
+  width: 100%;
+
+  &--inline {
+    display: inline;
+    .bp3-input {
+      width: auto;
+    }
+  }
+
+  &--hide {
+    visibility: hidden;
+  }
+}

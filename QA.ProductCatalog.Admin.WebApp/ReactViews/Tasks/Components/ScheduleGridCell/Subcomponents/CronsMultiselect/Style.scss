@@ -1,0 +1,11 @@
+.crons-menuitem {
+  font-family: SFProText, sans-serif;
+  font-size: 12px;
+}
+.crons-select-popover {
+  .bp3-menu {
+    max-height: 160px;
+    min-width: 90px;
+    overflow-x: auto;
+  }
+}

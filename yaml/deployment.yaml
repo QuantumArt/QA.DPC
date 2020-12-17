@@ -1,0 +1,355 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-admin
+  namespace: dpc
+  labels:
+    app: dpc-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-admin
+  template:
+    metadata:
+      labels:
+        app: dpc-admin
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-admin
+          image: ||registry||/dpc-admin:||version||
+          env:
+            - name: Integration__RestNotificationUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: NOTIFICATION_SENDER_HOST
+            - name: Integration__HighloadFrontSyncUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: SYNC_API_HOST            
+            - name: Integration__TarantoolSyncUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: TARANTOOL_SYNC_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz-config
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-api
+  namespace: dpc
+  labels:
+    app: dpc-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-api
+  template:
+    metadata:
+      labels:
+        app: dpc-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-api
+          image: ||registry||/dpc-api:||version||
+          env:
+            - name: Integration__RestNotificationUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: NOTIFICATION_SENDER_HOST
+            - name: Integration__TarantoolSyncUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: TARANTOOL_SYNC_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz-config
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-notification-sender
+  namespace: dpc
+  labels:
+    app: dpc-notification-sender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-notification-sender
+  template:
+    metadata:
+      labels:
+        app: dpc-notification-sender
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-notification-sender
+          image: ||registry||/dpc-notification-sender:||version||
+          env:
+            - name: Integration__DpcWebApiUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: API_HOST
+            - name: Integration__TarantoolApiUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: TARANTOOL_API_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Properties__InstanceId
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: INSTANCE_ID
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz-config
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-actions-service
+  namespace: dpc
+  labels:
+    app: dpc-actions-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-actions-service
+  template:
+    metadata:
+      labels:
+        app: dpc-actions-service
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-actions-service
+          image: ||registry||/dpc-actions-service:||version||
+          env:
+            - name: Integration__RestNotificationUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: NOTIFICATION_SENDER_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz-config
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-front
+  namespace: dpc
+  labels:
+    app: dpc-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-front
+  template:
+    metadata:
+      labels:
+        app: dpc-front
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-front
+          image: ||registry||/dpc-front:||version||
+          env:
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Data__InstanceId
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: INSTANCE_ID
+            - name: Data__UseProductVersions
+              value: "true"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz-config
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-search-api
+  namespace: dpc
+  labels:
+    app: dpc-search-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-search-api
+  template:
+    metadata:
+      labels:
+        app: dpc-search-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-search-api
+          image: ||registry||/dpc-highload-front:||version||
+          env:
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Data__CanUpdate
+              value: "false"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz-config
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-sync-api
+  namespace: dpc
+  labels:
+    app: dpc-sync-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-sync-api
+  template:
+    metadata:
+      labels:
+        app: dpc-sync-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-sync-api
+          image: ||registry||/dpc-highload-front:||version||
+          env:
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Data__InstanceId
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: INSTANCE_ID
+            - name: Data__CanUpdate
+              value: "true"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: tz-config
+      volumes:
+        - name: tz-config
+          hostPath:
+            path: /usr/share/zoneinfo/Europe/Moscow

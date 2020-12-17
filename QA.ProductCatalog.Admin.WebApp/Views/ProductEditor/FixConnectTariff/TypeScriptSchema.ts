@@ -3,7 +3,7 @@
  * @see ProductEditorController.TypeScriptSchema()
  */
 // @ts-ignore
-import { EntityObject, ExtensionObject, TablesObject, IArray, IMap } from "Models/EditorDataModels";
+import { EntityObject, ExtensionObject, TablesObject, IArray, IMap } from "ProductEditor/Models/EditorDataModels";
 
 /** Типизация хранилища данных */
 export interface Tables extends TablesObject {

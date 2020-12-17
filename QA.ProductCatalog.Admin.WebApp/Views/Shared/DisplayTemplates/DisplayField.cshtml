@@ -1,6 +1,5 @@
 ﻿@using QA.Core.Models.Entities
 @model QA.Core.DPC.UI.Controls.DisplayField
-<!--asdasd-->
 @if (Model == null) { return; }
 @{ var field = Model.Value; }
 @if (field == null) { return; }
@@ -16,31 +15,33 @@
     <dd class="plain-field-value field">
         @if (field.PlainFieldType == PlainFieldType.Boolean)
         {
-            <input type="checkbox"
-                   disabled="disabled" @(value == "1" ? "checked='checked'" : "")
-                   data-value="@(field.NativeValue)" />
+            <input class="bp3-input bp3-fill" type="checkbox" disabled="disabled" @(value == "1" ? "checked='checked'" : "") data-value="@(field.NativeValue)" />
         }
         else if (field.PlainFieldType == PlainFieldType.VisualEdit|| field.PlainFieldType == PlainFieldType.Textbox)
         {
-            <textarea class="plainfield__text__area" readonly="readonly" cols="65" rows="5">@value</textarea>
+            <textarea class="bp3-input bp3-fill" readonly="readonly" cols="65" rows="5">@value</textarea>
         }
         else if (field.PlainFieldType == PlainFieldType.String)
         {
-            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />        
+            <input type="text" class="bp3-input bp3-fill" readonly="readonly" value="@value" />
         }
         else if (field.PlainFieldType == PlainFieldType.Image || field.PlainFieldType == PlainFieldType.DynamicImage)
         {
-            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
-            <a href="@Model.GetFileUrl(field)" target="_blank" title="Открыть изображение в новой вкладке">
-                <span class="icon image_link"><img src="@Url.Content("~/images/icons/0.gif")"></span>
-            </a>
+            <div class="bp3-input-group">
+              <input type="text" class="bp3-input bp3-fill" readonly="readonly" value="@value" />
+              <a href="@Model.GetFileUrl(field)" target="_blank" role="button" class="bp3-button bp3-minimal bp3-intent-success" title="Открыть изображение в новой вкладке">
+                  <i class="icon fas fa-external-link-alt"></i>
+              </a>
+            </div>
         }
         else if (field.PlainFieldType == PlainFieldType.File)
         {
-            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
-            <a href="@Model.GetFileUrl(field)" target="_blank"  title="Открыть файл в новой вкладке">
-                <span class="icon folder_link"><img src="@Url.Content("~/images/icons/0.gif")"></span>
-            </a>
+            <div class="bp3-input-group">
+              <input type="text" class="bp3-input bp3-fill" readonly="readonly" value="@value" />
+              <a href="@Model.GetFileUrl(field)" target="_blank" role="button" class="bp3-button bp3-minimal bp3-intent-success" title="Открыть файл в новой вкладке">
+                  <i class="icon fas fa-external-link-alt"></i>
+              </a>
+            </div>
         }
         else
         {

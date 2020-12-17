@@ -36,19 +36,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.ImpactService.API\QA.ProductCatalog.ImpactService.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestData\50sms.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\bit.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\free.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="TestData\package_group_option.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -70,9 +61,6 @@
     <None Update="TestData\simple3_option.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\simple4_option.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="TestData\simple_package_force_option.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -86,12 +74,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\simple_tariff_order.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\zero.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="TestData\zone1.orig.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

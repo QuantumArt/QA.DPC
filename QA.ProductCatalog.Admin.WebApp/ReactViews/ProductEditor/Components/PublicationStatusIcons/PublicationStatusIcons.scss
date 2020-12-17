@@ -1,0 +1,24 @@
+@import "../../../../node_modules/@blueprintjs/core/lib/scss/variables";
+
+.publication-status-icon {
+  display: inline-block;
+  padding: 0 2px;
+  width: 18px;
+  color: $orange3;
+  border: 2px solid $orange3;
+  border-radius: 4px;
+  text-align: center;
+  font-family: monospace;
+  font-weight: bold;
+  cursor: default;
+  user-select: none;
+
+  &--sync {
+    color: $green3;
+    border-color: $green3;
+  }
+
+  &:not(:last-child) {
+    margin-right: 4px;
+  }
+}
