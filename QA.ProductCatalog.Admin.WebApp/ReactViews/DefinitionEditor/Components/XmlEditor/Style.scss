@@ -3,10 +3,9 @@
 .xml-editor {
   &__form-view {
     position: fixed;
-    padding: 30px 20px 20px;
     width: 100%;
     height: 100%;
     z-index: 20;
-    background-color: $light-gray5;
+    background-color: $white;
   }
 }

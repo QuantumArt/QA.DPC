@@ -1,5 +1,5 @@
 import XmlEditorStore from "./XmlEditorStore";
-import { action, observable, reaction, runInAction } from "mobx";
+import { action, observable, runInAction } from "mobx";
 import ApiService from "DefinitionEditor/ApiService";
 import { EnumBackendModel, IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
 import { BackendEnumType, ModelType } from "DefinitionEditor/Enums";
@@ -88,9 +88,9 @@ export default class FormStore {
   };
 
   /**
-   * @param deps - массив зависимостей содержащий name полей, которые не будут скрыты
-   * @param reverseLogic - массив deps работает наоборот,
-   * @param value - вместо противоположного значения будет установлено переданное,
+   * @param deps Массив зависимостей содержащий name полей, которые не будут скрыты
+   * @param reverseLogic Массив deps работает наоборот,
+   * @param value Вместо противоположного значения будет установлено переданное,
    * */
   hideUiFields = (deps: string[] = [], reverseLogic: boolean = false, value?: boolean) => {
     forIn(this.UIEditModel, async model => {
@@ -314,6 +314,9 @@ export default class FormStore {
           );
           break;
 
+        /**
+         * input models
+         * */
         case "FieldName":
         case "ContentName":
         case "DefaultCachePeriod":
@@ -322,7 +325,15 @@ export default class FormStore {
         case "VirtualPath":
           acc[field] = new InputParsedModel(field, l("Path"), fieldValue, "", hideIfInDefinition);
           break;
-
+        case "ObjectToRemovePath":
+          acc[field] = new InputParsedModel(
+            field,
+            l("RemovePath"),
+            fieldValue,
+            "",
+            hideIfInDefinition
+          );
+          break;
         case "FieldTitle":
           acc[field] = new InputParsedModel(
             field,

@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useStores } from "DefinitionEditor";
+import cn from "classnames";
 import { Form } from "react-final-form";
 import FormField from "../FormField";
 import FormFieldWrapper from "../FormFieldWrap";
@@ -8,10 +9,14 @@ import "./Style.scss";
 import FormErrorDialog from "DefinitionEditor/Components/Forms/FormErrorDialog";
 import { OperationState } from "Shared/Enums";
 import { keys } from "lodash";
-import { Loading } from "DefinitionEditor/Components";
 import { CheckboxParsedModel } from "Shared/Utils";
+import { Intent, Spinner } from "@blueprintjs/core";
 
-const EditForm = observer(() => {
+interface Props {
+  width: string;
+}
+
+const EditForm = observer(({ width }: Props) => {
   const { formStore, controlsStore } = useStores();
 
   useEffect(() => {
@@ -31,7 +36,12 @@ const EditForm = observer(() => {
   }, [formStore?.UIEditModel["CacheEnabled"]]);
 
   return (
-    <div className="forms-wrapper">
+    <div
+      className={cn("forms-wrapper", {
+        "forms-wrapper--loading": formStore.operationState === OperationState.Pending
+      })}
+      style={{ width }}
+    >
       {formStore.UIEditModel &&
         (formStore.operationState === OperationState.Success ||
           formStore.operationState === OperationState.Error) && (
@@ -55,10 +65,9 @@ const EditForm = observer(() => {
             }}
           />
         )}
-      <Loading
-        className="forms-wrapper__loading"
-        active={formStore.operationState === OperationState.Pending}
-      />
+      {formStore.operationState === OperationState.Pending && (
+        <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_LARGE} />
+      )}
       <FormErrorDialog />
     </div>
   );

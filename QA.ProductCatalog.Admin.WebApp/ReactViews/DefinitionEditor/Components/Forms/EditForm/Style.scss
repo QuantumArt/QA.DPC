@@ -1,7 +1,13 @@
 .forms-wrapper {
-  width: calc(100% - 383px);
-  height: 86vh;
-  overflow-y: auto;
+  display: flex;
+  height: 100%;
+  padding: 30px 20px 20px;
+  &--loading {
+    justify-content: center;
+  }
+  form {
+    width: 100%;
+  }
   &__loading.sk-circle {
     width: 20px;
     height: 20px;

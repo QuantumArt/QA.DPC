@@ -4,7 +4,7 @@ import { EnumBackendModel } from "DefinitionEditor/ApiService/ApiInterfaces";
 import { action, observable } from "mobx";
 import { isUndefined } from "lodash";
 
-export declare type ParsedModelType =
+export type ParsedModelType =
   | ICheckboxParsedModel
   | IInputParsedModel
   | ISelectParsedModel
