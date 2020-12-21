@@ -11,6 +11,8 @@ using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Binders;
+using System;
+using System.Collections.Generic;
 using Unity;
 
 namespace QA.ProductCatalog.Admin.WebApp
@@ -89,7 +91,9 @@ namespace QA.ProductCatalog.Admin.WebApp
             }
             else
             {
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);            }
+                var redirectMap = new Dictionary<Type, string>() { { typeof(ResolutionFailedException), "/Error/Consolidation" } };
+                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory, redirectMap).Action);
+            }
 
             app.UseStaticFiles();
             app.UseCookiePolicy();

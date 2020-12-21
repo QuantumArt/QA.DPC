@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using QA.Core.DPC.QP.Services;
 using Quartz;
 using Quartz.Core;
 using Quartz.Impl;
@@ -16,9 +17,10 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 	    private IScheduler _scheduler;
 
-	    public SchedulerFactory()
+	    public SchedulerFactory(IIdentityProvider identityProvider)
 	    {
-		    _scheduler = CreateScheduler();
+			var customerCode = identityProvider.Identity.CustomerCode;
+			_scheduler = CreateScheduler(customerCode);
 	    }
 		
 		public ICollection<IScheduler> AllSchedulers => new[] {_scheduler};
@@ -33,7 +35,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			return _scheduler;
 		}
 
-		private static IScheduler CreateScheduler()
+		private static IScheduler CreateScheduler(string customerCode)
 		{
 			var ramJobStore = new RAMJobStore();
 
@@ -41,7 +43,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			{
 				JobRunShellFactory = new StdJobRunShellFactory(),
 				JobStore = ramJobStore,
-				Name = "TasksScheduler"
+				Name = $"TasksScheduler_{customerCode}"
 			};
 
 			var threadPool = new DefaultThreadPool();

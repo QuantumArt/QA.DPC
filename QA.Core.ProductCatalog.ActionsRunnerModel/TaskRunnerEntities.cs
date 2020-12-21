@@ -20,8 +20,14 @@
         
         public static TaskRunnerEntities Get(IConnectionProvider provider)
         {
-            TaskRunnerEntities result = null;
+
             var customerConfig = provider.GetCustomer(Service.Actions);
+            return Get(customerConfig);
+        }
+
+        public static TaskRunnerEntities Get(Customer customerConfig)
+        {
+            TaskRunnerEntities result = null;
             if (!String.IsNullOrEmpty(customerConfig.ConnectionString))
             {
                 if (customerConfig.DatabaseType == DatabaseType.Postgres)
@@ -39,7 +45,8 @@
             }
             return result;
         }
-        
+
+
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Task> Tasks { get; set; }
         public DbSet<TaskState> TaskStates { get; set; }

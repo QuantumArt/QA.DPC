@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Exceptions;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -73,7 +74,7 @@ namespace QA.Core.DPC.QP.Services
                 return Resolve<T>(key, false);
             }
 
-            throw new Exception($"Can't resolve {typeof(T).Name} for {key}");
+            throw new ConsolidationException($"Can't resolve {typeof(T).Name} for {key}");
         }
 
         public T Resolve<T>(string key)
