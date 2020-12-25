@@ -441,7 +441,6 @@ export default class FormStore {
          * textarea models
          * */
         case "RelationCondition":
-          if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
           acc[field] = new TextAreaParsedModel(
             field,
             l(field),
@@ -456,7 +455,6 @@ export default class FormStore {
           break;
 
         case "ClonePrototypeCondition":
-          if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
           acc[field] = new TextAreaParsedModel(
             field,
             l(field),
