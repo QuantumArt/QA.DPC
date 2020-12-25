@@ -152,19 +152,13 @@ export default class FormStore {
     IsFromDictionaries: boolean
   ) {
     const fieldList = [];
-    fieldList.push("ContentId");
-    fieldList.push("AlreadyCachedAsDictionary");
+    fieldList.push("ContentId", "AlreadyCachedAsDictionary", "ContentName", "IsFromDictionaries");
     if (!AlreadyCachedAsDictionary) {
-      fieldList.push("CacheEnabled");
-      fieldList.push("CachePeriod");
+      fieldList.push("CacheEnabled", "CachePeriod");
     }
-    fieldList.push("ContentName");
     if (!IsFromDictionaries) {
-      fieldList.push("IsReadOnly");
-      fieldList.push("LoadAllPlainFields");
-      fieldList.push("PublishingMode");
+      fieldList.push("IsReadOnly", "LoadAllPlainFields", "PublishingMode");
     }
-    fieldList.push("IsFromDictionaries");
 
     return fieldList;
   }
@@ -175,29 +169,25 @@ export default class FormStore {
     if (fieldType === FieldDefinitionType.Dictionaries) {
       fieldList.push("DefaultCachePeriod");
     } else {
-      fieldList.push("FieldId");
-      fieldList.push("FieldName");
-      fieldList.push("FieldTitle");
+      fieldList.push("FieldId", "FieldName", "FieldTitle");
     }
-
     if (
       fieldType === FieldDefinitionType.EntityField ||
       fieldType === FieldDefinitionType.BackwardRelationField ||
       fieldType === FieldDefinitionType.ExtensionField
     ) {
-      fieldList.push("CloningMode");
-      fieldList.push("DeletingMode");
-      fieldList.push("UpdatingMode");
-
+      fieldList.push("CloningMode", "DeletingMode", "UpdatingMode");
       if (
         fieldType === FieldDefinitionType.EntityField ||
         fieldType === FieldDefinitionType.BackwardRelationField
       ) {
-        fieldList.push("PreloadingMode");
-        fieldList.push("RelationCondition");
-        fieldList.push("ClonePrototypeCondition");
-        fieldList.push("RelatedContentName");
-        fieldList.push("RelatedContentId");
+        fieldList.push(
+          "PreloadingMode",
+          "RelationCondition",
+          "ClonePrototypeCondition",
+          "RelatedContentName",
+          "RelatedContentId"
+        );
       } else if (fieldType === FieldDefinitionType.ExtensionField) {
         fieldList.push("IsClassifier");
       }
@@ -207,14 +197,10 @@ export default class FormStore {
     ) {
       fieldList.push("VirtualPath");
       if (fieldType === FieldDefinitionType.VirtualField) {
-        fieldList.push("ObjectToRemovePath");
-        fieldList.push("Converter");
+        fieldList.push("ObjectToRemovePath", "Converter");
       }
     } else if (fieldType === FieldDefinitionType.PlainField) {
-      fieldList.push("SkipCData");
-      fieldList.push("LoadLikeImage");
-      fieldList.push("SkipCData");
-      fieldList.push("LoadLikeImage");
+      fieldList.push("SkipCData", "LoadLikeImage");
     }
     return fieldList;
   }
