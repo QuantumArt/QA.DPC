@@ -9,5 +9,11 @@ namespace QA.Core.DPC.QP.Exceptions
         {
 
         }
+
+        public ConsolidationException(string message, Exception innerException)
+          : base(message, innerException)
+        {
+
+        }
     }
 }

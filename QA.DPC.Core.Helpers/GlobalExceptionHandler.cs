@@ -34,7 +34,8 @@ namespace QA.DPC.Core.Helpers
 
                     if (_redirectMap.TryGetValue(ex.Error.GetType(), out string redirect))
                     {
-                        context.Response.Redirect(redirect);
+                        var url = $"{context.Request.PathBase}{redirect}";
+                        context.Response.Redirect(url);
                     }
                     else
                     {

@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using Npgsql;
+using QA.Core.DPC.QP.Exceptions;
 using QA.Core.DPC.QP.Models;
 using QA.Core.Logger;
 using QP.ConfigurationService.Models;
@@ -32,24 +33,31 @@ namespace QA.Core.DPC.QP.Services
 
         public Customer GetCustomer(string customerCode)
         {
-            DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
-            DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
-            var configuration = DBConnector.GetQpConfiguration().Result;
-            var customerConfiguration = configuration.Customers.FirstOrDefault(c => c.Name == customerCode);
-            if (customerConfiguration == null)
+            try
             {
-                if (customerCode == SingleCustomerCoreProvider.Key)
+                DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
+                DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
+                var configuration = DBConnector.GetQpConfiguration().Result;
+                var customerConfiguration = configuration.Customers.FirstOrDefault(c => c.Name == customerCode);
+                if (customerConfiguration == null)
                 {
-                    return new Customer() { CustomerCode = SingleCustomerCoreProvider.Key};
+                    if (customerCode == SingleCustomerCoreProvider.Key)
+                    {
+                        return new Customer() { CustomerCode = SingleCustomerCoreProvider.Key };
+                    }
+                    throw new ConsolidationException($"Customer code '{customerCode}' not found");
                 }
-                throw new Exception($"Customer code '{customerCode}' not found");
+                return new Customer
+                {
+                    ConnectionString = customerConfiguration.ConnectionString.Replace("Provider=SQLOLEDB;", ""),
+                    CustomerCode = customerConfiguration.Name,
+                    DatabaseType = customerConfiguration.DbType
+                };
             }
-            return new Customer
+            catch (Exception ex)
             {
-                ConnectionString = customerConfiguration.ConnectionString.Replace("Provider=SQLOLEDB;", ""),
-                CustomerCode = customerConfiguration.Name,
-                DatabaseType = customerConfiguration.DbType
-            };
+                throw new ConsolidationException($"Customer code '{customerCode}' not found", ex);
+            }
         }
 
         public Customer[] GetCustomers()

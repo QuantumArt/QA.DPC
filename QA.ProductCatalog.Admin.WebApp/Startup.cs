@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QA.Core.DPC.Loader;
+using QA.Core.DPC.QP.Exceptions;
 using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Binders;
@@ -19,6 +20,8 @@ namespace QA.ProductCatalog.Admin.WebApp
 {
     public class Startup
     {
+        public const string ErrorPage = "/Error/Consolidation";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -91,7 +94,11 @@ namespace QA.ProductCatalog.Admin.WebApp
             }
             else
             {
-                var redirectMap = new Dictionary<Type, string>() { { typeof(ResolutionFailedException), "/Error/Consolidation" } };
+                
+                var redirectMap = new Dictionary<Type, string>() {
+                    { typeof(InvalidOperationException), ErrorPage },
+                    { typeof(ResolutionFailedException), ErrorPage }
+                };
                 app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory, redirectMap).Action);
             }
 
