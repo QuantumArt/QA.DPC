@@ -43,7 +43,7 @@ namespace QA.ProductCatalog.WebApi.Filters
             join content_{2}_united services on link.r_item_id = services.CONTENT_ITEM_ID
             where
             (@token is null and tokens.Name = 'Default' or tokens.AccessToken = @token) 
-            and services.Slug = @slug and services.Version = @version 
+            and lower(services.Slug) = @slug and lower(services.Version) = @version 
             and auth.Visible = 1 and auth.Archive = 0 
             and tokens.Visible = 1 and tokens.Archive = 0 
             and services.Visible = 1 and services.Archive = 0";
@@ -160,8 +160,8 @@ namespace QA.ProductCatalog.WebApi.Filters
                 else
                 {
                     dbCommand.CommandText = GetServiceQuery(method, customer.DatabaseType);
-                    dbCommand.Parameters.AddWithValue("@slug", slug);
-                    dbCommand.Parameters.AddWithValue("@version", version);
+                    dbCommand.Parameters.AddWithValue("@slug", slug.ToLower());
+                    dbCommand.Parameters.AddWithValue("@version", version.ToLower());
                 }
 
                 var tokenParameter = dbCommand.Parameters.AddWithValue("@token", (object) token ?? DBNull.Value);
