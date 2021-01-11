@@ -39,12 +39,14 @@ namespace QA.Core.DPC.QP.Services
                 try
                 {
                     _logger.LogInfo(() => "Before getting customers");
-                    actualCustomers = _customerProvider.GetCustomers(out string[] notConsolidatedCodes);
-                    _factory.NotConsolidatedCodes = notConsolidatedCodes;
+                    var allCustomers = _customerProvider.GetCustomers(onlyConsolidated:false);
+                    _factory.NotConsolidatedCodes = allCustomers.Where(c => !c.IsConsolidated).Select(c => c.CustomerCode).ToArray();
+                    actualCustomers = allCustomers.Where(c => c.IsConsolidated).ToArray();
                     _logger.LogInfo(() => "After getting customers: " + actualCustomers.Length);
                 }
                 catch (Exception ex)
                 {
+                    _factory.NotConsolidatedCodes = new string[0];
                     _logger.ErrorException("Can't get customers data", ex);
                 }
 

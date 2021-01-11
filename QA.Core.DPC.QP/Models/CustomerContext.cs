@@ -9,13 +9,11 @@ namespace QA.Core.DPC.QP.Models
         public CustomerState State { get; set; }
         public Dictionary<Type, object> Container { get; set; }
 
-
-        public CustomerContext(Customer customer)
+        public CustomerContext(Customer customer, CustomerState state = CustomerState.Creating)
         {
             Customer = customer;
-            State = CustomerState.Creating;
+            State = state;
             Container = new Dictionary<Type, object>();
         }
-
     }
 }

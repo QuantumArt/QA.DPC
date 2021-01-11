@@ -48,8 +48,7 @@ namespace QA.Core.DPC.QP.Services
                 if (!string.IsNullOrEmpty(key))
                 {
                     var customer = _customerProvider.GetCustomer(key);
-                    var context = new CustomerContext(customer);
-                    context.State = CustomerState.Creating;
+                    var context = new CustomerContext(customer, CustomerState.Creating);
                     CustomerMap[key] = context;
                     OnRegister((IRegistrationContext)this , context.Customer);
                     context.State = CustomerState.Active;

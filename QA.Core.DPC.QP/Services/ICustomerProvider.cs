@@ -6,7 +6,6 @@ namespace QA.Core.DPC.QP.Services
     {
         string GetConnectionString(string customerCode);
         Customer GetCustomer(string customerCode);
-        Customer[] GetCustomers(out string[] notConsolidatedCodes);
-        Customer[] GetCustomers();
+        Customer[] GetCustomers(bool onlyConsolidated = true);
     }
 }

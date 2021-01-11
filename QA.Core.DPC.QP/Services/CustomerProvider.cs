@@ -60,10 +60,9 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public Customer[] GetCustomers(out string[] notConsolidatedCodes)
+        public Customer[] GetCustomers(bool onlyConsolidated = true)
         {
             var result = new Customer[] { };
-            notConsolidatedCodes = new string[0];
             DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
             DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
             _logger.LogInfo(() => $"Config service url :{DBConnector.ConfigServiceUrl}");
@@ -79,24 +78,16 @@ namespace QA.Core.DPC.QP.Services
                             CustomerCode = c.Name,
                             DatabaseType = c.DbType
                         })
-                        .Where(IsDpcMode)
+                        .Select(UpdateIsConsolidated)
+                        .Where(c => !onlyConsolidated || c.IsConsolidated)
                         .ToArray();
-
-                var consolidatedCodes = result.Select(c => c.CustomerCode).ToArray();
-                var allCodes = customers.Select(c => c.Name).ToArray();
-                notConsolidatedCodes = allCodes.Except(consolidatedCodes).ToArray();
             }
             
             _logger.LogInfo(() => $"Customers after filtering: {result.Length}");
             return result;
         }
 
-        public Customer[] GetCustomers()
-        {
-            return GetCustomers(out string[] notConsolidatedCodes);
-        }
-
-        public bool IsDpcMode(Customer customer)
+        private Customer UpdateIsConsolidated(Customer customer)
         {
             try
             {
@@ -106,13 +97,15 @@ namespace QA.Core.DPC.QP.Services
                     : new NpgsqlConnectionStringBuilder(customer.ConnectionString) {CommandTimeout = Timeout};
                 var connector = new DBConnector(builder.ConnectionString, customer.DatabaseType);
                 var command =  connector.CreateDbCommand("SELECT USE_DPC FROM DB");
-                return (bool)connector.GetRealScalarData(command);
+                customer.IsConsolidated = (bool)connector.GetRealScalarData(command);
             }
             catch(Exception)
             {
+                customer.IsConsolidated = false;
                 _logger.LogError(() => $"Customer code {customer.CustomerCode} is not accessible");
-                return false;
             }
+
+            return customer;
         }   
     }
 }

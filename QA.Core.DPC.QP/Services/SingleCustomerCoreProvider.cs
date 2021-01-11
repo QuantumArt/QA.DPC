@@ -47,23 +47,18 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public Customer[] GetCustomers(out string[] notConsolidatedCodes)
+        public Customer[] GetCustomers(bool onlyConsolidated = true)
         {
-            notConsolidatedCodes = new string[0];
             return new[]
             {
                 new Customer
                 {
                     ConnectionString = _cnnProps.DpcConnectionString,
                     DatabaseType = _cnnProps.GetDatabaseType(),
+                    IsConsolidated = true,
                     CustomerCode = Key
                 }
             };
-        }
-
-        public Customer[] GetCustomers()
-        {
-            return GetCustomers(out string[] notConsolidatedCodes);
         }
     }
 }
