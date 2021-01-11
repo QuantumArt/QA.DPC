@@ -47,8 +47,9 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public Customer[] GetCustomers()
+        public Customer[] GetCustomers(out string[] notConsolidatedCodes)
         {
+            notConsolidatedCodes = new string[0];
             return new[]
             {
                 new Customer
@@ -58,6 +59,11 @@ namespace QA.Core.DPC.QP.Services
                     CustomerCode = Key
                 }
             };
+        }
+
+        public Customer[] GetCustomers()
+        {
+            return GetCustomers(out string[] notConsolidatedCodes);
         }
     }
 }

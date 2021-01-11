@@ -60,9 +60,10 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public Customer[] GetCustomers()
+        public Customer[] GetCustomers(out string[] notConsolidatedCodes)
         {
             var result = new Customer[] { };
+            notConsolidatedCodes = new string[0];
             DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
             DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
             _logger.LogInfo(() => $"Config service url :{DBConnector.ConfigServiceUrl}");
@@ -79,11 +80,20 @@ namespace QA.Core.DPC.QP.Services
                             DatabaseType = c.DbType
                         })
                         .Where(IsDpcMode)
-                        .ToArray();             
+                        .ToArray();
+
+                var consolidatedCodes = result.Select(c => c.CustomerCode).ToArray();
+                var allCodes = customers.Select(c => c.Name).ToArray();
+                notConsolidatedCodes = allCodes.Except(consolidatedCodes).ToArray();
             }
             
             _logger.LogInfo(() => $"Customers after filtering: {result.Length}");
             return result;
+        }
+
+        public Customer[] GetCustomers()
+        {
+            return GetCustomers(out string[] notConsolidatedCodes);
         }
 
         public bool IsDpcMode(Customer customer)

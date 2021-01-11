@@ -1,9 +1,10 @@
-﻿using QA.Core.Logger;
+﻿using QA.Core.DPC.QP.Exceptions;
+using QA.Core.DPC.QP.Models;
+using QA.Core.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using QA.Core.DPC.QP.Models;
-using QA.Core.DPC.QP.Exceptions;
+using System.Threading;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -11,31 +12,31 @@ namespace QA.Core.DPC.QP.Services
     {
         private readonly ILogger _logger;
         private readonly ICustomerProvider _customerProvider;
-        private readonly Dictionary<string, Dictionary<Type, object>> _container;
         private readonly bool _autoRegister;
         private readonly object _locker;
-        public Dictionary<string, string> Invalidator { get; private set; }
+        public string[] NotConsolidatedCodes { get; set; }
+        public Dictionary<string, CustomerContext> CustomerMap { get; private set; }
 
         public FactoryBase(ICustomerProvider customerProvider, ILogger logger, bool autoRegister)
         {
             _logger = logger;
             _customerProvider = customerProvider;
             _autoRegister = autoRegister;
-            _container = new Dictionary<string, Dictionary<Type, object>>();
-            Invalidator = new Dictionary<string, string>();
+            CustomerMap = new Dictionary<string, CustomerContext>();
             _locker = new object();
         }
 
         void IRegistrationContext.Register<T>(string key, T value)
         {            
-            if (!_container.TryGetValue(key, out var internalContainer))
+            if (CustomerMap.TryGetValue(key, out var context))
             {
-                internalContainer = new Dictionary<Type, object>();
-                _container[key] = internalContainer;
+                context.Container[typeof(T)] = value;
+                _logger.LogInfo(() => $"Register {typeof(T).Name} as {value.GetType().Name} for {key}");
             }
-
-            internalContainer[typeof(T)] = value;
-            _logger.LogInfo(() => $"Register {typeof(T).Name} as {value.GetType().Name} for {key}");
+            else
+            {
+                throw new ConsolidationException($"Can't register {typeof(T).Name} for {key}");
+            }
         }
 
         public void Register(string key)
@@ -47,10 +48,17 @@ namespace QA.Core.DPC.QP.Services
                 if (!string.IsNullOrEmpty(key))
                 {
                     var customer = _customerProvider.GetCustomer(key);
-                    Invalidator[key] = customer.ConnectionString;
-                    OnRegister((IRegistrationContext)this , customer);
+                    var context = new CustomerContext(customer);
+                    context.State = CustomerState.Creating;
+                    CustomerMap[key] = context;
+                    OnRegister((IRegistrationContext)this , context.Customer);
+                    context.State = CustomerState.Active;
+                    _logger.LogInfo(() => $"End register for {key}");
                 }
-                _logger.LogInfo(() => $"End register for {key}");
+                else
+                {
+                    _logger.LogInfo(() => $"{key} is not registered");
+                }
             }
         }
 
@@ -58,9 +66,9 @@ namespace QA.Core.DPC.QP.Services
 
         protected T Resolve<T>(string key, bool autoRegister)
         {
-            if (_container.TryGetValue(key, out Dictionary<Type, object> internalContainer))
+            if (CustomerMap.TryGetValue(key, out CustomerContext context))
             {
-                if (internalContainer.TryGetValue(typeof(T), out object value))
+                if (context.Container.TryGetValue(typeof(T), out object value))
                 {
                     if (value is T)
                     {
@@ -91,32 +99,25 @@ namespace QA.Core.DPC.QP.Services
             {
                 _logger.LogInfo(() => $"Clear factory for {key}");
 
-                if (Invalidator.ContainsKey(key))
-                {
-                    Invalidator.Remove(key);
-                }
 
-                if (_container.TryGetValue(key, out Dictionary<Type, object> internalContainer))
+                if (CustomerMap.TryGetValue(key, out CustomerContext context))
                 {
-                    internalContainer.Values
+                    context.Container.Values
                         .Distinct()
                         .OfType<IDisposable>()
                         .ToList()
                         .ForEach(x => x.Dispose());
 
-                    _container.Remove(key);
+                    CustomerMap.Remove(key);
                 }
             }
         }
 
         public void Clear()
         {
-            _container.Keys
+            CustomerMap.Keys
                 .ToList()
                 .ForEach(Clear);
-
-            Invalidator
-                .Clear();
         }
 
         public void Dispose()

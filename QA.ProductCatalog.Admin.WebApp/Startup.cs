@@ -94,12 +94,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             }
             else
             {
-                
-                var redirectMap = new Dictionary<Type, string>() {
-                    { typeof(InvalidOperationException), ErrorPage },
-                    { typeof(ResolutionFailedException), ErrorPage }
-                };
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory, redirectMap).Action);
+                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory, ErrorPage).Action);
             }
 
             app.UseStaticFiles();
