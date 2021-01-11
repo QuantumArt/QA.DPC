@@ -9,7 +9,7 @@ RUN dotnet restore
 
 COPY . ./
 
-RUN dotnet publish /app/QA.Core.DPC.NotificationSender/QA.Core.DPC.NotificationSender.csproj -c Release -o out -f netcoreapp3.1
+RUN dotnet publish /app/QA.Core.DPC.NotificationSender/QA.Core.DPC.NotificationSender.csproj -c Release -o out -f netcoreapp3.1 --no-restore
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
@@ -22,5 +22,4 @@ ENV SERVICE_VERSION=${SERVICE_VERSION:-0.0.0.0}
 
 WORKDIR /app
 COPY --from=build-env /app/out .
-RUN rm -rf /app/hosting.json
 ENTRYPOINT ["dotnet", "QA.Core.DPC.NotificationSender.dll"]

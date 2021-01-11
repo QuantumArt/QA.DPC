@@ -1,9 +1,18 @@
 import React from "react";
 import { observer, useLocalStore } from "mobx-react-lite";
-import { Button, ButtonGroup, Card, Intent, Popover, Slider, Switch } from "@blueprintjs/core";
+import {
+  Button,
+  ButtonGroup,
+  Card,
+  Intent,
+  Popover,
+  Slider,
+  Switch,
+  Spinner
+} from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
-import { TreeErrorDialog, Loading } from "DefinitionEditor/Components";
+import { TreeErrorDialog } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
 import { l } from "DefinitionEditor/Localization";
 import "./Style.scss";
@@ -36,7 +45,7 @@ const ToolBar = observer(() => {
                 Переключите в режим <i>Регулярных выражений</i> <b>(Alt+R)</b>
               </li>
               <li>
-                Вставьте сгенерированный запрос <b>(Ctrl+V)</b>
+                Вставьте сгенерированную строку <b>(Ctrl+V)</b>
               </li>
             </ol>
           </>
@@ -97,10 +106,9 @@ const ToolBar = observer(() => {
           <Button icon={IconNames.CROSS} onClick={controlsStore.exit}>
             {l("Exit")}
           </Button>
-          <Loading
-            className="editor-toolbar__loading"
-            active={treeStore.operationState === OperationState.Pending}
-          />
+          {treeStore.operationState === OperationState.Pending && (
+            <Spinner intent={Intent.PRIMARY} size={30} className="editor-toolbar__spinner" />
+          )}
         </ButtonGroup>
         <div
           className="editor-toolbar__xml-controls"
