@@ -17,7 +17,6 @@ namespace QA.Core.ProductCatalog.ActionsService
     {
         
         private IFactoryWatcher _factoryWatcher;
-        private Dictionary<string, ITasksRunner[]> _runnersDictionary = new Dictionary<string, ITasksRunner[]>();
         private Dictionary<string, ActionsServiceContext> _contextMap = new Dictionary<string, ActionsServiceContext>();
         private Func<TaskSchedulerRunner> _getSchedulerRunner;
         private Func<ITasksRunner> _getRunner;
@@ -149,7 +148,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             _logger.Info("{serviceName} stopping...", _options.Name);
             _factoryWatcher.OnConfigurationModify -= _factoryWatcher_OnConfigurationModify;
 
-            foreach (var code in _runnersDictionary.Keys)
+            foreach (var code in _contextMap.Keys)
             {
                 RemoveCode(code);
             }
