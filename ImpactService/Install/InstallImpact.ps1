@@ -32,7 +32,10 @@ param(
     [String] $liveIndexName,
     ## Stage index name
     [Parameter(Mandatory = $true)]
-    [String] $stageIndexName
+    [String] $stageIndexName,
+    ## Extra calculation libraries
+    [Parameter()]
+    [String] $libraries = ''
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -92,6 +95,12 @@ $json.ElasticBaseAddress = $elasticBaseAddress
 $json.ElasticIndexes = @()
 $json.ElasticIndexes += (New-Object PSObject -Property @{Name=$liveIndexName; State="live"; Language="invariant" })
 $json.ElasticIndexes += (New-Object PSObject -Property @{Name=$stageIndexName; State="stage"; Language="invariant" })
+
+if ($libraries) {
+    $libarr = @()
+    foreach ($lib in $libraries.Split(',')) { $libarr += $lib.Trim()}
+    $integration | Add-Member NoteProperty "ExtraLibraries" $libarr -Force
+}
 
 $json | Add-Member NoteProperty "HttpTimeout" $timeout -Force
 
