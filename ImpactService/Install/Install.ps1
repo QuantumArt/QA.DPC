@@ -46,6 +46,7 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $installLog = Join-Path $logPath "install.log"
 Start-Transcript -Path $installLog -Append
 
+$currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 . (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
 
 
