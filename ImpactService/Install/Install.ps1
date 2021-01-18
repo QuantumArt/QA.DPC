@@ -49,11 +49,13 @@ Start-Transcript -Path $installLog -Append
 $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 . (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
 
-
 if ($cleanUp) {
     $uninstallPath = Join-Path $currentPath "Uninstall.ps1"
     Invoke-Expression "$uninstallPath -ImpactName '$siteName'"
 }
+
+$validationPath = Join-Path $currentPath "Validate.ps1"
+Invoke-Expression "$validationPath -ImpactPort $port"
 
 $scriptName = Join-Path $currentPath "InstallImpact.ps1"
 Invoke-Expression "$scriptName -SiteName '$siteName' -Port $port -ElasticUrl '$elasticUrl' -LiveIndexName '$liveIndexName' -StageIndexName '$stageIndexName' -logPath '$logPath' "
