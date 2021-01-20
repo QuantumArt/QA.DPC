@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using QA.Core.DPC.QP.Models;
+using System.Collections.Generic;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -8,6 +9,7 @@ namespace QA.Core.DPC.QP.Services
         void Register(string key);
         void Clear(string key);
         void Clear();
-        Dictionary<string, string> Invalidator { get; }
+        string[] NotConsolidatedCodes { get; set; }
+        Dictionary<string, CustomerContext> CustomerMap { get; }
     }
 }
