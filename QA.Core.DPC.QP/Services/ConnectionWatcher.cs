@@ -22,7 +22,7 @@ namespace QA.Core.DPC.QP.Services
 
         public void Watch()
         {
-            var c = _customerProvider.GetCustomers();
+            var c = _customerProvider.GetCustomers(onlyConsolidated:true);
 
             foreach (var code in c)
             {             
@@ -45,7 +45,7 @@ namespace QA.Core.DPC.QP.Services
 
         public void Check()
         {
-            var actualCustomers = _customerProvider.GetCustomers();
+            var actualCustomers = _customerProvider.GetCustomers(onlyConsolidated:true);
 
             if (_customers != null)
             {

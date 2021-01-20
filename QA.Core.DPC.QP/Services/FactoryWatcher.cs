@@ -1,8 +1,10 @@
-﻿using System;
+﻿using QA.Core.DPC.QP.Models;
+using QA.Core.Logger;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using QA.Core.DPC.QP.Models;
-using QA.Core.Logger;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -37,15 +39,18 @@ namespace QA.Core.DPC.QP.Services
                 try
                 {
                     _logger.LogInfo(() => "Before getting customers");
-                    actualCustomers = _customerProvider.GetCustomers();
+                    var allCustomers = _customerProvider.GetCustomers(onlyConsolidated:false);
+                    _factory.NotConsolidatedCodes = allCustomers.Where(c => !c.IsConsolidated).Select(c => c.CustomerCode).ToArray();
+                    actualCustomers = allCustomers.Where(c => c.IsConsolidated).ToArray();
                     _logger.LogInfo(() => "After getting customers: " + actualCustomers.Length);
                 }
                 catch (Exception ex)
                 {
+                    _factory.NotConsolidatedCodes = new string[0];
                     _logger.ErrorException("Can't get customers data", ex);
                 }
 
-                var codes = _factory.Invalidator.Keys.ToArray();
+                var codes = _factory.CustomerMap.Keys.ToArray();
                 _logger.LogInfo(() => "Codes: " + codes.Length);
                 
                 var actualcodes = actualCustomers.Where(c => !string.IsNullOrEmpty(c.ConnectionString))
@@ -53,14 +58,14 @@ namespace QA.Core.DPC.QP.Services
                 _logger.LogInfo(() => "Actual codes: " + actualcodes.Length);                
                 var deletedCodes = codes.Except(actualcodes).ToArray();
                 var newcodes = actualcodes.Except(codes).ToArray();
-                var modifiedCodes = _factory.Invalidator.Join(
+                var modifiedCodes = _factory.CustomerMap.Join(
                         actualCustomers,
                         c => c.Key,
                         c => c.CustomerCode,
                         (c, ac) => new
                         {
                             CustomerCode = c.Key,
-                            Connection = c.Value,
+                            Connection = c.Value.Customer.ConnectionString,
                             ActualConnection = ac.ConnectionString
                         }
                     )
@@ -78,7 +83,24 @@ namespace QA.Core.DPC.QP.Services
 
         protected virtual void OnModify(string[] deletedCodes, string[] modifiedCodes, string[] newcodes)
         {
-            deletedCodes.Concat(modifiedCodes).ToList().ForEach(c => _factory.Clear(c));
+            var stateMap = new Dictionary<CustomerState, string[]>
+            {
+                { CustomerState.Deleting, deletedCodes },
+                { CustomerState.Updating, modifiedCodes },
+            };
+
+            foreach(var item in stateMap)
+            {
+                foreach(var customerCode in item.Value)
+                {
+                    if (_factory.CustomerMap.TryGetValue(customerCode, out CustomerContext context))
+                    {
+                        context.State = item.Key;
+                    }
+                }
+            }
+
+            deletedCodes.Concat(modifiedCodes).ToList().ForEach(c => _factory.Clear(c));        
             newcodes.Concat(modifiedCodes).ToList().ForEach(c => _factory.Register(c));
 
             OnConfigurationModify?.Invoke(this, new FactoryWatcherEventArgs(deletedCodes, modifiedCodes, newcodes));
