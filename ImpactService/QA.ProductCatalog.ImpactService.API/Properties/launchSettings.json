@@ -2,8 +2,6 @@
   "profiles": {
     "QA.ProductCatalog.ImpactService.API": {
       "commandName": "Project",
-      "launchBrowser": true,
-      "launchUrl": "api/mnr/country/AU",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Dev"
       },
