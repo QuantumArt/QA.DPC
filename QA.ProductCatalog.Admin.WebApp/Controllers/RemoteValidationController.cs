@@ -1,12 +1,15 @@
-﻿using System;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using QA.Validation.Xaml.Extensions.Rules;
-using QA.ProductCatalog.Integration;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Validation;
+using QA.Validation.Xaml.Extensions.Rules;
+using System;
+using System.Linq;
 using Unity;
-using Unity.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -15,10 +18,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
     public class RemoteValidationController : Controller
     {
         private readonly Func<string, IRemoteValidator2> _validationFactory;
+        private readonly IIdentityProvider _identityProvider;
+        private readonly IFactory _consolidationFactory;
 
-        public RemoteValidationController(Func<string, IRemoteValidator2> validationFactory)
+        public RemoteValidationController(Func<string, IRemoteValidator2> validationFactory, IIdentityProvider identityProvider, IFactory consolidationFactory)
         {
             _validationFactory = validationFactory;
+            _identityProvider = identityProvider;
+            _consolidationFactory = consolidationFactory;
         }
         
         [Route("{validatorKey}")]
@@ -28,6 +35,36 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var result = new RemoteValidationResult();
             try
             {
+                var customerCode = _identityProvider.Identity?.CustomerCode;
+
+                if (customerCode != null && customerCode != SingleCustomerCoreProvider.Key)
+                {
+                    CustomerState customerState;
+
+                    if (_consolidationFactory.NotConsolidatedCodes.Contains(customerCode))
+                    {
+                        customerState = CustomerState.NotRegistered;
+                    }
+                    else if (_consolidationFactory.CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
+                    {
+                        customerState = customerContext.State;
+                    }
+                    else
+                    {
+                        customerState = CustomerState.NotFound;
+                    }
+
+                    if (customerState != CustomerState.Active)
+                    {
+                        var template = MessageStrings.ConsolidationErrorMessage;
+                        var key = $"CustomerState{customerState}";
+                        var value = MessageStrings.ResourceManager.GetString(key);
+                        var message = string.Format(template, value);
+                        result.Messages.Add(message);
+                        return Json(result);
+                    }
+                }
+
                 result = _validationFactory(validatorKey).Validate(context, result);
             }
             catch (ResolutionFailedException ex)
