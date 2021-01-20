@@ -17,19 +17,23 @@ namespace QA.Core.ProductCatalog.ActionsService
     {
         
         private IFactoryWatcher _factoryWatcher;
-        private Dictionary<string, ITasksRunner[]> _runnersDictionary = new Dictionary<string, ITasksRunner[]>();
-        private TaskSchedulerRunner _taskSchedulerRunner;
+        private Dictionary<string, ActionsServiceContext> _contextMap = new Dictionary<string, ActionsServiceContext>();
+        private Func<TaskSchedulerRunner> _getSchedulerRunner;
+        private Func<ITasksRunner> _getRunner;
         private ActionsServiceProperties _options;
         private ILogger _logger = LogManager.GetCurrentClassLogger();
         
         public ActionsService(
             IFactoryWatcher watcher,
-            TaskSchedulerRunner schedulerRunner,
+            Func<TaskSchedulerRunner> getSchedulerRunner,
+            Func<ITasksRunner> getRunner,
             IOptions<ActionsServiceProperties> options
         )
         {
             _factoryWatcher = watcher;
-            _taskSchedulerRunner = schedulerRunner;
+            _getSchedulerRunner = getSchedulerRunner;
+            _getRunner = getRunner;
+            _getRunner = getRunner;
             _options = options.Value;
         }
         
@@ -40,22 +44,15 @@ namespace QA.Core.ProductCatalog.ActionsService
             _factoryWatcher.OnConfigurationModify += _factoryWatcher_OnConfigurationModify;
             _factoryWatcher.Watch();
             _factoryWatcher.Start();
-
-            if (_options.EnableScheduleProcess)
-            {
-                _logger.Info("Scheduler for {serviceName} started", _options.Name);
-                _taskSchedulerRunner.Start();
-            }
-
         }
 
         private void _factoryWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
         {
-            var stoppedCustomerCodes = _runnersDictionary.Where(de => de.Value.All(t => t.State == StateEnum.Stopped)).Select(de => de.Key).ToArray();
+            var stoppedCustomerCodes = _contextMap.Where(c => c.Value.IsStopped()).Select(c => c.Key).ToArray();
 
             foreach (var code in stoppedCustomerCodes)
             {
-                _runnersDictionary.Remove(code);
+                _contextMap.Remove(code);
             }
 
             foreach (var code in e.DeletedCodes)
@@ -73,11 +70,10 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             List<ITasksRunner> runners;
 
-            if (_runnersDictionary.TryGetValue(customerCode, out var tasks))
+            if (_contextMap.TryGetValue(customerCode, out var context))
             {
-                var stoppingTasks = tasks.Where(t => t.State == StateEnum.WaitingToStop).ToArray();
-                var runningTasks = tasks.Where(t => t.State == StateEnum.Running).ToArray();
-
+                var stoppingTasks = context.Runners.Where(t => t.State == StateEnum.WaitingToStop).ToArray();
+                var runningTasks = context.Runners.Where(t => t.State == StateEnum.Running).ToArray();
                 runners = new List<ITasksRunner>(stoppingTasks.Union(runningTasks));
 
                 for (int i = 0; i < Math.Max(_options.NumberOfThreads - runningTasks.Length, 0); i++)
@@ -85,35 +81,64 @@ namespace QA.Core.ProductCatalog.ActionsService
                     runners.Add(StartRunner(customerCode));
                 }
 
-                tasks = runners.ToArray();
+                context.Runners.Clear();
+                context.Runners.AddRange(runners);
+
+                if (_options.EnableScheduleProcess)
+                {
+                    context.SchedulerRunner = StartScheduler(customerCode);
+                }
+                else if(context.SchedulerRunner != null && !context.SchedulerRunner.IsRunning)
+                {
+                    context.SchedulerRunner = null;
+                }
             }
             else
             {
-                runners = new List<ITasksRunner>();
+                var newContext = new ActionsServiceContext(customerCode);
+
+                if (_options.EnableScheduleProcess)
+                {
+                    newContext.SchedulerRunner = StartScheduler(customerCode);
+                } 
 
                 for (int i = 0; i < _options.NumberOfThreads; i++)
                 {
-                    runners.Add(StartRunner(customerCode));
+                    newContext.Runners.Add(StartRunner(customerCode));
                 }
 
-                _runnersDictionary[customerCode] = runners.ToArray();
+                _contextMap[customerCode] = newContext;
             }
         }
 
         private void RemoveCode(string customerCode)
         {
-            if (_runnersDictionary.TryGetValue(customerCode, out var tasks))
+            if (_contextMap.TryGetValue(customerCode, out var context))
             {
-                foreach (var task in tasks)
+                if (context.SchedulerRunner != null)
+                {
+                    context.SchedulerRunner.Stop();
+                }
+
+                foreach (var task in context.Runners)
                 {
                     task.InitStop();
                 }
             }
         }
 
+
+        private TaskSchedulerRunner StartScheduler(string customerCode, TaskSchedulerRunner runner = null)
+        {
+            var schedulerRunner = runner == null ? _getSchedulerRunner() : runner;
+            _logger.Info("Scheduler for {customerCode} in {serviceName} started", customerCode, _options.Name);
+            schedulerRunner.Start(customerCode);
+            return schedulerRunner;
+        }
+
         private ITasksRunner StartRunner(string customerCode)
         {
-            var runner = ObjectFactoryBase.Resolve<ITasksRunner>();
+            var runner = _getRunner();
             ThreadPool.QueueUserWorkItem(runner.Run, customerCode);
             return runner;
         }
@@ -123,24 +148,19 @@ namespace QA.Core.ProductCatalog.ActionsService
             _logger.Info("{serviceName} stopping...", _options.Name);
             _factoryWatcher.OnConfigurationModify -= _factoryWatcher_OnConfigurationModify;
 
-            foreach (var code in _runnersDictionary.Keys)
+            foreach (var code in _contextMap.Keys)
             {
                 RemoveCode(code);
             }
 
-            if (_taskSchedulerRunner != null)
-            {
-                _taskSchedulerRunner.Stop();
-            }
-
             //нельзя выходить из этого метода пока не убедимся что все треды закончили работу
-            while (_runnersDictionary.Where(de => de.Value.All(t => t.State != StateEnum.Stopped)).Any())
+            while (_contextMap.Where(c => !c.Value.IsStopped()).Any())
             {
                 Thread.Sleep(500);
             }
 
             _factoryWatcher.Stop();
-            _runnersDictionary.Clear();
+            _contextMap.Clear();
             _logger.Info("{serviceName} stopped", _options.Name);
         }
 

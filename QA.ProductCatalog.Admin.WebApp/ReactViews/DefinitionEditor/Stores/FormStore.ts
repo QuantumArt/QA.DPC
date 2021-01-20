@@ -1,8 +1,8 @@
 import XmlEditorStore from "./XmlEditorStore";
-import { action, observable, reaction, runInAction } from "mobx";
+import { action, observable, runInAction } from "mobx";
 import ApiService from "DefinitionEditor/ApiService";
 import { EnumBackendModel, IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
-import { BackendEnumType, ModelType } from "DefinitionEditor/Enums";
+import { BackendEnumType, FieldDefinitionType, ModelType } from "DefinitionEditor/Enums";
 import {
   CheckboxParsedModel,
   getBackendEnumTypeByFieldName,
@@ -16,7 +16,7 @@ import {
   TextParsedModel
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
-import { keys, forIn, assign, isNull, isUndefined } from "lodash";
+import { assign, forIn, isNull, isUndefined, keys, pick } from "lodash";
 import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
 import qs from "qs";
@@ -88,9 +88,9 @@ export default class FormStore {
   };
 
   /**
-   * @param deps - массив зависимостей содержащий name полей, которые не будут скрыты
-   * @param reverseLogic - массив deps работает наоборот,
-   * @param value - вместо противоположного значения будет установлено переданное,
+   * @param deps Массив зависимостей содержащий name полей, которые не будут скрыты
+   * @param reverseLogic Массив deps работает наоборот,
+   * @param value Вместо противоположного значения будет установлено переданное,
    * */
   hideUiFields = (deps: string[] = [], reverseLogic: boolean = false, value?: boolean) => {
     forIn(this.UIEditModel, async model => {
@@ -103,32 +103,107 @@ export default class FormStore {
     });
   };
 
+  // parseEditFormDataToUIModel = (model: IEditFormModel): { [key in string]: ParsedModelType } => {
+  //   let exceptionFields = [];
+  //   /**
+  //    * исключение
+  //    * если заполнено поле DefaultCachePeriod рендерим только поля exceptionFields
+  //    * */
+  //   if (model["DefaultCachePeriod"]) {
+  //     exceptionFields = ["InDefinition", "DefaultCachePeriod"];
+  //   }
+  //   /**
+  //    * исключение
+  //    * если поле FieldType равняется нулю рендерим только поля exceptionFields
+  //    * */
+  //   if (model["FieldType"] === 0) {
+  //     exceptionFields = [
+  //       "InDefinition",
+  //       "FieldId",
+  //       "FieldName",
+  //       "FieldTitle",
+  //       "SkipCData",
+  //       "LoadLikeImage"
+  //     ];
+  //   }
+  //
+  //   return this.getParsedUIModelFromApiFields(model, exceptionFields);
+  // };
+
   parseEditFormDataToUIModel = (model: IEditFormModel): { [key in string]: ParsedModelType } => {
-    let exceptionFields = [];
-    /**
-     * исключение
-     * если заполнено поле DefaultCachePeriod рендерим только поля exceptionFields
-     * */
-    if (model["DefaultCachePeriod"]) {
-      exceptionFields = ["InDefinition", "DefaultCachePeriod"];
+    const fieldType = model.FieldType;
+
+    let fieldList: string[];
+    if (this.ModelType === ModelType.Field) {
+      fieldList = FormStore.getFieldUIFieldsList(fieldType);
     }
-    /**
-     * исключение
-     * если поле FieldType равняется нулю рендерим только поля exceptionFields
-     * */
-    if (model["FieldType"] === 0) {
-      exceptionFields = [
-        "InDefinition",
-        "FieldId",
-        "FieldName",
-        "FieldTitle",
-        "SkipCData",
-        "LoadLikeImage"
-      ];
+    if (this.ModelType === ModelType.Content) {
+      fieldList = FormStore.getContentUIFieldsList(
+        model.AlreadyCachedAsDictionary,
+        model.IsFromDictionaries
+      );
     }
 
-    return this.getParsedUIModelFromApiFields(model, exceptionFields);
+    return this.getParsedUIModelFromApiFields(model, fieldList);
   };
+
+  private static getContentUIFieldsList(
+    AlreadyCachedAsDictionary: boolean,
+    IsFromDictionaries: boolean
+  ) {
+    const fieldList = [];
+    fieldList.push("ContentId", "AlreadyCachedAsDictionary", "ContentName", "IsFromDictionaries");
+    if (!AlreadyCachedAsDictionary) {
+      fieldList.push("CacheEnabled", "CachePeriod");
+    }
+    if (!IsFromDictionaries) {
+      fieldList.push("IsReadOnly", "LoadAllPlainFields", "PublishingMode");
+    }
+
+    return fieldList;
+  }
+
+  private static getFieldUIFieldsList(fieldType: number): string[] {
+    const fieldList = [];
+    fieldList.push("InDefinition");
+    if (fieldType === FieldDefinitionType.Dictionaries) {
+      fieldList.push("DefaultCachePeriod");
+    } else {
+      fieldList.push("FieldId", "FieldName", "FieldTitle");
+    }
+    if (
+      fieldType === FieldDefinitionType.EntityField ||
+      fieldType === FieldDefinitionType.BackwardRelationField ||
+      fieldType === FieldDefinitionType.ExtensionField
+    ) {
+      fieldList.push("CloningMode", "DeletingMode", "UpdatingMode");
+      if (
+        fieldType === FieldDefinitionType.EntityField ||
+        fieldType === FieldDefinitionType.BackwardRelationField
+      ) {
+        fieldList.push(
+          "PreloadingMode",
+          "RelationCondition",
+          "ClonePrototypeCondition",
+          "RelatedContentName",
+          "RelatedContentId"
+        );
+      } else if (fieldType === FieldDefinitionType.ExtensionField) {
+        fieldList.push("IsClassifier");
+      }
+    } else if (
+      fieldType === FieldDefinitionType.VirtualField ||
+      fieldType === FieldDefinitionType.VirtualMultiEntityField
+    ) {
+      fieldList.push("VirtualPath");
+      if (fieldType === FieldDefinitionType.VirtualField) {
+        fieldList.push("ObjectToRemovePath", "Converter");
+      }
+    } else if (fieldType === FieldDefinitionType.PlainField) {
+      fieldList.push("SkipCData", "LoadLikeImage");
+    }
+    return fieldList;
+  }
 
   getXmlAndPathObj = (nodeId: string): { xml: string; path: string } => {
     return {
@@ -229,13 +304,9 @@ export default class FormStore {
 
   getParsedUIModelFromApiFields = (
     fields: IEditFormModel,
-    exceptionFields: string[] = []
+    fieldList: string[] = []
   ): { [key in string]: ParsedModelType } => {
-    const OnlyExceptionsFields = exceptionFields.reduce((model, field) => {
-      model[field] = fields[field];
-      return model;
-    }, {});
-    const fieldsModel = exceptionFields.length ? OnlyExceptionsFields : fields;
+    const fieldsModel = pick(fields, fieldList);
     const hideIfInDefinition =
       isUndefined(fieldsModel["InDefinition"]) || isNull(fieldsModel["InDefinition"])
         ? false
@@ -314,6 +385,9 @@ export default class FormStore {
           );
           break;
 
+        /**
+         * input models
+         * */
         case "FieldName":
         case "ContentName":
         case "DefaultCachePeriod":
@@ -322,7 +396,15 @@ export default class FormStore {
         case "VirtualPath":
           acc[field] = new InputParsedModel(field, l("Path"), fieldValue, "", hideIfInDefinition);
           break;
-
+        case "ObjectToRemovePath":
+          acc[field] = new InputParsedModel(
+            field,
+            l("RemovePath"),
+            fieldValue,
+            "",
+            hideIfInDefinition
+          );
+          break;
         case "FieldTitle":
           acc[field] = new InputParsedModel(
             field,
@@ -359,7 +441,6 @@ export default class FormStore {
          * textarea models
          * */
         case "RelationCondition":
-          if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
           acc[field] = new TextAreaParsedModel(
             field,
             l(field),
@@ -374,7 +455,6 @@ export default class FormStore {
           break;
 
         case "ClonePrototypeCondition":
-          if (fields["FieldType"] === 3 || fields["FieldType"] === 7) break;
           acc[field] = new TextAreaParsedModel(
             field,
             l(field),

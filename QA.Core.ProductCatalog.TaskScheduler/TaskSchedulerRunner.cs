@@ -9,6 +9,8 @@ using Quartz.Impl.Matchers;
 using Quartz.Spi;
 using NLog;
 using NLog.Fluent;
+using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
@@ -16,13 +18,16 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 	{
 		private readonly ISchedulerFactory _schedulerFactory;
 		private readonly Func<ITaskService> _taskServiceFunc;
+		private readonly IIdentityProvider _identityProvider;
 		private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+		public bool IsRunning { get; private set; } = false;
+		private string CustomerCode { get; set; } = string.Empty;
 		
-
-		public TaskSchedulerRunner(ISchedulerFactory schedulerFactory, Func<ITaskService> taskServiceFunc)
+		public TaskSchedulerRunner(ISchedulerFactory schedulerFactory, Func<ITaskService> taskServiceFunc, IIdentityProvider identityProvider)
 		{
 			_schedulerFactory = schedulerFactory;
 			_taskServiceFunc = taskServiceFunc;
+			_identityProvider = identityProvider;
 		}
 
 		private int _secondsToUpdateJobsAndTriggers = 5;
@@ -50,6 +55,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				_timerForSchedulerUpdate.Stop();
 
 				_scheduler.Shutdown(true);
+				IsRunning = false;
 			}
 		}
 
@@ -83,7 +89,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 					if (existingJob == null)
 					{
 						ScheduleJobIfNotInPast(CreateJob(task), task);
-						_logger.Info("Task {taskId} has been scheduled.", task.ID);
+						_logger.Info("Task {taskId} for {customerCode} has been scheduled.", task.ID, CustomerCode);
 					}
 					else
 					{
@@ -97,7 +103,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 									_scheduler.UnscheduleJob(existingTrigger.Key);
 
 							ScheduleJobIfNotInPast(existingJob, task);
-							_logger.Info("Schedule has been changed for task {taskId}", task.ID);
+							_logger.Info("Schedule for {customerCode} has been changed for task {taskId}", CustomerCode, task.ID);
 						}
 					}
 				}
@@ -132,7 +138,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 					taskService.SaveSchedule(task.ID, false, null);
 				}
 
-				_logger.Info("Onetime schedule has been removed from database for task {taskId}", task.ID);
+				_logger.Info("Onetime schedule for {customerCode} has been removed from database for task {taskId} ", CustomerCode, task.ID);
 			}
 		}
 
@@ -181,10 +187,14 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 		private System.Timers.Timer _timerForSchedulerUpdate;
 
-		public void Start()
+		public void Start(string customerCode)
 		{
 			lock (_stateLocker)
 			{
+				IsRunning = true;
+				CustomerCode = customerCode;
+				_identityProvider.Identity = new Identity(CustomerCode);
+
 				if (_scheduler == null)
 				{
 					_scheduler = _schedulerFactory.GetScheduler().Result;
@@ -219,7 +229,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				}
 				catch (Exception ex)
 				{
-					_logger.Error(ex, "Error while receiving actual triggers and jobs");
+					_logger.Error(ex, "Error while receiving actual triggers and jobs for {customerCode}", CustomerCode);
 				}
 				finally
 				{

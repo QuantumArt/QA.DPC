@@ -1,6 +1,7 @@
 ﻿using QA.Core.DPC.QP.Services;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using QA.ProductCatalog.WebApi.Models;
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
@@ -20,9 +21,14 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("cache/{format:regex(^json|xml|xaml|jsonDefinition|jsonDefinition2$)}")]        
-        public string[] Cache()
+        public CustomerCodeViewModel[] Cache()
         {
-            return _factory.Invalidator.Keys.ToArray();
+            return _factory.CustomerMap
+                .Select(item => new CustomerCodeViewModel()
+                {
+                    CustomerCode = item.Key,
+                    State = item.Value.State.ToString()
+                }).ToArray();
         }
     }
 }

@@ -47,7 +47,7 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public Customer[] GetCustomers()
+        public Customer[] GetCustomers(bool onlyConsolidated = true)
         {
             return new[]
             {
@@ -55,6 +55,7 @@ namespace QA.Core.DPC.QP.Services
                 {
                     ConnectionString = _cnnProps.DpcConnectionString,
                     DatabaseType = _cnnProps.GetDatabaseType(),
+                    IsConsolidated = true,
                     CustomerCode = Key
                 }
             };

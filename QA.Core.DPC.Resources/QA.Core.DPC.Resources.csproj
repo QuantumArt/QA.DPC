@@ -10,6 +10,11 @@
             <AutoGen>True</AutoGen>
             <DependentUpon>ControlStrings.resx</DependentUpon>
         </Compile>
+        <Compile Update="MessageStrings.Designer.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>MessageStrings.resx</DependentUpon>
+        </Compile>
         <Compile Update="TaskStrings.Designer.cs">
             <AutoGen>True</AutoGen>
             <DependentUpon>TaskStrings.resx</DependentUpon>
@@ -54,6 +59,10 @@
         <EmbeddedResource Update="HfStrings.resx">
             <Generator>PublicResXFileCodeGenerator</Generator>
             <LastGenOutput>HfStrings.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="MessageStrings.resx">
+          <Generator>PublicResXFileCodeGenerator</Generator>
+          <LastGenOutput>MessageStrings.Designer.cs</LastGenOutput>
         </EmbeddedResource>
         <EmbeddedResource Update="TaskStrings.resx">
             <Generator>PublicResXFileCodeGenerator</Generator>

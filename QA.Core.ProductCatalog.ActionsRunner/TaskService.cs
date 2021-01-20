@@ -29,7 +29,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         public TaskService(IConnectionProvider provider)
         {
             _provider = provider;
-            _customer = _provider.GetCustomer();
+            _customer = _provider.GetCustomer(Service.Actions);
             _taskRm = new ResourceManager(typeof(TaskStrings));
         }
 
@@ -56,7 +56,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 .Property("task", task)
                 .Write();
             
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 var result = AddTask(context, task);
                 
@@ -109,6 +109,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         private string _isCancellationRequested => _customer.DatabaseType == DatabaseType.Postgres ? "is_cancellation_requested" : "IsCancellationRequested";
 
+        private object _getIsCancellationRequestedValue(bool v) => _customer.DatabaseType == DatabaseType.Postgres ? (object)v : v ? 1 : 0;
+
         private string SqlTop(int n) => _customer.DatabaseType == DatabaseType.Postgres ? "" : "TOP " + n;
         
         private string PgTop(int n) => _customer.DatabaseType == DatabaseType.Postgres ? $"\nFETCH FIRST {n} ROWS ONLY" : "";
@@ -123,7 +125,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         /// <returns></returns>
         public int? TakeNewTaskForProcessing()
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             using (var tr = context.Database.BeginTransaction())
             {
                 var sql =
@@ -151,7 +153,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public Task GetTask(int id, bool convertMessage = false)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 return GetTask(context, id, convertMessage);
             }
@@ -199,7 +201,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             else if (state == State.Running)
                 progress = 0;
 
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             using (var tr = context.Database.BeginTransaction())
             {
                 
@@ -247,7 +249,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public Task GetLastTask(int? userId, State? state = null, string key = null)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 var result =
                     context.Tasks.Include("TaskState")
@@ -286,7 +288,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public void SpawnTask(int sourceTaskId)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 var sourceTask = GetTask(context, sourceTaskId);
 
@@ -303,7 +305,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public Task[] GetScheduledTasks()
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 return (context == null) ? new Task[] {} : 
                     context.Tasks.Include(x => x.Schedule).Where(x => x.Schedule.Enabled).ToArray();              
@@ -313,7 +315,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public void SaveSchedule(int taskId, bool enabled, string cronExpression)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 var task = GetTask(context, taskId);
 
@@ -347,12 +349,12 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public void CancelRequestedTasks()
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 if (context == null) return;
                 var sql =
-                    ($@"UPDATE tasks {_sqlUpdateHint} SET {_stateId}={{0}} WHERE {_isCancellationRequested} = 1 AND {_stateId}={{1}}");
-                var fString = FormattableStringFactory.Create(sql, State.Cancelled, State.Running);
+                    ($@"UPDATE tasks {_sqlUpdateHint} SET {_stateId}={{0}} WHERE {_isCancellationRequested} = {{1}} AND {_stateId}={{2}}");
+                var fString = FormattableStringFactory.Create(sql, State.Cancelled, _getIsCancellationRequestedValue(true), State.Running);
                 context.Database.ExecuteSqlInterpolated(fString);
             }
         }
@@ -360,7 +362,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public Dictionary<int, string> GetAllStates()
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 return context.TaskStates.ToDictionary(x => x.ID, x => x.Name);
             }
@@ -382,7 +384,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFilter,
             bool? hasSchedule, DateTime? createdLower, DateTime? createdUpper, out int totalCount)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 IQueryable<Task> tasksFiltered = context.Tasks.Include(n => n.TaskState).Include(n => n.Schedule);
 
@@ -446,10 +448,10 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         private bool RequestCancellation(int id)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
-                var sql = ($@"UPDATE tasks SET {_isCancellationRequested} = 1 WHERE id = {{0}} AND {_stateId}={{1}}");
-                var fString = FormattableStringFactory.Create(sql, id, State.Running);
+                var sql = ($@"UPDATE tasks SET {_isCancellationRequested} = {{0}} WHERE id = {{1}} AND {_stateId}={{2}}");
+                var fString = FormattableStringFactory.Create(sql, _getIsCancellationRequestedValue(true), id, State.Running);
                 var rowsAffected = context.Database.ExecuteSqlInterpolated(fString);
                 return rowsAffected == 1;            
             }
@@ -457,7 +459,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public void SetTaskProgress(int id, byte progress)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 context.Database.ExecuteSqlInterpolated(
                     $@"UPDATE tasks SET progress={progress} WHERE id={id}"
@@ -467,7 +469,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public bool GetIsCancellationRequested(int taskId)
         {
-            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var context = TaskRunnerEntities.Get(_customer))
             {
                 var task = GetTaskWithNoLock(context, taskId);
                 return task?.IsCancellationRequested ?? false;            

@@ -61,7 +61,24 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
                 VirtualPath = virtCommon.Path;
                 FieldType = FieldDefinitionType.VirtualField;
             }
-            FieldType = virt is VirtualEntityField ? FieldDefinitionType.VirtualEntityField :  FieldDefinitionType.VirtualMultiEntityField;
+
+
+            FieldType = GetVirtualFieldType(virt);
+        }
+
+        public FieldDefinitionType GetVirtualFieldType(BaseVirtualField virt)
+        {
+            switch (virt)
+            {
+                case VirtualMultiEntityField vmef:
+                    return FieldDefinitionType.VirtualMultiEntityField;
+                case VirtualEntityField vef:
+                    return FieldDefinitionType.VirtualEntityField;
+                case VirtualField vf:
+                    return FieldDefinitionType.VirtualField;
+                default:
+                    throw new ArgumentException(nameof(virt));
+            }
         }
 
         public Field GetField()

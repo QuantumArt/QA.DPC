@@ -105,7 +105,7 @@ namespace QA.Core.DPC.Loader
 
 			int prodDefContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
 
-			string cacheKey = "KEY_GET_DEFINITION_BY_SLUG: " + slug + "_" + version;
+			string cacheKey = $"KEY_GET_DEFINITION_BY_SLUG:{slug.ToLower()}_{version.ToLower()}";
 
 			return _cacheProvider.GetOrAdd(
                 cacheKey,
@@ -117,8 +117,8 @@ namespace QA.Core.DPC.Loader
 					var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 
 					string wherePart =
-						$@"({FIELD_NAME_SLUG}='{slug.Replace("'", "")}'
-						AND {FIELD_NAME_VERSION}='{version.Replace("'", "")}')";
+						$@"(lower({FIELD_NAME_SLUG})='{slug.Replace("'", "").ToLower()}'
+						AND lower({FIELD_NAME_VERSION})='{version.Replace("'", "").ToLower()}')";
 
 					var dtdefinitionArticles = dbConnector.GetContentData(new ContentDataQueryObject(
                         dbConnector,

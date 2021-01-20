@@ -125,13 +125,6 @@
   margin: 0 30px;
 }
 
-.editor-toolbar__loading.sk-circle {
-  width: 20px;
-  height: 20px;
-  margin-top: 5px;
-  margin-left: 20px;
-}
-
 .editor-toolbar__form-btn {
   position: absolute;
   right: 0;
@@ -141,6 +134,10 @@
   border-left: 1px solid rgba(16, 22, 26, 0.15);
   height: 20px;
   margin: 5px 20px 0;
+}
+
+.editor-toolbar__spinner {
+  margin-left: 25px;
 }
 
 .xml-tree-wrap {
@@ -157,78 +154,10 @@
  */
 .xml-editor__form-view {
   position: fixed;
-  padding: 30px 20px 20px;
   width: 100%;
   height: 100%;
   z-index: 20;
-  background-color: #f5f8fa;
-}
-
-/*
- * Copyright 2017 Palantir Technologies, Inc. All rights reserved.
- */
-.loader {
-  margin-top: -6px;
-  margin-left: 20px;
-  height: 40px;
-  text-align: center;
-  font-size: 10px;
-}
-
-.loader > .rect {
-  background-color: #2965cc;
-  height: 100%;
-  width: 6px;
-  display: inline-block;
-  margin: 0.5px;
-  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
-  animation: sk-stretchdelay 1.2s infinite ease-in-out;
-}
-
-.loader .rect2 {
-  -webkit-animation-delay: -1.1s;
-  animation-delay: -1.1s;
-}
-
-.loader .rect3 {
-  -webkit-animation-delay: -1s;
-  animation-delay: -1s;
-}
-
-.loader .rect4 {
-  -webkit-animation-delay: -0.9s;
-  animation-delay: -0.9s;
-}
-
-.loader .rect5 {
-  -webkit-animation-delay: -0.8s;
-  animation-delay: -0.8s;
-}
-
-@-webkit-keyframes sk-stretchdelay {
-  0%,
-  40%,
-  100% {
-    transform: scaleY(0.4);
-    -webkit-transform: scaleY(0.4);
-  }
-  20% {
-    transform: scaleY(1);
-    -webkit-transform: scaleY(1);
-  }
-}
-
-@keyframes sk-stretchdelay {
-  0%,
-  40%,
-  100% {
-    transform: scaleY(0.4);
-    -webkit-transform: scaleY(0.4);
-  }
-  20% {
-    transform: scaleY(1);
-    -webkit-transform: scaleY(1);
-  }
+  background-color: #ffffff;
 }
 
 .form-field-element {
@@ -269,9 +198,19 @@
 }
 
 .forms-wrapper {
-  width: calc(100% - 383px);
-  height: 86vh;
-  overflow-y: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  height: 100%;
+  padding: 30px 20px 20px;
+}
+.forms-wrapper--loading {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+.forms-wrapper form {
+  width: 100%;
 }
 .forms-wrapper__loading.sk-circle {
   width: 20px;
