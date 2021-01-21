@@ -35,17 +35,17 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var result = new RemoteValidationResult();
             try
             {
-                var customerCode = _identityProvider.Identity?.CustomerCode;
+                var QpMode = !(_consolidationFactory.CustomerMap.ContainsKey(SingleCustomerCoreProvider.Key) && _consolidationFactory.CustomerMap.Count() == 1);
 
-                if (customerCode != null && customerCode != SingleCustomerCoreProvider.Key)
+                if (context.CustomerCode != null && QpMode)
                 {
                     CustomerState customerState;
 
-                    if (_consolidationFactory.NotConsolidatedCodes.Contains(customerCode))
+                    if (_consolidationFactory.NotConsolidatedCodes.Contains(context.CustomerCode))
                     {
                         customerState = CustomerState.NotRegistered;
                     }
-                    else if (_consolidationFactory.CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
+                    else if (_consolidationFactory.CustomerMap.TryGetValue(context.CustomerCode, out CustomerContext customerContext))
                     {
                         customerState = customerContext.State;
                     }
