@@ -3,6 +3,7 @@ import moment from "moment";
 import { TaskItem, TaskMessage } from "Shared/Types";
 import { TaskState } from "Shared/Enums";
 import { isString } from "lodash";
+import { rootUrl } from "ProductEditor/Utils/Common";
 import { SendNotificationOptions, sendNotification } from "@quantumart/qp8backendapi-interaction";
 
 export default class HighloadFrontStore {
@@ -52,7 +53,7 @@ export default class HighloadFrontStore {
     } = window;
     try {
       const response = await fetch(
-        `/HighloadFront/GetSettings?customerCode=${CustomerCode}&url=api/sync/settings`
+        `${rootUrl}/HighloadFront/GetSettings?customerCode=${CustomerCode}&url=api/sync/settings`
       );
       if (response.ok) {
         const res: TaskItem[] = await response.json();
@@ -100,7 +101,7 @@ export default class HighloadFrontStore {
     } = window;
     try {
       await fetch(
-        `/HighloadFront/IndexChanel?customerCode=${CustomerCode}&url=api/sync/${task.ChannelLanguage}/${task.ChannelState}/reset`,
+        `${rootUrl}/HighloadFront/IndexChanel?customerCode=${CustomerCode}&url=api/sync/${task.ChannelLanguage}/${task.ChannelState}/reset`,
         { method: "POST" }
       );
       await this.fetchTasks();

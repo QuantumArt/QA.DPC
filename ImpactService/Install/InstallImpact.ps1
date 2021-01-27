@@ -6,21 +6,21 @@ Installs DPC.Impact
 DPC.Impact is a web service which uses product information from ElasticSearch and returns product calculator data.
 
 .EXAMPLE
-  .\InstallImpact.ps1 -port 8033 -logPath 'C:\Logs' -elasticBaseAddress 'http://elastic01:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
+  .\InstallImpact.ps1 -port 8033 -logPath 'C:\Logs' -elasticUrl 'http://elastic01:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
 
 .EXAMPLE
- .\InstallImpact.ps1 -port 8032 -siteName 'DPC.Impact' -logPath 'C:\Logs' -elasticBaseAddress 'http://elastic01:9200;http://elastic02:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
+ .\InstallImpact.ps1 -port 8032 -siteName 'DPC.Impact' -logPath 'C:\Logs' -elasticUrl 'http://elastic01:9200;http://elastic02:9200' -liveIndexName 'products' -stageIndexName 'products_stage'
 #>
 param(
-    ## HighloadFront site name
+    ## Impact site name
     [Parameter()]
     [String] $siteName = 'Dpc.Impact',
-    ## HighloadFront port
+    ## Impact port
     [Parameter(Mandatory = $true)]
     [int] $port,
-    ## Flag which allows updating ElasticSearch indices
+    ## ElasticSearch URL
     [Parameter(Mandatory = $true)]
-    [string] $elasticBaseAddress,
+    [string] $elasticUrl,
     ## Elasticsearch conneciton timeout (sec)
     [Parameter()]
     [int] $timeout = 60,
@@ -32,7 +32,10 @@ param(
     [String] $liveIndexName,
     ## Stage index name
     [Parameter(Mandatory = $true)]
-    [String] $stageIndexName
+    [String] $stageIndexName,
+    ## Extra calculation libraries
+    [Parameter()]
+    [String] $libraries = ''
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -88,10 +91,16 @@ $nlog.Save($nLogPath)
 $appSettingsPath = Join-Path $sitePath "appsettings.json"
 $json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 
-$json.ElasticBaseAddress = $elasticBaseAddress
+$json.ElasticBaseAddress = $elasticUrl
 $json.ElasticIndexes = @()
 $json.ElasticIndexes += (New-Object PSObject -Property @{Name=$liveIndexName; State="live"; Language="invariant" })
 $json.ElasticIndexes += (New-Object PSObject -Property @{Name=$stageIndexName; State="stage"; Language="invariant" })
+
+if ($libraries) {
+    $libarr = @()
+    foreach ($lib in $libraries.Split(',')) { $libarr += $lib.Trim()}
+    $integration | Add-Member NoteProperty "ExtraLibraries" $libarr -Force
+}
 
 $json | Add-Member NoteProperty "HttpTimeout" $timeout -Force
 
