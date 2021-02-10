@@ -185,8 +185,7 @@ export default class FormStore {
           "PreloadingMode",
           "RelationCondition",
           "ClonePrototypeCondition",
-          "RelatedContentName",
-          "RelatedContentId"
+          "RelateTo"
         );
       } else if (fieldType === FieldDefinitionType.ExtensionField) {
         fieldList.push("IsClassifier");
