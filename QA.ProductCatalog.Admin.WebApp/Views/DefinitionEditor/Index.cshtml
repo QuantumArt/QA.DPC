@@ -70,11 +70,11 @@ window.definitionEditor = {
     SameForm: "@Html.Raw(ControlStrings.SameForm)",
   },
   backendEnums: {
-    update: '/Resource/GetUpdateEnum',
-    publish: '/Resource/GetPublishEnum',
-    preload: '/Resource/GetPreloadEnum',
-    delete: '/Resource/GetDeleteEnum',
-    clone: '/Resource/GetCloneEnum',
+    update: '@Url.Content("~/Resource/GetUpdateEnum")',
+    publish: '@Url.Content("~/Resource/GetPublishEnum")',
+    preload: '@Url.Content("~/Resource/GetPreloadEnum")',
+    delete: '@Url.Content("~/Resource/GetDeleteEnum")',
+    clone: '@Url.Content("~/Resource/GetCloneEnum")',
   },
 };
 </script>
