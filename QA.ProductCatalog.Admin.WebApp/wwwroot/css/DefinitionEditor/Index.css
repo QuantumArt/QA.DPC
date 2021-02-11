@@ -156,8 +156,12 @@
   position: fixed;
   width: 100%;
   height: 100%;
-  z-index: 199;
+  z-index: 19;
   background-color: #ffffff;
+}
+
+.xml-editor .ace_search {
+  z-index: 18;
 }
 
 .form-field-element {
