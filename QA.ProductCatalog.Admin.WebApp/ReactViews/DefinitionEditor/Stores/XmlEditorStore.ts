@@ -7,6 +7,7 @@ export default class XmlEditorStore {
       publicProcedureName: "DefinitionEditor.SetXml",
       procedure: xml => {
         const xmlEmpty = xml.match(/ contentid="\d+"/i) == null;
+        console.log("xmlEmpty", xmlEmpty);
         if (!xmlEmpty) {
           this.setXml(xml, true);
           this.setRootId(xml);
@@ -28,6 +29,7 @@ export default class XmlEditorStore {
   @observable xml: string;
   origXml: string;
   lastLocalSavedXml: string;
+  @observable defaultXmlUsed: boolean = false;
   @observable rootId: string;
   @observable fontSize: number = localStorage.getItem("fontSize")
     ? parseInt(localStorage.getItem("fontSize"))
@@ -35,7 +37,16 @@ export default class XmlEditorStore {
   @observable wrapLines: boolean = localStorage.getItem("wrapLines") === "true";
   @observable queryOnClick: boolean = localStorage.getItem("queryOnClick") === "true";
 
-  setLastLocalSavedXml = (xml: string) => (this.lastLocalSavedXml = xml);
+  setLastLocalSavedXml = (xml: string) => {
+    console.log("setLastLocalSavedXml");
+    this.lastLocalSavedXml = xml;
+  };
+
+  @action
+  setDefaultXmlUsed = (val: boolean) => {
+    this.defaultXmlUsed = val;
+    console.log("setDefaultXmlUsed", val);
+  };
 
   @action
   changeFontSize = (size: number) => {
@@ -60,6 +71,10 @@ export default class XmlEditorStore {
 
   @action
   setXml = (xml: string, firstTime: boolean = false) => {
+    console.log("setXml", firstTime, xml);
+    console.log("origXml", this.origXml);
+    console.log("xml", this.xml);
+    console.log("lastLocalSavedXml", this.lastLocalSavedXml);
     if (firstTime) {
       this.origXml = xml;
       this.setLastLocalSavedXml(xml);
@@ -74,7 +89,9 @@ export default class XmlEditorStore {
     this.rootId = this.parseXml(xml).Content[`${this.attributeNamePrefix}ContentId`];
   };
 
+  @action
   private setDefaultXml = () => {
+    this.setDefaultXmlUsed(true);
     if (this.settings.xml) {
       const xml = this.settings.xml
         .replace(/&amp;/g, "&")

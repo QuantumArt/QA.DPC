@@ -88,6 +88,9 @@ export default class ControlsStore {
   };
 
   isSameDefinition = (originalMode: boolean = true): boolean => {
+    if (this.xmlEditorStore.defaultXmlUsed) {
+      return false;
+    }
     return (
       (this.xmlEditorStore.isSameDefinition() && originalMode) ||
       (this.xmlEditorStore.isSameDefinitionWithLastSaved() && !originalMode)
@@ -135,6 +138,7 @@ export default class ControlsStore {
       isLocalSaveWasCorrect = await this.applyOnOpenedXmlEditor();
       await this.updateFormWithNewData();
     }
+    this.xmlEditorStore.setDefaultXmlUsed(false);
     return isLocalSaveWasCorrect;
   };
 
