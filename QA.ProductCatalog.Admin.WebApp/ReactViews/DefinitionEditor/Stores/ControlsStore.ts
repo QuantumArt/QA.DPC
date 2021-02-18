@@ -97,7 +97,7 @@ export default class ControlsStore {
 
   @action
   applyOnOpenedForm = async (): Promise<boolean> => {
-    if (this.formStore.isFormTheSame()) {
+    if (this.formStore.isFormTheSame(this.savingMode !== SavingMode.Finish)) {
       return false;
     }
     await this.formStore.saveForm(this.selectedNodeId);

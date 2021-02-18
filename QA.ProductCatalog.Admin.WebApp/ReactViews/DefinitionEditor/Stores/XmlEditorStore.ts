@@ -7,7 +7,6 @@ export default class XmlEditorStore {
       publicProcedureName: "DefinitionEditor.SetXml",
       procedure: xml => {
         const xmlEmpty = xml.match(/ contentid="\d+"/i) == null;
-        console.log("xmlEmpty", xmlEmpty);
         if (!xmlEmpty) {
           this.setXml(xml, true);
           this.setRootId(xml);
