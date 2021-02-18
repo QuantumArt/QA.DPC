@@ -12,6 +12,7 @@ export default class XmlEditorStore {
           this.setXml(xml, true);
           this.setRootId(xml);
         } else {
+          this.origXmlWasEmpty = true;
           this.setDefaultXml();
         }
       }
@@ -29,7 +30,7 @@ export default class XmlEditorStore {
   @observable xml: string;
   origXml: string;
   lastLocalSavedXml: string;
-  @observable defaultXmlUsed: boolean = false;
+  @observable origXmlWasEmpty: boolean = false;
   @observable rootId: string;
   @observable fontSize: number = localStorage.getItem("fontSize")
     ? parseInt(localStorage.getItem("fontSize"))
@@ -38,14 +39,7 @@ export default class XmlEditorStore {
   @observable queryOnClick: boolean = localStorage.getItem("queryOnClick") === "true";
 
   setLastLocalSavedXml = (xml: string) => {
-    console.log("setLastLocalSavedXml");
     this.lastLocalSavedXml = xml;
-  };
-
-  @action
-  setDefaultXmlUsed = (val: boolean) => {
-    this.defaultXmlUsed = val;
-    console.log("setDefaultXmlUsed", val);
   };
 
   @action
@@ -60,7 +54,12 @@ export default class XmlEditorStore {
     localStorage.setItem("wrapLines", `${this.wrapLines}`);
   };
 
-  isSameDefinition = (): boolean => this.xml === this.origXml;
+  isSameDefinition = (): boolean => {
+    if (this.origXmlWasEmpty) {
+      return false;
+    }
+    return this.xml === this.origXml;
+  };
   isSameDefinitionWithLastSaved = (): boolean => this.xml === this.lastLocalSavedXml;
 
   @action
@@ -71,10 +70,6 @@ export default class XmlEditorStore {
 
   @action
   setXml = (xml: string, firstTime: boolean = false) => {
-    console.log("setXml", firstTime, xml);
-    console.log("origXml", this.origXml);
-    console.log("xml", this.xml);
-    console.log("lastLocalSavedXml", this.lastLocalSavedXml);
     if (firstTime) {
       this.origXml = xml;
       this.setLastLocalSavedXml(xml);
@@ -91,7 +86,6 @@ export default class XmlEditorStore {
 
   @action
   private setDefaultXml = () => {
-    this.setDefaultXmlUsed(true);
     if (this.settings.xml) {
       const xml = this.settings.xml
         .replace(/&amp;/g, "&")

@@ -87,14 +87,12 @@ export default class ControlsStore {
     await this.treeStore.onNodeExpand(this.treeStore.tree[0]);
   };
 
-  isSameDefinition = (originalMode: boolean = true): boolean => {
-    if (this.xmlEditorStore.defaultXmlUsed) {
-      return false;
+  isSameDefinition = (checkAgainstOrigXml: boolean = true): boolean => {
+    if (checkAgainstOrigXml) {
+      return this.xmlEditorStore.isSameDefinition();
+    } else {
+      return this.xmlEditorStore.isSameDefinitionWithLastSaved();
     }
-    return (
-      (this.xmlEditorStore.isSameDefinition() && originalMode) ||
-      (this.xmlEditorStore.isSameDefinitionWithLastSaved() && !originalMode)
-    );
   };
 
   @action
@@ -138,7 +136,6 @@ export default class ControlsStore {
       isLocalSaveWasCorrect = await this.applyOnOpenedXmlEditor();
       await this.updateFormWithNewData();
     }
-    this.xmlEditorStore.setDefaultXmlUsed(false);
     return isLocalSaveWasCorrect;
   };
 
