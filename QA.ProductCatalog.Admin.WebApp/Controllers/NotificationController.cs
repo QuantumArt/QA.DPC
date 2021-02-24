@@ -130,7 +130,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 _service.UpdateConfiguration(customerCode);
             }
 
-            return Index();
+            return _Index();
 		}
 	}
 }
