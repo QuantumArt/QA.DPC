@@ -97,7 +97,11 @@ const ToolBar = observer(() => {
           </Button>
           <Button
             icon={IconNames.FLOPPY_DISK}
-            onClick={controlsStore.saveAndExit}
+            onClick={event => {
+              controlsStore.submitFormSyntheticEvent &&
+                controlsStore.submitFormSyntheticEvent(event);
+              controlsStore.saveAndExit();
+            }}
             disabled={treeStore.operationState === OperationState.Pending}
           >
             {l("SaveAndExit")}

@@ -87,16 +87,17 @@ export default class ControlsStore {
     await this.treeStore.onNodeExpand(this.treeStore.tree[0]);
   };
 
-  isSameDefinition = (originalMode: boolean = true): boolean => {
-    return (
-      (this.xmlEditorStore.isSameDefinition() && originalMode) ||
-      (this.xmlEditorStore.isSameDefinitionWithLastSaved() && !originalMode)
-    );
+  isSameDefinition = (checkAgainstOrigXml: boolean = true): boolean => {
+    if (checkAgainstOrigXml) {
+      return this.xmlEditorStore.isSameDefinition();
+    } else {
+      return this.xmlEditorStore.isSameDefinitionWithLastSaved();
+    }
   };
 
   @action
   applyOnOpenedForm = async (): Promise<boolean> => {
-    if (this.formStore.isFormTheSame()) {
+    if (this.formStore.isFormTheSame(this.savingMode !== SavingMode.Finish)) {
       return false;
     }
     await this.formStore.saveForm(this.selectedNodeId);

@@ -231,16 +231,20 @@ export default class FormStore {
       if (formDataValue !== modelValue) acc.push(fieldKey);
       return acc;
     }, [] as string[]);
-
     return !overlapFields.length;
   };
 
-  isFormTheSame = (): boolean => {
-    if (this.isEqualFormDataWithOriginalModel()) {
-      this.setError(l("SameForm"));
-      return true;
+  isFormTheSame = (checkAgainstOrigModel: boolean = true): boolean => {
+    if (checkAgainstOrigModel) {
+      if (this.isEqualFormDataWithOriginalModel()) {
+        this.setError(l("SameForm"));
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
     }
-    return false;
   };
 
   setModelTypeByFieldType = (fieldType: number | undefined): void => {
