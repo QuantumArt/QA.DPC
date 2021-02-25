@@ -13,7 +13,7 @@ import {
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
-import { TreeErrorDialog, FormErrorDialog } from "DefinitionEditor/Components";
+import { ErrorDialog } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
 import { l } from "DefinitionEditor/Localization";
 import "./Style.scss";
@@ -73,8 +73,8 @@ const ToolBar = observer(() => {
 
   return (
     <div className="editor-toolbar">
-      <TreeErrorDialog />
-      <FormErrorDialog />
+      <ErrorDialog store={treeStore} />
+      <ErrorDialog store={formStore} />
       <div className="editor-toolbar__buttons">
         <ButtonGroup>
           <Button

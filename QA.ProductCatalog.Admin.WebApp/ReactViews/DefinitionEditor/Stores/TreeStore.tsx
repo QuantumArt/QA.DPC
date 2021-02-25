@@ -1,5 +1,5 @@
 import React from "react";
-import { Classes, Icon, IconName, Intent, MaybeElement, Tooltip } from "@blueprintjs/core";
+import { Classes, Icon, IconName, Intent, Tooltip } from "@blueprintjs/core";
 import { action, computed, observable, when } from "mobx";
 import XmlEditorStore from "./XmlEditorStore";
 import { OperationState } from "Shared/Enums";
@@ -7,9 +7,12 @@ import { ITreeNode } from "@blueprintjs/core";
 import { IDefinitionNode } from "DefinitionEditor/ApiService/ApiInterfaces";
 import ApiService from "DefinitionEditor/ApiService";
 import { l } from "DefinitionEditor/Localization";
+import ErrorHandler from "./ErrorHandler";
 
-export default class TreeStore {
-  constructor(private xmlEditorStore: XmlEditorStore) {}
+export default class TreeStore extends ErrorHandler {
+  constructor(private xmlEditorStore: XmlEditorStore) {
+    super();
+  }
 
   init = (setSelectedNodeId: (id: string) => void) => {
     this.setSelectedNodeId = setSelectedNodeId;
@@ -117,20 +120,25 @@ export default class TreeStore {
     try {
       return await cb();
     } catch (e) {
-      let log: string;
       console.error(e);
-      try {
-        if (e.err) {
-          log = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
-        } else {
-          log = (await e.text()) ?? null;
-        }
-      } catch {
-      } finally {
-        const text = e.message ?? e.statusMessage ?? e.statusText ?? (e.err && "Invalid XML");
-        this.setError(text, log);
-      }
+      await this.logError(e, l("InvalidXml"));
       return null;
+    }
+  };
+
+  @action
+  logError = async (e, fallbackText: string) => {
+    let log: string;
+    try {
+      if (e.err) {
+        log = `${e.err.code}\n${e.err.msg}\nOn line ${e.err.line}`;
+      } else {
+        log = (await e.text()) ?? null;
+      }
+    } catch {
+    } finally {
+      const text = e.message || e.statusMessage || e.statusText || (e.err && fallbackText);
+      this.setError(text, log);
     }
   };
 
@@ -151,9 +159,9 @@ export default class TreeStore {
   };
 
   @action
-  setError = (text?: string, log?: string) => {
+  setError = (errText?: string, log?: string) => {
     this.operationState = OperationState.Error;
-    this.errorText = text ?? "Error";
+    this.errorText = errText ?? l("GenericError");
     if (log) {
       this.errorLog = log;
     }

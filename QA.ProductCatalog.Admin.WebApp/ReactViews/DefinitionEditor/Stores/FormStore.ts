@@ -1,5 +1,6 @@
 import XmlEditorStore from "./XmlEditorStore";
-import { action, computed, observable, runInAction } from "mobx";
+import { action, computed, observable, IReactionDisposer } from "mobx";
+import qs from "qs";
 import ApiService from "DefinitionEditor/ApiService";
 import { EnumBackendModel, IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
 import { BackendEnumType, FieldDefinitionType, ModelType } from "DefinitionEditor/Enums";
@@ -17,12 +18,12 @@ import {
 } from "Shared/Utils";
 import { OperationState } from "Shared/Enums";
 import { assign, forIn, isNull, isUndefined, keys, pick } from "lodash";
-import { IReactionDisposer } from "mobx/lib/internal";
 import { l } from "DefinitionEditor/Localization";
-import qs from "qs";
+import ErrorHandler from "./ErrorHandler";
 
-export default class FormStore {
+export default class FormStore extends ErrorHandler {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
+    super();
     this.singleRequestedEnums = new singleRequestedData(ApiService.getSelectEnums);
     this.initEnumsModel();
   }
@@ -68,7 +69,7 @@ export default class FormStore {
   @action
   setError = (errText?: string, log?: string) => {
     this.operationState = OperationState.Error;
-    this.errorText = errText ?? "Error";
+    this.errorText = errText ?? l("GenericError");
     if (log) {
       this.errorLog = log;
     }

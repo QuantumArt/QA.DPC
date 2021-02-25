@@ -235,18 +235,6 @@
   white-space: pre-line;
 }
 
-.error-dialog {
-  max-width: 90%;
-  width: auto;
-  min-width: 500px;
-}
-.error-dialog__error-log {
-  margin-top: 10px;
-}
-.error-dialog__pre {
-  white-space: pre-line;
-}
-
 :root {
   --sk-size: 40px;
   --sk-color: #333;

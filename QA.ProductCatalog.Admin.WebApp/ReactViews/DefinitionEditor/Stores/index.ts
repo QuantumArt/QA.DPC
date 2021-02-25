@@ -3,6 +3,7 @@ import XmlEditorStore from "./XmlEditorStore";
 import TreeStore from "./TreeStore";
 import FormStore from "./FormStore";
 import ControlsStore from "./ControlsStore";
+import ErrorHandler from "./ErrorHandler";
 
 export interface StoresCtx {
   controlsStore: ControlsStore;
@@ -24,3 +25,5 @@ export const storesCtx = React.createContext<StoresCtx>({
 });
 
 export const useStores = () => React.useContext(storesCtx);
+
+export { XmlEditorStore, TreeStore, FormStore, ControlsStore, ErrorHandler };
