@@ -8,18 +8,18 @@ import {
   Popover,
   Slider,
   Switch,
-  Spinner
+  Spinner,
+  Position
 } from "@blueprintjs/core";
 import { IconNames } from "@blueprintjs/icons";
 import { useStores } from "DefinitionEditor";
-import { TreeErrorDialog } from "DefinitionEditor/Components";
+import { ErrorDialog } from "DefinitionEditor/Components";
 import { OperationState } from "Shared/Enums";
 import { l } from "DefinitionEditor/Localization";
 import "./Style.scss";
-import { Position } from "@blueprintjs/core/lib/esm/common/position";
 
 const ToolBar = observer(() => {
-  const { xmlEditorStore, treeStore, controlsStore } = useStores();
+  const { xmlEditorStore, treeStore, formStore, controlsStore } = useStores();
   const infoState = useLocalStore(() => ({
     opened: false,
     toggle() {
@@ -73,7 +73,8 @@ const ToolBar = observer(() => {
 
   return (
     <div className="editor-toolbar">
-      <TreeErrorDialog />
+      <ErrorDialog store={treeStore} />
+      <ErrorDialog store={formStore} />
       <div className="editor-toolbar__buttons">
         <ButtonGroup>
           <Button
@@ -152,7 +153,7 @@ const ToolBar = observer(() => {
             />
           </div>
         </div>
-        {controlsStore.selectedNodeId !== null && (
+        {controlsStore.selectedNodeId !== null && formStore.UIEditModelPresent && (
           <Button
             icon={controlsStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}

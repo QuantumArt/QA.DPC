@@ -105,6 +105,7 @@ export default class ControlsStore {
     return true;
   };
 
+  @action
   applyOnOpenedXmlEditor = async (): Promise<boolean> => {
     if (this.isSameDefinition(this.savingMode === SavingMode.Finish)) {
       this.treeStore.setError(l("SameDefinition"));
@@ -114,6 +115,7 @@ export default class ControlsStore {
     return true;
   };
 
+  @action
   apply = async () => {
     this.setSavingMode(SavingMode.Apply);
     const isSaveSuccess = await this.doLocalSave();
@@ -124,10 +126,12 @@ export default class ControlsStore {
     this.treeStore.setSelectedNodeIdInUI();
   };
 
+  @action
   updateFormWithNewData = async () => {
     if (this.selectedNodeId) await this.formStore.fetchFormFields(this.selectedNodeId);
   };
 
+  @action
   doLocalSave = async (): Promise<boolean> => {
     let isLocalSaveWasCorrect: boolean;
     if (this.formMode) {
