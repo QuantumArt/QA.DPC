@@ -18,6 +18,10 @@ interface Props {
 const EditForm = observer(({ width }: Props) => {
   const { formStore, controlsStore } = useStores();
 
+  if (!formStore.UIEditModelPresent) {
+    return null;
+  }
+
   useEffect(() => {
     if (formStore.UIEditModel["InDefinition"])
       formStore.hideUiFields(
@@ -25,14 +29,14 @@ const EditForm = observer(({ width }: Props) => {
         false,
         !Boolean(formStore.UIEditModel["InDefinition"].value)
       );
-  }, [formStore?.UIEditModel["InDefinition"]]);
+  }, [formStore.UIEditModel["InDefinition"]]);
 
   useEffect(() => {
     if (formStore.UIEditModel["CacheEnabled"]) {
       const model = formStore.UIEditModel["CacheEnabled"] as CheckboxParsedModel;
       model.subModel.toggleIsHide(!model.value);
     }
-  }, [formStore?.UIEditModel["CacheEnabled"]]);
+  }, [formStore.UIEditModel["CacheEnabled"]]);
 
   return (
     <div

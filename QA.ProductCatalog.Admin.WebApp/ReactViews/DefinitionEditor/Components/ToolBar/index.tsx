@@ -19,7 +19,7 @@ import { l } from "DefinitionEditor/Localization";
 import "./Style.scss";
 
 const ToolBar = observer(() => {
-  const { xmlEditorStore, treeStore, controlsStore } = useStores();
+  const { xmlEditorStore, treeStore, formStore, controlsStore } = useStores();
   const infoState = useLocalStore(() => ({
     opened: false,
     toggle() {
@@ -153,7 +153,7 @@ const ToolBar = observer(() => {
             />
           </div>
         </div>
-        {controlsStore.selectedNodeId !== null && !xmlEditorStore.xmlIsEmpty && (
+        {controlsStore.selectedNodeId !== null && formStore.UIEditModelPresent && (
           <Button
             icon={controlsStore.formMode ? IconNames.APPLICATION : IconNames.CODE_BLOCK}
             intent={Intent.PRIMARY}

@@ -1,5 +1,5 @@
 import XmlEditorStore from "./XmlEditorStore";
-import { action, observable, runInAction } from "mobx";
+import { action, computed, observable, runInAction } from "mobx";
 import ApiService from "DefinitionEditor/ApiService";
 import { EnumBackendModel, IEditFormModel } from "DefinitionEditor/ApiService/ApiInterfaces";
 import { BackendEnumType, FieldDefinitionType, ModelType } from "DefinitionEditor/Enums";
@@ -28,6 +28,9 @@ export default class FormStore {
   }
 
   @observable UIEditModel: { [key in string]: ParsedModelType };
+  @computed get UIEditModelPresent() {
+    return this.UIEditModel != null;
+  }
   ModelType: ModelType;
   private singleRequestedEnums: ISingleRequestedData<
     { [key in BackendEnumType]: EnumBackendModel[] }
@@ -301,6 +304,7 @@ export default class FormStore {
       this.operationState = OperationState.Success;
     } catch (e) {
       await this.logError(e, l("FormLoadError"));
+      this.UIEditModel = undefined;
     }
   };
 
