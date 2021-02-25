@@ -38,23 +38,40 @@ export default class FormStore {
 
   @observable operationState: OperationState = OperationState.None;
   @observable errorText: string = null;
+  @observable errorLog: string = null;
 
   onChangeNodeIdReaction: IReactionDisposer;
 
+  @action
   resetErrorState = () => {
-    runInAction(() => {
-      this.operationState = OperationState.Success;
-      this.errorText = null;
-    });
+    this.operationState = OperationState.Success;
+    this.errorText = null;
+    this.errorLog = null;
   };
 
-  setError = (errText?: string) => {
-    runInAction(() => {
-      this.operationState = OperationState.Error;
-      this.errorText = errText ?? "Error";
-    });
+  @action
+  logError = async (e, fallbackText: string) => {
+    console.error(e);
+    let log: string;
+    try {
+      log = (await e.text()) ?? null;
+    } catch {
+    } finally {
+      const text = e.message || e.statusMessage || e.statusText || fallbackText;
+      this.setError(text, log);
+    }
   };
 
+  @action
+  setError = (errText?: string, log?: string) => {
+    this.operationState = OperationState.Error;
+    this.errorText = errText ?? "Error";
+    if (log) {
+      this.errorLog = log;
+    }
+  };
+
+  @action
   setFormData = (newFormData: object | null = null): void => {
     const excludeFieldsFromNewFormData: string[] = ["RelateTo", "IsClassifier"];
     if (!newFormData) {
@@ -78,11 +95,12 @@ export default class FormStore {
     });
   };
 
+  @action
   initEnumsModel = async () => {
     try {
       this.enumsModel = await this.singleRequestedEnums.getData();
     } catch (e) {
-      this.setError(l("FormLoadError"));
+      await this.logError(e, l("FormLoadError"));
       throw e;
     }
   };
@@ -282,8 +300,7 @@ export default class FormStore {
       this.UIEditModel = this.parseEditFormDataToUIModel(editForm);
       this.operationState = OperationState.Success;
     } catch (e) {
-      this.setError(l("FormLoadError"));
-      console.error(e);
+      await this.logError(e, l("FormLoadError"));
     }
   };
 
@@ -301,8 +318,7 @@ export default class FormStore {
       this.xmlEditorStore.setLastLocalSavedXml(newEditForm.Xml);
       this.operationState = OperationState.Success;
     } catch (e) {
-      this.setError(l("FormSaveError"));
-      console.error(e);
+      await this.logError(e, l("FormSaveError"));
     }
   };
 

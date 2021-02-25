@@ -6,7 +6,6 @@ import { Form } from "react-final-form";
 import FormField from "../FormField";
 import FormFieldWrapper from "../FormFieldWrap";
 import "./Style.scss";
-import FormErrorDialog from "DefinitionEditor/Components/Forms/FormErrorDialog";
 import { OperationState } from "Shared/Enums";
 import { keys } from "lodash";
 import { CheckboxParsedModel } from "Shared/Utils";
@@ -68,7 +67,6 @@ const EditForm = observer(({ width }: Props) => {
       {formStore.operationState === OperationState.Pending && (
         <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_LARGE} />
       )}
-      <FormErrorDialog />
     </div>
   );
 });

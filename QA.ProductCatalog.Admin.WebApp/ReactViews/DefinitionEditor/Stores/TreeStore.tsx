@@ -113,7 +113,7 @@ export default class TreeStore {
   };
 
   @action
-  withLogError = async <T extends {}>(cb: () => Promise<T>): Promise<T> => {
+  withLogError = async <T extends {} | void>(cb: () => Promise<T>): Promise<T> => {
     try {
       return await cb();
     } catch (e) {
