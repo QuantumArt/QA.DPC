@@ -10,7 +10,8 @@
 
     .EXAMPLE
     .\InstallConsolidationCustomerCode.ps1 -databaseServer 'dbhost' -targetBackupPath 'c:\temp\catalog_consolidation.bak' -customerCode 'catalog_consolidation' -customerLogin 'login' -customerPassword '1q2w#E$R' 
-    -currentSqlPath '\\storage\Developers_share\QP\current.sql' -frontHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin'
+    -currentSqlPath '\\storage\Developers_share\QP\current.sql' -frontHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin' 
+    -uploadFolderName 'test_catalog'
 #>
 param(
     ## Database Server
@@ -38,6 +39,9 @@ param(
     ## Elasticsearch cluster search
     [Parameter(Mandatory = $true)]
     [string] $elasticsearchHost,
+    ## Upload folder name
+    [Parameter(Mandatory = $true)]
+    [string] $uploadFolder,
     ## Sql script for bringing DB up-to-date
     [Parameter(Mandatory = $true)]
     [string] $currentSqlPath,
@@ -117,12 +121,17 @@ $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
 
 . (Join-Path $currentPath "Modules\Database.ps1")
 . (Join-Path $currentPath "Modules\CustomerCode.ps1")
+. (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
 
 if (Get-CustomerCode -CustomerCode $customerCode)
 {
     Write-Host "Customer code $customerCode already exists"
     return
 }
+
+$def = Get-SiteOrApplication "Default Web Site"
+if (!$def) { throw "Default Web Site doesn't exist"}
+$root = $def.PhysicalPath -replace "%SystemDrive%",$env:SystemDrive
 
 $resetUserPassword = $false
 
@@ -217,8 +226,21 @@ $formQuery2 = "update content set FORM_SCRIPT = $replace2 where FORM_SCRIPT like
 Execute-Sql @cnnParams -query $formQuery
 
 Execute-Sql @cnnParams -query $formQuery2
- 
+
+$uploadPath = Join-Path $root $uploadFolder
+$bitfalse =  if ($dbType -eq 0) { "0" } else {"false"}
+$pathQuery = "update site set upload_dir = '$uploadPath', upload_url = '/$uploadFolder/', use_absolute_upload_url = $bitfalse"
+Execute-Sql @cnnParams -query $pathQuery
+
+
+$oldUploadFolder = 'test_catalog'
+$oldUploadHost = 'storage.demo.dev.qsupport.ru'
+$newUploadHost = 'localhost'
+$productsQuery = "update products set data = replace(data, '\\$oldUploadHost\$oldUploadFolder', '\\$newUploadHost\$uploadFolder')"
+Execute-Sql @cnnParams -query $productsQuery
+
 Write-Host "Database updated"  
+
 $savedParams = @{
     Server = $databaseServer;
     Database = $customerCode;
