@@ -19,7 +19,7 @@ function Execute-Sql {
         $expr = """
             \! chcp 1251
             \pset pager off
-            $query"" | psql -qtAx -d '$cnnString'"
+            $query"" | psql -qbtAx -d '$cnnString' 2>&1"
         Write-Verbose $expr
         $result = Invoke-Expression $expr
     } else {
@@ -66,7 +66,7 @@ function Execute-File {
     $cnnString = Get-ConnectionString -database $database -server $server -name $name -pass $pass -dbType $dbType
 
     if ($dbType -eq 1) {
-        $expr = "psql -b -d '$cnnString' -c '\! chcp 1251' -c'\pset pager off' -f '$path'"
+        $expr = "psql -b -d '$cnnString' -c '\! chcp 1251' -c'\pset pager off' -f '$path' 2>&1"
         Write-Verbose "Executing DB script: ${path}"
         Invoke-Expression $expr
     } else {

@@ -228,15 +228,14 @@ Execute-Sql @cnnParams -query $formQuery
 Execute-Sql @cnnParams -query $formQuery2
 
 $uploadPath = Join-Path $root $uploadFolder
-$bitfalse =  if ($dbType -eq 0) { "0" } else {"false"}
-$pathQuery = "update site set upload_dir = '$uploadPath', upload_url = '/$uploadFolder/', use_absolute_upload_url = $bitfalse"
+$pathQuery = "update site set upload_dir = '$uploadPath', upload_url = '/$uploadFolder/', use_absolute_upload_url = 0"
 Execute-Sql @cnnParams -query $pathQuery
 
 
 $oldUploadFolder = 'test_catalog'
 $oldUploadHost = 'storage.demo.dev.qsupport.ru'
 $newUploadHost = 'localhost'
-$productsQuery = "update products set data = replace(data, '\\$oldUploadHost\$oldUploadFolder', '\\$newUploadHost\$uploadFolder')"
+$productsQuery = "update products set data = replace(data, '//$oldUploadHost/$oldUploadFolder', '//$newUploadHost/$uploadFolder')"
 Execute-Sql @cnnParams -query $productsQuery
 
 

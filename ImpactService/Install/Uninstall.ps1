@@ -71,7 +71,7 @@ function Stop-AppPool
 
     if ($s -and $s.State -ne "Stopped")
     {
-        Write-Verbose "Stopping AppPool $AppPoolName..." -Verbose
+        Write-Verbose "Stopping AppPool $AppPoolName..." 
         $s.Stop()
         $endTime = $(get-date).AddMinutes('1')
         while($(get-date) -lt $endtime)
@@ -80,7 +80,7 @@ function Stop-AppPool
             if ($s.State -ne "Stopping")
             {
                 if ($s.State -eq "Stopped") {
-                    Write-Verbose "Stopped" -Verbose
+                    Write-Verbose "Stopped" 
                 }
                 break
             }
