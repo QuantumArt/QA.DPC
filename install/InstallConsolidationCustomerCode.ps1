@@ -239,9 +239,6 @@ $newUploadHost = 'localhost'
 $productsQuery = "update products set data = replace(data, '\\$oldUploadHost\$oldUploadFolder', '\\$newUploadHost\$uploadFolder')"
 Execute-Sql @cnnParams -query $productsQuery
 
-$bittrue =  if ($dbType -eq 0) { "1" } else {"true"}
-$customActionQuery = "update custom_action set show_in_menu = $bittrue where alias in ('pdf_viewer', 'html_viewer', 'mapping_viewer')"
-Execute-Sql @cnnParams -query $customActionQuery
 
 Write-Host "Database updated"  
 
