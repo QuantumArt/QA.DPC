@@ -63,6 +63,7 @@ function Test-Port
     )
 
     if ($port) {
+        Write-Host "Checking port $port..."
         $connected = $false
 
         Try{
@@ -76,6 +77,7 @@ function Test-Port
   
 }
 
+
 $requiredRuntime = '3.1.1[2-9]'
   
 Try {
@@ -87,22 +89,27 @@ Try {
 
 if (!($actualRuntimes | Where-Object {$_ -match $requiredRuntime})){ Throw "Check ASP.NET Core runtime 3.1.x (3.1.12 or newer) : failed" }
 
-
 If ($databaseServer) {
+    Write-Host "Connecting to database server..."
     if ($dbType -eq 0) {
         $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
         $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
         if (-not(Get-Module -Name $moduleName)) {
             Import-Module $moduleName
         }
-    }
-
     Try {
         Execute-Sql -server $databaseServer -name $login -pass $password -query "select 1 as result" -dbType $dbType | Out-Null
     } Catch {
         Write-Error $_.Exception
         Throw "Test connection to  $databaseServer : failed"
     } 
+    }
+
+    else {
+        $result = Execute-Sql -server $databaseServer -name $login -pass $password -query "select 1 as result" -dbType $dbType
+        if ($result -match "FATAL:") { Throw "Test connection to  $databaseServer : failed" }
+    }
+    Write-Host "Done"
 }
 
 Test-Port -Port $actionsPort -Name "ActionsPort"
@@ -111,3 +118,4 @@ Test-Port -Port $frontPort -Name "FrontPort"
 Test-Port -Port $syncApiPort -Name "SyncApiPort"
 Test-Port -Port $searchApiPort -Name "SearchApiPort"
 Test-Port -Port $webApiPort -Name "WebApiPort"
+
