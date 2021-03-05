@@ -66,7 +66,9 @@ New-Item -Path $sitePath -ItemType Directory -Force | Out-Null
 $parentPath = Split-Path -parent $currentPath
 $sourcePath = Join-Path $parentPath "HighloadFront"
 
+Write-Host "Copying files from $sourcePath to $sitePath..."
 Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
+Write-Host "Done"
 
 $nLogPath = Join-Path $sitePath "NLog.config"
 [xml]$nlog = Get-Content -Path $nLogPath

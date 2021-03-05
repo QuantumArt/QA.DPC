@@ -114,7 +114,7 @@ function ReplaceFieldValues
     )  
 
     $query = "update content_data set data = replace(data, '$placeholder', '$value') where ATTRIBUTE_ID = $fieldId and data like '%$placeholder%'"
-    Execute-Sql @connectionParams -Query $query   
+    Execute-Sql @connectionParams -Query $query | Out-Null
 }
 
 $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
@@ -185,7 +185,7 @@ $cnnParams = @{
 }
 
 Write-Host "Run Current.sql on $currentSqlPath"  
-Execute-File @cnnParams -path $currentSqlPath 
+Execute-File @cnnParams -path $currentSqlPath | Out-Null
 Write-Host "Current.sql updated"  
 
 Write-Host "Update database"  
@@ -208,7 +208,7 @@ if ($dbType -eq 0) {
 }
 $validationQuery = "update site set XAML_DICTIONARIES = $replace where XAML_DICTIONARIES like '%$validationPlaceholder%'"
 
-Execute-Sql @cnnParams -query $validationQuery
+Execute-Sql @cnnParams -query $validationQuery | Out-Null
 
 $localhost = "localhost:5250"
 $oldCustomerCode = "sber_pg"
@@ -223,20 +223,20 @@ if ($dbType -eq 0) {
 $formQuery = "update content set FORM_SCRIPT = $replace where FORM_SCRIPT like '%$localhost%'"
 $formQuery2 = "update content set FORM_SCRIPT = $replace2 where FORM_SCRIPT like '%$oldCustomerCode%'"
 
-Execute-Sql @cnnParams -query $formQuery
+Execute-Sql @cnnParams -query $formQuery | Out-Null
 
-Execute-Sql @cnnParams -query $formQuery2
+Execute-Sql @cnnParams -query $formQuery2 | Out-Null
 
 $uploadPath = Join-Path $root $uploadFolder
 $pathQuery = "update site set upload_dir = '$uploadPath', upload_url = '/$uploadFolder/', use_absolute_upload_url = 0"
-Execute-Sql @cnnParams -query $pathQuery
+Execute-Sql @cnnParams -query $pathQuery | Out-Null
 
 
 $oldUploadFolder = 'test_catalog'
 $oldUploadHost = 'storage.demo.dev.qsupport.ru'
 $newUploadHost = 'localhost'
 $productsQuery = "update products set data = replace(data, '//$oldUploadHost/$oldUploadFolder', '//$newUploadHost/$uploadFolder')"
-Execute-Sql @cnnParams -query $productsQuery
+Execute-Sql @cnnParams -query $productsQuery | Out-Null
 
 
 Write-Host "Database updated"  

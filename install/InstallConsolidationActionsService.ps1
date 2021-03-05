@@ -94,7 +94,7 @@ $json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 $json.Loader.UseFileSizeService = $false
 $json.Properties.EnableScheduleProcess = $false
 
-$integration = ($json | Get-Member "Integration")
+$integration = $json.Integration
 if (!$integration) {
     $integration = New-Object PSObject
     $json | Add-Member NoteProperty "Integration" $integration

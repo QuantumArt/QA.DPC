@@ -22,6 +22,7 @@ function Execute-Sql {
             $query"" | psql -qbtAx -d '$cnnString' 2>&1"
         Write-Verbose $expr
         $result = Invoke-Expression $expr
+        if ($result -match "ERROR:") { $result | Write-Host }     
     } else {
         $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
         $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
@@ -68,7 +69,8 @@ function Execute-File {
     if ($dbType -eq 1) {
         $expr = "psql -b -d '$cnnString' -c '\! chcp 1251' -c'\pset pager off' -f '$path' 2>&1"
         Write-Verbose "Executing DB script: ${path}"
-        Invoke-Expression $expr
+        $result = Invoke-Expression $expr
+        if ($result -match "ERROR:") { $result | Write-Host }     
     } else {
         $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
         $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
@@ -372,7 +374,7 @@ function Restore-Database
         $createQuery = "SELECT 'CREATE DATABASE $databaseName'
         WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$databaseName')\gexec"
 
-        Execute-Sql @executeParams -query $createQuery
+        Execute-Sql @executeParams -query $createQuery | Out-Null
         $cnnString = Get-ConnectionString @executeParams -database $databaseName 
         $numCores = (Get-WmiObject -class Win32_ComputerSystem).NumberOfLogicalProcessors
         Invoke-Expression "pg_restore -Fc -c -d '$cnnString' -j $numCores '$backupPath'"
@@ -408,7 +410,7 @@ function Restore-Database
         ALTER DATABASE [$databaseName] SET RECOVERY SIMPLE;"
     
     
-        Execute-Sql @executeParams -query $query 
+        Execute-Sql @executeParams -query $query | Out-Null
     
         Write-Host "$databaseName is restored"
     }
