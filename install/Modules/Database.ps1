@@ -388,7 +388,7 @@ function Restore-Database
         Write-Host "Restoring $databaseName from $backupPath..."
         $cnnString = Get-ConnectionString @executeParams -database $databaseName 
         $numCores = (Get-WmiObject -class Win32_ComputerSystem).NumberOfLogicalProcessors
-        Invoke-Expression "pg_restore -Fc -d '$cnnString' -j $numCores '$backupPath'"
+        Invoke-Expression "pg_restore -Fc -d '$cnnString' -j $numCores --no-privileges --no-owner '$backupPath'"
         Write-Host "Done"
 
     } else {
