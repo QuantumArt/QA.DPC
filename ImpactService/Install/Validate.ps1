@@ -4,7 +4,7 @@
 
     .DESCRIPTION
     Checks:
-    - .NET Core Runtime 3.1.8 is installed
+    - .NET Core Runtime 3.1.12 or newer is installed
     - Port is available
 
     .EXAMPLE
@@ -45,15 +45,17 @@ function Test-Port
   
 }
 
-$requiredRuntime = '3.1.8'
+$requiredRuntime = '3.1.1[2-9]'
   
 Try {
-    $actualRuntime = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.AspNetCore.App')).Name
+    $actualRuntimes = (Get-ChildItem (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.AspNetCore.App')).Name
 } Catch {
     Write-Error $_.Exception
     Throw "Check ASP.NET Core runtime : failed"
-} 
-If ($actualRuntime -notcontains $requiredRuntime){ Throw "Check ASP.NET Core runtime $requiredRuntime : failed" }
+}
+
+if (!($actualRuntimes | Where-Object {$_ -match $requiredRuntime})){ Throw "Check ASP.NET Core runtime 3.1.x (3.1.12 or newer) : failed" }
+
 
 
 Test-Port -Port $impactPort -Name "ImpactPort"

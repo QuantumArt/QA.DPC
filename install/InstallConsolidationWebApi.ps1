@@ -54,7 +54,9 @@ New-Item -Path $sitePath -ItemType Directory -Force | Out-Null
 $parentPath = Split-Path -parent $currentPath
 $sourcePath = Join-Path $parentPath "WebApi"
 
+Write-Host "Copying files from $sourcePath to $sitePath..."
 Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
+Write-Host "Done"
 
 $nLogPath = Join-Path $sitePath "NLogClient.config"
 
@@ -80,12 +82,11 @@ $json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 $loader = $json.Loader
 $loader.UseFileSizeService = $false
 
-$integration = ($json | Get-Member "Integration")
+$integration = $json.Integration
 if (!$integration) {
     $integration = New-Object PSObject
     $json | Add-Member NoteProperty "Integration" $integration
 }
-
 $integration | Add-Member NoteProperty "RestNotificationUrl" "http://${env:COMPUTERNAME}:$notifyPort" -Force
 
 Set-ItemProperty $appSettingsPath -name IsReadOnly -value $false

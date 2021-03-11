@@ -223,7 +223,7 @@ $source = Join-Path $parentPath $webApiArtifactName
 Invoke-Expression "$scriptName -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort -LogPath '$logPath'"
 
 $scriptName = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
-$params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -FrontHost '$frontHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost' -DbType $dbType"
+$params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -FrontHost '$frontHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost' -DbType $dbType -UploadFolder $customerCode"
 if ($sourceBackupPath) { 
     $params = "$params -SourceBackupPath '$sourceBackupPath'" 
 }

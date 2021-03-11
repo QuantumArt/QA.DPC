@@ -6,7 +6,6 @@ import { Form } from "react-final-form";
 import FormField from "../FormField";
 import FormFieldWrapper from "../FormFieldWrap";
 import "./Style.scss";
-import FormErrorDialog from "DefinitionEditor/Components/Forms/FormErrorDialog";
 import { OperationState } from "Shared/Enums";
 import { keys } from "lodash";
 import { CheckboxParsedModel } from "Shared/Utils";
@@ -19,6 +18,10 @@ interface Props {
 const EditForm = observer(({ width }: Props) => {
   const { formStore, controlsStore } = useStores();
 
+  if (!formStore.UIEditModelPresent) {
+    return null;
+  }
+
   useEffect(() => {
     if (formStore.UIEditModel["InDefinition"])
       formStore.hideUiFields(
@@ -26,14 +29,14 @@ const EditForm = observer(({ width }: Props) => {
         false,
         !Boolean(formStore.UIEditModel["InDefinition"].value)
       );
-  }, [formStore?.UIEditModel["InDefinition"]]);
+  }, [formStore.UIEditModel["InDefinition"]]);
 
   useEffect(() => {
     if (formStore.UIEditModel["CacheEnabled"]) {
       const model = formStore.UIEditModel["CacheEnabled"] as CheckboxParsedModel;
       model.subModel.toggleIsHide(!model.value);
     }
-  }, [formStore?.UIEditModel["CacheEnabled"]]);
+  }, [formStore.UIEditModel["CacheEnabled"]]);
 
   return (
     <div
@@ -68,7 +71,6 @@ const EditForm = observer(({ width }: Props) => {
       {formStore.operationState === OperationState.Pending && (
         <Spinner intent={Intent.PRIMARY} size={Spinner.SIZE_LARGE} />
       )}
-      <FormErrorDialog />
     </div>
   );
 });

@@ -59,7 +59,9 @@ $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
 $sourcePath = Join-Path $parentPath "Front"
 
+Write-Host "Copying files from $sourcePath to $sitePath..."
 Copy-Item "$sourcePath\*" -Destination $sitePath -Force -Recurse
+Write-Host "Done"
 
 $nLogPath = Join-Path $sitePath "NLog.config"
 [xml]$nlog = Get-Content -Path $nLogPath

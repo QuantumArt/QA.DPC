@@ -10,8 +10,8 @@
 
 namespace QA.Core.DPC.Resources {
     using System;
-
-
+    
+    
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace QA.Core.DPC.Resources {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ControlStrings {
-
+        
         private static global::System.Resources.ResourceManager resourceMan;
-
+        
         private static global::System.Globalization.CultureInfo resourceCulture;
-
+        
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal ControlStrings() {
         }
-
+        
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -45,7 +45,7 @@ namespace QA.Core.DPC.Resources {
                 return resourceMan;
             }
         }
-
+        
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ namespace QA.Core.DPC.Resources {
                 resourceCulture = value;
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Content is already cached as dictionary.
         /// </summary>
@@ -68,7 +68,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("AlreadyCached", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Apply.
         /// </summary>
@@ -77,7 +77,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Apply", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Back to editing.
         /// </summary>
@@ -86,7 +86,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("BackToEditing", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Cache Settings.
         /// </summary>
@@ -95,7 +95,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CacheSettings", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to To publish these products please click &quot;Publish and Send&quot; button.
         /// </summary>
@@ -104,7 +104,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ClickPublishAndSendButton", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to clone entity.
         /// </summary>
@@ -113,7 +113,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Clone", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Clone Prototype Condition.
         /// </summary>
@@ -122,7 +122,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ClonePrototypeCondition", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to SQL-statement to specify prototype article for cloning.
         /// </summary>
@@ -131,7 +131,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ClonePrototypeConditionDescription", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Cloning Mode.
         /// </summary>
@@ -140,7 +140,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CloningMode", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Close.
         /// </summary>
@@ -149,7 +149,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Close", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Content Name.
         /// </summary>
@@ -158,7 +158,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ContentName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Converter.
         /// </summary>
@@ -167,7 +167,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Converter", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Created date.
         /// </summary>
@@ -176,7 +176,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CreatedDate", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Current send task.
         /// </summary>
@@ -185,7 +185,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("CurrentPartialSendTask", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Default Cache Period.
         /// </summary>
@@ -194,7 +194,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DefaultCachePeriod", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Deleting Mode.
         /// </summary>
@@ -203,7 +203,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DeletingMode", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Description.
         /// </summary>
@@ -212,7 +212,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Description", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Dictionary caching settings.
         /// </summary>
@@ -221,7 +221,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DictionaryCachingSettings", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Display Name.
         /// </summary>
@@ -230,7 +230,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DisplayName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to don&apos;t publish.
         /// </summary>
@@ -239,7 +239,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DontPublish", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to don&apos;t remove.
         /// </summary>
@@ -248,7 +248,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DontRemove", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Don&apos;t wrap in CDATA.
         /// </summary>
@@ -257,7 +257,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("DontWrapInCData", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to eager loading.
         /// </summary>
@@ -266,7 +266,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("EagerLoading", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Edit XML.
         /// </summary>
@@ -275,7 +275,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("EditXml", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Enabled.
         /// </summary>
@@ -284,7 +284,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Enabled", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finish XML Editing.
         /// </summary>
@@ -293,7 +293,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("EndEditXml", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Exit.
         /// </summary>
@@ -302,7 +302,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Exit", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Exit anyway.
         /// </summary>
@@ -311,7 +311,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ExitAnyway", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Field Id.
         /// </summary>
@@ -320,7 +320,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("FieldId", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Field Name.
         /// </summary>
@@ -329,7 +329,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("FieldName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Field Name for Card.
         /// </summary>
@@ -338,7 +338,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("FieldNameForCard", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Form loading error.
         /// </summary>
@@ -347,7 +347,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("FormLoadError", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Form saving error.
         /// </summary>
@@ -356,7 +356,16 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("FormSaveError", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error occured.
+        /// </summary>
+        public static string GenericError {
+            get {
+                return ResourceManager.GetString("GenericError", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Hide log.
         /// </summary>
@@ -365,7 +374,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("HideLog", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to ignore.
         /// </summary>
@@ -374,7 +383,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Ignore", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to don&apos;t load.
         /// </summary>
@@ -383,7 +392,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("IgnoreLoading", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Include in definition.
         /// </summary>
@@ -392,7 +401,16 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("InDefinition", resourceCulture);
             }
         }
-
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid XML.
+        /// </summary>
+        public static string InvalidXml {
+            get {
+                return ResourceManager.GetString("InvalidXml", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Field type is classifier.
         /// </summary>
@@ -401,7 +419,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("IsClassifier", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Read-only.
         /// </summary>
@@ -410,7 +428,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("IsReadOnly", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to JSON Field Name.
         /// </summary>
@@ -419,7 +437,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("JsonFieldName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Key.
         /// </summary>
@@ -428,7 +446,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Key", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Text in &lt;label&gt;.
         /// </summary>
@@ -437,7 +455,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("LabelText", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Last status change time.
         /// </summary>
@@ -446,7 +464,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("LastStatusChangeTime", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to lazy loading.
         /// </summary>
@@ -455,7 +473,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("LazyLoading", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Load all plain fields.
         /// </summary>
@@ -464,7 +482,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("LoadAllPlainFields", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Load as Image.
         /// </summary>
@@ -473,7 +491,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("LoadAsImage", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Message.
         /// </summary>
@@ -482,7 +500,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Message", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Field is missing in QP.
         /// </summary>
@@ -491,7 +509,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("MissingInQp", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Not in definition.
         /// </summary>
@@ -500,7 +518,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("NotInDefinition", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Сoncurrent execution of send tasks is prohibited. Please, wait for completion of the current task..
         /// </summary>
@@ -509,7 +527,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("OnlyOneTask", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Send Products to all fronts (live and stage).
         /// </summary>
@@ -518,7 +536,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PartialSend", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to This utility allows publishing and sending product to fronts along with deleting archived, invisible or ocassionally deleted products.\nYou should enter list of regional or marketing product Ids (possible separators: &lt;span class=&quot;highlighted&quot;&gt;,&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;highlighted&quot;&gt;;&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;highlighted&quot;&gt;space&lt;/span&gt;&amp;nbsp;&amp;nbsp;&lt;span class=&quot;highlighted&quot;&gt;newline&lt;/span&gt;).
         /// </summary>
@@ -527,7 +545,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PartialSendDescription", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Path.
         /// </summary>
@@ -536,7 +554,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Path", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Preloading Mode.
         /// </summary>
@@ -545,7 +563,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PreloadingMode", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Cache.
         /// </summary>
@@ -554,7 +572,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProceedCaching", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Process special statuses.
         /// </summary>
@@ -563,7 +581,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProcessSpecialStatuses", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Product Id List.
         /// </summary>
@@ -572,7 +590,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductIdList", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Product Id List to Publish .
         /// </summary>
@@ -581,7 +599,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ProductIdListToPublish", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Progress.
         /// </summary>
@@ -590,7 +608,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Progress", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Some products are required to be published before send to fronts.
         /// </summary>
@@ -599,7 +617,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PublicationRequired", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to publish.
         /// </summary>
@@ -608,7 +626,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Publish", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Publish and Send.
         /// </summary>
@@ -617,7 +635,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PublishAndSend", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Publish Behaviour.
         /// </summary>
@@ -626,7 +644,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("PublishBehaviour", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Query on click.
         /// </summary>
@@ -635,7 +653,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("QueryOnClick", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Refresh.
         /// </summary>
@@ -644,7 +662,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Refresh", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Relates to content.
         /// </summary>
@@ -653,7 +671,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RelateToAnother", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Relates to this content from content.
         /// </summary>
@@ -662,7 +680,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RelateToThis", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Relation Condition.
         /// </summary>
@@ -671,7 +689,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RelationCondition", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to SQL-statement for article list filtration.
         /// </summary>
@@ -680,7 +698,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RelationConditionDescription", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to remove.
         /// </summary>
@@ -689,7 +707,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Remove", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Path to remove field (specify only if it differs from Path).
         /// </summary>
@@ -698,7 +716,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("RemovePath", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Definition is the same. No changes to apply..
         /// </summary>
@@ -707,7 +725,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SameDefinition", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to The form wasn&apos;t changed.
         /// </summary>
@@ -716,7 +734,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SameForm", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
@@ -725,7 +743,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Save", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Save and exit.
         /// </summary>
@@ -734,7 +752,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SaveAndExit", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to s.
         /// </summary>
@@ -743,7 +761,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("Seconds", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Send on Stage only.
         /// </summary>
@@ -752,7 +770,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SendOnStageOnly", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Send Products.
         /// </summary>
@@ -761,7 +779,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SendProducts", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Server is not avalaible. Reload of reopen the page..
         /// </summary>
@@ -770,7 +788,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ServerNotAvalaible", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Session has expired. Reload or reopen the page..
         /// </summary>
@@ -779,7 +797,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SessionExpired", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to set null reference.
         /// </summary>
@@ -788,7 +806,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("SetNull", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Show log.
         /// </summary>
@@ -797,7 +815,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("ShowLog", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to State.
         /// </summary>
@@ -806,7 +824,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("State", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Task Id.
         /// </summary>
@@ -815,7 +833,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("TaskId", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Your changes will not save. Are you sure that you want to leave?.
         /// </summary>
@@ -824,7 +842,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("UnsavedChanges", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to update or create.
         /// </summary>
@@ -833,7 +851,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("UpdateOrCreate", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Updating Mode.
         /// </summary>
@@ -842,7 +860,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("UpdatingMode", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to use existing reference.
         /// </summary>
@@ -851,7 +869,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("UseExisting", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to User Name.
         /// </summary>
@@ -860,7 +878,7 @@ namespace QA.Core.DPC.Resources {
                 return ResourceManager.GetString("UserName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Wrap lines.
         /// </summary>

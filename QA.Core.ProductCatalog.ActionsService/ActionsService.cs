@@ -42,10 +42,15 @@ namespace QA.Core.ProductCatalog.ActionsService
             _logger.Info("{serviceName} started", _options.Name);
             
             _factoryWatcher.OnConfigurationModify += _factoryWatcher_OnConfigurationModify;
-            _factoryWatcher.Watch();
             _factoryWatcher.Start();
+            ThreadPool.QueueUserWorkItem(Watch);
         }
 
+        public void Watch(object? stateInfo)
+        {
+            _factoryWatcher.Watch();
+        }
+        
         private void _factoryWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
         {
             var stoppedCustomerCodes = _contextMap.Where(c => c.Value.IsStopped()).Select(c => c.Key).ToArray();

@@ -1,4 +1,4 @@
-﻿import { action, observable } from "mobx";
+﻿import { action, computed, observable } from "mobx";
 import { parse, validate, ValidationError } from "fast-xml-parser";
 
 export default class XmlEditorStore {
@@ -6,11 +6,12 @@ export default class XmlEditorStore {
     window.pmrpc.register({
       publicProcedureName: "DefinitionEditor.SetXml",
       procedure: xml => {
-        const xmlEmpty = xml.match(/ contentid="\d+"/i) == null;
-        if (!xmlEmpty) {
+        const xamlEmpty = xml.match(/ contentid="\d+"/i) == null;
+        if (!xamlEmpty) {
           this.setXml(xml, true);
           this.setRootId(xml);
         } else {
+          this.origXmlWasEmpty = true;
           this.setDefaultXml();
         }
       }
@@ -28,6 +29,10 @@ export default class XmlEditorStore {
   @observable xml: string;
   origXml: string;
   lastLocalSavedXml: string;
+  @computed get xmlIsEmpty() {
+    return this.xml?.replace(/\s/g, "") === "";
+  }
+  @observable origXmlWasEmpty: boolean = false;
   @observable rootId: string;
   @observable fontSize: number = localStorage.getItem("fontSize")
     ? parseInt(localStorage.getItem("fontSize"))
@@ -35,7 +40,10 @@ export default class XmlEditorStore {
   @observable wrapLines: boolean = localStorage.getItem("wrapLines") === "true";
   @observable queryOnClick: boolean = localStorage.getItem("queryOnClick") === "true";
 
-  setLastLocalSavedXml = (xml: string) => (this.lastLocalSavedXml = xml);
+  @action
+  setLastLocalSavedXml = (xml: string) => {
+    this.lastLocalSavedXml = xml;
+  };
 
   @action
   changeFontSize = (size: number) => {
@@ -49,7 +57,12 @@ export default class XmlEditorStore {
     localStorage.setItem("wrapLines", `${this.wrapLines}`);
   };
 
-  isSameDefinition = (): boolean => this.xml === this.origXml;
+  isSameDefinition = (): boolean => {
+    if (this.origXmlWasEmpty) {
+      return false;
+    }
+    return this.xml === this.origXml;
+  };
   isSameDefinitionWithLastSaved = (): boolean => this.xml === this.lastLocalSavedXml;
 
   @action
@@ -74,6 +87,7 @@ export default class XmlEditorStore {
     this.rootId = this.parseXml(xml).Content[`${this.attributeNamePrefix}ContentId`];
   };
 
+  @action
   private setDefaultXml = () => {
     if (this.settings.xml) {
       const xml = this.settings.xml

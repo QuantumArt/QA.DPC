@@ -74,7 +74,9 @@ $root = Split-Path -parent $backendApp.PhysicalPath
 $adminPath = Join-Path $root $admin
 New-Item -Path $adminPath -ItemType Directory -Force | Out-Null
 
+Write-Host "Copying files from $sourcePath to $adminPath..."
 Copy-Item "$sourcePath\*" -Destination $adminPath -Force -Recurse
+Write-Host "Done"
 
 $nLogPath = Join-Path $adminPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
@@ -99,7 +101,7 @@ $json = Get-Content -Path $appSettingsPath | ConvertFrom-Json
 $loader = $json.Loader
 $loader.UseFileSizeService = $false
 
-$integration = ($json | Get-Member "Integration")
+$integration = $json.Integration
 if (!$integration) {
     $integration = New-Object PSObject
     $json | Add-Member NoteProperty "Integration" $integration

@@ -19,9 +19,10 @@ function Execute-Sql {
         $expr = """
             \! chcp 1251
             \pset pager off
-            $query"" | psql -qtAx -d '$cnnString'"
+            $query"" | psql -qbtAx -d '$cnnString' 2>&1"
         Write-Verbose $expr
         $result = Invoke-Expression $expr
+        if ($result -match "ERROR:|FATAL:") { $result | Write-Host }     
     } else {
         $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
         $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
@@ -66,9 +67,10 @@ function Execute-File {
     $cnnString = Get-ConnectionString -database $database -server $server -name $name -pass $pass -dbType $dbType
 
     if ($dbType -eq 1) {
-        $expr = "psql -b -d '$cnnString' -c '\! chcp 1251' -c'\pset pager off' -f '$path'"
+        $expr = "psql -b -d '$cnnString' -c '\! chcp 1251' -c'\pset pager off' -f '$path' 2>&1"
         Write-Verbose "Executing DB script: ${path}"
-        Invoke-Expression $expr
+        $result = Invoke-Expression $expr
+        if ($result -match "ERROR:") { $result | Write-Host }     
     } else {
         $useSqlPs = (-not(Get-Module -ListAvailable -Name SqlServer))
         $moduleName = if ($useSqlPs) { "SqlPS" } else { "SqlServer" }
@@ -246,9 +248,9 @@ function Add-DatabaseUser
             $resetQuery
         end ```$```$;"
         
-        Write-Verbose $createQuery
+        Write-Host "Creating user $userName..."
         $result = Execute-Sql @executeParams -query $createQuery
-        Write-Verbose $result
+        Write-Host $result
 
         $grantQuery = "
             GRANT CONNECT ON DATABASE $databaseName TO $userName;
@@ -257,9 +259,9 @@ function Add-DatabaseUser
             GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $userName;
             GRANT EXECUTE ON ALL ROUTINES IN SCHEMA public TO $userName;
         "
-        Write-Verbose $grantQuery
-        $result = Execute-Sql @executeParams -query $grantQuery
-        Write-Verbose $result
+        Write-Host "Granting access to user $userName..."
+        Execute-Sql @executeParams -query $grantQuery | Out-Null
+        Write-Host "Done"
 
     } else {
    
@@ -369,13 +371,25 @@ function Restore-Database
 
     if ($dbType -eq 1) {
 
-        $createQuery = "SELECT 'CREATE DATABASE $databaseName'
-        WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '$databaseName')\gexec"
+        Write-Host "Dropping database $databaseName..."
+        $shutDownQuery = 
+        "UPDATE pg_database SET datallowconn = 'false' WHERE datname = '$databaseName'; 
+        SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$databaseName';"
+        Execute-Sql @executeParams -query $shutDownQuery  | Out-Null
+        $dropQuery = "DROP DATABASE IF EXISTS $databaseName"
+        Execute-Sql @executeParams -query $dropQuery  | Out-Null
+        Write-Host "Done"
 
-        Execute-Sql @executeParams -query $createQuery
+        Write-Host "Creating empty database $databaseName..."
+        $createQuery = "CREATE DATABASE $databaseName"
+        Execute-Sql @executeParams -query $createQuery | Out-Null
+        Write-Host "Done"
+
+        Write-Host "Restoring $databaseName from $backupPath..."
         $cnnString = Get-ConnectionString @executeParams -database $databaseName 
         $numCores = (Get-WmiObject -class Win32_ComputerSystem).NumberOfLogicalProcessors
-        Invoke-Expression "pg_restore -Fc -c -d '$cnnString' -j $numCores '$backupPath'"
+        Invoke-Expression "pg_restore -Fc -d '$cnnString' -j $numCores --no-privileges --no-owner '$backupPath'"
+        Write-Host "Done"
 
     } else {
  
@@ -408,7 +422,7 @@ function Restore-Database
         ALTER DATABASE [$databaseName] SET RECOVERY SIMPLE;"
     
     
-        Execute-Sql @executeParams -query $query 
+        Execute-Sql @executeParams -query $query | Out-Null
     
         Write-Host "$databaseName is restored"
     }

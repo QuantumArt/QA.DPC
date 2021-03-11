@@ -30,7 +30,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         Route("api/{customerCode}/products"),
         Route("api/{customerCode}/{language}/{state}/products"),
         Route("api/{customerCode}/{version:decimal}/products"),
+        Route("api/{customerCode}/{version:decimal}"),
         Route("api/{customerCode}/{version:decimal}/{language}/{state}/products"),
+        Route("api/{customerCode}/{version:decimal}/{language}/{state}"),
+
     ]
     [OnlyAuthUsers]
     public class ProductsController : BaseController
