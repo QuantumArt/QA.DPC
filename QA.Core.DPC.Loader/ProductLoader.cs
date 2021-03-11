@@ -521,7 +521,7 @@ namespace QA.Core.DPC.Loader
             var res = new ProductDefinition
             {
                 ProdictTypeId = productTypeId,
-                StorageSchema = _definitionService.GetDefinitionForContent(productTypeId, contentId, isLive)
+                StorageSchema = _definitionService.TryGetDefinitionForContent(productTypeId, contentId, isLive)
             };
 
 
