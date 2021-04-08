@@ -61,6 +61,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _contentDefinitionService.SaveDefinition(contentItemId, xml);
 
             return Json("Ok");
+        } 
+        
+        public ActionResult GetInitialNodeUrl(int? contentId)
+        {
+            var xml = XamlConfigurationParser.Save(new Content {ContentId = contentId.Value});
+
+            return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(xml) };
         }
 
         public ActionResult GetDefinitionLevel(DefinitionPathInfo defInfo)

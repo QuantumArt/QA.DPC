@@ -1,17 +1,28 @@
 ﻿import { action, computed, observable } from "mobx";
 import { parse, validate, ValidationError } from "fast-xml-parser";
+import apiService from "DefinitionEditor/ApiService";
 
 export default class XmlEditorStore {
   constructor(private settings: DefinitionEditorSettings) {
     window.pmrpc.register({
       publicProcedureName: "DefinitionEditor.SetXml",
-      procedure: xml => {
+      procedure: async (xml, contentId) => {
         const xamlEmpty = xml.match(/ contentid="\d+"/i) == null;
         if (!xamlEmpty) {
           this.setXml(xml, true);
           this.setRootId(xml);
         } else {
           this.origXmlWasEmpty = true;
+
+          if (contentId) {
+            let node = await apiService.getInitialNode(contentId);
+            if (node) {
+              this.setXml(node, true);
+              this.setRootId(node);
+              return;
+            }
+          }
+
           this.setDefaultXml();
         }
       }
