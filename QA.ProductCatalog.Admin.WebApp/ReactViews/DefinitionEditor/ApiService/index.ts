@@ -25,6 +25,13 @@ class ApiService extends BaseApiService {
     return this.mapResponse(res, (x: IDefinitionNode[]) => x);
   };
 
+  public getInitialNode = async (contentId: FormData): Promise<string> => {
+    const res = await fetch(`${this.settings.getInitialNodeUrl}?contentId=${contentId}`, {
+      method: "GET"
+    });
+    return this.mapResponse(res, (x: string) => x);
+  };
+
   /**
    * POST
    *

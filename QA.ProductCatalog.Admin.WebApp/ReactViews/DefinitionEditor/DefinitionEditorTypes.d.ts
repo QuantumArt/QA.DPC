@@ -4,6 +4,7 @@
   saveDefinitionUrl: string;
   getSingleNodeUrl: string;
   getDefinitionLevelUrl: string;
+  getInitialNodeUrl: string;
   editUrl: string;
   editOldUrl: string;
   saveFieldOldUrl: string;

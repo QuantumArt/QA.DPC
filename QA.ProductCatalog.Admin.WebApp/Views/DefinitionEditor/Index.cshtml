@@ -12,6 +12,7 @@ window.definitionEditor = {
   xml: "@Model.Xml",
   saveToDb: '@(Model.ContentItemId.HasValue ? "true" : "false")',
   saveDefinitionUrl: '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
+  getInitialNodeUrl: '@Url.Action("GetInitialNodeUrl")',
   getSingleNodeUrl: '@Url.Action("GetSingleNode")',
   getDefinitionLevelUrl: '@Url.Action("GetDefinitionLevel")',
   editUrl: '@Url.Action("Edit")',
