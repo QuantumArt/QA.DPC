@@ -26,7 +26,7 @@
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="QA.Configuration" Version="1.1.0-portable86" />
+    <PackageReference Include="QA.Configuration" Version="1.1.1" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources" />
