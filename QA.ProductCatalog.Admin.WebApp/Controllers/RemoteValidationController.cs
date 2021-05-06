@@ -35,37 +35,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var result = new RemoteValidationResult();
             try
             {
-                var QpMode = !(_consolidationFactory.CustomerMap.ContainsKey(SingleCustomerCoreProvider.Key) && _consolidationFactory.CustomerMap.Count() == 1);
+                var errorMessage = _consolidationFactory.Validate(context.CustomerCode);
 
-                if (context.CustomerCode != null && QpMode)
+                if (errorMessage != null)
                 {
-                    CustomerState customerState;
-
-                    if (_consolidationFactory.NotConsolidatedCodes.Contains(context.CustomerCode))
-                    {
-                        customerState = CustomerState.NotRegistered;
-                    }
-                    else if (_consolidationFactory.CustomerMap.TryGetValue(context.CustomerCode, out CustomerContext customerContext))
-                    {
-                        customerState = customerContext.State;
-                    }
-                    else
-                    {
-                        customerState = CustomerState.NotFound;
-                    }
-
-                    if (customerState != CustomerState.Active)
-                    {
-                        var template = MessageStrings.ConsolidationErrorMessage;
-                        var key = $"CustomerState{customerState}";
-                        var value = MessageStrings.ResourceManager.GetString(key);
-                        var message = string.Format(template, value);
-                        result.Messages.Add(message);
-                        return Json(result);
-                    }
+                    result.Messages.Add(errorMessage);
                 }
-
-                result = _validationFactory(validatorKey).Validate(context, result);
+                else
+                {
+                    result = _validationFactory(validatorKey).Validate(context, result);
+                }
             }
             catch (ResolutionFailedException ex)
             {

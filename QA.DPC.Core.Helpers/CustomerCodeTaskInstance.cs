@@ -1,11 +1,9 @@
-using System;
-using System.Threading;
-using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.ContentProviders;
+using System;
+using System.Threading;
 
 namespace QA.DPC.Core.Helpers
 {
@@ -21,14 +19,14 @@ namespace QA.DPC.Core.Helpers
 
         public Func<string, int, ITask> ReindexAllTaskAccessor { get; set; }
 
-        public CustomerCodeTaskInstance(IIdentityProvider provider, ITask reindexAllTask, TaskRunnerDelays delays)
+        public CustomerCodeTaskInstance(IIdentityProvider provider, ITask reindexAllTask, TaskRunnerDelays delays, IFactory consolidationFactory)
         {
             ReindexAllTask = reindexAllTask;
             ReindexAllTaskAccessor = (s, i) => s == "ReindexAllTask" ? ReindexAllTask : null;
             TaskService = new InmemoryTaskService();
             TaskServiceAccessor = () => TaskService;
 
-            TasksRunner = new TasksRunner(ReindexAllTaskAccessor, TaskServiceAccessor, provider, delays);
+            TasksRunner = new TasksRunner(ReindexAllTaskAccessor, TaskServiceAccessor, provider, delays, consolidationFactory);
 
             var actionRunnerThread = new Thread(TasksRunner.Run);
             actionRunnerThread.Start(provider.Identity.CustomerCode);

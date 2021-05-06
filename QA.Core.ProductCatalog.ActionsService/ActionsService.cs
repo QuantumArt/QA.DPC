@@ -33,7 +33,6 @@ namespace QA.Core.ProductCatalog.ActionsService
             _factoryWatcher = watcher;
             _getSchedulerRunner = getSchedulerRunner;
             _getRunner = getRunner;
-            _getRunner = getRunner;
             _options = options.Value;
         }
         
@@ -131,7 +130,6 @@ namespace QA.Core.ProductCatalog.ActionsService
                 }
             }
         }
-
 
         private TaskSchedulerRunner StartScheduler(string customerCode, TaskSchedulerRunner runner = null)
         {

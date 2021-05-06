@@ -9,7 +9,8 @@ namespace QA.Core.DPC.QP.Services
         void Register(string key);
         void Clear(string key);
         void Clear();
+        string Validate(string key);
         string[] NotConsolidatedCodes { get; set; }
-        Dictionary<string, CustomerContext> CustomerMap { get; }
+        Dictionary<string, CustomerContext> CustomerMap { get; }        
     }
 }
