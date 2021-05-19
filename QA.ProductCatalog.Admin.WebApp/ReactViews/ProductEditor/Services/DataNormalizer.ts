@@ -1,6 +1,10 @@
 import { normalize, schema } from "normalizr";
 import { deepMerge } from "ProductEditor/Utils/DeepMerge";
-import { ArticleObject, TablesSnapshot, EntitySnapshot } from "ProductEditor/Models/EditorDataModels";
+import {
+  ArticleObject,
+  TablesSnapshot,
+  EntitySnapshot
+} from "ProductEditor/Models/EditorDataModels";
 import {
   ContentSchemasById,
   isSingleRelationField,
@@ -76,11 +80,11 @@ export class DataNormalizer {
 class ObjectSchema extends schema.Object {
   schema: object;
 
-  normalize(input, _parent, _key, visit, addEntity) {
+  normalize(input, _parent, _key, visit, addEntity, visitedEntities) {
     const object = { ...input };
     Object.keys(this.schema).forEach(key => {
       const localSchema = this.schema[key];
-      const value = visit(input[key], input, key, localSchema, addEntity);
+      const value = visit(input[key], input, key, localSchema, addEntity, visitedEntities);
       if (value === undefined) {
         delete object[key];
       } else {
