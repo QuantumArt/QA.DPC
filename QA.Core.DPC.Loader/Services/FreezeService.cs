@@ -155,6 +155,8 @@ namespace QA.Core.DPC.Loader.Services
 							and CONTENT_ITEM_ID = @id
 							and {_freezeFieldName} is not null");
             }
+
+            if (!freezeFieldQueries.Any()) return FreezeState.Missing;
             
             var dbConnector = GetConnector();
             var dbCommand = dbConnector.CreateDbCommand(string.Join("\nunion all\n", freezeFieldQueries));
