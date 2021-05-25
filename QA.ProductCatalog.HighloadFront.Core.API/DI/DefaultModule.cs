@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using Autofac;
+﻿using Autofac;
 using Autofac.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using QA.Core;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.HighloadFront.PostProcessing;
-using QA.ProductCatalog.ContentProviders;
+using System;
+using System.Collections.Generic;
 using Service = QA.Core.DPC.QP.Models.Service;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.DI
@@ -69,7 +69,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 );
             });
 
-            builder.RegisterSingleton<ICustomerCodeInstanceCollection, CustomerCodeInstanceCollection>();
+            builder.RegisterSingleton<ICustomerCodeInstanceCollection>(c => new CustomerCodeInstanceCollection(c.Resolve<ILogger>(), c.Resolve<TaskRunnerDelays>(), null));
             builder.RegisterScoped(c => c.Resolve<ICustomerCodeInstanceCollection>().Get(
                 c.Resolve<IIdentityProvider>(),
                 c.Resolve<IConnectionProvider>()
