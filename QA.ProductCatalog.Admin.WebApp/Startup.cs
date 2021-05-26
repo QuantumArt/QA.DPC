@@ -14,6 +14,7 @@ using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Admin.WebApp.Binders;
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.HttpOverrides;
 using Unity;
 
 namespace QA.ProductCatalog.Admin.WebApp
@@ -59,6 +60,18 @@ namespace QA.ProductCatalog.Admin.WebApp
             var props = new IntegrationProperties();
             Configuration.Bind("Integration", props);
             
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedProtoHeaderName = "X-FORWARDED-PROTO";
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                // Only loopback proxies are allowed by default.
+                // Clear that restriction because forwarders are enabled by explicit 
+                // configuration.
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+            
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
 
@@ -102,6 +115,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             app.UseSession();
             app.UseResponseCaching();
             
+            app.UseForwardedHeaders();
             app.UseMvcWithDefaultRoute();
             
             LogStart(app, loggerFactory);
