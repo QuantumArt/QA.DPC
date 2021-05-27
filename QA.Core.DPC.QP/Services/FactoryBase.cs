@@ -119,26 +119,34 @@ namespace QA.Core.DPC.QP.Services
                 .ForEach(Clear);
         }
 
+        private bool QpMode => !(CustomerMap.ContainsKey(SingleCustomerCoreProvider.Key) && CustomerMap.Count() == 1);
+
+        public CustomerState GetState(string customerCode)
+        {
+            CustomerState customerState;
+
+            if (NotConsolidatedCodes.Contains(customerCode))
+            {
+                customerState = CustomerState.NotRegistered;
+            }
+            else if (CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
+            {
+                customerState = customerContext.State;
+            }
+            else
+            {
+                customerState = CustomerState.NotFound;
+            }
+
+            return customerState;
+        }
+
+
         public string Validate(string customerCode)
         {
-            var QpMode = !(CustomerMap.ContainsKey(SingleCustomerCoreProvider.Key) && CustomerMap.Count() == 1);
-
             if (customerCode != null && QpMode)
             {
-                CustomerState customerState;
-
-                if (NotConsolidatedCodes.Contains(customerCode))
-                {
-                    customerState = CustomerState.NotRegistered;
-                }
-                else if (CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
-                {
-                    customerState = customerContext.State;
-                }
-                else
-                {
-                    customerState = CustomerState.NotFound;
-                }
+                var customerState = GetState(customerCode);            
 
                 if (customerState != CustomerState.Active)
                 {

@@ -146,6 +146,16 @@ namespace QA.Core.ProductCatalog.ActionsService
             return runner;
         }
 
+        public ActionsServiceContext GetContext(string customerCode)
+        {
+            if (_contextMap.TryGetValue(customerCode, out var context))
+            {
+                return context;
+            }
+
+            return null;
+        }
+
         public void Stop()
         {
             _logger.Info("{serviceName} stopping...", _options.Name);
