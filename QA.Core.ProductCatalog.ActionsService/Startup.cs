@@ -50,8 +50,9 @@ namespace QA.Core.ProductCatalog.ActionsService
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            services.AddSingleton<IHostedService, ActionsService>();
 
+            services.AddSingleton<ActionsService>();
+            services.AddSingleton<IHostedService>(x => x.GetRequiredService<ActionsService>());
             
             var props = new ConnectionProperties();
             Configuration.Bind("Connection", props);

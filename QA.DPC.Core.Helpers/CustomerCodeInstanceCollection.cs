@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.Options;
-using QA.Core.DPC.QP.Services;
+﻿using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.ActionsRunner;
-using ILogger = QA.Core.Logger.ILogger;
 using QA.ProductCatalog.ContentProviders;
+using System;
+using System.Collections.Generic;
+using ILogger = QA.Core.Logger.ILogger;
 
 namespace QA.DPC.Core.Helpers
 {
@@ -21,10 +20,13 @@ namespace QA.DPC.Core.Helpers
         private readonly Dictionary<string, CustomerCodeTaskInstance> _taskList =
             new Dictionary<string, CustomerCodeTaskInstance>();
 
-        public CustomerCodeInstanceCollection(ILogger logger, TaskRunnerDelays delays)
+        private readonly IFactory _consolidationFactory;
+
+        public CustomerCodeInstanceCollection(ILogger logger, TaskRunnerDelays delays, IFactory consolidationFactory)
         {
             _logger = logger;
             _delays = delays;
+            _consolidationFactory = consolidationFactory;
         }
 
         public CustomerCodeInstance Get(IIdentityProvider provider, IConnectionProvider connectionProvider)
@@ -71,7 +73,7 @@ namespace QA.DPC.Core.Helpers
             {
                 if (!_taskList.TryGetValue(customerCode, out result))
                 {
-                    result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), delays);
+                    result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), delays, _consolidationFactory);
                     _taskList.Add(customerCode, result);
                 }
             }

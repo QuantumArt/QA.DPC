@@ -1,10 +1,10 @@
 ﻿using QA.Core.DPC.QP.Exceptions;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.Resources;
 using QA.Core.Logger;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -117,6 +117,48 @@ namespace QA.Core.DPC.QP.Services
             CustomerMap.Keys
                 .ToList()
                 .ForEach(Clear);
+        }
+
+        private bool QpMode => !(CustomerMap.ContainsKey(SingleCustomerCoreProvider.Key) && CustomerMap.Count() == 1);
+
+        public CustomerState GetState(string customerCode)
+        {
+            CustomerState customerState;
+
+            if (NotConsolidatedCodes.Contains(customerCode))
+            {
+                customerState = CustomerState.NotRegistered;
+            }
+            else if (CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
+            {
+                customerState = customerContext.State;
+            }
+            else
+            {
+                customerState = CustomerState.NotFound;
+            }
+
+            return customerState;
+        }
+
+
+        public string Validate(string customerCode)
+        {
+            if (customerCode != null && QpMode)
+            {
+                var customerState = GetState(customerCode);            
+
+                if (customerState != CustomerState.Active)
+                {
+                    var template = MessageStrings.ConsolidationErrorMessage;
+                    var key = $"CustomerState{customerState}";
+                    var value = MessageStrings.ResourceManager.GetString(key);
+                    var message = string.Format(template, value);
+                    return message;
+                }
+            }
+
+            return null;
         }
 
         public void Dispose()

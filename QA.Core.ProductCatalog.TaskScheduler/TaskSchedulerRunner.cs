@@ -1,20 +1,19 @@
-﻿using System;
-using System.Linq;
-using System.Threading;
-using System.Timers;
+﻿using NLog;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using Quartz;
 using Quartz.Impl.Matchers;
 using Quartz.Spi;
-using NLog;
-using NLog.Fluent;
-using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.QP.Models;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Timers;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
-	public class TaskSchedulerRunner
+    public class TaskSchedulerRunner
 	{
 		private readonly ISchedulerFactory _schedulerFactory;
 		private readonly Func<ITaskService> _taskServiceFunc;
@@ -197,7 +196,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 				if (_scheduler == null)
 				{
-					_scheduler = _schedulerFactory.GetScheduler().Result;
+					_scheduler = _schedulerFactory.GetScheduler(customerCode).Result;
 				}
 				
 				else if (_scheduler.IsStarted)

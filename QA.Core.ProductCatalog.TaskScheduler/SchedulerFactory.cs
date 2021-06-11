@@ -1,38 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using QA.Core.DPC.QP.Services;
-using Quartz;
+﻿using Quartz;
 using Quartz.Core;
 using Quartz.Impl;
 using Quartz.Simpl;
 using Quartz.Spi;
 using Quartz.Util;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
     public class SchedulerFactory : ISchedulerFactory
-    {
+	{
+		private ConcurrentDictionary<string, IScheduler> _schedulerMap;
 
-	    private IScheduler _scheduler;
-
-	    public SchedulerFactory(IIdentityProvider identityProvider)
-	    {
-			var customerCode = identityProvider.Identity.CustomerCode;
-			_scheduler = CreateScheduler(customerCode);
-	    }
-		
-		public ICollection<IScheduler> AllSchedulers => new[] {_scheduler};
-
-		public IScheduler GetScheduler(string schedName)
+		public SchedulerFactory()
 		{
-			return _scheduler;
-		}
-
-		public IScheduler GetScheduler()
-		{
-			return _scheduler;
+			_schedulerMap = new ConcurrentDictionary<string, IScheduler>();
 		}
 
 		private static IScheduler CreateScheduler(string customerCode)
@@ -83,18 +70,19 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 		public Task<IReadOnlyList<IScheduler>> GetAllSchedulers(CancellationToken cancellationToken = new CancellationToken())
 		{
-			throw new NotImplementedException();
+			IReadOnlyList<IScheduler> schedulers = _schedulerMap.Values.ToList();
+			return Task.FromResult(schedulers);
 		}
 
 		public Task<IScheduler> GetScheduler(CancellationToken cancellationToken = new CancellationToken())
 		{
-			return Task.FromResult(_scheduler);
+			throw new NotImplementedException();
 		}
 
 		public Task<IScheduler> GetScheduler(string schedName, CancellationToken cancellationToken = new CancellationToken())
 		{
-			return Task.FromResult(_scheduler);
+			var scheduler = _schedulerMap.GetOrAdd(schedName, CreateScheduler);
+			return Task.FromResult(scheduler);
 		}
 	}
-
 }

@@ -1,17 +1,17 @@
-using QA.Core.DPC.QP.Models;
-using QA.Core.DPC.QP.Services;
+using Newtonsoft.Json;
 using NLog;
 using NLog.Fluent;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
 using System;
 using System.Threading;
-using Newtonsoft.Json;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {
     public class TasksRunner : ITasksRunner
     {
-        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, IIdentityProvider identityProvider, TaskRunnerDelays delays)
+        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, IIdentityProvider identityProvider, TaskRunnerDelays delays, IFactory consolidationFactory)
         {
             State = StateEnum.Stopped;
 
@@ -26,7 +26,9 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             _identityProvider = identityProvider;
 
             _delays = delays;
-        }
+
+            _consolidationFactory = consolidationFactory;
+    }
 
         public StateEnum State { get; private set; }
         public Action StopTask { get; private set; }
@@ -56,6 +58,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         private readonly Func<string, int, ITask> _taskFactoryMethod;
         private readonly Func<ITaskService> _taskServiceFactoryMethod;
         private readonly TaskRunnerDelays _delays;
+        private readonly IFactory _consolidationFactory;
 
         public void Run(object customerCode)
         {
@@ -133,8 +136,25 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                             try
                             {
                                 var taskFromQueueInfo = taskService.GetTask(taskIdToRun.Value);
+                                ITask task = null;
+                                
+                                try
+                                {
+                                    task = _taskFactoryMethod(taskFromQueueInfo.Name, taskFromQueueInfo.UserID);
+                                }
+                                catch(Exception ex)
+                                {
+                                    var consolidationMessage = _consolidationFactory.Validate(customerCode as string);
 
-                                var task = _taskFactoryMethod(taskFromQueueInfo.Name, taskFromQueueInfo.UserID);
+                                    if (consolidationMessage == null)
+                                    {
+                                        throw ex;
+                                    }
+                                    else
+                                    {
+                                        throw new Exception(consolidationMessage);
+                                    }
+                                }
 
                                 if (task == null)
                                     throw new Exception(
@@ -231,7 +251,6 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 .Message("Run stopped for {customerCode}", customerCode)
                 .Property("taskRunnerId", GetHashCode())
                 .Write();
-
         }
 
         public void InitStop()

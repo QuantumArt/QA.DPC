@@ -53,11 +53,11 @@ namespace QA.Core.ProductCatalog.ActionsService
             container.AddNewExtension<LoaderConfigurationExtension>();
 
             container.RegisterType<ITasksRunner, TasksRunner>();
-	        container.RegisterType<IUserProvider, HttpContextUserProvider>();
+            container.RegisterType<IUserProvider, HttpContextUserProvider>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
             
             container.RegisterFactory<Func<ITaskService>>(x => new Func<ITaskService>(() => x.Resolve<ITaskService>()));
-            
+
             container.RegisterFactory<Func<string, int, ITask>>(x => new Func<string, int, ITask>((key, userId) => GetTaskByKey(key, userId,x)));
             container.RegisterType<ITaskService, TaskService>();
             
@@ -78,12 +78,12 @@ namespace QA.Core.ProductCatalog.ActionsService
             var connection = container.Resolve<IConnectionProvider>();
             if (connection.QPMode)
             {
-                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).As<IFactoryWatcher>();
+                container.RegisterConsolidationCache(autoRegister).As<IFactory>().With<FactoryWatcher>(watcherInterval).As<IFactoryWatcher>();
             }
             else
             {                
                 container.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
-                container.RegisterConsolidationCache(autoRegister, SingleCustomerCoreProvider.Key).With<FactoryWatcher>().As<IFactoryWatcher>();
+                container.RegisterConsolidationCache(autoRegister, SingleCustomerCoreProvider.Key).As<IFactory>().With<FactoryWatcher>().As<IFactoryWatcher>();
             }
 
             if (connection.QPMode || connection.UseQPMonitoring)
@@ -123,9 +123,11 @@ namespace QA.Core.ProductCatalog.ActionsService
 	        HttpContextUserProvider.ForcedUserId = userId;
             
             ITask result = null;
-			if (container.IsRegistered<ITask>(key))
+            if (container.IsRegistered<ITask>(key))
+            {
                 result = container.Resolve<ITask>(key);
-			else
+            }
+            else
                 result = (ITask)container.Resolve(Type.GetType(key));
 
             HttpContextUserProvider.ForcedUserId = 0;

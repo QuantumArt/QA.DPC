@@ -33,7 +33,6 @@ namespace QA.Core.ProductCatalog.ActionsService
             _factoryWatcher = watcher;
             _getSchedulerRunner = getSchedulerRunner;
             _getRunner = getRunner;
-            _getRunner = getRunner;
             _options = options.Value;
         }
         
@@ -132,7 +131,6 @@ namespace QA.Core.ProductCatalog.ActionsService
             }
         }
 
-
         private TaskSchedulerRunner StartScheduler(string customerCode, TaskSchedulerRunner runner = null)
         {
             var schedulerRunner = runner == null ? _getSchedulerRunner() : runner;
@@ -146,6 +144,16 @@ namespace QA.Core.ProductCatalog.ActionsService
             var runner = _getRunner();
             ThreadPool.QueueUserWorkItem(runner.Run, customerCode);
             return runner;
+        }
+
+        public ActionsServiceContext GetContext(string customerCode)
+        {
+            if (_contextMap.TryGetValue(customerCode, out var context))
+            {
+                return context;
+            }
+
+            return null;
         }
 
         public void Stop()
