@@ -499,12 +499,13 @@ namespace QA.Core.DPC
                     }
                     else
                     {
-                        _logger.Error().Exception(ex)
+                        _logger.Info()
                             .Message(
                                 "Message {message} for channel {channel} has not been sent on url {url}",
                                 message.Method, channel.Name, Uri.UnescapeDataString(url)
                             )
                             .Property("productId", message.Key)
+                            .Property("statusCode", ex.Status)
                             .Property("timeTaken", timer.ElapsedMilliseconds)
                             .Property("messageId", message.Id)
                             .Property("customerCode", customerCode)
