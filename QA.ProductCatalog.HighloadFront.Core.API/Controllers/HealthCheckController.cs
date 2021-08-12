@@ -12,7 +12,10 @@ using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
-    [Route("api/{customerCode}/healthCheck"), Route("api/healthCheck")]
+    [Route("api/healthCheck"),
+     Route("api/{customerCode}/healthCheck"), 
+     Route("api/{version:decimal}/healthCheck"),
+     Route("api/{customerCode}/{version:decimal}/healthCheck")]
     public class HealthCheckController : Controller
     {
         private readonly ElasticConfiguration _elasticConfiguration;
