@@ -27,7 +27,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
                 var token = context.HttpContext.Request.Headers
-                    .FirstOrDefault(h => h.Key == "X-Auth-Token")
+                    .FirstOrDefault(h => h.Key.Equals("X-Auth-Token", StringComparison.InvariantCultureIgnoreCase))
                     .Value.FirstOrDefault();
 
                 var user = _configuration.GetUserName(token);

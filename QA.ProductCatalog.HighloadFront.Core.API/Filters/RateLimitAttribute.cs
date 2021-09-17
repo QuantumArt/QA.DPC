@@ -38,7 +38,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             var ip = context.HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString();
             var actionContext = context.HttpContext;
             var token = actionContext.Request.Headers
-                .FirstOrDefault(h => h.Key == "X-Auth-Token")
+                .FirstOrDefault(h => h.Key.Equals("X-Auth-Token", StringComparison.InvariantCultureIgnoreCase))
                 .Value.FirstOrDefault();
 
             var user = _configuration.GetUserName(token) ?? "Default";
