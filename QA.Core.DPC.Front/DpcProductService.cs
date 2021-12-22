@@ -172,6 +172,14 @@ namespace QA.Core.DPC.Front
                 var p = _context.GetProduct(locator, id);
                 if (p != null)
                 {
+                    _context.Database.BeginTransaction();
+
+                    var isPg = _context is NpgSqlDpcModelDataContext;
+                    var sql = isPg
+                        ? $"SELECT * from Products where id = {p.Id} FOR UPDATE "
+                        : $"SELECT * from Products with(rowlock, xlock) where id = {p.Id}";
+                    _context.Database.ExecuteSqlRaw(sql);
+                    
                     foreach (var pr in p.ProductRegions)
                     {
                         _context.Remove(pr);
@@ -184,6 +192,7 @@ namespace QA.Core.DPC.Front
                     }
 
                     _context.SaveChanges();
+                    _context.Database.CommitTransaction();
                 }
             });
         }
