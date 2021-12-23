@@ -111,7 +111,7 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex);
+				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex) { IsError = true };
 			}
 		}
 		#endregion

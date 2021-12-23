@@ -96,7 +96,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 if (Product == null)
                 {
                     message = "Product {0} is not found";
-                    Log(LogLevel.Error, message, searchOptions, id);
+                    Log(LogLevel.Info, message, searchOptions, id);
                     result = NotFound(String.Format(message, id));
                 }
                 else
@@ -109,7 +109,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                         {
                             if (loadServicesSilently) continue;
                             message = "Service {0} is not found";
-                            Log(LogLevel.Error, message, searchOptions, serviceId);
+                            Log(LogLevel.Info, message, searchOptions, serviceId);
                             result = NotFound(String.Format(message, serviceId));
                         }
                         else

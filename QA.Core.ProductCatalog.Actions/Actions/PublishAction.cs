@@ -249,7 +249,7 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(stageProduct.Id, nameof(TaskStrings.NotificationSenderError), ex);
+				throw new ProductException(stageProduct.Id, nameof(TaskStrings.NotificationSenderError), ex) { IsError = true };
 			}		
 		}
 		#endregion

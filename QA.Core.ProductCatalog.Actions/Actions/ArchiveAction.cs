@@ -31,7 +31,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "Product notification preparing failed", ex);
+				throw new ProductException(productId, "Product notification preparing failed", ex) { IsError = true };
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex);
+				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex) { IsError = true };
 			}
 		}
 

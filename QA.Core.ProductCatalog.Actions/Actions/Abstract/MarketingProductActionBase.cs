@@ -89,7 +89,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                     }
                     catch (Exception ex)
                     {
-                        exceptions.Add(new ProductException(productId, nameof(TaskStrings.ServerError), ex));
+                        exceptions.Add(new ProductException(productId, nameof(TaskStrings.ServerError), ex) { IsError = true });
                         count -= remainingCount;
                         break;
                     }
@@ -117,7 +117,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                     }
                     catch (Exception ex)
                     {
-                        exceptions.Add(new ProductException(marketingProduct.Id, nameof(TaskStrings.ServerError), ex));
+                        exceptions.Add(new ProductException(marketingProduct.Id, nameof(TaskStrings.ServerError), ex) { IsError = true });
                     }
 
                     SetProgress(++index, count);

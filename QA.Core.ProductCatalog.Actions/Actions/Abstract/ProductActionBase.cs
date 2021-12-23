@@ -101,7 +101,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				}
 				catch (ProductException pex)
 				{
-					var builder = Logger.Error().Message(LoggerMessage + id);
+					var logLevel = pex.IsError ? LogLevel.Error : LogLevel.Info;
+					var builder = Logger.Log(logLevel).Message(LoggerMessage + id);
 					var result = ActionTaskResult.FromString(pex.Message);
 					var msg = ResourceManager.GetString(pex.Message);
 					if (result != null)
