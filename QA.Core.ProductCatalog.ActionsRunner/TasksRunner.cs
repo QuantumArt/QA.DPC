@@ -207,7 +207,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                 }
                                 else if (state == ActionsRunnerModel.State.Failed)
                                 {
-                                    _logger.Error()
+                                    _logger.Info()
                                         .Message("Task {taskId} for customer code {customerCode} failed",
                                             taskIdToRun, customerCode)
                                         .Property("taskRunnerId", GetHashCode())
