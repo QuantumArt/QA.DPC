@@ -3,9 +3,9 @@
     "outputFileName": "wwwroot/css/blueprint.min.css",
     "inputFiles": [
       "node_modules/normalize.css/normalize.css",
-      "node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css",
       "node_modules/@blueprintjs/core/lib/css/blueprint.css",
-      "wwwroot/resources/fa.css"
+      "wwwroot/resources/fa.css",
+      "wwwroot/resources/blueprint-icons.css"
     ],
     "minify": {
       "enabled": true

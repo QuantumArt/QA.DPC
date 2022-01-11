@@ -725,7 +725,7 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        protected JToken[] AppendParents(JArray root, JToken[] inParams)
+        protected IEnumerable<JToken> AppendParents(IEnumerable<JToken> root, IEnumerable<JToken> inParams)
         {
             var countryParamIds = new HashSet<int>(inParams.Select(n => (int)n["Id"]));
             var parentParamIds = new HashSet<int>(inParams

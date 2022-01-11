@@ -174,6 +174,7 @@ export default class FormStore extends ErrorHandler {
     IsFromDictionaries: boolean
   ) {
     const fieldList = [];
+    fieldList.push("InDefinition");
     fieldList.push("ContentId", "AlreadyCachedAsDictionary", "ContentName", "IsFromDictionaries");
     if (!AlreadyCachedAsDictionary) {
       fieldList.push("CacheEnabled", "CachePeriod");

@@ -11,6 +11,8 @@ namespace QA.Core.ProductCatalog.Actions.Exceptions
 		private const string ProductIdKey = "ProductId";
 
 		public int ProductId { get; private set; }
+		
+		public bool IsError { get; set; }
 
 		public ProductException(int productId, string message)
 			: base(message)

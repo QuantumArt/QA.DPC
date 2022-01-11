@@ -60,7 +60,7 @@ namespace QA.Core.DPC.Loader.Container
                 c => new ContentServiceAdapter(
                     new ContentService(c.Resolve<IConnectionProvider>().GetConnection(), 1), 
                     c.Resolve<IConnectionProvider>()
-                    ), (IFactoryLifetimeManager)GetHttpContextLifeTimeManager());
+                    ));
             
 
             Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));
