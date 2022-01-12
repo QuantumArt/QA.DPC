@@ -23,13 +23,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 		public string IconName = null;
 
-		public DefinitionTreeNode(Content content, string parentPath, string ownPath, bool isFromDictionaries, bool notInDefinition, ContentService contentService)
+		public DefinitionTreeNode(Content content, string parentPath, string ownPath, bool isFromDictionaries, bool isExtensionField, bool notInDefinition, ContentService contentService)
 		{
 			Id = ownPath ?? parentPath + Separator + content.ContentId;
 
 			text = string.IsNullOrEmpty(content.ContentName) ? contentService.Read(content.ContentId).Name : content.ContentName;
 
-			expanded = hasChildren = !isFromDictionaries && !notInDefinition;
+			hasChildren = !isFromDictionaries && !notInDefinition;
+
+            expanded = !isFromDictionaries && !notInDefinition && !isExtensionField;
 
 			imageUrl = "images/icons/content.gif";
 
@@ -141,7 +143,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 		{
 			//запрос корня
 			if (string.IsNullOrEmpty(path))
-				return new[] {new DefinitionTreeNode(rootContent, string.Empty, null, false, false, contentService)};
+				return new[] {new DefinitionTreeNode(rootContent, string.Empty, null, false, false, false, contentService)};
 			
 			bool notFoundInDef;
 
@@ -153,7 +155,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			var contentsFromDef = definitionEditorService.GetContentsFromField((Field) foundObject);
 
 			var nodesFromContentsInDef = contentsFromDef
-				.Select(x => new DefinitionTreeNode(x, path, null, foundObject is Dictionaries, false, contentService))
+				.Select(x => new DefinitionTreeNode(x, path, null, foundObject is Dictionaries, foundObject is ExtensionField, false, contentService))
 				.ToArray();
 
 			if (foundObject is ExtensionField)

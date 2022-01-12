@@ -94,9 +94,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 case Content def:
                     {
-                        var isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(content, defInfo.Path) is Dictionaries;
+                        var parentObject = _definitionEditorService.GetParentObjectFromPath(content, defInfo.Path);
+                        var isFromDictionaries = parentObject is Dictionaries;
+                        var isExtensionField = parentObject is ExtensionField;
 
-                        resultObj = new DefinitionTreeNode(def, null, defInfo.Path, isFromDictionaries, notFoundInDef, _contentService);
+                        resultObj = new DefinitionTreeNode(def, null, defInfo.Path, isFromDictionaries, isExtensionField, notFoundInDef, _contentService);
                         break;
                     }
                 case Field field:
