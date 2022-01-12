@@ -28,6 +28,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         public TimeSpan CachePeriod { get; set; }
 
 		public bool IsFromDictionaries { get; set; }
+        
+        public bool IsExtensionContent { get; set; }
 
 		public bool AlreadyCachedAsDictionary { get; set; }
 	}

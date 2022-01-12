@@ -34,6 +34,7 @@ class EditFormModel implements IEditFormModel {
   IsReadOnly: boolean;
   LoadAllPlainFields: boolean;
   IsFromDictionaries: boolean;
+  IsExtensionContent: boolean;
   CachePeriod: string;
   CacheEnabled: boolean;
   AlreadyCachedAsDictionary: boolean;

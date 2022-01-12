@@ -162,7 +162,8 @@ export default class FormStore extends ErrorHandler {
     if (this.ModelType === ModelType.Content) {
       fieldList = FormStore.getContentUIFieldsList(
         model.AlreadyCachedAsDictionary,
-        model.IsFromDictionaries
+        model.IsFromDictionaries,
+        model.IsExtensionContent
       );
     }
 
@@ -171,10 +172,13 @@ export default class FormStore extends ErrorHandler {
 
   private static getContentUIFieldsList(
     AlreadyCachedAsDictionary: boolean,
-    IsFromDictionaries: boolean
+    IsFromDictionaries: boolean,
+    IsExtensionContent: boolean
   ) {
     const fieldList = [];
-    fieldList.push("InDefinition");
+    if (IsExtensionContent) {
+      fieldList.push("InDefinition");
+    }
     fieldList.push("ContentId", "AlreadyCachedAsDictionary", "ContentName", "IsFromDictionaries");
     if (!AlreadyCachedAsDictionary) {
       fieldList.push("CacheEnabled", "CachePeriod");

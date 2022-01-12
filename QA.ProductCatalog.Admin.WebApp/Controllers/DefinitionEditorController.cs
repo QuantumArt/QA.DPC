@@ -131,9 +131,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                )};
 
             var isFromDictionaries = false;
+            var isExtensionContent = false;
 
             if (!Equals(rootContent, objectToEdit))
-                isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path) is Dictionaries;
+            {
+                var parentObject = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
+                isFromDictionaries = parentObject is Dictionaries;
+                isExtensionContent = parentObject is ExtensionField;
+            }
 
             var contentToEdit = (Content)objectToEdit;
             return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(new DefinitionContentInfo
@@ -149,6 +154,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 Xml = defInfo.Xml,
                 InDefinition = !notFoundInDef,
                 IsFromDictionaries = isFromDictionaries,
+                IsExtensionContent = isExtensionContent
             }) };  
         }
 
@@ -183,13 +189,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
             var contentToSave = (Content)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
+            var isRoot = Equals(contentToSave, rootContent);
 
             contentToSave.ContentName = defInfo.ContentName;
             contentToSave.CachePeriod = defInfo.CacheEnabled ? defInfo.CachePeriod : (TimeSpan?)null;
 
+            var parentObject = (isRoot) ? null : _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
             if (defInfo.IsFromDictionaries)
             {
-                var dictionaries = (Dictionaries)_definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
+                var dictionaries = (Dictionaries)parentObject;
 
                 if (contentToSave.CachePeriod != null && notFoundInDef)
                     dictionaries.ContentDictionaries[contentToSave.ContentId] = contentToSave;
@@ -202,12 +210,18 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 contentToSave.LoadAllPlainFields = defInfo.LoadAllPlainFields;
                 contentToSave.PublishingMode = defInfo.PublishingMode;
 
-
-                if (notFoundInDef)
+                if (parentObject is ExtensionField parentExtension)
                 {
-                    var parentExtension = (ExtensionField)_definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
-
-                    parentExtension.ContentMapping[contentToSave.ContentId] = contentToSave;
+                    if (notFoundInDef && defInfo.InDefinition)
+                    {
+                        parentExtension.ContentMapping[contentToSave.ContentId] = contentToSave;
+                    }
+                    
+                    if (!notFoundInDef && !defInfo.InDefinition)
+                    {
+                        parentExtension.ContentMapping.Remove(contentToSave.ContentId);
+                    }
+                    
                 }
             }
 
@@ -215,10 +229,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
 
             var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out _);
-            var isFromDictionaries = false;
-
-            if (!Equals(rootContent, objectToEdit))
-                isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path) is Dictionaries;
+            var isFromDictionaries = parentObject is Dictionaries;
+            var isExtensionContent = parentObject is ExtensionField;
 
             var contentToEdit = (Content)objectToEdit;
             ModelState.Clear();
@@ -237,8 +249,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     CachePeriod = contentToEdit.CachePeriod ?? new TimeSpan(1, 45, 0),
                     Path = defInfo.Path,
                     Xml = resultXml,
-                    InDefinition = !notFoundInDef,
+                    InDefinition = defInfo.InDefinition,
                     IsFromDictionaries = isFromDictionaries,
+                    IsExtensionContent = isExtensionContent
                 })
             };
         }
