@@ -54,7 +54,7 @@ export default class TreeStore extends ErrorHandler {
         (await this.withLogError(async () => await this.getDefinitionLevel(node.id.toString()))) ||
         [];
     }
-    node.isExpanded = !node.nodeData.NotInDefinition;
+    node.isExpanded = node.nodeData.InDefinition;
     if (node.isExpanded) {
       this.setOpenedNodes(node.id);
       for (const el of node.childNodes) {
@@ -192,7 +192,7 @@ export default class TreeStore extends ErrorHandler {
         )
       };
     }
-    if (node.NotInDefinition) {
+    if (!node.InDefinition) {
       return {
         label: node.text,
         icon: (
@@ -238,7 +238,7 @@ export default class TreeStore extends ErrorHandler {
         expanded: node.expanded,
         hasChildren: node.hasChildren,
         missingInQp: node.MissingInQp,
-        NotInDefinition: node.NotInDefinition
+        InDefinition: node.InDefinition
       }
     });
     return this.nodesMap.get(node.Id);
@@ -250,10 +250,10 @@ export default class TreeStore extends ErrorHandler {
     Object.assign(nodeObj, this.getNodeStatus(node));
     nodeObj.isSelected = false;
     nodeObj.hasCaret = node.hasChildren;
-    nodeObj.isExpanded = !node.NotInDefinition && node.hasChildren;
-    nodeObj.nodeData.expanded = !node.NotInDefinition && node.hasChildren;
-    nodeObj.nodeData.hasChildren = !node.NotInDefinition && node.hasChildren;
-    nodeObj.nodeData.NotInDefinition = node.NotInDefinition;
+    nodeObj.isExpanded = node.InDefinition && node.hasChildren;
+    nodeObj.nodeData.expanded = node.InDefinition && node.hasChildren;
+    nodeObj.nodeData.hasChildren = node.InDefinition && node.hasChildren;
+    nodeObj.nodeData.InDefinition = node.InDefinition;
     return nodeObj;
   };
 

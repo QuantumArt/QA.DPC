@@ -83,7 +83,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             var content = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
-            var objFromDef = _definitionEditorService.GetObjectFromPath(content, defInfo.Path, out var notFoundInDef);
+            var objFromDef = _definitionEditorService.GetObjectFromPath(content, defInfo.Path, out var found);
 
             if (objFromDef == null)
                 return Json(new { MissingFieldToDeleteId = defInfo.Path });
@@ -98,7 +98,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                         var isFromDictionaries = parentObject is Dictionaries;
                         var isExtensionField = parentObject is ExtensionField;
 
-                        resultObj = new DefinitionTreeNode(def, null, defInfo.Path, isFromDictionaries, isExtensionField, notFoundInDef, _contentService);
+                        resultObj = new DefinitionTreeNode(def, null, defInfo.Path, isFromDictionaries, isExtensionField, found, _contentService);
                         break;
                     }
                 case Field field:
@@ -108,7 +108,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                         if (!(field is BaseVirtualField))
                             existsInQp = _fieldService.Read(field.FieldId) != null;
 
-                        resultObj = new DefinitionTreeNode(field, null, defInfo.Path, !existsInQp, notFoundInDef);
+                        resultObj = new DefinitionTreeNode(field, null, defInfo.Path, !existsInQp, found);
                         break;
                     }
             }
@@ -121,12 +121,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
-            var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
+            var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var found);
 
             if (objectToEdit is Field edit)
                 return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(new DefinitionFieldInfo(edit)
                 {
-                    InDefinition = !notFoundInDef,
+                    InDefinition = found,
                     Path = defInfo.Path,
                     Xml = defInfo.Xml
                 }
@@ -154,7 +154,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 CachePeriod = contentToEdit.CachePeriod ?? new TimeSpan(1, 45, 0),
                 Path = defInfo.Path,
                 Xml = defInfo.Xml,
-                InDefinition = !notFoundInDef,
+                InDefinition = found,
                 IsFromDictionaries = isFromDictionaries,
                 IsExtensionContent = isExtensionContent
             }) };  
@@ -190,7 +190,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
-            var contentToSave = (Content)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
+            var contentToSave = (Content)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var found);
             var isRoot = Equals(contentToSave, rootContent);
 
             contentToSave.ContentName = defInfo.ContentName;
@@ -201,9 +201,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 var dictionaries = (Dictionaries)parentObject;
 
-                if (contentToSave.CachePeriod != null && notFoundInDef)
+                if (contentToSave.CachePeriod != null && !found)
                     dictionaries.ContentDictionaries[contentToSave.ContentId] = contentToSave;
-                else if (contentToSave.CachePeriod == null && !notFoundInDef)
+                else if (contentToSave.CachePeriod == null && found)
                     dictionaries.ContentDictionaries.Remove(contentToSave.ContentId);
             }
             else
@@ -214,12 +214,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
                 if (parentObject is ExtensionField parentExtension)
                 {
-                    if (notFoundInDef && defInfo.InDefinition)
+                    if (!found && defInfo.InDefinition)
                     {
                         parentExtension.ContentMapping[contentToSave.ContentId] = contentToSave;
                     }
                     
-                    if (!notFoundInDef && !defInfo.InDefinition)
+                    if (found && !defInfo.InDefinition)
                     {
                         parentExtension.ContentMapping.Remove(contentToSave.ContentId);
                     }

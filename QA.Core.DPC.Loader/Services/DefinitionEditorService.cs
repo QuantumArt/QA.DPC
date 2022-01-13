@@ -28,17 +28,7 @@ namespace QA.Core.DPC.Loader.Services
 
 		public const string VirtualFieldPrefix = "V";
 
-		/// <summary>
-		///     возвращает Content или Field из rootContent по пути
-		/// </summary>
-		/// <param name="rootContent"></param>
-		/// <param name="path">разделенные Separator идшники контентов и полей</param>
-		/// <param name="notFoundInDef">
-		///     был ли в rootContent найден по этому пути объект, если нет, будет возвращен с дефолтными
-		///     настройками
-		/// </param>
-		/// <returns></returns>
-		public object GetObjectFromPath(Content rootContent, string path, out bool notFoundInDef)
+		public object GetObjectFromPath(Content rootContent, string path, out bool found)
 		{
 			var entityIds = path.Split(new[] {PathSeparator}, StringSplitOptions.RemoveEmptyEntries)
 				.Select(x =>
@@ -51,17 +41,10 @@ namespace QA.Core.DPC.Loader.Services
 						return x.Substring(VirtualFieldPrefix.Length);
 				});
 
-			return GetObjectFromDef(rootContent, out notFoundInDef, entityIds);
+			return GetObjectFromDef(rootContent, out found, entityIds);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rootContent"></param>
-		/// <param name="notFoundInDef"></param>
-		/// <param name="entityIds">int c id поля для невиртуальных полей и string с именем поля для виртуальных</param>
-		/// <returns></returns>
-		private object GetObjectFromDef(Content rootContent, out bool notFoundInDef, IEnumerable<object> entityIds)
+		private object GetObjectFromDef(Content rootContent, out bool found, IEnumerable<object> entityIds)
 		{
 			object[] entityIdsToSearch = entityIds
 				.Skip(1) //корень ровно один поэтому первый компонент пути нам не нужен
@@ -69,7 +52,7 @@ namespace QA.Core.DPC.Loader.Services
 
 			object currentPositionObj = rootContent;
 
-			notFoundInDef = false;
+			found = true;
 
 			foreach (object entityId in entityIdsToSearch)
 			{
@@ -87,7 +70,7 @@ namespace QA.Core.DPC.Loader.Services
 						//дурацкая система что Dictionaries это поле с id=0
 						if (entityId is int && (int)entityId == 0)
 						{
-							notFoundInDef = true;
+							found = false;
 
 							return new Dictionaries();
 						}
@@ -100,7 +83,7 @@ namespace QA.Core.DPC.Loader.Services
 
 							if (qpField == null)
 							{
-								notFoundInDef = true;
+								found = false;
 
 								return null;
 							}
@@ -109,7 +92,7 @@ namespace QA.Core.DPC.Loader.Services
 							{
 								currentPositionObj = new PlainField { FieldId = enitityIdInt, FieldName = qpField.Name };
 
-								notFoundInDef = !currContent.LoadAllPlainFields;
+								found = currContent.LoadAllPlainFields;
 							}
 							else
 							{
@@ -157,7 +140,7 @@ namespace QA.Core.DPC.Loader.Services
 									}
 								}
 
-								notFoundInDef = !qpField.IsClassifier || !currContent.LoadAllPlainFields;
+								found = qpField.IsClassifier && currContent.LoadAllPlainFields;
 							}
 						}
 					}
@@ -176,7 +159,7 @@ namespace QA.Core.DPC.Loader.Services
 						{
 							currentPositionObj = new Content { ContentId = enitityIdInt, ContentName = _contentService.Read(enitityIdInt).Name };
 
-							notFoundInDef = true;
+							found = false;
 						}
 					}
 				}
@@ -218,11 +201,9 @@ namespace QA.Core.DPC.Loader.Services
 						return x.Substring(VirtualFieldPrefix.Length);
 				});
 
-			bool notFoundInDef;
+			object result = GetObjectFromDef(rootContent, out var found, entityIds);
 
-			object result = GetObjectFromDef(rootContent, out notFoundInDef, entityIds);
-
-			if (notFoundInDef)
+			if (!found)
 				throw new Exception("Element not found by path: " + path);
 
 			return result;
@@ -230,16 +211,14 @@ namespace QA.Core.DPC.Loader.Services
 
 		public Field UpdateOrDeleteField(Content rootContent, Field field, string path, bool doDelete)
 		{
-			bool notFoundInDef;
-
-			var fieldToSave = (Field)GetObjectFromPath(rootContent, path, out notFoundInDef);
+			var fieldToSave = (Field)GetObjectFromPath(rootContent, path, out var found);
 
 			var parentContent = (Content)GetParentObjectFromPath(rootContent, path);
 
 			using (_fieldService.CreateQpConnectionScope())
 			{
 				//нужно удалить из описания
-				if (doDelete && !notFoundInDef)
+				if (doDelete && found)
 				{
 					parentContent.Fields.Remove(fieldToSave);
 

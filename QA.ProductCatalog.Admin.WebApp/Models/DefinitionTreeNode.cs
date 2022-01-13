@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 	{
 		public string Id { get; set; }
 
-		public bool NotInDefinition { get; set; }
+		public bool InDefinition { get; set; }
 
 		public bool MissingInQp = false;
 
@@ -23,21 +23,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 		public string IconName = null;
 
-		public DefinitionTreeNode(Content content, string parentPath, string ownPath, bool isFromDictionaries, bool isExtensionField, bool notInDefinition, ContentService contentService)
+		public DefinitionTreeNode(Content content, string parentPath, string ownPath, bool isFromDictionaries, bool isExtensionField, bool inDefinition, ContentService contentService)
 		{
 			Id = ownPath ?? parentPath + Separator + content.ContentId;
 
 			text = string.IsNullOrEmpty(content.ContentName) ? contentService.Read(content.ContentId).Name : content.ContentName;
 
-			hasChildren = !isFromDictionaries && !notInDefinition;
+			hasChildren = !isFromDictionaries && inDefinition;
 
-            expanded = !isFromDictionaries && !notInDefinition && !isExtensionField;
+            expanded = !isFromDictionaries && inDefinition && !isExtensionField;
 
 			imageUrl = "images/icons/content.gif";
 
 			IconName = "document";
 
-			NotInDefinition = notInDefinition;
+			InDefinition = inDefinition;
 		}
 
 		public DefinitionTreeNode(Quantumart.QP8.BLL.Content content, string parentPath)
@@ -52,14 +52,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			imageUrl = "images/icons/content.gif";
 
-			NotInDefinition = true;
+			InDefinition = false;
 
 			IconName = "document";
 		}
 
 		internal const string VirtualFieldPrefix = "V";
 
-		public DefinitionTreeNode(Field fieldFromDef, string parentPath, string ownPath, bool missingInQp, bool notInDefinition)
+		public DefinitionTreeNode(Field fieldFromDef, string parentPath, string ownPath, bool missingInQp, bool inDefinition)
 		{
 			Id = ownPath ?? parentPath + Separator + (fieldFromDef is BaseVirtualField ? VirtualFieldPrefix + fieldFromDef.FieldName : fieldFromDef.FieldId.ToString());
 
@@ -73,7 +73,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
             expanded = false;
 
-			hasChildren = !(fieldFromDef is PlainField) && !notInDefinition && !(fieldFromDef is VirtualField);
+			hasChildren = !(fieldFromDef is PlainField) && inDefinition && !(fieldFromDef is VirtualField);
 
 			if (fieldFromDef is Association) {
 				imageUrl = "images/icons/relation.gif";
@@ -86,12 +86,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			MissingInQp = missingInQp;
 
-			NotInDefinition = notInDefinition;
+			InDefinition = inDefinition;
 
 			IsDictionaries = fieldFromDef is Dictionaries;
 		}
 
-		public DefinitionTreeNode(Quantumart.QP8.BLL.Field fieldNotInDef, string parentPath, string ownPath, bool notInDefinition, bool isFromRelatedContent, IFieldService fieldService)
+		public DefinitionTreeNode(Quantumart.QP8.BLL.Field fieldNotInDef, string parentPath, string ownPath, bool inDefinition, bool isFromRelatedContent, IFieldService fieldService)
 		{
 			Id = ownPath ?? parentPath + Separator + fieldNotInDef.Id;
 
@@ -109,7 +109,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			//ноды которые не включены в описание не надо позволять раскрывать пока их не включат
 			hasChildren = false;
 
-			NotInDefinition = notInDefinition;
+			InDefinition = inDefinition;
 
 			MissingInQp = false;
 
@@ -128,10 +128,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			var fieldsNotInDef = qpFields.Where(x => content.Fields.All(y => y.FieldId != x.Id) && (!x.Aggregated || x.ContentId == content.ContentId));
 
 			var contentFields = content.Fields
-				.Select(x => new DefinitionTreeNode(x, parentPath, null, qpFields.All(y => y.Id != x.FieldId) && !(x is Dictionaries) && !(x is BaseVirtualField), false));
+				.Select(x => new DefinitionTreeNode(x, parentPath, null, qpFields.All(y => y.Id != x.FieldId) && !(x is Dictionaries) && !(x is BaseVirtualField), true));
 
 			if (isRootContent && !content.Fields.Any(x => x is Dictionaries))
-				contentFields = contentFields.Concat(new[] {new DefinitionTreeNode(new Dictionaries(), parentPath, null, false, true)});
+				contentFields = contentFields.Concat(new[] {new DefinitionTreeNode(new Dictionaries(), parentPath, null, false, false)});
 
 			return contentFields
 				.Concat(fieldsNotInDef.Select(x => new DefinitionTreeNode(x, parentPath, null, x.RelationType != RelationType.None || !content.LoadAllPlainFields, x.ContentId != content.ContentId, fieldService)))
@@ -143,11 +143,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 		{
 			//запрос корня
 			if (string.IsNullOrEmpty(path))
-				return new[] {new DefinitionTreeNode(rootContent, string.Empty, null, false, false, false, contentService)};
+				return new[] {new DefinitionTreeNode(rootContent, string.Empty, null, false, false, true, contentService)};
 			
-			bool notFoundInDef;
-
-			object foundObject = definitionEditorService.GetObjectFromPath(rootContent, path, out notFoundInDef);
+			object foundObject = definitionEditorService.GetObjectFromPath(rootContent, path, out _);
 
 			if (foundObject is Content)
 				return GetContentFields((Content) foundObject, fieldService, path, foundObject == rootContent);
@@ -155,7 +153,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			var contentsFromDef = definitionEditorService.GetContentsFromField((Field) foundObject);
 
 			var nodesFromContentsInDef = contentsFromDef
-				.Select(x => new DefinitionTreeNode(x, path, null, foundObject is Dictionaries, foundObject is ExtensionField, false, contentService))
+				.Select(x => new DefinitionTreeNode(x, path, null, foundObject is Dictionaries, foundObject is ExtensionField, true, contentService))
 				.ToArray();
 
 			if (foundObject is ExtensionField)
