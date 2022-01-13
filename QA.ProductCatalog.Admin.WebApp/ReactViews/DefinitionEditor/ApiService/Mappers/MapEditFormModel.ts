@@ -15,7 +15,11 @@ class EditFormModel implements IEditFormModel {
   FieldName: string;
   FieldTitle: string;
   FieldType: number;
+  ExactFieldType: string;
+  LoadAllPlainFieldsAtContentLevel: boolean;
   InDefinition: boolean;
+  InDefinitionExplicitly: boolean;
+  InDefinitionImplicitly: string;
   IsClassifier: string;
   LoadLikeImage: boolean;
   ObjectToRemovePath: string;

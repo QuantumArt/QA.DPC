@@ -1,5 +1,6 @@
 export interface IEditFormModel {
   FieldType: number;
+  ExactFieldType: string;
   RelatedContentName: string;
   RelatedContentId: string;
   FieldId: number;
@@ -20,7 +21,10 @@ export interface IEditFormModel {
   Converter: {};
   SkipCData: boolean;
   LoadLikeImage: boolean;
+  LoadAllPlainFieldsAtContentLevel: boolean;
   InDefinition: boolean;
+  InDefinitionExplicitly: boolean;
+  InDefinitionImplicitly: string;
   Path: string;
   Xml: string;
   IsReadOnly: boolean;

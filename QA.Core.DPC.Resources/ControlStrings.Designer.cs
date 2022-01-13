@@ -151,6 +151,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Id.
+        /// </summary>
+        public static string ContentId {
+            get {
+                return ResourceManager.GetString("ContentId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Content Name.
         /// </summary>
         public static string ContentName {
@@ -403,6 +412,33 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Include in definition explicitly.
+        /// </summary>
+        public static string InDefinitionExplicitly {
+            get {
+                return ResourceManager.GetString("InDefinitionExplicitly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Implicit.
+        /// </summary>
+        public static string InDefinitionImplicitly {
+            get {
+                return ResourceManager.GetString("InDefinitionImplicitly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Included in definition implicitly.
+        /// </summary>
+        public static string InDefinitionImplicitlyValue {
+            get {
+                return ResourceManager.GetString("InDefinitionImplicitlyValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid XML.
         /// </summary>
         public static string InvalidXml {
@@ -412,11 +448,20 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field type is classifier.
+        ///   Looks up a localized string similar to Classifier.
         /// </summary>
         public static string IsClassifier {
             get {
                 return ResourceManager.GetString("IsClassifier", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field type is classifier.
+        /// </summary>
+        public static string IsClassifierValue {
+            get {
+                return ResourceManager.GetString("IsClassifierValue", resourceCulture);
             }
         }
         
