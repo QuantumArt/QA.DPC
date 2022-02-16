@@ -120,6 +120,9 @@
   <data name="FieldId" xml:space="preserve">
     <value>Field Id</value>
   </data>
+  <data name="ContentId" xml:space="preserve">
+    <value>Content Id</value>
+  </data>  
   <data name="FieldName" xml:space="preserve">
     <value>Field Name</value>
   </data>
@@ -291,7 +294,7 @@
   <data name="LabelText" xml:space="preserve">
     <value>Text in &lt;label&gt;</value>
   </data>
-  <data name="IsClassifier" xml:space="preserve">
+  <data name="IsClassifierValue" xml:space="preserve">
     <value>Field type is classifier</value>
   </data>
   <data name="Path" xml:space="preserve">
@@ -392,5 +395,17 @@
   </data>
   <data name="InvalidXml" xml:space="preserve">
     <value>Invalid XML</value>
+  </data>
+  <data name="InDefinitionExplicitly" xml:space="preserve">
+    <value>Include in definition explicitly</value>
+  </data>
+  <data name="InDefinitionImplicitly" xml:space="preserve">
+    <value>Implicit</value>
+  </data>
+  <data name="InDefinitionImplicitlyValue" xml:space="preserve">
+    <value>Included in definition implicitly</value>
+  </data>
+  <data name="IsClassifier" xml:space="preserve">
+    <value>Classifier</value>
   </data>
 </root>

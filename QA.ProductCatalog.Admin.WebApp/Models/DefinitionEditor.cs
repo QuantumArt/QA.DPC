@@ -5,5 +5,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 		public string Xml { get; set; }
 
 		public int? ContentItemId { get; set; }
+        
+        public string Version { get; set; }
 	}
 }

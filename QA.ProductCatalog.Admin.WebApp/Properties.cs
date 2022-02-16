@@ -4,6 +4,7 @@ namespace QA.ProductCatalog.Admin.WebApp
 {
     public class Properties
     {
+        public static string TimeStamp = DateTime.Now.Millisecond.ToString(); 
         public Properties()
         {
             UserId = 1;
@@ -23,6 +24,8 @@ namespace QA.ProductCatalog.Admin.WebApp
         public bool AutoRegisterConsolidationCache { get; set; }
         
         public string Name { get; set; }
+        
+        public bool UseTimestampVersion { get; set; }
         
     }
 }

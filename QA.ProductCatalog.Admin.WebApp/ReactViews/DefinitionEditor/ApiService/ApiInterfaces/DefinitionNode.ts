@@ -9,7 +9,7 @@ export interface IDefinitionNode {
   checked: boolean;
   selected: boolean;
   Id: string;
-  NotInDefinition: boolean;
+  InDefinition: boolean;
   text: string;
   url: string | null;
   imageUrl: string | null;

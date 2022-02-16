@@ -10,7 +10,7 @@ using Field = QA.Core.Models.Configuration.Field;
 
 namespace QA.Core.DPC.Loader.Services
 {
-    public class DefinitionEditorService
+	public class DefinitionEditorService
 	{
 		private readonly IFieldService _fieldService;
 
@@ -28,40 +28,20 @@ namespace QA.Core.DPC.Loader.Services
 
 		public const string VirtualFieldPrefix = "V";
 
-		/// <summary>
-		///     возвращает Content или Field из rootContent по пути
-		/// </summary>
-		/// <param name="rootContent"></param>
-		/// <param name="path">разделенные Separator идшники контентов и полей</param>
-		/// <param name="notFoundInDef">
-		///     был ли в rootContent найден по этому пути объект, если нет, будет возвращен с дефолтными
-		///     настройками
-		/// </param>
-		/// <returns></returns>
-		public object GetObjectFromPath(Content rootContent, string path, out bool notFoundInDef)
+		public object GetObjectFromPath(Content rootContent, string path, out DefinitionSearchResult searchResult)
 		{
 			var entityIds = path.Split(new[] {PathSeparator}, StringSplitOptions.RemoveEmptyEntries)
 				.Select(x =>
 				{
-					int fieldId;
-
-					if (int.TryParse(x, out fieldId))
+					if (int.TryParse(x, out var fieldId))
 						return (object) fieldId;
 					else
 						return x.Substring(VirtualFieldPrefix.Length);
 				});
-
-			return GetObjectFromDef(rootContent, out notFoundInDef, entityIds);
+			return GetObjectFromDef(rootContent, entityIds, out searchResult);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rootContent"></param>
-		/// <param name="notFoundInDef"></param>
-		/// <param name="entityIds">int c id поля для невиртуальных полей и string с именем поля для виртуальных</param>
-		/// <returns></returns>
-		private object GetObjectFromDef(Content rootContent, out bool notFoundInDef, IEnumerable<object> entityIds)
+		private object GetObjectFromDef(Content rootContent, IEnumerable<object> entityIds, out DefinitionSearchResult result)
 		{
 			object[] entityIdsToSearch = entityIds
 				.Skip(1) //корень ровно один поэтому первый компонент пути нам не нужен
@@ -69,47 +49,60 @@ namespace QA.Core.DPC.Loader.Services
 
 			object currentPositionObj = rootContent;
 
-			notFoundInDef = false;
+			result = new DefinitionSearchResult() {Found = true, FoundExplicitly = true};
 
-			foreach (object entityId in entityIdsToSearch)
+			foreach (var entityId in entityIdsToSearch)
 			{
-				if (currentPositionObj is Content)
+				if (currentPositionObj is Content currContent)
 				{
-					var currContent = (Content)currentPositionObj;
+					var isIntEntityId = entityId is int;
+					var intEntityId = isIntEntityId ? (int)entityId : 0;
 
-					if(entityId is int)
-						currentPositionObj = currContent.Fields.SingleOrDefault(x => x.FieldId == (int)entityId);
+					if (isIntEntityId)
+					{
+						var f = currContent.Fields.SingleOrDefault(x => x.FieldId == intEntityId);
+						if (f != null)
+						{
+							result.LoadAllPlainFieldsAtContentLevel = currContent.LoadAllPlainFields;
+							f.FieldType = _fieldService.Read(intEntityId).ExactType.ToString();
+						}
+						currentPositionObj = f;
+					}
 					else
 						currentPositionObj = currContent.Fields.SingleOrDefault(x => x.FieldName == (string)entityId && x is BaseVirtualField);
 
+	
 					if (currentPositionObj == null)
 					{
-						//дурацкая система что Dictionaries это поле с id=0
-						if (entityId is int && (int)entityId == 0)
+						if (isIntEntityId)
 						{
-							notFoundInDef = true;
-
-							return new Dictionaries();
-						}
-
-						if (entityId is int)
-						{
-							int enitityIdInt = (int) entityId;
-
-							var qpField = _fieldService.Read(enitityIdInt);
-
+							//дурацкая система что Dictionaries это поле с id=0
+							if (intEntityId == 0)
+							{
+								result.Found = false;
+								result.FoundExplicitly = false;
+								return new Dictionaries();
+							}
+							
+							var qpField = _fieldService.Read(intEntityId);
 							if (qpField == null)
 							{
-								notFoundInDef = true;
-
+								result.Found = false;
+								result.FoundExplicitly = false;
 								return null;
 							}
 
 							if (qpField.RelationType == RelationType.None && !qpField.IsClassifier)
 							{
-								currentPositionObj = new PlainField { FieldId = enitityIdInt, FieldName = qpField.Name };
-
-								notFoundInDef = !currContent.LoadAllPlainFields;
+								currentPositionObj = new PlainField
+								{
+									FieldId = intEntityId, 
+									FieldName = qpField.Name,
+									FieldType = qpField.ExactType.ToString(),
+								};
+								result.LoadAllPlainFieldsAtContentLevel = currContent.LoadAllPlainFields;
+								result.Found = currContent.LoadAllPlainFields;
+								result.FoundExplicitly = false;
 							}
 							else
 							{
@@ -119,8 +112,9 @@ namespace QA.Core.DPC.Loader.Services
 										if (!qpField.IsClassifier)
 											currentPositionObj = new EntityField
 											{
-												FieldId = enitityIdInt,
+												FieldId = intEntityId,
 												FieldName = qpField.Name,
+												FieldType = qpField.ExactType.ToString(),
 												CloningMode = CloningMode.UseExisting,
 												Content =
 													new Content {ContentId = qpField.RelateToContentId.Value, ContentName = qpField.RelatedToContent.Name}
@@ -131,6 +125,7 @@ namespace QA.Core.DPC.Loader.Services
 											{
 												FieldId = qpField.Id,
 												FieldName = qpField.Name,
+												FieldType = qpField.ExactType.ToString(),
 												CloningMode = CloningMode.UseExisting
 											};
 
@@ -151,13 +146,15 @@ namespace QA.Core.DPC.Loader.Services
 										{
 											FieldId = qpField.Id,
 											FieldName = qpField.Name,
+											FieldType = qpField.ExactType.ToString(),
 											Content = new Content {ContentId = qpField.ContentId, ContentName = qpField.Content.Name},
 											CloningMode = CloningMode.UseExisting
 										};
 									}
 								}
-
-								notFoundInDef = !qpField.IsClassifier || !currContent.LoadAllPlainFields;
+								result.LoadAllPlainFieldsAtContentLevel = currContent.LoadAllPlainFields;
+								result.Found = qpField.IsClassifier && currContent.LoadAllPlainFields;
+								result.FoundExplicitly = false;
 							}
 						}
 					}
@@ -176,7 +173,8 @@ namespace QA.Core.DPC.Loader.Services
 						{
 							currentPositionObj = new Content { ContentId = enitityIdInt, ContentName = _contentService.Read(enitityIdInt).Name };
 
-							notFoundInDef = true;
+							result.Found = false;
+							result.FoundExplicitly = false;
 						}
 					}
 				}
@@ -218,11 +216,9 @@ namespace QA.Core.DPC.Loader.Services
 						return x.Substring(VirtualFieldPrefix.Length);
 				});
 
-			bool notFoundInDef;
+			object result = GetObjectFromDef(rootContent, entityIds, out var searchResult);
 
-			object result = GetObjectFromDef(rootContent, out notFoundInDef, entityIds);
-
-			if (notFoundInDef)
+			if (!searchResult.Found)
 				throw new Exception("Element not found by path: " + path);
 
 			return result;
@@ -230,16 +226,14 @@ namespace QA.Core.DPC.Loader.Services
 
 		public Field UpdateOrDeleteField(Content rootContent, Field field, string path, bool doDelete)
 		{
-			bool notFoundInDef;
-
-			var fieldToSave = (Field)GetObjectFromPath(rootContent, path, out notFoundInDef);
+			var fieldToSave = (Field)GetObjectFromPath(rootContent, path, out var searchResult);
 
 			var parentContent = (Content)GetParentObjectFromPath(rootContent, path);
 
 			using (_fieldService.CreateQpConnectionScope())
 			{
 				//нужно удалить из описания
-				if (doDelete && !notFoundInDef)
+				if (doDelete && searchResult.Found)
 				{
 					parentContent.Fields.Remove(fieldToSave);
 

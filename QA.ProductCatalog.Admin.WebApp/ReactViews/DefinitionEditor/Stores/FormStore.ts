@@ -20,6 +20,7 @@ import { OperationState } from "Shared/Enums";
 import { assign, forIn, isNull, isUndefined, keys, pick } from "lodash";
 import { l } from "DefinitionEditor/Localization";
 import ErrorHandler from "./ErrorHandler";
+import { Field } from "react-final-form";
 
 export default class FormStore extends ErrorHandler {
   constructor(private settings: DefinitionEditorSettings, private xmlEditorStore: XmlEditorStore) {
@@ -153,42 +154,48 @@ export default class FormStore extends ErrorHandler {
   // };
 
   parseEditFormDataToUIModel = (model: IEditFormModel): { [key in string]: ParsedModelType } => {
-    const fieldType = model.FieldType;
-
     let fieldList: string[];
     if (this.ModelType === ModelType.Field) {
-      fieldList = FormStore.getFieldUIFieldsList(fieldType);
+      fieldList = FormStore.getFieldUIFieldsList(model);
     }
     if (this.ModelType === ModelType.Content) {
-      fieldList = FormStore.getContentUIFieldsList(
-        model.AlreadyCachedAsDictionary,
-        model.IsFromDictionaries
-      );
+      fieldList = FormStore.getContentUIFieldsList(model);
     }
 
     return this.getParsedUIModelFromApiFields(model, fieldList);
   };
 
-  private static getContentUIFieldsList(
-    AlreadyCachedAsDictionary: boolean,
-    IsFromDictionaries: boolean
-  ) {
+  private static getContentUIFieldsList(model: IEditFormModel): string[] {
     const fieldList = [];
-    fieldList.push("InDefinition");
+    if (model.IsExtensionContent) {
+      fieldList.push("InDefinition");
+    }
     fieldList.push("ContentId", "AlreadyCachedAsDictionary", "ContentName", "IsFromDictionaries");
-    if (!AlreadyCachedAsDictionary) {
+    if (!model.AlreadyCachedAsDictionary) {
       fieldList.push("CacheEnabled", "CachePeriod");
     }
-    if (!IsFromDictionaries) {
+    if (!model.IsFromDictionaries) {
       fieldList.push("IsReadOnly", "LoadAllPlainFields", "PublishingMode");
     }
-
     return fieldList;
   }
 
-  private static getFieldUIFieldsList(fieldType: number): string[] {
+  private static getFieldUIFieldsList(model: IEditFormModel): string[] {
+    const fieldType = model.FieldType;
     const fieldList = [];
-    fieldList.push("InDefinition");
+    if (model.LoadAllPlainFieldsAtContentLevel) {
+      if (!model.InDefinitionExplicitly && model.InDefinition) {
+        fieldList.push("InDefinitionImplicitly");
+        if (fieldType == FieldDefinitionType.ExtensionField) {
+          fieldList.push("InDefinitionExplicitly");
+        }
+      } else {
+        fieldList.push("InDefinition");
+      }
+    } else {
+      fieldList.push("InDefinition");
+    }
+
     if (fieldType === FieldDefinitionType.Dictionaries) {
       fieldList.push("DefaultCachePeriod");
     } else {
@@ -396,6 +403,7 @@ export default class FormStore extends ErrorHandler {
           );
           break;
 
+        case "InDefinitionExplicitly":
         case "IsReadOnly":
         case "LoadAllPlainFields":
           if (fields["IsFromDictionaries"]) return acc;
@@ -454,12 +462,10 @@ export default class FormStore extends ErrorHandler {
           break;
 
         case "FieldId":
-          acc[field] = new TextParsedModel(field, l(field), fieldValue, hideIfInDefinition);
-          break;
-
         case "IsClassifier":
+        case "InDefinitionImplicitly":
         case "ContentId":
-          acc[field] = new TextParsedModel(field, field, fieldValue, hideIfInDefinition);
+          acc[field] = new TextParsedModel(field, l(field), fieldValue, hideIfInDefinition);
           break;
 
         /**

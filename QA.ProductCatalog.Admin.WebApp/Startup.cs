@@ -55,6 +55,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
+            services.Configure<Properties>(Configuration.GetSection("Properties"));              
             services.Configure<QPOptions>(Configuration.GetSection("QP"));
             
             var props = new IntegrationProperties();

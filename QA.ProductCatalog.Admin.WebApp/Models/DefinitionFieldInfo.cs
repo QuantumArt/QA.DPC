@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.DPC.Loader;
+using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Resources;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
@@ -28,12 +29,28 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         {
             
         }
+
+        public DefinitionFieldInfo(Field field, DefinitionSearchResult searchResult, DefinitionPathInfo pathInfo) :
+            this(field)
+        {
+            InDefinition = searchResult.Found;
+            InDefinitionExplicitly = searchResult.FoundExplicitly;
+            LoadAllPlainFieldsAtContentLevel = searchResult.LoadAllPlainFieldsAtContentLevel;
+            Path = pathInfo.Path;
+            Xml = pathInfo.Xml;
+
+            if ((field is PlainField || field is ExtensionField) && searchResult.LoadAllPlainFieldsAtContentLevel)
+            {
+                InDefinitionImplicitly = ControlStrings.InDefinitionImplicitlyValue;
+            }
+        }
         
         public DefinitionFieldInfo(Field field)
         {
             FieldName = field.FieldName;
             FieldTitle = field.FieldTitle;
             FieldId = field.FieldId;
+            ExactFieldType = field.FieldType;
             if (field is Dictionaries dict)
             {
                 DefaultCachePeriod = dict.DefaultCachePeriod;
@@ -86,6 +103,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
             Field result = GetEmptyField();
             result.FieldName = FieldName;
             result.FieldTitle = FieldTitle;
+            result.FieldType = ExactFieldType;
             if (result is Association association)
             {
                 FillAssociationField(association);
@@ -104,7 +122,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
             }
 
             return result;
-
         }
 
         private void FillPlainField(PlainField plain)
@@ -124,7 +141,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         {
             virt.ObjectToRemovePath = ObjectToRemovePath;
             virt.Path = VirtualPath;
-
         }
 
         private void FillAssociationField(Association output)
@@ -196,12 +212,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
             else
             {
                 FieldType = FieldDefinitionType.ExtensionField;
-                IsClassifier = ControlStrings.IsClassifier;
+                IsClassifier = ControlStrings.IsClassifierValue;
             }
-
         }
 
         public FieldDefinitionType FieldType { get; set; }
+        
+        public string ExactFieldType { get; set; }
         
         public string RelatedContentName { get;  set; }
 
@@ -249,7 +266,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         
         public bool LoadLikeImage { get; set; }
         
-        
+        public bool InDefinitionExplicitly { get; set; }
+
+        public string InDefinitionImplicitly { get; set; }
+
+        public bool LoadAllPlainFieldsAtContentLevel { get; set; }
 	}
 	
 }

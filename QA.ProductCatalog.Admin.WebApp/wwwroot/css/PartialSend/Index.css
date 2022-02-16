@@ -13,28 +13,24 @@
 .ProgressBar__label {
   margin-left: 5px;
 }
-
 .Chip {
   padding: 4px 7px 4px 4px;
   border-radius: 10px;
   font-size: 12px;
   line-height: 16px;
-  color: white;
+  color: #fff;
 }
 .Chip__icon {
   margin-right: 4px;
 }
-
 .PartialSend__description {
   max-width: 812px;
 }
-
 .PartialSend__ids {
   margin-bottom: 10px;
   border: none !important;
   resize: vertical;
 }
-
 body {
   background-color: #f5f8fa;
   font-family: Verdana, Arial, Helvetica, sans-serif;
@@ -42,18 +38,15 @@ body {
   margin: 0;
   padding: 0;
 }
-
-html,
-body,
 #root,
-.PartialSend {
+.PartialSend,
+body,
+html {
   height: 100%;
 }
-
 .half-transparent {
   opacity: 0.5;
 }
-
 .centered {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -65,17 +58,14 @@ body,
   -ms-flex-align: center;
   align-items: center;
 }
-
 .formLayout fieldset {
-  margin: 0 0 1.875rem 0;
-  padding: 10px 20px 0 20px;
+  margin: 0 0 1.875rem;
+  padding: 10px 20px 0;
   border: none;
 }
-
 .formLayout .bp3-heading {
   margin-top: 15px;
 }
-
 .formLayout .row {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -84,19 +74,16 @@ body,
   -ms-flex-align: center;
   align-items: center;
   padding: 0;
-  margin: 0 0 20px 0;
+  margin: 0 0 20px;
   min-height: 1em;
 }
-
 .formLayout .row:last-child {
   margin-bottom: 0;
 }
-
 .formLayout dt.label {
   padding: 0 1.625rem 0 0;
   width: 13.125rem;
 }
-
 .formLayout dd.field {
   margin: 0;
   padding: 10px;
@@ -105,23 +92,19 @@ body,
   flex-grow: 1;
   background-color: rgba(206, 217, 224, 0.2);
 }
-
 .formLayout dd.transparent {
   background-color: initial;
 }
-
 .formLayout textarea {
   border: 1px solid #909090;
 }
-
 .formLayout input.textbox,
-.formLayout textarea.textbox,
 .formLayout select.dropDownList,
-.formLayout select.listBox {
+.formLayout select.listBox,
+.formLayout textarea.textbox {
   width: 100%;
   font-family: Verdana, Arial, Helvetica, sans-serif;
 }
-
 .highlighted {
   padding: 0 8px;
   background-color: rgba(206, 217, 224, 0.6);

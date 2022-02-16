@@ -48,7 +48,11 @@ window.definitionEditor = {
     LoadAsImage: '@Html.Raw(ControlStrings.LoadAsImage)',
     LabelText: '@Html.Raw(ControlStrings.LabelText)',
     FieldId: '@Html.Raw(ControlStrings.FieldId)',
+    ContentId: '@Html.Raw(ControlStrings.ContentId)',
+    IsClassifier: '@Html.Raw(ControlStrings.IsClassifier)',
+    InDefinitionImplicitly: '@Html.Raw(ControlStrings.InDefinitionImplicitly)',
     InDefinition: '@Html.Raw(ControlStrings.InDefinition)',
+    InDefinitionExplicitly: '@Html.Raw(ControlStrings.InDefinitionExplicitly)',
     DeletingMode: '@Html.Raw(ControlStrings.DeletingMode)',
     UpdatingMode: '@Html.Raw(ControlStrings.UpdatingMode)',
     CloningMode: '@Html.Raw(ControlStrings.CloningMode)',
@@ -83,4 +87,4 @@ window.definitionEditor = {
 </script>
 <div id="definitionEditor"></div>
 <script src="~/js/pmrpc.js"></script>
-<script src="~/js/bundles/DefinitionEditor/Index.js"></script>
+<script src="~/js/bundles/DefinitionEditor/Index.js?v=@Model.Version"></script>

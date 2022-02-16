@@ -36,7 +36,7 @@ namespace QA.Core.Models.Configuration
 
         [DefaultValue(null)]
         public NumberType? NumberType { get; set; }
-
+        
         public Field ShallowCopy()
         {
             var field = (Field)MemberwiseClone();

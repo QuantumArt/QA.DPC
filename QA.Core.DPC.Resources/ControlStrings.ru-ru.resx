@@ -292,7 +292,7 @@
     <value>Текст в &lt;label&gt;</value>
   </data>
   <data name="IsClassifier" xml:space="preserve">
-    <value>Поле является классификатором</value>
+    <value>Классификатор</value>
   </data>
   <data name="Path" xml:space="preserve">
     <value>Путь</value>
@@ -392,5 +392,20 @@
   </data>
   <data name="InvalidXml" xml:space="preserve">
     <value>Неверный XML</value>
+  </data>
+  <data name="InDefinitionExplicitly" xml:space="preserve">
+    <value>Включить явно в описание</value>
+  </data>
+  <data name="InDefinitionImplicitly" xml:space="preserve">
+    <value>Неявное</value>
+  </data>
+  <data name="ContentId" xml:space="preserve">
+    <value>ID контента</value>
+  </data>
+  <data name="IsClassifierValue" xml:space="preserve">
+    <value>Поле является классификатором</value>
+  </data>
+  <data name="InDefinitionImplicitlyValue" xml:space="preserve">
+    <value>Включено в описание неявно</value>
   </data>
 </root>
