@@ -38,9 +38,6 @@ namespace QA.DPC.Core.Helpers
                     var logger = _factory.CreateLogger("Global Exception Handling");
                     LoggerExtensions.LogError(logger, new EventId(1), ex.Error, "Unhandled exception occurs");
 
-                    var provider = options.ApplicationServices.GetService<IIdentityProvider>();
-                    var customerCode = provider.Identity?.CustomerCode;
-
                     if (IsConsolidationError(options, out CustomerState state))
                     {
                         var url = $"{context.Request.PathBase}{_errorPage}?state={state}";
@@ -95,7 +92,7 @@ namespace QA.DPC.Core.Helpers
             });
         }
 
-        private bool  IsConsolidationError(IApplicationBuilder options, out CustomerState customerState)
+        private bool IsConsolidationError(IApplicationBuilder options, out CustomerState customerState)
         {
             var provider = options.ApplicationServices.GetService<IIdentityProvider>();
             var customerCode = provider.Identity?.CustomerCode;
