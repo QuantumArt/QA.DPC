@@ -212,7 +212,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 var task = GetTaskWithUpdateLock(context, id);
                 if (task == null)
                 {
-                    Logger.Error()
+                    Logger.Warn()
                         .Message("Task {taskId} is not found", id)
                         .Write();
                     
@@ -221,7 +221,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                 if (allowedInitialStates != null && !allowedInitialStates.Select(x => (int) x).Contains(task.StateID))
                 {
-                    Logger.Error()
+                    Logger.Warn()
                         .Message("Task {taskId} has been excluded by state {state}", id, task.TaskState)
                         .Write();
                     

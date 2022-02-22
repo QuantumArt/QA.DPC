@@ -4,6 +4,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml.Serialization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,12 @@ namespace QA.ProductCatalog.WebApi.Filters
                     new XmlSerializer(error.GetType()).Serialize(ms, error);
                     content = Encoding.UTF8.GetString(ms.ToArray());
                 }
-                context.Result = new ContentResult() {ContentType = WebApiConstants.XmlMediaType, Content = content};
+                context.Result = new ContentResult()
+                {
+                    ContentType = WebApiConstants.XmlMediaType, 
+                    Content = content,
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
             }
             else if (format.Equals(WebApiConstants.BinaryMappingValue))
             {
@@ -42,7 +48,10 @@ namespace QA.ProductCatalog.WebApi.Filters
             }
             else
             {
-                context.Result = new JsonResult(context.Exception);
+                context.Result = new JsonResult(context.Exception)
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
             }
             context.ExceptionHandled = true;
         }

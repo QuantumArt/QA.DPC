@@ -4,7 +4,8 @@ using System.Security.Principal;
  using System.Threading;
  using QA.Core.DPC.QP.Models;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
+ using Microsoft.AspNetCore.Http.Features;
+ using Microsoft.AspNetCore.Routing;
 using QA.Core.DPC.QP.Services;
 
 namespace QA.DPC.Core.Helpers
@@ -75,7 +76,7 @@ namespace QA.DPC.Core.Helpers
             {
                 _context.User = new GenericPrincipal(identity, new string[0]);
     
-                if (_useSession)
+                if (_useSession && _context.Features.Get<ISessionFeature>()?.Session != null)
                 {
                     _context.Session.SetString(CustomerCodeKey, Identity.CustomerCode);
                 }
@@ -105,7 +106,7 @@ namespace QA.DPC.Core.Helpers
                 code = _context.GetRouteValue(CustomerCodeKey) as string;
                 if (!string.IsNullOrEmpty(code)) return code;
             
-                if (_useSession)
+                if (_useSession && _context.Features.Get<ISessionFeature>()?.Session != null)
                 {
                     code = (!string.IsNullOrEmpty(code)) ? code : _context.Session.GetString(CustomerCodeKey);
                     if (!string.IsNullOrEmpty(code)) return code;
