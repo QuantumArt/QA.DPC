@@ -61,7 +61,7 @@ namespace QA.Core.DPC.Loader.Services
 					if (isIntEntityId)
 					{
 						var f = currContent.Fields.SingleOrDefault(x => x.FieldId == intEntityId);
-						if (f != null)
+						if (f != null && intEntityId != 0)
 						{
 							result.LoadAllPlainFieldsAtContentLevel = currContent.LoadAllPlainFields;
 							f.FieldType = _fieldService.Read(intEntityId).ExactType.ToString();
