@@ -124,14 +124,16 @@ namespace QA.Core.DPC.API.Update
                 throw new ProductUpdateConcurrencyException(_outdatedArticleIds.ToArray());
             }
 
+            var updateData = MergeUpdateData(_updateData);
+
             using (var transaction = _createTransaction())
             {
                 _logger.Info()
                     .Message("Batch update for product {id} started", product.Id)
-                    .Property("updateData", _updateData.ToDictionary(n => n.ToString(), m => m.Fields))
+                    .Property("updateData", updateData.ToDictionary(n => n.ToString(), m => m.Fields))
                     .Write();
 
-                InsertData[] idMapping = _articleService.BatchUpdate(_updateData, createVersions);
+                InsertData[] idMapping = _articleService.BatchUpdate(updateData, createVersions);
 
                 _logger.Info("Batch update for product {id} completed", product.Id);
 
@@ -421,6 +423,22 @@ namespace QA.Core.DPC.API.Update
             {
                 _outdatedArticleIds.Add(newArticle.Id);
             }
+        }
+
+        private IEnumerable<ArticleData> MergeUpdateData(List<ArticleData> articles)
+        {
+            return from article in articles
+                   group article by new { article.Id, article.ContentId } into mergedArticle
+                   select new ArticleData
+                   {
+                       Id = mergedArticle.Key.Id,
+                       ContentId = mergedArticle.Key.ContentId,
+                       Fields = mergedArticle
+                            .SelectMany(a => a.Fields)
+                            .GroupBy(field => field.Id)
+                            .Select(mergedFields => mergedFields.First())
+                            .ToList()
+                   };
         }
     }
 }
