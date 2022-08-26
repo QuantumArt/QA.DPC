@@ -286,6 +286,10 @@ namespace QA.Core.DPC
 
                 if (Monitor.TryEnter(state))
                 {
+                    _logger.Info().Message("Monitor Enter")
+                        .Property("key", key)
+                        .Write();
+
                     try
                     {
                         if (!state.BlockState.HasValue ||
@@ -311,12 +315,23 @@ namespace QA.Core.DPC
                                 var localState = new ChannelState() {ErrorsCount = 0};
                                 var factoryMap = res.Result.Select(m => m.Key).Distinct()
                                     .ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
+
+
+                                _logger.Info().Message("SendOneMessage Prepre tasks")
+                                    .Property("key", key)
+                                    .Property("count", res.Result.Count)
+                                    .Write();
+
                                 var tasks = res.Result
                                     .Select(m => SendOneMessage(descriptor.CustomerCode, descriptor.InstanceId, config,
                                         channel, service, m, semaphore, factoryMap[m.Key], localState, channelService))
                                     .ToArray();
 
                                 Task.WaitAll(tasks);
+
+                                _logger.Info().Message("SendOneMessage End wait tasks")
+                                    .Property("key", key)
+                                    .Write();
 
                                 if (localState.ErrorsCount >= config.ErrorCountBeforeWait)
                                 {
@@ -428,6 +443,13 @@ namespace QA.Core.DPC
 
                 try
                 {
+                    _logger.Info().Message("Semaphore before Wait")
+                        .Property("customerCode", customerCode)
+                        .Property("channel", channel.Name)
+                        .Property("currentCount", semaphore.CurrentCount)
+                        .Property("productId", message.Key)
+                        .Write();
+
                     semaphore.Wait();
                     _logger.Debug("Start processing message {messageId} ", message.Id);
 
@@ -529,6 +551,13 @@ namespace QA.Core.DPC
                 finally
                 {
                     semaphore.Release();
+
+                    _logger.Info().Message("Semaphore after Release")
+                        .Property("customerCode", customerCode)
+                        .Property("channel", channel.Name)
+                        .Property("currentCount", semaphore.CurrentCount)
+                        .Property("productId", message.Key)
+                        .Write();
                 }
             });
         }
