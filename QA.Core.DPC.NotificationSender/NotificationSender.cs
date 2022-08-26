@@ -319,6 +319,7 @@ namespace QA.Core.DPC
 
                                 _logger.Info().Message("SendOneMessage Prepre tasks")
                                     .Property("key", key)
+                                    .Property("degreeOfParallelism", channel.DegreeOfParallelism)
                                     .Property("count", res.Result.Count)
                                     .Write();
 
@@ -355,6 +356,9 @@ namespace QA.Core.DPC
                     finally
                     {
                         Monitor.Exit(state);
+                            _logger.Info().Message("Monitor Exit")
+                            .Property("key", key)
+                            .Write();
                     }
                 }
                 else
