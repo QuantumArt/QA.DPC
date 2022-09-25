@@ -142,18 +142,16 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                 {
                                     task = _taskFactoryMethod(taskFromQueueInfo.Name, taskFromQueueInfo.UserID);
                                 }
-                                catch(Exception ex)
+                                catch(Exception)
                                 {
                                     var consolidationMessage = _consolidationFactory.Validate(customerCode as string);
 
                                     if (consolidationMessage == null)
                                     {
-                                        throw ex;
+                                        throw;
                                     }
-                                    else
-                                    {
-                                        throw new Exception(consolidationMessage);
-                                    }
+
+                                    throw new Exception(consolidationMessage);
                                 }
 
                                 if (task == null)

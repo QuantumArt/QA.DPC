@@ -4,7 +4,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic.Extensions
 {
     public static class EnumerableExtensions
     {
-        public static IEnumerable<IEnumerable<T>> Chunk<T>(
+        public static IEnumerable<IEnumerable<T>> MyChunk<T>(
             this IEnumerable<T> source, int chunkSize)
         {
             var chunk = new List<T>(chunkSize);

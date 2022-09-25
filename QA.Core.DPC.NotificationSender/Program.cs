@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
  using System.IO;
  using System.Reflection;
+ using System.Runtime.InteropServices;
  using Microsoft.Extensions.Logging;
 using NLog.Web;
 using Microsoft.AspNetCore;
@@ -23,9 +24,12 @@ namespace QA.Core.DPC
                 
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
-                var log = new EventLog { Source = "NotificationSender" };
-
-                log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var log = new EventLog {Source = "NotificationSender"};
+                        log.WriteEntry(string.Join(" -> ", ((Exception) e.ExceptionObject).Flat().Select(x => x.Message)),
+                        EventLogEntryType.Error);
+                }
             };
 
             args.SetDirectory().BuildWebHost().RunAdaptive(args);

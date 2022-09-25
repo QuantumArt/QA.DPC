@@ -25,9 +25,12 @@ namespace QA.Core.ProductCatalog.ActionsService
                 
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
-                var log = new EventLog { Source = "ActionsService" };
-
-                log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    var log = new EventLog {Source = "ActionsService"};
+                    log.WriteEntry(string.Join(" -> ", ((Exception) e.ExceptionObject).Flat().Select(x => x.Message)),
+                        EventLogEntryType.Error);
+                }
             };
 
             args.SetDirectory().BuildWebHost().RunAdaptive(args);

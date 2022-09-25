@@ -45,7 +45,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             ThreadPool.QueueUserWorkItem(Watch);
         }
 
-        public void Watch(object? stateInfo)
+        public void Watch(object stateInfo)
         {
             _factoryWatcher.Watch();
         }
