@@ -286,7 +286,7 @@ namespace QA.Core.DPC
 
                 if (Monitor.TryEnter(state))
                 {
-                    _logger.Info().Message("Monitor Enter")
+                    _logger.Debug().Message("Monitor Enter")
                         .Property("key", key)
                         .Write();
 
@@ -317,7 +317,7 @@ namespace QA.Core.DPC
                                     .ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
 
 
-                                _logger.Info().Message("SendOneMessage Prepre tasks")
+                                _logger.Debug().Message("SendOneMessage Prepare tasks")
                                     .Property("key", key)
                                     .Property("degreeOfParallelism", channel.DegreeOfParallelism)
                                     .Property("count", res.Result.Count)
@@ -330,7 +330,7 @@ namespace QA.Core.DPC
 
                                 Task.WaitAll(tasks);
 
-                                _logger.Info().Message("SendOneMessage End wait tasks")
+                                _logger.Debug().Message("SendOneMessage End wait tasks")
                                     .Property("key", key)
                                     .Write();
 
@@ -356,7 +356,7 @@ namespace QA.Core.DPC
                     finally
                     {
                         Monitor.Exit(state);
-                            _logger.Info().Message("Monitor Exit")
+                            _logger.Debug().Message("Monitor Exit")
                             .Property("key", key)
                             .Write();
                     }
