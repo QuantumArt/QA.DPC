@@ -6,7 +6,10 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.ContentProviders;
@@ -23,8 +26,9 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         private readonly Uri _baseTntUri;
         private readonly Uri _baseWebApiUri;
         private readonly IStatusProvider _statusProvider;
+        private readonly IHttpClientFactory _factory;
 
-        public AutopublishProvider(ISettingsService settingsService, IStatusProvider statusProvider, IOptions<IntegrationProperties> intProps)
+        public AutopublishProvider(ISettingsService settingsService, IStatusProvider statusProvider, IOptions<IntegrationProperties> intProps, IHttpClientFactory factory)
         {
             _settingsService = settingsService;
             _statusProvider = statusProvider;
@@ -32,6 +36,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 new Uri(intProps.Value.TarantoolApiUrl) : null;
             _baseWebApiUri = string.IsNullOrEmpty(intProps.Value.DpcWebApiUrl)
                 ? new Uri(intProps.Value.DpcWebApiUrl) : null;
+            _factory = factory;
         }
 
         public ProductItem[] Peek(string customerCode)
@@ -62,46 +67,19 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                   .ToArray();
         }
 
-        public void PublishProduct(ProductItem item)
+        public async void PublishProduct(ProductItem item)
         {
-            var url = GetAutopublishUrl(item, true);
-            var uri = new Uri(_baseWebApiUri, url);
-            var request = (HttpWebRequest)WebRequest.Create(uri);
-            request.Method = PostMethod;
-            request.ContentType = "application/octet-stream";
-
-            using (var stream = request.GetRequestStream())
-            {
-                new BinaryFormatter().Serialize(stream, item);
-                stream.Flush();
-            }
-
+            var uri = new Uri(_baseWebApiUri, GetAutopublishUrl(item, true));
+            var content = new StringContent(JsonConvert.SerializeObject(item), Encoding.UTF8, "application/json");
+            var client = _factory.CreateClient();
             try
             {
-                using (var response = (HttpWebResponse)request.GetResponse())
-                {
-                    if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        throw new Exception($"{PostMethod} request on {uri} failed because of {response.StatusCode}: {response.StatusDescription}");
-                    }
-                }
+                var result = await client.PostAsync(uri, content);
+                result.EnsureSuccessStatusCode();
             }
-            catch (WebException ex)
+            catch (HttpRequestException ex)
             {
-                Exception innerException = null;
-                var formatter = new BinaryFormatter();
-                var response = ex.Response as HttpWebResponse;
-
-                using (var stream = ex.Response.GetResponseStream())
-                {
-                    innerException = formatter.Deserialize(stream) as Exception;
-                }
-              
-                throw new Exception($"{PostMethod} request on {uri} failed because of {response.StatusCode} in {response.StatusDescription}", innerException);
+                throw new Exception($"{PostMethod} request on {uri} failed because of {ex.StatusCode}: {ex.Message}", ex);
             }
         }
 
@@ -128,25 +106,18 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         private JObject RequestQueue(string url, string method)
         {
             var uri = new Uri(_baseTntUri, url);
-            var request = (HttpWebRequest)WebRequest.Create(uri);
-            request.Method = method;
-            request.Accept = "application/json";
-
-            var serializer = new JsonSerializer();
-
-            using (var response = (HttpWebResponse)request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            using (var reader = new StreamReader(stream))
-            using (var jsonReader = new JsonTextReader(reader))
+            var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            var request = new HttpRequestMessage(new HttpMethod(method), uri);
+            try
             {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    return serializer.Deserialize<JObject>(jsonReader);
-                }
-                else
-                {
-                    throw new Exception($"{method} request on {uri} failed with code {response.StatusCode}: {response.StatusDescription}");
-                }                
+                var response = client.Send(request);
+                response.EnsureSuccessStatusCode();
+                return JsonConvert.DeserializeObject<JObject>(response.Content.ToString() ?? string.Empty);
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"{method} request on {uri} failed with code {ex.StatusCode}: {ex.Message}", ex);
             }
         }
 

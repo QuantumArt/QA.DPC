@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,6 +28,7 @@ namespace QA.Core.DPC
         private readonly IConnectionProvider _connectionProvider;
         private readonly IIdentityProvider _identityProvider;
         private readonly IFactoryWatcher _configurationWatcher;
+        private readonly IHttpClientFactory _factory;
         private readonly NotificationProperties _props;
         private readonly static NLog.ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly List<Timer> _senders = new List<Timer>();
@@ -42,6 +44,7 @@ namespace QA.Core.DPC
             IConnectionProvider connectionProvider,
             IIdentityProvider identityProvider,
             IFactoryWatcher factoryWatcher,
+            IHttpClientFactory factory,
             IOptions<NotificationProperties> propsAccessor
         )
         {
@@ -49,6 +52,7 @@ namespace QA.Core.DPC
             _connectionProvider = connectionProvider;
             _identityProvider = identityProvider;
             _configurationWatcher = factoryWatcher;
+            _factory = factory;
             _props = propsAccessor.Value;
         }
 
@@ -431,139 +435,96 @@ namespace QA.Core.DPC
             ChannelState state,
             INotificationChannelService channelService)
         {
-            await factory.StartNew(() =>
+            lock (state)
             {
+                if (state.ErrorsCount >= config.ErrorCountBeforeWait)
+                {
+                    return;
+                }
+            }
+
+            var timer = new Stopwatch();
+            timer.Start();
+            string url = GetUrl(customerCode, instanceId, channel, message);
+
+            try
+            {
+                _logger.Debug().Message("Semaphore before Wait")
+                    .Property("customerCode", customerCode)
+                    .Property("channel", channel.Name)
+                    .Property("currentCount", semaphore.CurrentCount)
+                    .Property("productId", message.Key)
+                    .Write();
+
+                semaphore.Wait();
+                _logger.Debug("Start processing message {messageId} ", message.Id);
+
+                var client = _factory.CreateClient(GetKey(channel.Name, customerCode));
+                client.Timeout = TimeSpan.FromSeconds(config.TimeOut);
+                
+                var media = !string.IsNullOrEmpty(channel.MediaType) ? channel.MediaType : "text/xml";
+                var req = new HttpRequestMessage(new HttpMethod(message.Method.ToUpper()), url)
+                {
+                    Content = new StringContent(message.Xml, Encoding.UTF8, media)
+                };
+                
+                var resp = await client.SendAsync(req);
+                resp.EnsureSuccessStatusCode();
+                    
+                timer.Stop();
+                _logger.Info()
+                    .Message(
+                        "Message {message} for channel {channel} has been sent on url {url}",
+                        message.Method, channel.Name, Uri.UnescapeDataString(url)
+                    )
+                    .Property("productId", message.Key)
+                    .Property("statusCode", resp.StatusCode)
+                    .Property("timeTaken", timer.ElapsedMilliseconds)
+                    .Property("messageId", message.Id)
+                    .Property("customerCode", customerCode)
+                    .Write();
+
+                channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
+                    message.Created, resp.StatusCode.ToString());
+
+                service.RemoveMessage(message.Id);
+            }
+            catch (HttpRequestException ex)
+            {
+                timer.Stop();
+
                 lock (state)
                 {
-                    if (state.ErrorsCount >= config.ErrorCountBeforeWait)
-                    {
-                        return;
-                    }
+                    state.ErrorsCount++;
                 }
+                
+                _logger.Error()
+                    .Exception(ex)
+                    .Message(
+                    "Message {message} for channel {channel} has not been sent on url {url}",
+                          message.Method, channel.Name, Uri.UnescapeDataString(url)
+                    )
+                    .Property("productId", message.Key)
+                    .Property("statusCode", ex.StatusCode)
+                    .Property("timeTaken", timer.ElapsedMilliseconds)
+                    .Property("messageId", message.Id)
+                    .Property("customerCode", customerCode)
+                    .Write();
 
-                var timer = new Stopwatch();
-                timer.Start();
-                string url = GetUrl(customerCode, instanceId, channel, message);
+                    channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
+                        message.Created, ex.StatusCode.ToString());
+            }
+            finally
+            {
+                semaphore.Release();
 
-                try
-                {
-                    _logger.Info().Message("Semaphore before Wait")
-                        .Property("customerCode", customerCode)
-                        .Property("channel", channel.Name)
-                        .Property("currentCount", semaphore.CurrentCount)
-                        .Property("productId", message.Key)
-                        .Write();
-
-                    semaphore.Wait();
-                    _logger.Debug("Start processing message {messageId} ", message.Id);
-
-
-                    var request = (HttpWebRequest) WebRequest.Create(url);
-                    request.Method = message.Method.ToUpper();
-                    request.Timeout = 1000 * config.TimeOut;
-                    var mediaType = !string.IsNullOrEmpty(channel.MediaType) ? channel.MediaType : "text/xml";
-                    request.ContentType = $"{mediaType}; charset=utf-8";
-                    byte[] data = Encoding.UTF8.GetBytes(message.Xml);
-                    request.ContentLength = data.Length;
-
-                    using (var streamWriter = request.GetRequestStream())
-                    {
-                        streamWriter.Write(data, 0, data.Length);
-                        streamWriter.Flush();
-                    }
-
-                    using (var httpResponse = (HttpWebResponse) request.GetResponse())
-                    {
-                        timer.Stop();
-                        _logger.Info()
-                            .Message(
-                                "Message {message} for channel {channel} has been sent on url {url}",
-                                message.Method, channel.Name, Uri.UnescapeDataString(url)
-                            )
-                            .Property("productId", message.Key)
-                            .Property("statusCode", httpResponse.StatusCode)
-                            .Property("timeTaken", timer.ElapsedMilliseconds)
-                            .Property("messageId", message.Id)
-                            .Property("customerCode", customerCode)
-                            .Write();
-
-                        channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
-                            message.Created, httpResponse.StatusCode.ToString());
-                    }
-
-                    ;
-
-                    service.RemoveMessage(message.Id);
-                }
-                catch (WebException ex)
-                {
-                    timer.Stop();
-
-                    lock (state)
-                    {
-                        state.ErrorsCount++;
-                    }
-
-                    var httpResponse = ex.Response as HttpWebResponse;
-
-                    if (httpResponse != null)
-                    {
-                        _logger.Info()
-                            .Message(
-                                "Message {message} for channel {channel} has been sent on url {url}",
-                                message.Method, channel.Name, Uri.UnescapeDataString(url)
-                            )
-                            .Property("productId", message.Key)
-                            .Property("statusCode", httpResponse.StatusCode)
-                            .Property("timeTaken", timer.ElapsedMilliseconds)
-                            .Property("messageId", message.Id)
-                            .Property("customerCode", customerCode)
-                            .Write();
-
-                        channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
-                            message.Created, httpResponse.StatusCode.ToString());
-                    }
-                    else
-                    {
-                        _logger.Info()
-                            .Message(
-                                "Message {message} for channel {channel} has not been sent on url {url}",
-                                message.Method, channel.Name, Uri.UnescapeDataString(url)
-                            )
-                            .Property("productId", message.Key)
-                            .Property("statusCode", ex.Status)
-                            .Property("timeTaken", timer.ElapsedMilliseconds)
-                            .Property("messageId", message.Id)
-                            .Property("customerCode", customerCode)
-                            .Write();
-
-                        channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
-                            message.Created, ex.Status.ToString());
-                    }
-
-                    _logger.Error().Exception(ex)
-                        .Message(
-                            "Message {message} for channel {channel} has not been sent on url {url}",
-                            message.Method, channel.Name, Uri.UnescapeDataString(url)
-                        )
-                        .Property("productId", message.Key)
-                        .Property("timeTaken", timer.ElapsedMilliseconds)
-                        .Property("messageId", message.Id)
-                        .Property("customerCode", customerCode)                        
-                        .Write();
-                }
-                finally
-                {
-                    semaphore.Release();
-
-                    _logger.Info().Message("Semaphore after Release")
-                        .Property("customerCode", customerCode)
-                        .Property("channel", channel.Name)
-                        .Property("currentCount", semaphore.CurrentCount)
-                        .Property("productId", message.Key)
-                        .Write();
-                }
-            });
+                _logger.Debug().Message("Semaphore after Release")
+                    .Property("customerCode", customerCode)
+                    .Property("channel", channel.Name)
+                    .Property("currentCount", semaphore.CurrentCount)
+                    .Property("productId", message.Key)
+                    .Write();
+            }
         }
 
         private static string GetUrl(string customerCode, string instanceId, NotificationChannel channel,

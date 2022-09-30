@@ -42,6 +42,7 @@ namespace QA.Core.DPC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+            services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<NotificationProperties>(Configuration.GetSection("Properties"));
