@@ -40,7 +40,7 @@
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
     <PackageReference Include="Unity" Version="5.11.10" />
 
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.2.1" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.3.0" />
 
     <PackageReference Include="Unity.Container" Version="5.11.11" />
   </ItemGroup>
