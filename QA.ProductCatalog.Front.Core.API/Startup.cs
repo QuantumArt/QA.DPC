@@ -99,7 +99,7 @@ namespace QA.ProductCatalog.Front.Core.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory factory)
         {
             if (env.IsDevelopment())
                 
@@ -108,7 +108,7 @@ namespace QA.ProductCatalog.Front.Core.API
             }
             else
             {
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
+                app.UseExceptionHandler(new GlobalExceptionHandler().Action);
             }
 
             app.UseMvcWithDefaultRoute();
@@ -122,7 +122,7 @@ namespace QA.ProductCatalog.Front.Core.API
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Front API");
             });
             
-            LogStart(app, loggerFactory);
+            LogStart(app, factory);
         }
         
         private void LogStart(IApplicationBuilder app, ILoggerFactory loggerFactory)

@@ -22,6 +22,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
 
             NLog.LogManager.LoadConfiguration("NLogClient.config");
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
                 
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {

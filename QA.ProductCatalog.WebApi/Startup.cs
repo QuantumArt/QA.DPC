@@ -99,7 +99,7 @@ namespace QA.ProductCatalog.WebApi
             }
             else
             {
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).ApiAction);
+                app.UseExceptionHandler(new GlobalExceptionHandler().ApiAction);
             }
             
             app.UseSwagger();
