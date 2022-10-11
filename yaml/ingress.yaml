@@ -5,7 +5,7 @@ metadata:
   namespace: dpc
 spec:
   rules:
-  - host: dpc-admin.dev.qsupport.ru
+  - host: '||admin_host||'
     http:
       paths:
       - backend:
@@ -19,7 +19,7 @@ metadata:
   namespace: dpc
 spec:
   rules:
-  - host: dpc-api.dev.qsupport.ru
+  - host: '||api_host||'
     http:
       paths:
       - backend:
@@ -33,7 +33,7 @@ metadata:
   namespace: dpc
 spec:
   rules:
-  - host: dpc-notification-sender.dev.qsupport.ru
+  - host: '||notify_host||'
     http:
       paths:
       - backend:
@@ -47,7 +47,7 @@ metadata:
   namespace: dpc
 spec:
   rules:
-  - host: dpc-actions-service.dev.qsupport.ru
+  - host: '||actions_host||'
     http:
       paths:
       - backend:
@@ -61,7 +61,7 @@ metadata:
   namespace: dpc
 spec:
   rules:
-  - host: dpc-front.dev.qsupport.ru
+  - host: '||front_host||'
     http:
       paths:
       - backend:
@@ -75,7 +75,7 @@ metadata:
   namespace: dpc
 spec:
   rules:
-  - host: dpc-search-api.dev.qsupport.ru
+  - host: '||search_host||'
     http:
       paths:
       - backend:
@@ -89,7 +89,7 @@ metadata:
   namespace: dpc
 spec:
   rules:
-  - host: dpc-sync-api.dev.qsupport.ru
+  - host: '||sync_host||'
     http:
       paths:
       - backend:
