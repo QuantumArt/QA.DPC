@@ -2,7 +2,7 @@
 .gitignore
 .dockerignore
 *.Dockerfile
-*.sh
+**/*.sh
 *.md
 **/hosting.json
 **/appsettings.*.json
@@ -11,5 +11,6 @@
 **/obj
 global.json
 yaml
+move
 install
 *.yml
