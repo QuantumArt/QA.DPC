@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: impact
+  namespace: dpc
+  labels:
+    app: impact
+    logging: enabled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: impact
+  template:
+    metadata:
+      labels:
+        app: impact
+    spec:
+      containers:
+      - name: impact
+        image: '||registry||/dpc-impact:||version||'
+        envFrom:
+        - configMapRef:
+            name: impact-config
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: time-config
+          mountPath: /etc/localtime
+          subPathExpr: $(TZ)
+        - name: timezone-config
+          mountPath: /etc/timezone
+          subPath: TZ
+      volumes:
+      - name: time-config
+        hostPath:
+          path: /usr/share/zoneinfo
+      - name: timezone-config
+        configMap: 
+          name: impact-config
+          items:
+          - key: TZ
+            path: TZ
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: impact
+  namespace: dpc
+spec:
+  type: LoadBalancer
+  selector:
+    app: impact
+  ports:
+  - port: 80
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: impact
+  namespace: dpc
+spec:
+  rules:
+  - host: '||host||'
+    http:
+      paths:
+      - backend:
+          serviceName: impact
+          servicePort: 80
+
+

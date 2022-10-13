@@ -48,12 +48,25 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /etc/localtime
-              name: tz-config
+            - name: time-config
+              hostPath:
+                path: /usr/share/zoneinfo
+            - name: timezone-config
+              configMap: 
+                name: dpc-config
+                items:
+                - key: TZ
+                  path: TZ
       volumes:
-        - name: tz-config
+        - name: time-config
           hostPath:
-            path: /usr/share/zoneinfo/Europe/Moscow
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: impact-config
+            items:
+            - key: TZ
+              path: TZ
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -100,12 +113,25 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /etc/localtime
-              name: tz-config
+            - name: time-config
+              hostPath:
+                path: /usr/share/zoneinfo
+            - name: timezone-config
+              configMap: 
+                name: dpc-config
+                items:
+                - key: TZ
+                  path: TZ
       volumes:
-        - name: tz-config
+        - name: time-config
           hostPath:
-            path: /usr/share/zoneinfo/Europe/Moscow
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: impact-config
+            items:
+            - key: TZ
+              path: TZ
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -157,12 +183,25 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /etc/localtime
-              name: tz-config
+            - name: time-config
+              hostPath:
+                path: /usr/share/zoneinfo
+            - name: timezone-config
+              configMap: 
+                name: dpc-config
+                items:
+                - key: TZ
+                  path: TZ
       volumes:
-        - name: tz-config
+        - name: time-config
           hostPath:
-            path: /usr/share/zoneinfo/Europe/Moscow
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: impact-config
+            items:
+            - key: TZ
+              path: TZ
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -205,12 +244,25 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /etc/localtime
-              name: tz-config
+            - name: time-config
+              hostPath:
+                path: /usr/share/zoneinfo
+            - name: timezone-config
+              configMap: 
+                name: dpc-config
+                items:
+                - key: TZ
+                  path: TZ
       volumes:
-        - name: tz-config
+        - name: time-config
           hostPath:
-            path: /usr/share/zoneinfo/Europe/Moscow
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: impact-config
+            items:
+            - key: TZ
+              path: TZ
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -254,12 +306,25 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /etc/localtime
-              name: tz-config
+            - name: time-config
+              hostPath:
+                path: /usr/share/zoneinfo
+            - name: timezone-config
+              configMap: 
+                name: dpc-config
+                items:
+                - key: TZ
+                  path: TZ
       volumes:
-        - name: tz-config
+        - name: time-config
           hostPath:
-            path: /usr/share/zoneinfo/Europe/Moscow
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: impact-config
+            items:
+            - key: TZ
+              path: TZ
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -298,12 +363,25 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /etc/localtime
-              name: tz-config
+            - name: time-config
+              hostPath:
+                path: /usr/share/zoneinfo
+            - name: timezone-config
+              configMap: 
+                name: dpc-config
+                items:
+                - key: TZ
+                  path: TZ
       volumes:
-        - name: tz-config
+        - name: time-config
           hostPath:
-            path: /usr/share/zoneinfo/Europe/Moscow
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: impact-config
+            items:
+            - key: TZ
+              path: TZ
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -347,9 +425,22 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /etc/localtime
-              name: tz-config
+            - name: time-config
+              hostPath:
+                path: /usr/share/zoneinfo
+            - name: timezone-config
+              configMap: 
+                name: dpc-config
+                items:
+                - key: TZ
+                  path: TZ
       volumes:
-        - name: tz-config
+        - name: time-config
           hostPath:
-            path: /usr/share/zoneinfo/Europe/Moscow
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: impact-config
+            items:
+            - key: TZ
+              path: TZ
