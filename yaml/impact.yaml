@@ -21,7 +21,7 @@ spec:
         image: '||registry||/dpc-impact:||version||'
         envFrom:
         - configMapRef:
-            name: impact-config
+          name: impact-config
         ports:
         - containerPort: 80
         volumeMounts:

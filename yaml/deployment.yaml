@@ -19,6 +19,9 @@ spec:
       containers:
         - name: dpc-admin
           image: '||registry||/dpc-admin:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
           env:
             - name: Integration__RestNotificationUrl
               valueFrom:
@@ -89,6 +92,9 @@ spec:
       containers:
         - name: dpc-api
           image: '||registry||/dpc-api:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
           env:
             - name: Integration__RestNotificationUrl
               valueFrom:
@@ -154,6 +160,9 @@ spec:
       containers:
         - name: dpc-notification-sender
           image: '||registry||/dpc-notification-sender:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
           env:
             - name: Integration__DpcWebApiUrl
               valueFrom:
@@ -224,6 +233,9 @@ spec:
       containers:
         - name: dpc-actions-service
           image: '||registry||/dpc-actions-service:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
           env:
             - name: Integration__RestNotificationUrl
               valueFrom:
@@ -285,6 +297,9 @@ spec:
       containers:
         - name: dpc-front
           image: '||registry||/dpc-front:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
           env:
             - name: Integration__ConfigurationServiceUrl
               valueFrom:
@@ -347,6 +362,9 @@ spec:
       containers:
         - name: dpc-search-api
           image: '||registry||/dpc-highload-front:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
           env:
             - name: Integration__ConfigurationServiceUrl
               valueFrom:
@@ -404,6 +422,9 @@ spec:
       containers:
         - name: dpc-sync-api
           image: '||registry||/dpc-highload-front:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
           env:
             - name: Integration__ConfigurationServiceUrl
               valueFrom:
