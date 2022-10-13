@@ -3,6 +3,7 @@
 .dockerignore
 *.Dockerfile
 **/*.sh
+**/*.yaml
 *.md
 **/hosting.json
 **/appsettings.*.json
@@ -10,7 +11,5 @@
 **/bin
 **/obj
 global.json
-yaml
-move
 install
 *.yml
