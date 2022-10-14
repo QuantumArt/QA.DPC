@@ -51,15 +51,12 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: time-config
-              hostPath:
-                path: /usr/share/zoneinfo
-            - name: timezone-config
-              configMap: 
-                name: dpc-config
-                items:
-                - key: TZ
-                  path: TZ
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
       volumes:
         - name: time-config
           hostPath:
@@ -119,15 +116,12 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: time-config
-              hostPath:
-                path: /usr/share/zoneinfo
-            - name: timezone-config
-              configMap: 
-                name: dpc-config
-                items:
-                - key: TZ
-                  path: TZ
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
       volumes:
         - name: time-config
           hostPath:
@@ -192,15 +186,12 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: time-config
-              hostPath:
-                path: /usr/share/zoneinfo
-            - name: timezone-config
-              configMap: 
-                name: dpc-config
-                items:
-                - key: TZ
-                  path: TZ
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
       volumes:
         - name: time-config
           hostPath:
@@ -252,19 +243,15 @@ spec:
                 configMapKeyRef:
                   name: dpc-config
                   key: CONFIGURATION_SERVICE_TOKEN
-
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: time-config
-              hostPath:
-                path: /usr/share/zoneinfo
-            - name: timezone-config
-              configMap: 
-                name: dpc-config
-                items:
-                - key: TZ
-                  path: TZ
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
       volumes:
         - name: time-config
           hostPath:
@@ -321,15 +308,12 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: time-config
-              hostPath:
-                path: /usr/share/zoneinfo
-            - name: timezone-config
-              configMap: 
-                name: dpc-config
-                items:
-                - key: TZ
-                  path: TZ
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
       volumes:
         - name: time-config
           hostPath:
@@ -381,15 +365,12 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: time-config
-              hostPath:
-                path: /usr/share/zoneinfo
-            - name: timezone-config
-              configMap: 
-                name: dpc-config
-                items:
-                - key: TZ
-                  path: TZ
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
       volumes:
         - name: time-config
           hostPath:
@@ -446,15 +427,12 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: time-config
-              hostPath:
-                path: /usr/share/zoneinfo
-            - name: timezone-config
-              configMap: 
-                name: dpc-config
-                items:
-                - key: TZ
-                  path: TZ
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
       volumes:
         - name: time-config
           hostPath:
