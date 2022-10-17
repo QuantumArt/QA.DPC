@@ -63,7 +63,7 @@ spec:
             path: /usr/share/zoneinfo
         - name: timezone-config
           configMap: 
-            name: impact-config
+            name: dpc-config
             items:
             - key: TZ
               path: TZ
@@ -128,7 +128,7 @@ spec:
             path: /usr/share/zoneinfo
         - name: timezone-config
           configMap: 
-            name: impact-config
+            name: dpc-config
             items:
             - key: TZ
               path: TZ
@@ -198,7 +198,7 @@ spec:
             path: /usr/share/zoneinfo
         - name: timezone-config
           configMap: 
-            name: impact-config
+            name: dpc-config
             items:
             - key: TZ
               path: TZ
@@ -258,7 +258,7 @@ spec:
             path: /usr/share/zoneinfo
         - name: timezone-config
           configMap: 
-            name: impact-config
+            name: dpc-config
             items:
             - key: TZ
               path: TZ
@@ -320,7 +320,7 @@ spec:
             path: /usr/share/zoneinfo
         - name: timezone-config
           configMap: 
-            name: impact-config
+            name: dpc-config
             items:
             - key: TZ
               path: TZ
@@ -377,7 +377,7 @@ spec:
             path: /usr/share/zoneinfo
         - name: timezone-config
           configMap: 
-            name: impact-config
+            name: dpc-config
             items:
             - key: TZ
               path: TZ
@@ -439,7 +439,7 @@ spec:
             path: /usr/share/zoneinfo
         - name: timezone-config
           configMap: 
-            name: impact-config
+            name: dpc-config
             items:
             - key: TZ
               path: TZ

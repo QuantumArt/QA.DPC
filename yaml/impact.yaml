@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: impact
+  name: dpc-impact-api
   namespace: dpc
   labels:
-    app: impact
+    app: dpc-impact-api
     logging: enabled
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: impact
+      app: dpc-impact-api
   template:
     metadata:
       labels:
-        app: impact
+        app: dpc-impact-api
     spec:
       containers:
-      - name: impact
+      - name: dpc-impact-api
         image: '||registry||/dpc-impact:||version||'
         envFrom:
         - configMapRef:
-            name: impact-config
+            name: dpc-impact-config
         ports:
         - containerPort: 80
         volumeMounts:
@@ -37,7 +37,7 @@ spec:
           path: /usr/share/zoneinfo
       - name: timezone-config
         configMap: 
-          name: impact-config
+          name: dpc-impact-config
           items:
           - key: TZ
             path: TZ
@@ -46,20 +46,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: impact
+  name: dpc-impact-api
   namespace: dpc
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
-    app: impact
+    app: dpc-impact-api
   ports:
   - port: 80
+    targetPort: 80
 
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
-  name: impact
+  name: dpc-impact-api
   namespace: dpc
 spec:
   rules:
@@ -67,7 +68,7 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: impact
+          serviceName: dpc-impact-api
           servicePort: 80
 
 
