@@ -62,6 +62,8 @@ kind: Ingress
 metadata:
   name: dpc-impact-api
   namespace: dpc
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"  
 spec:
   rules:
   - host: '||host||'

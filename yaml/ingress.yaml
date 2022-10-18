@@ -17,6 +17,8 @@ kind: Ingress
 metadata:
   name: dpc-api
   namespace: dpc
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   rules:
   - host: '||api_host||'
@@ -73,6 +75,8 @@ kind: Ingress
 metadata:
   name: dpc-search-api
   namespace: dpc
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   rules:
   - host: '||search_host||'
