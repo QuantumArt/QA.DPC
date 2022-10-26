@@ -108,7 +108,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             }
             else
             {
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory, ErrorPage).Action);
+                app.UseExceptionHandler(new GlobalExceptionHandler(ErrorPage).Action);
             }
 
             app.UseStaticFiles();

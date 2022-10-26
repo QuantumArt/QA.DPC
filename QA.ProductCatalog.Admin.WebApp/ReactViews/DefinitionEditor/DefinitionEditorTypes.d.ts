@@ -6,8 +6,6 @@
   getDefinitionLevelUrl: string;
   getInitialNodeUrl: string;
   editUrl: string;
-  editOldUrl: string;
-  saveFieldOldUrl: string;
   saveFieldUrl: string;
   saveContentUrl: string;
   locale: string;

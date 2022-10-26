@@ -4,7 +4,6 @@ using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using QA.Core.DPC.QP.Exceptions;
 using Unity;
@@ -12,17 +11,18 @@ using Microsoft.Extensions.DependencyInjection;
 using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.QP.Models;
 using System.Linq;
+using NLog;
+using NLog.Fluent;
 
 namespace QA.DPC.Core.Helpers
 {
     public class GlobalExceptionHandler
     {
-        private readonly ILoggerFactory _factory;
         private readonly string _errorPage;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
-        public GlobalExceptionHandler(ILoggerFactory factory, string errorPage = null)
+        public GlobalExceptionHandler(string errorPage = null)
         {
-            _factory = factory;
             _errorPage = errorPage;
         }
 
@@ -35,10 +35,13 @@ namespace QA.DPC.Core.Helpers
                 var ex = context.Features.Get<IExceptionHandlerFeature>();
                 if (ex != null)
                 {
-                    var logger = _factory.CreateLogger("Global Exception Handling");
-                    LoggerExtensions.LogError(logger, new EventId(1), ex.Error, "Unhandled exception occurs");
+                    Logger.Error()
+                        .Message("Unhandled exception occurs")
+                        .Exception(ex.Error)
+                        .Property("httpContext", context)
+                        .Write();
 
-                    if (IsConsolidationError(options, out CustomerState state))
+                    if (IsConsolidationError(options, context, out CustomerState state))
                     {
                         var url = $"{context.Request.PathBase}{_errorPage}?state={state}";
                         context.Response.Redirect(url);
@@ -62,15 +65,12 @@ namespace QA.DPC.Core.Helpers
                 var ex = context.Features.Get<IExceptionHandlerFeature>();
                 if (ex != null)
                 {
-                    var logger = _factory.CreateLogger("Global Exception Handling");
-                    
                     object err;
 
-                    if (IsConsolidationError(options, out CustomerState state))
+                    if (IsConsolidationError(options, context, out CustomerState state))
                     {
                         context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                         var msg = $"Customer code is not available because of its state {state}";
-                        LoggerExtensions.LogError(logger, new EventId(1), ex.Error, msg);
                         err = new
                         {
                             Message = msg,
@@ -78,7 +78,11 @@ namespace QA.DPC.Core.Helpers
                     }
                     else
                     {
-                        LoggerExtensions.LogError(logger, new EventId(1), ex.Error, "Unhandled exception occurs");
+                        Logger.Error()
+                            .Message("Unhandled exception occurs")
+                            .Exception(ex.Error)
+                            .Property("httpRequest", context.Request)
+                            .Write();
 
                         err = new
                         {
@@ -92,36 +96,50 @@ namespace QA.DPC.Core.Helpers
             });
         }
 
-        private bool IsConsolidationError(IApplicationBuilder options, out CustomerState customerState)
+        private bool IsConsolidationError(IApplicationBuilder options, HttpContext context, out CustomerState customerState)
         {
             var provider = options.ApplicationServices.GetService<IIdentityProvider>();
             var customerCode = provider.Identity?.CustomerCode;
             
             if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key)
             {
+                Logger.Debug()
+                    .Message("Customer code is not defined")
+                    .Property("httpRequest", context.Request)
+                    .Write();
                 customerState = CustomerState.NotDefined;
                 return false;
 
             }
+
+            var factory = options.ApplicationServices.GetService<IFactory>();
+            if (factory.NotConsolidatedCodes.Contains(customerCode))
+            {
+                Logger.Debug()
+                    .Message("Customer code {customerCode} is not consolidated", customerCode)
+                    .Property("httpRequest", context.Request)
+                    .Write();
+                customerState = CustomerState.NotRegistered;
+            }
+            else if (factory.CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
+            {
+                Logger.Debug()
+                    .Message("Customer code {customerCode} is not active", customerCode)
+                    .Property("httpRequest", context.Request)
+                    .Write();
+                customerState = customerContext.State;
+                return customerContext.State != CustomerState.Active;
+            }
             else
             {
-                var factory = options.ApplicationServices.GetService<IFactory>();
-                if (factory.NotConsolidatedCodes.Contains(customerCode))
-                {
-                    customerState = CustomerState.NotRegistered;
-                }
-                else if (factory.CustomerMap.TryGetValue(customerCode, out CustomerContext context))
-                {
-                    customerState = context.State;
-                    return context.State != CustomerState.Active;
-                }
-                else
-                {
-                    customerState = CustomerState.NotFound;
-                }
-
-                return true;
+                Logger.Debug()
+                    .Message("Customer code {customerCode} is not found", customerCode)
+                    .Property("httpRequest", context.Request)
+                    .Write();
+                customerState = CustomerState.NotFound;
             }
+
+            return true;
 
         }
     }

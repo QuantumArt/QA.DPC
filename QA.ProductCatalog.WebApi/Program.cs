@@ -23,6 +23,7 @@ namespace QA.ProductCatalog.WebApi
         public static void Main(string[] args)
         {
             _container = new UnityContainer();
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             NLog.LogManager.LoadConfiguration("NLogClient.config");
             BuildWebHost(args).Build().Run();
         }

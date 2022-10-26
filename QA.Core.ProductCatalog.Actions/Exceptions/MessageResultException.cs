@@ -24,7 +24,6 @@ namespace QA.Core.ProductCatalog.Actions.Exceptions
 			MessageResult = (MessageResult)info.GetValue(MessageResultKey, typeof(MessageResult));
 		}
 
-		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue(MessageResultKey, MessageResult, typeof(MessageResult));

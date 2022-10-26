@@ -74,7 +74,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -82,7 +82,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             }
             else
             {
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
+                app.UseExceptionHandler(new GlobalExceptionHandler().Action);
             }
 
             app.UseMvc();

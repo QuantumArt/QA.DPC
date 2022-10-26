@@ -42,6 +42,7 @@ namespace QA.Core.DPC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+            services.AddHttpClient();
             services.AddHttpContextAccessor();
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<NotificationProperties>(Configuration.GetSection("Properties"));
@@ -81,7 +82,7 @@ namespace QA.Core.DPC
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -89,7 +90,7 @@ namespace QA.Core.DPC
             }
             else
             {
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
+                app.UseExceptionHandler(new GlobalExceptionHandler().Action);
             }
             
             app.UseSwagger();

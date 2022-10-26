@@ -251,12 +251,13 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             using (var context = TaskRunnerEntities.Get(_customer))
             {
+                var intState = (int?) state;
                 var result =
                     context.Tasks.Include("TaskState")
                         .OrderByDescending(x => x.ID)
                         .FirstOrDefault(
                             x => (x.UserID == userId || !userId.HasValue)
-                                 && (x.StateID == (byte?) state || !state.HasValue)
+                                 && (x.StateID == intState || !intState.HasValue)
                                  && (x.Name == key || key == null));
 
                 if (result != null)
