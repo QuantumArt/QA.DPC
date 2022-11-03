@@ -245,6 +245,7 @@ _Pvt_Extensions
 *.sln.iml
 
 QA.ProductCatalog.Admin.WebApp/wwwroot/js/bundles
+QA.ProductCatalog.Admin.WebApp/wwwroot/css/blueprint.min.css
 
 HighloadAPI/src
 **/appsettings.*.json
