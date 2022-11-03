@@ -24,54 +24,42 @@ namespace QA.Core.DPC.Formatters.Services
 
         public async Task Write(Stream stream, IEnumerable<Article> products)
         {
-            using (TextWriter sw = new StreamWriter(stream))
-            using (JsonWriter writer = new JsonTextWriter(sw))
-            {                
-                writer.WriteStartArray();
+            await using TextWriter sw = new StreamWriter(stream, leaveOpen: true);
+            using JsonWriter writer = new JsonTextWriter(sw) { CloseOutput = false };
 
-                foreach(var product in products)
-                {
-                    using (var productStream = new MemoryStream())
-                    {
-                        await _formatter.Write(productStream, product);
+            await writer.WriteStartArrayAsync();
+            await writer.FlushAsync();
 
-                        productStream.Position = 0;
-                            
-                        using (var sr = new StreamReader(productStream))
-                        using (var reader = new JsonTextReader(sr))
-                        {
-                            await writer.WriteTokenAsync(reader);
-                            await writer.FlushAsync();
-                        }
-                    }                    
-                }
-                                
-                writer.WriteEndArray();
-                writer.Flush();
+            foreach (var product in products)
+            {
+                await _formatter.Write(stream, product);
             }
+
+            await writer.WriteEndArrayAsync();
+            await writer.FlushAsync();
         }
 
         public string Serialize(IEnumerable<Article> products)
         {
             using (var sw = new StringWriter())
             using (var writer = new JsonTextWriter(sw))
-            {                
+            {
                 writer.WriteStartArray();
 
-                foreach(var product in products)
+                foreach (var product in products)
                 {
                     var data = _formatter.Serialize(product);
                     using (var sr = new StringReader(data))
                     using (var reader = new JsonTextReader(sr))
                     {
                         writer.WriteToken(reader);
-                        writer.Flush();                    
+                        writer.Flush();
                     }
                 }
-                                
+
                 writer.WriteEndArray();
                 writer.Flush();
-                
+
                 return sw.ToString();
             }
 

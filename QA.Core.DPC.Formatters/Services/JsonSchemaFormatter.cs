@@ -27,11 +27,9 @@ namespace QA.Core.DPC.Formatters.Services
 		public async Task Write(Stream stream, Content schema)
 		{
 			var data = Serialize(schema);
-			using (var writer = new StreamWriter(stream))
-			{
-				await writer.WriteAsync(data);
-				await writer.FlushAsync();
-			}
+			await using var writer = new StreamWriter(stream, leaveOpen: true);
+			await writer.WriteAsync(data);
+			await writer.FlushAsync();
 		}
 
 		public string Serialize(Content schema)

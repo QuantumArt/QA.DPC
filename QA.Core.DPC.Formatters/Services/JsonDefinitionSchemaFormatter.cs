@@ -52,11 +52,28 @@ namespace QA.Core.DPC.Formatters.Services
             throw new NotImplementedException();
         }
 
-        public Task Write(Stream stream, Content product)
+        public async Task Write(Stream stream, Content product)
         {
-            var jObject = new JObject();
+            var jObject = ConvertToJsonObject(product);
+            await WriteAsync(stream, jObject);
+        }
 
-            jObject["Hash"] = $"{product.GetHashCode()}";
+        public string Serialize(Content product)
+        {
+            using var memoryStream = new MemoryStream();
+            var jObject = ConvertToJsonObject(product);
+            Write(memoryStream, jObject);
+
+            return Encoding.UTF8.GetString(memoryStream.ToArray());
+        }
+
+        private JObject ConvertToJsonObject(Content product)
+        {
+            var jObject = new JObject
+            {
+                ["Hash"] = $"{product.GetHashCode()}"
+            };
+
             var fieldService = _serviceFactory.Resolve<IFieldService>("FieldServiceAdapterAlwaysAdmin");
             var contentService = _serviceFactory.Resolve<IContentService>("ContentServiceAdapterAlwaysAdmin");
 
@@ -65,25 +82,24 @@ namespace QA.Core.DPC.Formatters.Services
                 jObject["Content"] = VisitDefinition(product, new List<Content>(), new Context(fieldService, contentService, TreatClassifiersAsBackwardFields));
             }
 
-            var textWriter = new StreamWriter(stream);
-            var writer = new JsonTextWriter(textWriter);
-            writer.Formatting = Newtonsoft.Json.Formatting.Indented;
-            jObject.WriteTo(writer);
-
-            textWriter.Flush();
-
-            return Task.CompletedTask;
+            return jObject;
         }
 
-        public string Serialize(Content product)
+        private static async Task WriteAsync(Stream stream, JObject jsonContent)
         {
-            using (var ms = new MemoryStream())
-            {
-                Write(ms, product);
-                return Encoding.UTF8.GetString(ms.ToArray());
-            }
+            await using var textWriter = new StreamWriter(stream, leaveOpen: true);
+            using var writer = new JsonTextWriter(textWriter) { CloseOutput = false };
+            writer.Formatting = Newtonsoft.Json.Formatting.Indented;
+            await jsonContent.WriteToAsync(writer);
         }
 
+        private static void Write(Stream stream, JObject jsonContent)
+        {
+            using var textWriter = new StreamWriter(stream, leaveOpen: true);
+            using var writer = new JsonTextWriter(textWriter) { CloseOutput = false };
+            writer.Formatting = Newtonsoft.Json.Formatting.Indented;
+            jsonContent.WriteTo(writer);
+        }
 
         private static JObject VisitDefinition(Content content, List<Content> visited, Context context)
         {

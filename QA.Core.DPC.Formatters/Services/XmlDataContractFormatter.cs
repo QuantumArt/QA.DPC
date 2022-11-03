@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
+using QA.ProductCatalog.Infrastructure;
 using System.IO;
-using System.Net.Http.Formatting;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Formatters.Services
 {

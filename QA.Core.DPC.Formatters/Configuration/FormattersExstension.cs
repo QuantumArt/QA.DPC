@@ -55,7 +55,7 @@ namespace QA.Core.DPC.Formatters.Configuration
 		{
 			string data = formatter.Serialize(product, filter, includeRegionTags);
 
-            var writer = new StreamWriter(stream);
+            await using var writer = new StreamWriter(stream, leaveOpen: true);
 			await writer.WriteAsync(data);
 			await writer.FlushAsync();
 		}

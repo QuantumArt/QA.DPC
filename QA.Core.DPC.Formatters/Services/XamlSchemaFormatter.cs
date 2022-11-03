@@ -11,12 +11,14 @@ namespace QA.Core.DPC.Formatters.Services
 		#region IFormatter implementation
 		public Task<Content> Read(Stream stream)
 		{
-			return Task.Run<Content>(() => (Content)XamlConfigurationParser.LoadFrom(stream));
+			return Task.FromResult((Content)XamlConfigurationParser.LoadFrom(stream));
 		}
 
-		public Task Write(Stream stream, Content product)
+		public async Task Write(Stream stream, Content product)
 		{
-			return Task.Run(() => XamlConfigurationParser.SaveTo(stream, product));
+			using var memoryStream = new MemoryStream();
+			XamlConfigurationParser.SaveTo(memoryStream, product);
+			await stream.CopyToAsync(memoryStream);
 		}
 
 		public string Serialize(Content product)
