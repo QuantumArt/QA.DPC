@@ -10,5 +10,6 @@ namespace QA.Core.DPC.Loader
         JSchema GetSchema(Content definition, bool forList = false, bool includeRegionTags = false);
 
 	    Article DeserializeProduct(string productJson, Content definition);
-	}
+        string GetTypeName(string productJson);
+    }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -15,11 +10,16 @@ using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
 using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
+using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
 using Field = QA.Core.Models.Configuration.Field;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
-using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
 using IHttpClientFactory = System.Net.Http.IHttpClientFactory;
 
 namespace QA.Core.DPC.Loader
@@ -37,7 +37,8 @@ namespace QA.Core.DPC.Loader
         private readonly VirtualFieldContextService _virtualFieldContextService;
         private readonly IRegionTagReplaceService _regionTagReplaceService;
         private readonly LoaderProperties _loaderProperties;
-        private readonly IHttpClientFactory _factory;        
+        private readonly IHttpClientFactory _factory;
+        private readonly JsonProductServiceSettings _settings;
 
         public JsonProductService(
             IConnectionProvider connectionProvider,
@@ -47,8 +48,8 @@ namespace QA.Core.DPC.Loader
             VirtualFieldContextService virtualFieldContextService,
             IRegionTagReplaceService regionTagReplaceService,
             IOptions<LoaderProperties> loaderProperties,
-            IHttpClientFactory factory            
-            )
+            IHttpClientFactory factory,
+            JsonProductServiceSettings settings)
         {
             _logger = logger;
             _contentService = contentService;
@@ -61,6 +62,18 @@ namespace QA.Core.DPC.Loader
             _regionTagReplaceService = regionTagReplaceService;
             _loaderProperties = loaderProperties.Value;
             _factory = factory;
+            _settings = settings;
+        }
+
+        public string GetTypeName(string productJson)
+        {
+            var json = JsonConvert.DeserializeObject<JObject>(productJson);
+
+            var typeNode = _settings.IsWrapped
+                ? json.SelectToken("product.Type")
+                : json.SelectToken("type");
+
+            return typeNode?.Value<string>();
         }
 
         public Article DeserializeProduct(string productJson, Content definition)
@@ -70,10 +83,13 @@ namespace QA.Core.DPC.Loader
 
         public Article DeserializeProduct(JObject rootArticleDictionary, Content definition)
         {
-            var product = rootArticleDictionary.SelectToken("product");
-            if (product != null)
+            if (_settings.IsWrapped)
             {
-                rootArticleDictionary = (JObject)product;
+                var product = rootArticleDictionary.SelectToken(_settings.WrapperName);
+                if (product != null)
+                {
+                    rootArticleDictionary = (JObject)product;
+                }
             }
 
             var productDeserializer = ObjectFactoryBase.Resolve<IProductDeserializer>();
@@ -83,15 +99,22 @@ namespace QA.Core.DPC.Loader
 
         public string SerializeProduct(Article article, IArticleFilter filter, bool includeRegionTags = false)
         {
+            if (!_settings.IsWrapped && includeRegionTags)
+            {
+                _logger.Info("Warning! Inclusion of region tags not supported for unwrapped json. " +
+                    "Specify JsonProductSettings.WrapperName or serialize with argument includeRegionTags = false.");
+                includeRegionTags = false;
+            }
+
             var sw = new Stopwatch();
             sw.Start();
             Dictionary<string, object> convertedArticle = ConvertArticle(article, filter);
             sw.Stop();
             _logger.Debug("Product {1} conversion took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
-            
+
             sw.Reset();
             sw.Start();
-            string productJson = JsonConvert.SerializeObject(convertedArticle, Formatting.Indented);
+            string productJson = JsonConvert.SerializeObject(convertedArticle, _settings.SerializerSettings);
             sw.Stop();
             _logger.Debug("Product {1} serializing took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
 
@@ -117,12 +140,14 @@ namespace QA.Core.DPC.Loader
             }
             else
             {
-                result = $"{{ \"{ProductProp}\" : {productJson} }}";
+                result = _settings.IsWrapped
+                    ? productJson
+                    : $"{{ \"{ProductProp}\" : {productJson} }}";
             }
 
             return result;
         }
-        
+
         private class SchemaContext
         {
             /// <summary>
@@ -165,7 +190,7 @@ namespace QA.Core.DPC.Loader
                 forList: false,
                 includeRegionTags: false,
                 excludeVirtualFields: true);
-            
+
             return JsonConvert.SerializeObject(schema);
         }
 

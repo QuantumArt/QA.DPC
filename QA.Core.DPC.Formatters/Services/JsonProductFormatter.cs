@@ -56,7 +56,7 @@ namespace QA.Core.DPC.Formatters.Services
 
                 if (slug == null && version == null)
                 {
-                    var type = GetTypeName(line);
+                    var type = _jsonProductService.GetTypeName(line);
                     var contentId = _productContentResolver.GetContentIdByType(type);
                     definition = _contentDefinitionService.GetDefinitionForContent(0, contentId);
                 }
@@ -69,12 +69,6 @@ namespace QA.Core.DPC.Formatters.Services
             }
         }
 
-        private string GetTypeName(string product)
-        {
-            var json = JsonConvert.DeserializeObject<JObject>(product);
-            return json.SelectToken("product.Type")?.Value<string>();
-        }
-        
         public async Task Write(Stream stream, Article product)
 		{
 			var articleFilter = (IArticleFilter)_httpContext.Items["ArticleFilter"];
