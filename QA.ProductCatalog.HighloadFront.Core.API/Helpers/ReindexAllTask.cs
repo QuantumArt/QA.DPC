@@ -37,7 +37,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 {
                     if (_importer.ValidateInstance(language, state))
                     {
-                        _manager.DeleteAllASync(language, state, _stores).Wait();
+                        var result = _manager.DeleteAllASync(language, state, _stores).Result;
+
+                        if (!result.Succeeded)
+                        {
+                            executionContext.Result = ActionTaskResult.Error("Unable to delete or create index.");
+                            return;
+                        }
+
                         _importer.ImportAsync(executionContext, language, state, _stores).Wait();
                     }
                     else

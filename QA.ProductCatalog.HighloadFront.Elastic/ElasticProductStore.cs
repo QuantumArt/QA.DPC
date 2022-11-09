@@ -56,6 +56,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return type;
         }
 
+        protected virtual string BuildRowMetadata(string name, string type, string id)
+        {
+            return $"{{\"index\":{{\"_index\":\"{name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}";
+        }
+
         public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products, string language, string state)
         {
             if (products == null) throw new ArgumentNullException(nameof(products));
@@ -81,8 +86,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 }
 
                 var json = JsonConvert.SerializeObject(p, DateTimeConverter);
-
-                return $"{{\"index\":{{\"_index\":\"{index.Name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}\n{json}\n";
+                var metadata = BuildRowMetadata(index.Name, type, id);
+                return $"{metadata}\n{json}\n";
             });
 
             if (failedResult.Any()) return SonicResult.Failed(failedResult.ToArray());
@@ -218,7 +223,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             string type = GetType(product);
             var client = Configuration.GetElasticClient(language, state);
             return await client.DocumentExistsAsync(id, type);
-            
         }
 
         public async Task<SonicResult> ResetAsync(string language, string state)
