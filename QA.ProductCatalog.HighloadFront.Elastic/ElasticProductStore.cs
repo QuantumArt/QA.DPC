@@ -561,6 +561,16 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return (isSeparated) ? MatchPhrases(field, values) : MatchPhrase(field, value);
         }
 
+        protected string[] GetDynamicDateFormatsFromConfig(string key)
+        {
+            if (!Options.DynamicDateFormats.TryGetValue(key, out string[] dateFormats))
+            {
+                throw new InvalidOperationException($"Unable to find {key} date formats in configuration.");
+            }
+
+            return dateFormats;
+        }
+
         private static bool IsSeparated(string value, string separator)
         {
             return !string.IsNullOrEmpty(separator) && value.Contains(separator);

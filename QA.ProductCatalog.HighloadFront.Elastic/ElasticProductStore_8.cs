@@ -33,7 +33,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         protected override JObject GetMapping(string type, string[] fields)
         {
-            var formats = new JArray(Options.DynamicDateFormats);
+            var formats = new JArray(GetDynamicDateFormatsFromConfig("Elastic8"));
             var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
             templates.Add(GetTextTemplate());
 
