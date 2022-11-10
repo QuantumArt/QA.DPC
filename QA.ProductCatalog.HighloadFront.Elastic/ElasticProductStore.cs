@@ -128,10 +128,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
+        public virtual async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
-            return await client.FindSourceByIdAsync(options.Id.ToString(), options?.PropertiesFilter?.ToArray());
+            return await client.FindSourceByIdAsync(options.Id, "_all", "_source", options?.PropertiesFilter?.ToArray());
         }
 
 

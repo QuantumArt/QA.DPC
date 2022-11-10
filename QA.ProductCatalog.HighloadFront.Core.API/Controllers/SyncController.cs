@@ -45,7 +45,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return BadRequest($"Unable to create/update product {id}. This is read-only instance.");
             }
 
-
             Logger.Info("Query received for creating/updating product: {id}", id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))

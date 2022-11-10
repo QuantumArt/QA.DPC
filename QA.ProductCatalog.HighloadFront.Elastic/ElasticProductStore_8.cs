@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Options;
@@ -38,6 +39,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 new JProperty("dynamic_date_formats", formats),
                 new JProperty("dynamic_templates", templates)
             );
+        }
+
+        public override async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        {
+            var q = GetQuery(options).ToString();
+            var client = Configuration.GetElasticClient(language, state);
+            return await client.SearchAsync(string.Empty, q);
+        }
+
+        public override async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            return await client.FindSourceByIdAsync(options.Id, "_source", string.Empty, options?.PropertiesFilter?.ToArray());
         }
     }
 }
