@@ -96,9 +96,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }         
         }
 
-        public async Task<string> FindSourceByIdAsync(int id, string operation, string type, string[] filters)
+        public async Task<string> FindSourceByIdAsync(string operation, string type, string[] filters)
         {
-            var esparams = CreateElasticRequestParams(HttpMethod.Get, $"{operation}/{id}", type);
+            var esparams = CreateElasticRequestParams(HttpMethod.Get, operation, type);
             if (filters != null)
             {
                 esparams.UrlParams.Add("_source_include", String.Join(",", filters));
@@ -120,9 +120,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(eparams, json);
         }
 
-        public async Task<string> UpdateAsync(string id, string type, string json)
+        public async Task<string> UpdateAsync(string operation, string type, string json)
         {
-            var eparams = CreateElasticRequestParams(HttpMethod.Post, $"{id}/_update", type);
+            var eparams = CreateElasticRequestParams(HttpMethod.Post, operation, type);
             return await QueryAsync(eparams, json);
         }
 

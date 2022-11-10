@@ -131,9 +131,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public virtual async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
-            return await client.FindSourceByIdAsync(options.Id, "_all", "_source", options?.PropertiesFilter?.ToArray());
+            return await client.FindSourceByIdAsync( $"{options.Id}/_source", "_all", options?.PropertiesFilter?.ToArray());
         }
-
 
         public async Task<SonicResult> CreateAsync(JObject product, string language, string state)
         {
@@ -164,7 +163,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         }
 
-        public async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
+        public virtual async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
         {
             var id = GetId(product);
             if (id == null)
@@ -185,7 +184,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                await client.UpdateAsync(id, type, json);
+                await client.UpdateAsync($"{id}/_update", type, json);
                 return SonicResult.Success;
             }
             catch (Exception e)

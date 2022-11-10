@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Options;
 
@@ -51,7 +53,30 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public override async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
-            return await client.FindSourceByIdAsync(options.Id, "_source", string.Empty, options?.PropertiesFilter?.ToArray());
+            return await client.FindSourceByIdAsync($"_source/{options.Id}", string.Empty, options?.PropertiesFilter?.ToArray());
+        }
+
+        public override async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
+        {
+            var id = GetId(product);
+            if (id == null)
+            {
+                return SonicResult.Failed(SonicErrorDescriber
+                    .StoreFailure("Product has no id"));
+            }
+
+            var json = JsonConvert.SerializeObject(product);
+            var client = Configuration.GetElasticClient(language, state);
+
+            try
+            {
+                await client.UpdateAsync($"{id}/_update", string.Empty, json);
+                return SonicResult.Success;
+            }
+            catch (Exception e)
+            {
+                return SonicResult.Failed(SonicErrorDescriber.StoreFailure(e.Message, e));
+            }
         }
     }
 }
