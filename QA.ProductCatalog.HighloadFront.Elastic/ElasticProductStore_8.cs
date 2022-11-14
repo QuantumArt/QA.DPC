@@ -24,7 +24,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var indexSettings = new JObject(
                 new JProperty("settings", new JObject(
                     new JProperty("max_result_window", Options.MaxResultWindow),
-                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit)
+                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit),
+                    GetIndexAnalyzers().First
                 )),
                 new JProperty("mappings", GetMapping(string.Empty, Options.NotAnalyzedFields))
             );
@@ -35,6 +36,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var formats = new JArray(GetDynamicDateFormatsFromConfig("Elastic8"));
             var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+            templates = AddEdgeNgramTemplates(templates, type);
             templates.Add(GetTextTemplate());
 
             return new JObject(

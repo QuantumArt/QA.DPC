@@ -10,6 +10,7 @@ using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using Newtonsoft.Json.Converters;
+using Quantumart.QP8.BLL.Services.MultistepActions.Csv;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -249,11 +250,70 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var indexSettings = new JObject(
                 new JProperty("settings", new JObject(
                     new JProperty("max_result_window", Options.MaxResultWindow),
-                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit)
+                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit),
+                    new JProperty("index", GetIndexAnalyzers())
                 )),
                 new JProperty("mappings", GetMappings(Options.Types, Options.NotAnalyzedFields))
             );
             return indexSettings;
+        }
+
+        protected virtual JObject GetIndexAnalyzers()
+        {
+            JObject analysis = new()
+            {
+                GetAnalyzers(),
+                GetTokenizers()
+            };
+
+            return new JObject(new JProperty("analysis", analysis));
+        }
+
+        protected virtual JProperty GetTokenizers()
+        {
+            JObject tokenizers = new()
+            {
+                GetEdgeNgramTokenizer()
+            };
+
+            return new JProperty("tokenizer",
+                tokenizers);
+        }
+
+        protected virtual JProperty GetEdgeNgramTokenizer()
+        {
+            return new JProperty("edge_ngram_tokenizer",
+                new JObject (new JProperty("type", "edge_ngram"),
+                new JProperty("min_gram", 3),
+                new JProperty("max_gram", 20),
+                new JProperty("token_chars", new JArray("letter", "digit"))));
+        }
+
+        protected virtual JProperty GetAnalyzers()
+        {
+            JObject analyzers = new()
+            {
+                GetEdgeNgramAnalyzer(),
+                GetEdgeNgramSearchAnalyzer()
+            };
+
+            return new JProperty("analyzer", analyzers);
+        }
+
+        protected virtual JProperty GetEdgeNgramAnalyzer()
+        {
+            return new JProperty("edge_ngram_analyzer", 
+                new JObject(
+                    new JProperty("filter", new JArray("lowercase")),
+                    new JProperty("type", "custom"),
+                    new JProperty("tokenizer", "edge_ngram_tokenizer")));
+        }
+
+        protected virtual JProperty GetEdgeNgramSearchAnalyzer()
+        {
+            return new JProperty("edge_ngram_search_analyzer",
+                new JObject(
+                    new JProperty("tokenizer", "lowercase")));
         }
 
         public virtual async Task<string> SearchAsync(ProductsOptions options, string language, string state)
@@ -312,15 +372,44 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             );
         }
 
+        protected JObject GetEdgeNgramTemplate(string type, string field)
+        {
+            return new JObject(
+                new JProperty($"edge_ngram_{type}_{field}", new JObject(
+                    new JProperty("match_mapping_type", "string"),
+                    new JProperty("match", field),
+                    new JProperty("mapping", new JObject(
+                        new JProperty("type", "text"),
+                        new JProperty("analyzer", "edge_ngram_analyzer"),
+                        new JProperty("search_analyzer", "edge_ngram_search_analyzer")
+                        ))
+                    ))
+                );
+        }
+
         protected virtual JObject GetMapping(string type, string[] fields)
         {
             var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+            templates = AddEdgeNgramTemplates(templates, type);
 
             return new JObject(
                 new JProperty(type, new JObject(
-                    new JProperty("dynamic_templates", templates)                   
+                    new JProperty("dynamic_templates", templates)
                 ))
             );
+        }
+
+        protected virtual JArray AddEdgeNgramTemplates(JArray templates, string type)
+        {
+            if (Options.NgramFields is not null and { Length: > 0 })
+            {
+                foreach (string field in Options.NgramFields)
+                {
+                    templates.Add(GetEdgeNgramTemplate(type, field));
+                }
+            }
+
+            return templates;
         }
 
         public JObject GetMappings(string[] types, string[] fields)
