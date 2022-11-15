@@ -401,7 +401,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         protected virtual JArray AddEdgeNgramTemplates(JArray templates, string type)
         {
-            if (Options.NgramFields is not null and { Length: > 0 })
+            if (Options.NgramFields?.Length > 0)
             {
                 foreach (string field in Options.NgramFields)
                 {
