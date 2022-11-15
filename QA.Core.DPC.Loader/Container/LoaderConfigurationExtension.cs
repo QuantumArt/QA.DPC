@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Serialization;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
@@ -77,8 +79,15 @@ namespace QA.Core.DPC.Loader.Container
                     // TODO: Extract to constant in type of settings.
                     if (accessor?.HttpContext.Items.ContainsKey("tmf") == true)
                     {
+                        var hasFieldsFilter = accessor.HttpContext.Request.Query.TryGetValue("fields", out StringValues fields);
+                        var fieldsFilter = hasFieldsFilter
+                            ? (ICollection<string>)new HashSet<string>(fields.ToArray(), StringComparer.OrdinalIgnoreCase)
+                            : Array.Empty<string>();
+
                         return new JsonProductServiceSettings
                         {
+                            Fields = fieldsFilter,
+                            WrapperName = string.Empty,
                             SerializerSettings = new Newtonsoft.Json.JsonSerializerSettings
                             {
                                 ContractResolver = new CamelCasePropertyNamesContractResolver()

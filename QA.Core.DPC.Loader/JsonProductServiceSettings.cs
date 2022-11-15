@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace QA.Core.DPC.Loader
 {
@@ -13,5 +15,7 @@ namespace QA.Core.DPC.Loader
         public JsonSerializerSettings SerializerSettings { get; init; } = _defaultSerializerSettings;
 
         public bool IsWrapped => !string.IsNullOrWhiteSpace(WrapperName);
+
+        public ICollection<string> Fields { get; init; } = Array.Empty<string>();
     }
 }

@@ -13,14 +13,14 @@ namespace QA.Core.DPC.Loader
 
         protected JToken GetJToken(string fieldName)
         {
-            var token = _article[fieldName];
+            _ = _article.TryGetValue(fieldName, out var token);
 
             return token == null || token.Type == JTokenType.Null ? null : token;
         }
 
         public JsonProductDataSource(IDictionary<string, JToken> article)
         {
-            _article = article;
+            _article = new Dictionary<string, JToken>(article, StringComparer.OrdinalIgnoreCase);
         }
 
         public virtual int GetArticleId() => GetInt(nameof(Article.Id)) ?? default(int);
@@ -49,7 +49,7 @@ namespace QA.Core.DPC.Loader
 
             return value != null ? Convert.ToDecimal(value) : (decimal?)null;
         }
-        
+
         public string GetString(string fieldName)
         {
             return (string)GetJToken(fieldName);
@@ -59,7 +59,10 @@ namespace QA.Core.DPC.Loader
         {
             var token = GetJToken(fieldName);
 
-            return token == null ? null : new JsonProductDataSource((IDictionary<string, JToken>)token);
+            return token == null
+                ? null
+                : new JsonProductDataSource(
+                    new Dictionary<string, JToken>((IDictionary<string, JToken>)token, StringComparer.OrdinalIgnoreCase));
         }
 
         public virtual IEnumerable<IProductDataSource> GetContainersCollection(string fieldName)
@@ -67,7 +70,8 @@ namespace QA.Core.DPC.Loader
             var token = GetJToken(fieldName);
 
             return token == null ? null : ((JArray)token)
-                .Select(x => new JsonProductDataSource((IDictionary<string, JToken>)x));
+                .Select(x => new JsonProductDataSource(
+                    new Dictionary<string, JToken>((IDictionary<string, JToken>)x, StringComparer.OrdinalIgnoreCase)));
         }
 
         public virtual IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName) => this;
@@ -93,7 +97,7 @@ namespace QA.Core.DPC.Loader
 
             return token == null ? null : new EditorJsonProductDataSource((IDictionary<string, JToken>)token);
         }
-        
+
         public override IEnumerable<IProductDataSource> GetContainersCollection(string fieldName)
         {
             var token = GetJToken(fieldName);

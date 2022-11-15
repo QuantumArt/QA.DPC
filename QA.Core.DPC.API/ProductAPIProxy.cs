@@ -52,14 +52,23 @@ namespace QA.Core.DPC.API
 			return result;
 		}
 
-		public void UpdateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
-		{
-			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + product.Id + "?isLive=" + isLive;
-			Update<Article>(product, url);			
-		}
+        public void UpdateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
+        {
+            string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + product.Id + "?isLive=" + isLive;
+            Update<Article>(product, url);
+        }
 
+        public void CreateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
+        {
+			throw new NotSupportedException();
+        }
 
-		public void CustomAction(string actionName, int id, int contentId = default(int))
+        public void DeleteProduct(string slug, string version, int id)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void CustomAction(string actionName, int id, int contentId = default(int))
 		{
 			string url = _configuration.Host + "/custom/binary/" + actionName + "/" + id;
 			Post(url);

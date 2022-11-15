@@ -16,6 +16,8 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API.Models;
 using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
+using Microsoft.AspNetCore.Mvc;
+using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 
 namespace QA.Core.DPC.API.Update
 {
@@ -91,7 +93,7 @@ namespace QA.Core.DPC.API.Update
                         .ListRelated(contentId)
                         .Select(field => _fieldsById[field.Id] = field)
                         .ToList();
-                
+
             }
 
             public Quantumart.QP8.BLL.Field Read(int id)
@@ -103,7 +105,7 @@ namespace QA.Core.DPC.API.Update
         }
 
         #endregion
-        
+
         #region IProductUpdateService
 
         /// <exception cref="ProductUpdateConcurrencyException" />
@@ -116,7 +118,7 @@ namespace QA.Core.DPC.API.Update
             _outdatedArticleIds.Clear();
 
             _filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-            
+
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
 
             if (_outdatedArticleIds.Any())
@@ -143,7 +145,7 @@ namespace QA.Core.DPC.API.Update
                         .Message("Deleting articles for product {id} started", product.Id)
                         .Property("articlesToDelete", _articlesToDelete.Keys)
                         .Write();
-                    
+
                     foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                     {
                         try
@@ -171,6 +173,31 @@ namespace QA.Core.DPC.API.Update
             }
         }
 
+        public void Delete(int productId, ProductDefinition definition)
+        {
+            using var transaction = _createTransaction();
+
+            _logger.Info()
+                .Message("Deleting articles for product {id} started", productId)
+                .Write();
+
+            try
+            {
+                var qpArticle = _articleService.Read(productId);
+
+                _deleteAction.DeleteProduct(qpArticle, definition, true, false, null);
+            }
+            catch (MessageResultException ex)
+            {
+                _logger.Error()
+                    .Exception(ex)
+                    .Message("Cannot remove article {id}", productId)
+                    .Write();
+            }
+
+            _logger.Info("Deleting articles for product {id} completed", productId);
+        }
+
         #endregion
 
         /// <exception cref="ArgumentNullException" />
@@ -185,7 +212,8 @@ namespace QA.Core.DPC.API.Update
             {
                 existingArticle = null;
             }
-            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
 
             ValidateDates(newArticle, existingArticle);
 
@@ -259,7 +287,7 @@ namespace QA.Core.DPC.API.Update
                             {
                                 new FieldData { Id = field.FieldId.Value, ArticleIds = new[] { newArticle.Id } }
                             }
-                        }));          
+                        }));
                     }
 
                     if (idsToRemove.Any())
@@ -271,14 +299,14 @@ namespace QA.Core.DPC.API.Update
                                 _articlesToDelete[idToRemove] = backwardRelationFieldDef.Content;
                             }
                         }
-                        else 
+                        else
                         {
                             _updateData.AddRange(idsToRemove.Select(x => new ArticleData
                             {
                                 Id = x,
                                 ContentId = backwardRelationFieldDef.Content.ContentId
                             }));
-                        }         
+                        }
                     }
 
                 }
@@ -341,7 +369,8 @@ namespace QA.Core.DPC.API.Update
                     {
                         newArticleUpdateData.Fields.Add(new FieldData
                         {
-                            Id = field.FieldId.Value, ArticleIds = items.Select(x => x.Id).ToArray()
+                            Id = field.FieldId.Value,
+                            ArticleIds = items.Select(x => x.Id).ToArray()
                         });
 
                         if (entityFieldDef.DeletingMode == DeletingMode.Delete)
@@ -362,7 +391,7 @@ namespace QA.Core.DPC.API.Update
 
             if (newArticleUpdateData.Fields.Any())
             {
-                _updateData.Add(newArticleUpdateData);                
+                _updateData.Add(newArticleUpdateData);
             }
 
             foreach (var fieldInfo in associationFieldsInfo

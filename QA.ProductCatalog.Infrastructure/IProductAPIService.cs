@@ -17,6 +17,7 @@ namespace QA.ProductCatalog.Infrastructure
         void CustomAction(string actionName, int[] ids, Dictionary<string, string> parameters, int contentId = default(int));
 		ServiceDefinition GetProductDefinition(string slug, string version, bool forList = false);
         RelevanceInfo GetRelevance(int id, bool isLive = false);
-
-	}
+        void CreateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false);
+        void DeleteProduct(string slug, string version, int id);
+    }
 }

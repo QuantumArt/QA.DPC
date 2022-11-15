@@ -93,8 +93,9 @@ namespace QA.Core.DPC.Loader
             }
 
             var productDeserializer = ObjectFactoryBase.Resolve<IProductDeserializer>();
-
-            return productDeserializer.Deserialize(new JsonProductDataSource(rootArticleDictionary), definition);
+            JsonProductDataSource productDataSource = new(rootArticleDictionary);
+            
+            return productDeserializer.Deserialize(productDataSource, definition);
         }
 
         public string SerializeProduct(Article article, IArticleFilter filter, bool includeRegionTags = false)
@@ -109,6 +110,14 @@ namespace QA.Core.DPC.Loader
             var sw = new Stopwatch();
             sw.Start();
             Dictionary<string, object> convertedArticle = ConvertArticle(article, filter);
+
+            if (_settings.Fields.Count > 0)
+            {
+                convertedArticle = convertedArticle
+                    .Where(field => _settings.Fields.Contains(field.Key))
+                    .ToDictionary(pair => pair.Key, pair => pair.Value);
+            }
+            
             sw.Stop();
             _logger.Debug("Product {1} conversion took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
 
@@ -141,8 +150,8 @@ namespace QA.Core.DPC.Loader
             else
             {
                 result = _settings.IsWrapped
-                    ? productJson
-                    : $"{{ \"{ProductProp}\" : {productJson} }}";
+                    ? $"{{ \"{ProductProp}\" : {productJson} }}"
+                    : productJson;
             }
 
             return result;
@@ -218,7 +227,7 @@ namespace QA.Core.DPC.Loader
             };
 
             JSchema rootSchema = GetSchemaRecursive(definition, context, forList);
-            
+
             if (includeRegionTags)
             {
                 JSchema schemaWithRegionTags = new JSchema { Type = JSchemaType.Object };
@@ -265,7 +274,7 @@ namespace QA.Core.DPC.Loader
 
                 return schemaWithRegionTags;
             }
-            
+
             FillSchemaDefinitions(rootSchema, context);
 
             DeduplicateJsonSchema(rootSchema, context);
@@ -310,7 +319,7 @@ namespace QA.Core.DPC.Loader
 
             rootSchema.ExtensionData["definitions"] = definitions;
         }
-        
+
         /// <summary>
         /// Заменяет вхождения повторяющихся JSON схем на JSON Pointer вида
         /// <c>{ "$ref": "#/definitions/ContentName" }</c>.
@@ -330,7 +339,7 @@ namespace QA.Core.DPC.Loader
 
             DeduplicateJsonSchemaFields(rootSchema, context);
         }
-        
+
         private void DeduplicateJsonSchemaFields(JSchema schema, SchemaContext context)
         {
             schema.AdditionalProperties = DeduplicateJsonSchemaInstance(schema.AdditionalProperties, context);
@@ -361,7 +370,7 @@ namespace QA.Core.DPC.Loader
             }
         }
 
-        private void DeduplicateJsonSchemaDict(IDictionary<string , JSchema> schemaDict, SchemaContext context)
+        private void DeduplicateJsonSchemaDict(IDictionary<string, JSchema> schemaDict, SchemaContext context)
         {
             if (schemaDict?.Count > 0)
             {
@@ -375,7 +384,7 @@ namespace QA.Core.DPC.Loader
                 }
             }
         }
-        
+
         private JSchema DeduplicateJsonSchemaInstance(JSchema schema, SchemaContext context)
         {
             if (schema == null || schema.ExtensionData.ContainsKey("$ref"))
@@ -410,7 +419,7 @@ namespace QA.Core.DPC.Loader
                 context.RepeatedContents.Add(definition);
                 return context.SchemasByContent[definition];
             }
-            
+
             var contentSchema = CreateContentSchema(definition);
 
             context.SchemasByContent[definition] = contentSchema;
@@ -453,7 +462,7 @@ namespace QA.Core.DPC.Loader
                         throw new InvalidOperationException($@"There is a field id={
                             field.FieldId} which specified in product definition and missing in the content id={definition.ContentId}");
                     }
-                    
+
                     if (field is ExtensionField extensionField)
                     {
                         MergeExtensionFieldSchema(extensionField, qpField, contentSchema, context);
@@ -512,7 +521,7 @@ namespace QA.Core.DPC.Loader
                     : !IsHtmlWhiteSpace(qpField.FriendlyName)
                         ? qpField.FriendlyName
                         : schema.Description;
-            
+
             switch (qpField.ExactType)
             {
                 case FieldExactTypes.StringEnum:
@@ -527,13 +536,13 @@ namespace QA.Core.DPC.Loader
                     }
                     break;
             }
-            
+
             return schema;
         }
 
         private static bool IsHtmlWhiteSpace(string str)
         {
-            return String.IsNullOrEmpty(str) 
+            return String.IsNullOrEmpty(str)
                 || String.IsNullOrWhiteSpace(WebUtility.HtmlDecode(str));
         }
 
@@ -731,7 +740,7 @@ namespace QA.Core.DPC.Loader
 
             throw new NotSupportedException("Converter is not supported for type " + type);
         }
-        
+
         private JSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
         {
             var schema = new JSchema();
@@ -785,32 +794,32 @@ namespace QA.Core.DPC.Loader
             var longFieldUrl = _dbConnector.GetUrlForFileAttribute(fieldId, false, false);
 
             var value = plainArticleField.Value;
-            
+
             if (plainArticleField.NativeValue == null || string.IsNullOrWhiteSpace(value))
             {
                 return null;
             }
-            
+
             switch (plainArticleField.PlainFieldType)
             {
                 case PlainFieldType.File:
-                {
-                    var valueUrl = $@"{shortFieldUrl}/{value}";
-                    var size = Common.GetFileSize(_factory, _loaderProperties, _dbConnector, fieldId, value, $"{longFieldUrl}/{value}");
-
-                    return new PlainFieldFileInfo
                     {
-                        Name = Common.GetFileNameByUrl(_dbConnector, fieldId, valueUrl),
-                        FileSizeBytes = size,
-                        AbsoluteUrl = valueUrl 
-                    };
-                }
+                        var valueUrl = $@"{shortFieldUrl}/{value}";
+                        var size = Common.GetFileSize(_factory, _loaderProperties, _dbConnector, fieldId, value, $"{longFieldUrl}/{value}");
+
+                        return new PlainFieldFileInfo
+                        {
+                            Name = Common.GetFileNameByUrl(_dbConnector, fieldId, valueUrl),
+                            FileSizeBytes = size,
+                            AbsoluteUrl = valueUrl
+                        };
+                    }
 
                 case PlainFieldType.Image:
                 case PlainFieldType.DynamicImage:
-                {
-                    return $@"{shortFieldUrl}/{value}";
-                }
+                    {
+                        return $@"{shortFieldUrl}/{value}";
+                    }
 
                 case PlainFieldType.Boolean:
                     return (decimal)plainArticleField.NativeValue == 1;
