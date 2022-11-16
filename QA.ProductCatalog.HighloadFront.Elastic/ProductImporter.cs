@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
-using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.ContentProviders;
@@ -17,7 +15,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ProductImporter
     {
-        private readonly IHttpClientFactory _factory;        
+        private readonly IHttpClientFactory _factory;
         private readonly ILogger _logger;
 
         private readonly ElasticConfiguration _configuration;
@@ -51,15 +49,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public bool ValidateInstance(string language, string state)
         {
             var reindexUrl = _configuration.GetReindexUrl(language, state);
-            _logger.LogInformation($"Checking instance ({language}, {state}) ...");            
+            _logger.LogInformation($"Checking instance ({language}, {state}) ...");
             var url = $"{reindexUrl}/ValidateInstance";
             var result = GetContent(url).Result;
             var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
-            _logger.LogInformation($"Validation result for instance ({language}, {state}): {validation}");            
+            _logger.LogInformation($"Validation result for instance ({language}, {state}): {validation}");
             return validation;
         }
 
-        public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state, Dictionary<string, IProductStore> stores)
+        public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state, Dictionary<string, IProductStore> stores, string newIndex)
         {
             if(executionContext.IsCancellationRequested)
             {
@@ -105,7 +103,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 }
                 _logger.LogInformation($"Products from chunk {index} received. Starting bulk import...");
 
-                var result = await _manager.BulkCreateAsync(data, language, state, stores);
+                var result = await _manager.BulkCreateAsync(data, language, state, stores, newIndex);
 
                 if (result.Succeeded)
                 {

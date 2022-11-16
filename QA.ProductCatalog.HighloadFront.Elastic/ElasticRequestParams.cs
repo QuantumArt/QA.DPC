@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -7,14 +8,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ElasticRequestParams
     {
-        public ElasticRequestParams(HttpMethod verb, string indexName, string operation, string type)
+        public ElasticRequestParams(HttpMethod verb, string indexName, string operation, string type, bool requestSystemMethod)
         {
             ThrowNotFound = true;
             Verb = verb;
             Operation = operation;
             Type = type;
             IndexName = indexName;
-            UrlParams = new Dictionary<string, string>();            
+            UrlParams = new Dictionary<string, string>();
+            RequestSystemMethod = requestSystemMethod;
         }
         
         
@@ -27,16 +29,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public string IndexName { get; set; }
         
         public bool ThrowNotFound { get; set; }
-        
+
+        public bool RequestSystemMethod { get; set; }
+
 
         public Dictionary<string, string> UrlParams;
-        
-        
+
         public string GetUri()
         {
             var sb = new StringBuilder();
             var isGlobalOperation = Operation == "_bulk";
-            if (!string.IsNullOrEmpty(IndexName))
+            if (!string.IsNullOrEmpty(IndexName) && !RequestSystemMethod)
             {
                 if (!isGlobalOperation)
                 {
@@ -57,6 +60,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     sb.Append("/");
                 }
                 sb.Append(Operation);
+            }
+
+            if (!string.IsNullOrEmpty(IndexName) && RequestSystemMethod)
+            {
+                if (!isGlobalOperation)
+                {
+                    sb.Append("/");
+                }
+                sb.Append(IndexName);
             }
             
             if (UrlParams.Any())

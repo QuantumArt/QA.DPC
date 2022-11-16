@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Options;
-using Quantumart.QP8.DAL.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
