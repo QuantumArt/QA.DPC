@@ -12,7 +12,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
         private readonly ProductImporter _importer;
         private readonly ProductManager _manager;
         private readonly ElasticConfiguration _configuration;
-        private readonly Dictionary<string, IProductStore> _stores;        
+        private readonly Dictionary<string, IProductStore> _stores;
         private const int LockTimeoutInMs = 5000;
 
         
@@ -38,6 +38,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 {
                     if (_importer.ValidateInstance(language, state))
                     {
+                        var indexesInAlias = _manager.GetIndexesInAliasAsync(language, state, _stores).Result;
                         var indexesToDelete = _manager.GetIndexesAsync(language, state, _stores).Result;
                         var newIndex = _manager.CreateVersionedIndexAsync(language, state, _stores).Result;
 
@@ -54,11 +55,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                         if (indexesToDelete.Contains(alias))
                         {
                             DeleteIndexes();
-                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias).Wait();
+                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
                         }
                         else
                         {
-                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias).Wait();
+                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
                             DeleteIndexes();
                         }
 

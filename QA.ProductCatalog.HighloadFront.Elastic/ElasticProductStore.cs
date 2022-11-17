@@ -239,12 +239,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.DocumentExistsAsync(id, type);
         }
 
-        public async Task AddIndexToAliasAsync(string language, string state, string indexName, string alias)
+        public async Task AddIndexToAliasAsync(string language, string state, string newIndexName, string[] oldIndexes, string alias)
         {
             var client = Configuration.GetElasticClient(language, state);
             try
             {
-                _ = await client.AddIndexToAliasAsync(GetIndexToAliasRequest(indexName, alias).ToString());
+                _ = await client.AddIndexToAliasAsync(GetIndexToAliasRequest(newIndexName, oldIndexes, alias).ToString());
             }
             catch (Exception ex)
             {
@@ -265,17 +265,42 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        protected virtual JObject GetIndexToAliasRequest(string index, string alias)
+        public async Task<string[]> GetIndexInAliasAsync(string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            var result = await client.GetAliasByNameAsync();
+
+            if (result == "Not Found")
+            {
+                return Array.Empty<string>();
+            }
+
+            var json = JObject.Parse(result);
+            return json.Root.Select(x => (x as JProperty).Name).ToArray();
+        }
+
+        protected virtual JObject GetIndexToAliasRequest(string newIndex, string[] oldIndexes, string alias)
+        {
+            var actions = new JArray
+            {
+                GetAliasAction(newIndex, alias, "add")
+            };
+
+            foreach (string oldIndex in oldIndexes)
+            {
+                actions.Add(GetAliasAction(oldIndex, alias, "remove"));
+            }
+
+            return new JObject(new JProperty("actions", actions));
+        }
+
+        protected virtual JObject GetAliasAction(string index, string alias, string action)
         {
             return new JObject(
-                new JProperty("actions", 
-                new JArray(new JObject(
-                    new JProperty("add", new JObject(
-                        new JProperty("index", index),
-                        new JProperty("alias", alias)
-                        ))
-                    ))
-                )
+                new JProperty(action, new JObject(
+                    new JProperty("index", index),
+                    new JProperty("alias", alias)
+                ))
             );
         }
 

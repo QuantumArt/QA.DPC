@@ -80,7 +80,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Delete);
             esparams.IndexName = indexName;
-            esparams.ThrowNotFound = true;
             return await QueryAsync(esparams, null);
         }
         
@@ -95,9 +94,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var esparams = CreateElasticRequestParams(HttpMethod.Post, type: "_aliases", systemRequest: true);
 
             esparams.IndexName = string.Empty;
-            esparams.ThrowNotFound = true;
 
             return await QueryAsync(esparams, json);
+        }
+
+        public async Task<string> GetAliasByNameAsync()
+        {
+            var esparams = CreateElasticRequestParams(HttpMethod.Get, type: "_alias", systemRequest: true);
+            esparams.ThrowNotFound = false;
+            return await QueryAsync(esparams, null);
         }
 
         public async Task<string> CreateVersionedIndexAsync(string json)
@@ -111,7 +116,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     .ToLower();
 
             esparams.IndexName = $"{esparams.IndexName}.{version}";
-            esparams.ThrowNotFound = true;
 
             _ = await QueryAsync(esparams, json);
             return esparams.IndexName;
@@ -172,7 +176,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Get, "indices", "_cat", true);
             esparams.IndexName = $"{esparams.IndexName}*";
-            esparams.ThrowNotFound = true;
             return await QueryAsync(esparams, null);
         }
 

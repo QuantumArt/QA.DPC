@@ -119,14 +119,19 @@ namespace QA.ProductCatalog.HighloadFront
             return await GetProductStore(language, state, stores).CreateVersionedIndexAsync(language, state);
         }
 
-        public async Task AddIndexToAliasAsync(string language, string state, Dictionary<string, IProductStore> stores, string index, string alias)
+        public async Task AddIndexToAliasAsync(string language, string state, Dictionary<string, IProductStore> stores, string newIndex, string alias, string[] oldIndexes)
         {
-            await GetProductStore(language, state, stores).AddIndexToAliasAsync(language, state, index, alias);
+            await GetProductStore(language, state, stores).AddIndexToAliasAsync(language, state, newIndex, oldIndexes, alias);
         }
 
         public async Task DeleteIndexByNameAsync(string language, string state, Dictionary<string, IProductStore> stores, string index)
         {
             await GetProductStore(language, state, stores).DeleteIndexByNameAsync(language, state, index);
+        }
+
+        public async Task<string[]> GetIndexesInAliasAsync(string language, string state, Dictionary<string, IProductStore> stores)
+        {
+            return await GetProductStore(language, state, stores).GetIndexInAliasAsync(language, state);
         }
 
         public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)

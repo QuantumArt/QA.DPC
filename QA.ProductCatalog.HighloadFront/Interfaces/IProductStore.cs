@@ -14,7 +14,8 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
         Task<string> FindByIdAsync(ProductsOptions options, string language, string state);
         Task<string[]> GetIndexesAsync(string language, string state);
         Task<string> CreateVersionedIndexAsync(string language, string state);
-        Task AddIndexToAliasAsync(string language, string state, string indexName, string alias);
+        Task<string[]> GetIndexInAliasAsync(string language, string state);
+        Task AddIndexToAliasAsync(string language, string state, string newIndexName, string[] oldIndexes, string alias);
         Task DeleteIndexByNameAsync(string language, string state, string indexName);
 
         Task<SonicResult> CreateAsync(JObject product, string language, string state);
