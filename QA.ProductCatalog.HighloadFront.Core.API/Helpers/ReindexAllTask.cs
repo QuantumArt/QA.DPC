@@ -38,8 +38,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 {
                     if (_importer.ValidateInstance(language, state))
                     {
-                        var indexesInAlias = _manager.GetIndexesInAliasAsync(language, state, _stores).Result;
-                        var indexesToDelete = _manager.GetIndexesAsync(language, state, _stores).Result;
                         var newIndex = _manager.CreateVersionedIndexAsync(language, state, _stores).Result;
 
                         if (string.IsNullOrWhiteSpace(newIndex))
@@ -51,14 +49,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                         _importer.ImportAsync(executionContext, language, state, _stores, newIndex).Wait();
 
                         string alias = _configuration.GetElasticIndex(language, state).Name;
+                        var indexesToDelete = _manager.GetIndexesAsync(language, state, _stores).Result;
 
                         if (indexesToDelete.Contains(alias))
                         {
                             DeleteIndexes();
-                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
+                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias, Array.Empty<string>()).Wait();
                         }
                         else
                         {
+                            var indexesInAlias = _manager.GetIndexesInAliasAsync(language, state, _stores).Result;
                             _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
                             DeleteIndexes();
                         }
