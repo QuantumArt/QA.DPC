@@ -109,16 +109,11 @@ namespace QA.ProductCatalog.HighloadFront
             throw StoreFactory.ElasticVersionNotSupported(version);
         }
 
-        public async Task<List<string>> GetIndexesAsync(string language, string state, Dictionary<string, IProductStore> stores)
+        public async Task<List<string>> GetIndexesToDeleteAsync(string language, string state, Dictionary<string, IProductStore> stores, string alias)
         {
             IProductStore store = GetProductStore(language, state, stores);
-            List<string> indexes = new();
-            string versionedIndexes = await store.GetIndicesByVersionedPattern(language, state);
-            indexes.AddRange(store.RetrieveIndexesFromIndicesResponse(versionedIndexes));
-            string currentIndex = await store.GetIndiceByName(language, state);
-            indexes.AddRange(store.RetrieveIndexesFromIndicesResponse(currentIndex));
-
-            return indexes;
+            string indexes = await store.GetIndiceByName(language, state);
+            return store.RetrieveIndexesFromIndicesResponse(indexes, alias);
         }
 
         public async Task<string> CreateVersionedIndexAsync(string language, string state, Dictionary<string, IProductStore> stores)

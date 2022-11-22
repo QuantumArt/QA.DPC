@@ -172,16 +172,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(eparams, null);
         }
 
-        public async Task<string> GetIndicesByVersionedPattern()
-        {
-            var esparams = CreateElasticRequestParams(HttpMethod.Get, "indices", "_cat", true);
-            esparams.IndexName = $"{esparams.IndexName}.*";
-            return await QueryAsync(esparams, null);
-        }
-
         public async Task<string> GetIndiceByName()
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Get, "indices", "_cat", true);
+            esparams.IndexName = $"{esparams.IndexName}*";
             return await QueryAsync(esparams, null);
         }
 

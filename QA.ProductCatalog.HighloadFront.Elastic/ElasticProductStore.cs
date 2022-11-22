@@ -162,19 +162,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public virtual async Task<string> GetIndicesByVersionedPattern(string language, string state)
-        {
-            var client = Configuration.GetElasticClient(language, state);
-            try
-            {
-                return await client.GetIndicesByVersionedPattern();
-            }
-            catch (Exception ex)
-            {
-                throw new ElasticClientException("Unable to get indices by versioned pattern.", ex);
-            }
-        }
-
         public virtual async Task<string> GetIndiceByName(string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
@@ -188,12 +175,13 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public virtual List<string> RetrieveIndexesFromIndicesResponse(string indices)
+        public virtual List<string> RetrieveIndexesFromIndicesResponse(string indices, string index)
         {
             try
             {
                 var indexData = JArray.Parse(indices);
-                return indexData.Select(p => p.Value<string>("index")).ToList();
+                var indexes = indexData.Select(p => p.Value<string>("index")).ToList();
+                return indexes.Where(x => x == index || x.StartsWith($"{index}.")).ToList();
             }
             catch (Exception ex)
             {
