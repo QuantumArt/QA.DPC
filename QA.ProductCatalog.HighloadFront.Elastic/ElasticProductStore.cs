@@ -162,19 +162,42 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public virtual async Task<string[]> GetIndexesAsync(string language, string state)
+        public virtual async Task<string> GetIndicesByVersionedPattern(string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
             try
             {
-                var result = await client.GetIndices();
-                var indexData = JArray.Parse(result);
-                return indexData.Select(p => p.Value<string>("index")).ToArray();
-
+                return await client.GetIndicesByVersionedPattern();
             }
             catch (Exception ex)
             {
-                throw new ElasticClientException("Unable to get indices.", ex);
+                throw new ElasticClientException("Unable to get indices by versioned pattern.", ex);
+            }
+        }
+
+        public virtual async Task<string> GetIndiceByName(string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            try
+            {
+                return await client.GetIndiceByName();
+            }
+            catch (Exception ex)
+            {
+                throw new ElasticClientException("Unable to get indice by name.", ex);
+            }
+        }
+
+        public virtual List<string> RetrieveIndexesFromIndicesResponse(string indices)
+        {
+            try
+            {
+                var indexData = JArray.Parse(indices);
+                return indexData.Select(p => p.Value<string>("index")).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Unable to retrieve indexes from indices response.", ex);
             }
         }
 
@@ -431,7 +454,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 .ToArray();
         }   
 
-        protected JObject GetKeywordTemplate(string type, string field)
+        protected virtual JObject GetKeywordTemplate(string type, string field)
         {
             return new JObject(
                 new JProperty($"not_analyzed_{type}_{field}", new JObject(
