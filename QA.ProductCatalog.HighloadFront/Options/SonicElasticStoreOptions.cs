@@ -33,7 +33,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public string[] Types { get; set; }
 
         public Dictionary<string, string[]> DynamicDateFormats { get; set; }
-        public string[] NgramFields { get; set; }
+        public EdgeNgramOptions EdgeNgramOptions { get; set; }
 
         public string[] NotAnalyzedFields { get; set; }
 
