@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
+using NLog.Filters;
 using NLog.Fluent;
 using Polly;
 using Polly.CircuitBreaker;
@@ -95,16 +96,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }         
         }
 
-        public async Task<string> FindSourceByIdAsync(string id, string[] filter)
+        public async Task<string> FindSourceByIdAsync(string operation, string type, string[] filters)
         {
-            var operation = $"{id}/_source";
-            var eparams = CreateElasticRequestParams(HttpMethod.Get, operation, "_all");
-            if (filter != null)
+            var esparams = CreateElasticRequestParams(HttpMethod.Get, operation, type);
+            if (filters != null)
             {
-                eparams.UrlParams.Add("_source_include", String.Join(",", filter));
+                esparams.UrlParams.Add("_source_include", String.Join(",", filters));
             }
-            
-            return await QueryAsync(eparams, null);
+
+            return await QueryAsync(esparams, null);
         }
 
         public async Task<string> GetInfo()
@@ -120,9 +120,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(eparams, json);
         }
 
-        public async Task<string> UpdateAsync(string id, string type, string json)
+        public async Task<string> UpdateAsync(string operation, string type, string json)
         {
-            var eparams = CreateElasticRequestParams(HttpMethod.Post, $"{id}/_update", type);
+            var eparams = CreateElasticRequestParams(HttpMethod.Post, operation, type);
             return await QueryAsync(eparams, json);
         }
 

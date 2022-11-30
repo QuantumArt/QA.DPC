@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         protected override JObject GetMapping(string type, string[] fields)
         {
-            var formats = new JArray(Options.DynamicDateFormats);
+            var formats = new JArray(GetDynamicDateFormatsFromConfig("Default"));
             var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
             templates.Add(GetTextTemplate());
 

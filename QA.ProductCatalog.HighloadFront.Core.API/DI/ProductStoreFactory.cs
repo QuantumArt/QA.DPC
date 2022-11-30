@@ -20,6 +20,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 return "5.*";
             if (serviceVersion.StartsWith("6."))
                 return "6.*";
+            if (serviceVersion.StartsWith("8."))
+                return "8.*";
             throw ElasticVersionNotSupported(serviceVersion);
         }
     }

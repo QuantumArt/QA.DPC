@@ -56,6 +56,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return type;
         }
 
+        protected virtual string BuildRowMetadata(string name, string type, string id)
+        {
+            return $"{{\"index\":{{\"_index\":\"{name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}";
+        }
+
         public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products, string language, string state)
         {
             if (products == null) throw new ArgumentNullException(nameof(products));
@@ -81,8 +86,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 }
 
                 var json = JsonConvert.SerializeObject(p, DateTimeConverter);
-
-                return $"{{\"index\":{{\"_index\":\"{index.Name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}\n{json}\n";
+                var metadata = BuildRowMetadata(index.Name, type, id);
+                return $"{metadata}\n{json}\n";
             });
 
             if (failedResult.Any()) return SonicResult.Failed(failedResult.ToArray());
@@ -123,12 +128,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
+        public virtual async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
-            return await client.FindSourceByIdAsync(options.Id.ToString(), options?.PropertiesFilter?.ToArray());
+            return await client.FindSourceByIdAsync( $"{options.Id}/_source", "_all", options?.PropertiesFilter?.ToArray());
         }
-
 
         public async Task<SonicResult> CreateAsync(JObject product, string language, string state)
         {
@@ -159,7 +163,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         }
 
-        public async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
+        public virtual async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
         {
             var id = GetId(product);
             if (id == null)
@@ -180,7 +184,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                await client.UpdateAsync(id, type, json);
+                await client.UpdateAsync($"{id}/_update", type, json);
                 return SonicResult.Success;
             }
             catch (Exception e)
@@ -218,7 +222,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             string type = GetType(product);
             var client = Configuration.GetElasticClient(language, state);
             return await client.DocumentExistsAsync(id, type);
-            
         }
 
         public async Task<SonicResult> ResetAsync(string language, string state)
@@ -556,6 +559,16 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
 
             return (isSeparated) ? MatchPhrases(field, values) : MatchPhrase(field, value);
+        }
+
+        protected string[] GetDynamicDateFormatsFromConfig(string key)
+        {
+            if (!Options.DynamicDateFormats.TryGetValue(key, out string[] dateFormats))
+            {
+                throw new InvalidOperationException($"Unable to find {key} date formats in configuration.");
+            }
+
+            return dateFormats;
         }
 
         private static bool IsSeparated(string value, string separator)

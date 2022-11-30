@@ -40,7 +40,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 if (!isGlobalOperation)
                 {
-                    sb.Append(IndexName);                   
+                    sb.Append(IndexName);
                 }
             }
 
