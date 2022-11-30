@@ -26,10 +26,6 @@
     "ie 11",
     "not ie 10"
   ],
-  "repository": {
-    "type": "git",
-    "url": "http://tfs01:8080/tfs/QuantumartCollection/_git/QA.DPC"
-  },
   "devDependencies": {
     "@types/classnames": "^2.2.6",
     "@types/jest": "^23.3.10",
