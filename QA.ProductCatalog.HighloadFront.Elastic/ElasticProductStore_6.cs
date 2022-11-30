@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Options;
+using Quantumart.QP8.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var formats = new JArray(GetDynamicDateFormatsFromConfig("Default"));
             var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+            templates = AddEdgeNgramTemplates(templates, type);
             templates.Add(GetTextTemplate());
 
             return new JObject(
@@ -47,7 +49,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var indexSettings = new JObject(
                 new JProperty("settings", new JObject(
                     new JProperty("max_result_window", Options.MaxResultWindow),
-                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit)
+                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit),
+                    new JProperty("index", GetIndexAnalyzers())
                 )),
                 new JProperty("mappings", GetMappings(new[] { "_doc" }, Options.NotAnalyzedFields))
             );
