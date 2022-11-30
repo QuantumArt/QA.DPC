@@ -136,7 +136,7 @@ export default class PartialSendStore {
       this.setTask(taskModel);
     } else {
       this.setFetchStatus(FetchStatus.Failure);
-      if (this.fetchStatus === 401) {
+      if (response.status === 401) {
         this.setFetchError(l("sessionExpired"));
       } else {
         this.setFetchError(l("serverNotAvalaible"));
@@ -179,7 +179,7 @@ export default class PartialSendStore {
       this.setTaskId(taskId);
     } else {
       this.setFetchStatus(FetchStatus.Failure);
-      if (this.fetchStatus === 401) {
+      if (response.status === 401) {
         this.setFetchError(l("sessionExpired"));
       } else {
         this.setFetchError(l("serverNotAvalaible"));
