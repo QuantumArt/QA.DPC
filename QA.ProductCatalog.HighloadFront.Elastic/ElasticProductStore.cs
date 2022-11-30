@@ -367,8 +367,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             return new JProperty("edge_ngram_tokenizer",
                 new JObject (new JProperty("type", "edge_ngram"),
-                new JProperty("min_gram", 3),
-                new JProperty("max_gram", 20),
+                new JProperty("min_gram", Options.EdgeNgramOptions.MinNgram < 1 
+                    ? throw new InvalidOperationException("Minimum length of ngram can't be less than 1.") 
+                    : Options.EdgeNgramOptions.MinNgram),
+                new JProperty("max_gram", Options.EdgeNgramOptions.MaxNgram < Options.EdgeNgramOptions.MinNgram
+                    ? throw new InvalidOperationException("Maximum length of ngram can't be less then minimum length of ngram.")
+                    : Options.EdgeNgramOptions.MaxNgram),
                 new JProperty("token_chars", new JArray("letter", "digit"))));
         }
 
@@ -484,9 +488,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         protected virtual JArray AddEdgeNgramTemplates(JArray templates, string type)
         {
-            if (Options.NgramFields?.Length > 0)
+            if (Options.EdgeNgramOptions.NgramFields?.Length > 0)
             {
-                foreach (string field in Options.NgramFields)
+                foreach (string field in Options.EdgeNgramOptions.NgramFields)
                 {
                     templates.Add(GetEdgeNgramTemplate(type, field));
                 }
