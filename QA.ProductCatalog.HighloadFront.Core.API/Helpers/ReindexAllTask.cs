@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.HighloadFront.Interfaces;
-using System.Linq;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
 {
@@ -53,22 +52,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
 
                         if (indexesToDelete.Contains(alias))
                         {
-                            DeleteIndexes();
-                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias, Array.Empty<string>()).Wait();
+                            _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
+                            _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, alias, Array.Empty<string>()).Wait();
                         }
                         else
                         {
                             var indexesInAlias = _manager.GetIndexesInAliasAsync(language, state, _stores).Result;
-                            _manager.AddIndexToAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
-                            DeleteIndexes();
-                        }
-
-                        void DeleteIndexes()
-                        {
-                            foreach(string index in indexesToDelete)
-                            {
-                                _manager.DeleteIndexByNameAsync(language, state, _stores, index).Wait();
-                            }
+                            _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
+                            _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
                         }
                     }
                     else

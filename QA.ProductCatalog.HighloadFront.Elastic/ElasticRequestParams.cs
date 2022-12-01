@@ -8,7 +8,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ElasticRequestParams
     {
-        public ElasticRequestParams(HttpMethod verb, string indexName, string operation, string type, bool requestSystemMethod)
+        public ElasticRequestParams(HttpMethod verb, string indexName, string operation, string type, bool isRequestSystemMethod)
         {
             ThrowNotFound = true;
             Verb = verb;
@@ -16,10 +16,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             Type = type;
             IndexName = indexName;
             UrlParams = new Dictionary<string, string>();
-            RequestSystemMethod = requestSystemMethod;
+            IsRequestSystemMethod = isRequestSystemMethod;
         }
-        
-        
+
         public string Type { get; set; }
         
         public string Operation { get; set; }
@@ -30,7 +29,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         
         public bool ThrowNotFound { get; set; }
 
-        public bool RequestSystemMethod { get; set; }
+        public bool IsRequestSystemMethod { get; set; }
 
 
         public Dictionary<string, string> UrlParams;
@@ -39,7 +38,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var sb = new StringBuilder();
             var isGlobalOperation = Operation == "_bulk";
-            if (!string.IsNullOrEmpty(IndexName) && !RequestSystemMethod)
+            if (!string.IsNullOrEmpty(IndexName) && !IsRequestSystemMethod)
             {
                 if (!isGlobalOperation)
                 {
@@ -62,7 +61,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 sb.Append(Operation);
             }
 
-            if (!string.IsNullOrEmpty(IndexName) && RequestSystemMethod)
+            if (!string.IsNullOrEmpty(IndexName) && IsRequestSystemMethod)
             {
                 if (!isGlobalOperation)
                 {

@@ -162,20 +162,20 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public virtual async Task<string> GetIndiceByName(string language, string state)
+        public virtual async Task<string> GetIndicesByName(string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
             try
             {
-                return await client.GetIndiceByName();
+                return await client.GetIndicesByName();
             }
             catch (Exception ex)
             {
-                throw new ElasticClientException("Unable to get indice by name.", ex);
+                throw new ElasticClientException("Unable to get indices by name.", ex);
             }
         }
 
-        public virtual List<string> RetrieveIndexesFromIndicesResponse(string indices, string index)
+        public virtual List<string> RetrieveIndexNamesFromIndicesResponse(string indices, string index)
         {
             try
             {
@@ -185,7 +185,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Unable to retrieve indexes from indices response.", ex);
+                throw new InvalidOperationException("Unable to retrieve indexes from response.", ex);
             }
         }
 
@@ -250,12 +250,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.DocumentExistsAsync(id, type);
         }
 
-        public async Task AddIndexToAliasAsync(string language, string state, string newIndexName, string[] oldIndexes, string alias)
+        public async Task ReplaceIndexesInAliasAsync(string language, string state, string newIndexName, string[] oldIndexes, string alias)
         {
             var client = Configuration.GetElasticClient(language, state);
             try
             {
-                _ = await client.AddIndexToAliasAsync(GetIndexToAliasRequest(newIndexName, oldIndexes, alias).ToString());
+                _ = await client.ReplaceIndexesInAliasAsync(GetReplaceIndexesRequest(newIndexName, oldIndexes, alias).ToString());
             }
             catch (Exception ex)
             {
@@ -290,7 +290,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return json.Root.Select(x => (x as JProperty).Name).ToArray();
         }
 
-        protected virtual JObject GetIndexToAliasRequest(string newIndex, string[] oldIndexes, string alias)
+        protected virtual JObject GetReplaceIndexesRequest(string newIndex, string[] oldIndexes, string alias)
         {
             var actions = new JArray
             {

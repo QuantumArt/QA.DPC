@@ -112,8 +112,8 @@ namespace QA.ProductCatalog.HighloadFront
         public async Task<List<string>> GetIndexesToDeleteAsync(string language, string state, Dictionary<string, IProductStore> stores, string alias)
         {
             IProductStore store = GetProductStore(language, state, stores);
-            string indexes = await store.GetIndiceByName(language, state);
-            return store.RetrieveIndexesFromIndicesResponse(indexes, alias);
+            string indices = await store.GetIndicesByName(language, state);
+            return store.RetrieveIndexNamesFromIndicesResponse(indices, alias);
         }
 
         public async Task<string> CreateVersionedIndexAsync(string language, string state, Dictionary<string, IProductStore> stores)
@@ -121,14 +121,24 @@ namespace QA.ProductCatalog.HighloadFront
             return await GetProductStore(language, state, stores).CreateVersionedIndexAsync(language, state);
         }
 
-        public async Task AddIndexToAliasAsync(string language, string state, Dictionary<string, IProductStore> stores, string newIndex, string alias, string[] oldIndexes)
+        public async Task ReplaceIndexesInAliasAsync(string language, string state, Dictionary<string, IProductStore> stores, string newIndex, string alias, string[] oldIndexes)
         {
-            await GetProductStore(language, state, stores).AddIndexToAliasAsync(language, state, newIndex, oldIndexes, alias);
+            await GetProductStore(language, state, stores).ReplaceIndexesInAliasAsync(language, state, newIndex, oldIndexes, alias);
         }
 
         public async Task DeleteIndexByNameAsync(string language, string state, Dictionary<string, IProductStore> stores, string index)
         {
             await GetProductStore(language, state, stores).DeleteIndexByNameAsync(language, state, index);
+        }
+
+        public async Task DeleteIndexesByNamesAsync(string language, string state, Dictionary<string, IProductStore> stores, List<string> indexNames)
+        {
+            var store = GetProductStore(language, state, stores);
+
+            foreach (string indexName in indexNames)
+            {
+                await store.DeleteIndexByNameAsync(language, state, indexName);
+            }
         }
 
         public async Task<string[]> GetIndexesInAliasAsync(string language, string state, Dictionary<string, IProductStore> stores)

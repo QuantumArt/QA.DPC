@@ -89,7 +89,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(eparams, json);
         }
 
-        public async Task<string> AddIndexToAliasAsync(string json)
+        public async Task<string> ReplaceIndexesInAliasAsync(string json)
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Post, type: "_aliases", systemRequest: true);
 
@@ -172,7 +172,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(eparams, null);
         }
 
-        public async Task<string> GetIndiceByName()
+        public async Task<string> GetIndicesByName()
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Get, "indices", "_cat", true);
             esparams.IndexName = $"{esparams.IndexName}*";
@@ -262,7 +262,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private async Task<HttpResponseMessage> GetHttpResponse(string baseUri, ElasticRequestParams eparams, string json)
         {
             HttpResponseMessage response = null;
-            var requestUri = eparams.RequestSystemMethod ? $"{baseUri}" : $"{baseUri}/{_indexName}";
+            var requestUri = eparams.IsRequestSystemMethod ? $"{baseUri}" : $"{baseUri}/{_indexName}";
             var policy = GetOrCreatePolicy(requestUri);
             var client = CreateClient(baseUri);
             try
