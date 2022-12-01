@@ -10,7 +10,7 @@ using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using Newtonsoft.Json.Converters;
-using Quantumart.QP8.BLL.Services.MultistepActions.Csv;
+using System.Net.Http;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -62,13 +62,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return $"{{\"index\":{{\"_index\":\"{name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}";
         }
 
-        public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products, string language, string state)
+        public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products, string language, string state, string newIndex)
         {
             if (products == null) throw new ArgumentNullException(nameof(products));
 
             var failedResult = new List<SonicError>();
             var client = Configuration.GetElasticClient(language, state);
-            var index = Configuration.GetElasticIndex(language, state);
 
             var commands = products.Select(p =>
             {
@@ -87,7 +86,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 }
 
                 var json = JsonConvert.SerializeObject(p, DateTimeConverter);
-                var metadata = BuildRowMetadata(index.Name, type, id);
+                var metadata = BuildRowMetadata(newIndex, type, id);
                 return $"{metadata}\n{json}\n";
             });
 
@@ -95,7 +94,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             try
             {
 
-                var responseText = await client.BulkAsync(string.Join(string.Empty, commands));
+                var responseText = await client.BulkAsync(string.Join(string.Empty, commands), newIndex);
 
                 var responseJson = JObject.Parse(responseText);
 
@@ -161,7 +160,33 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 return SonicResult.Failed(SonicErrorDescriber.StoreFailure(e.Message, e));
             }
+        }
 
+        public virtual async Task<string> GetIndicesByName(string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            try
+            {
+                return await client.GetIndicesByName();
+            }
+            catch (Exception ex)
+            {
+                throw new ElasticClientException("Unable to get indices by name.", ex);
+            }
+        }
+
+        public virtual List<string> RetrieveIndexNamesFromIndicesResponse(string indices, string index)
+        {
+            try
+            {
+                var indexData = JArray.Parse(indices);
+                var indexes = indexData.Select(p => p.Value<string>("index")).ToList();
+                return indexes.Where(x => x == index || x.StartsWith($"{index}.")).ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException("Unable to retrieve indexes from response.", ex);
+            }
         }
 
         public virtual async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
@@ -225,23 +250,81 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.DocumentExistsAsync(id, type);
         }
 
-        public async Task<SonicResult> ResetAsync(string language, string state)
+        public async Task ReplaceIndexesInAliasAsync(string language, string state, string newIndexName, string[] oldIndexes, string alias)
         {
             var client = Configuration.GetElasticClient(language, state);
             try
             {
-                if (await client.IndexExistsAsync())
-                {
-                    await client.DeleteIndexAsync();
-                }
-
-                await client.CreateIndexAsync(GetDefaultIndexSettings().ToString());
-                
-                return SonicResult.Success;
+                _ = await client.ReplaceIndexesInAliasAsync(GetReplaceIndexesRequest(newIndexName, oldIndexes, alias).ToString());
             }
             catch (Exception ex)
             {
-                return SonicResult.Failed(SonicErrorDescriber.StoreFailure(ex.Message, ex));
+                throw new ElasticClientException("Unable to add index to alias.", ex);
+            }
+        }
+
+        public async Task DeleteIndexByNameAsync(string language, string state, string indexName)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            try
+            {
+                await client.DeleteIndexByNameAsync(indexName);
+            }
+            catch (Exception ex)
+            {
+                throw new ElasticClientException("Unable to delete index.", ex);
+            }
+        }
+
+        public async Task<string[]> GetIndexInAliasAsync(string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            var result = await client.GetAliasByNameAsync();
+
+            if (result == "Not Found")
+            {
+                return Array.Empty<string>();
+            }
+
+            var json = JObject.Parse(result);
+            return json.Root.Select(x => (x as JProperty).Name).ToArray();
+        }
+
+        protected virtual JObject GetReplaceIndexesRequest(string newIndex, string[] oldIndexes, string alias)
+        {
+            var actions = new JArray
+            {
+                GetAliasAction(newIndex, alias, "add")
+            };
+
+            foreach (string oldIndex in oldIndexes)
+            {
+                actions.Add(GetAliasAction(oldIndex, alias, "remove"));
+            }
+
+            return new JObject(new JProperty("actions", actions));
+        }
+
+        protected virtual JObject GetAliasAction(string index, string alias, string action)
+        {
+            return new JObject(
+                new JProperty(action, new JObject(
+                    new JProperty("index", index),
+                    new JProperty("alias", alias)
+                ))
+            );
+        }
+
+        public async Task<string> CreateVersionedIndexAsync(string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            try
+            {
+                return await client.CreateVersionedIndexAsync(GetDefaultIndexSettings().ToString());
+            }
+            catch (Exception ex)
+            {
+                throw new ElasticClientException("Unable to create index.", ex);
             }
         }
 
@@ -363,7 +446,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 .ToArray();
         }   
 
-        protected JObject GetKeywordTemplate(string type, string field)
+        protected virtual JObject GetKeywordTemplate(string type, string field)
         {
             return new JObject(
                 new JProperty($"not_analyzed_{type}_{field}", new JObject(
