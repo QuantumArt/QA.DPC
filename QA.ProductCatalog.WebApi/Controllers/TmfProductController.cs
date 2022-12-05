@@ -8,7 +8,6 @@ using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.WebApi.Filters;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Mime;
 
@@ -21,6 +20,9 @@ namespace QA.ProductCatalog.WebApi.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     public class TmfProductController : Controller
     {
+        // TODO: Remove duplicated constant TmfId. (TmfProductDeserializer.TmfIdFieldName)
+        public const string TmfIdFieldName = "TmfId";
+
         private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "fields"
@@ -76,25 +78,24 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// </summary>
         /// <param name="slug">Definition identifier (e.g. productSpecification)</param>
         /// <param name="version">Definition version (e.g. v1)</param>
-        /// <param name="productId">Identifier of product to get details for</param>
+        /// <param name="tmfProductId">Identifier of product to get details for</param>
         /// <param name="fields">Fields filter</param>
         /// <returns>Product details</returns>
         /// <response code="406">Unsupported format</response>
         /// <response code="404">Product not found</response>
         /// <response code="200">Product retrieved successfully</response>
-        [HttpGet("{productId}")]
+        [HttpGet("{tmfProductId}")]
         public IActionResult Get(
             [FromRoute] string slug,
             [FromRoute] string version,
-            [FromRoute] string productId,
+            [FromRoute] string tmfProductId,
             [FromQuery] string[] fields = null)
         {
-            _ = _logger.LogDebug(() => new { version, slug, productId, fields }.ToString());
-            var stopwatch = Stopwatch.StartNew();
-            var dbProductService = _databaseProductServiceFactory();
-            Console.WriteLine(stopwatch.Elapsed);
+            _ = _logger.LogDebug(() => new { version, slug, tmfProductId, fields }.ToString());
 
-            var foundArticleId = FindProductById(dbProductService, slug, version, productId);
+            var dbProductService = _databaseProductServiceFactory();
+
+            var foundArticleId = FindProductByTmfId(dbProductService, slug, version, tmfProductId);
             if (foundArticleId is null)
             {
                 return NotFound();
@@ -110,19 +111,19 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// </summary>
         /// <param name="slug">Definition identifier (e.g. productSpecification)</param>
         /// <param name="version">Definition version (e.g. v1)</param>
-        /// <param name="productId">Identifier of product to delete</param>
+        /// <param name="tmfProductId">Identifier of product to delete</param>
         /// <response code="202">Created or updated</response>
         /// <response code="406">Unsupported format</response>
-        [HttpDelete("{productId}")]
+        [HttpDelete("{tmfProductId}")]
         public IActionResult Delete(
             [FromRoute] string slug,
             [FromRoute] string version,
-            [FromRoute] string productId)
+            [FromRoute] string tmfProductId)
         {
-            _ = _logger.LogDebug(() => new { version, slug, productId }.ToString());
+            _ = _logger.LogDebug(() => new { version, slug, tmfProductId }.ToString());
             var dbProductService = _databaseProductServiceFactory();
 
-            var foundArticleId = FindProductById(dbProductService, slug, version, productId);
+            var foundArticleId = FindProductByTmfId(dbProductService, slug, version, tmfProductId);
             if (foundArticleId is null)
             {
                 return NotFound();
@@ -138,28 +139,56 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// </summary>
         /// <param name="slug">Definition identifier (e.g. productSpecification)</param>
         /// <param name="version">Definition version (e.g. v1)</param>
-        /// <param name="productId">Identifier of product to update</param>
+        /// <param name="tmfProductId">Identifier of product to update</param>
         /// <param name="product">Product in json format</param>
         /// <response code="202">Created or updated</response>
         /// <response code="406">Unsupported format</response>
-        [ProducesResponseType(202)]
-        [ProducesResponseType(406)]
-        [HttpPut("{productId}")]
-        public ActionResult Update(string slug, string version, [FromRoute] string productId, [FromBody] Article product)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+        [HttpPatch("{tmfProductId}")]
+        public ActionResult Update(string slug, string version, [FromRoute] string tmfProductId, [FromBody] Article product)
         {
             _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
+
             var dbProductService = _databaseProductServiceFactory();
 
-            var foundArticleId = FindProductById(dbProductService, slug, version, productId);
+            var foundArticleId = FindProductByTmfId(dbProductService, slug, version, tmfProductId);
             if (foundArticleId is null)
             {
                 return NotFound();
             }
 
             product.Id = foundArticleId.Value;
-            dbProductService.CreateProduct(slug, version, product);
+            _ = SetPlainFieldValue(product.Fields, TmfIdFieldName, tmfProductId);
 
-            return Created(HttpContext.Request.Path + new PathString("/" + product.Id), null);
+            dbProductService.UpdateProduct(slug, version, product);
+
+            return Ok();
+        }
+
+        private static bool SetPlainFieldValue<T>(IReadOnlyDictionary<string, ArticleField> fields, string fieldName, T value)
+        {
+            if (fields is null)
+            {
+                throw new ArgumentNullException(nameof(fields));
+            }
+
+            if (string.IsNullOrEmpty(fieldName))
+            {
+                throw new ArgumentException($"Cannot be null or empty.", fieldName);
+            }
+
+            if (fields.TryGetValue(fieldName, out var idField))
+            {
+                if (idField is PlainArticleField plainIdField)
+                {
+                    plainIdField.NativeValue = value;
+                    plainIdField.Value = value?.ToString();
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -171,7 +200,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <response code="202">Created or updated</response>
         /// <response code="406">Unsupported format</response>
         [ProducesResponseType(202)]
-        [ProducesResponseType(406)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpPost]
         public ActionResult Create(
             string slug,
@@ -179,7 +208,14 @@ namespace QA.ProductCatalog.WebApi.Controllers
             [FromBody] Article product)
         {
             _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
-            _databaseProductServiceFactory().UpdateProduct(slug, version, product);
+
+            var dbProductService = _databaseProductServiceFactory();
+
+            product.Id = 0;
+            _ = SetPlainFieldValue<string>(product.Fields, TmfIdFieldName, null);
+
+            // TODO: Remove id to create new article?
+            dbProductService.CreateProduct(slug, version, product);
 
             return Created(HttpContext.Request.Path + new PathString("/" + product.Id), null);
         }
@@ -198,12 +234,13 @@ namespace QA.ProductCatalog.WebApi.Controllers
             return filter;
         }
 
-        private int? FindProductById(IProductAPIService dbProductService, string slug, string version, string productId)
+        private int? FindProductByTmfId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
         {
             HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
             HttpContext.Items["includeRegionTags"] = false;
 
-            var foundArticles = dbProductService.SearchProducts(slug, version, $"Id={productId}");
+            // TODO: Remove duplicated constant TmfId.
+            var foundArticles = dbProductService.SearchProducts(slug, version, $"TmfId={tmfProductId}");
 
             return foundArticles.Length switch
             {

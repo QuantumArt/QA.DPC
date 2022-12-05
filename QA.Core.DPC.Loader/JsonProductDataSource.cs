@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using QA.Core.DPC.Loader.Editor;
 using QA.Core.Models.Entities;
+using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,8 +62,7 @@ namespace QA.Core.DPC.Loader
 
             return token == null
                 ? null
-                : new JsonProductDataSource(
-                    new Dictionary<string, JToken>((IDictionary<string, JToken>)token, StringComparer.OrdinalIgnoreCase));
+                : CreateDataSource(token);
         }
 
         public virtual IEnumerable<IProductDataSource> GetContainersCollection(string fieldName)
@@ -70,8 +70,16 @@ namespace QA.Core.DPC.Loader
             var token = GetJToken(fieldName);
 
             return token == null ? null : ((JArray)token)
-                .Select(x => new JsonProductDataSource(
-                    new Dictionary<string, JToken>((IDictionary<string, JToken>)x, StringComparer.OrdinalIgnoreCase)));
+                .Select(CreateDataSource);
+        }
+
+        protected virtual JsonProductDataSource CreateDataSource(JToken token)
+        {
+            // TODO: Roll back to using register dependent comparison
+            var tokenDict = (IDictionary<string, JToken>)token;
+
+            return new JsonProductDataSource(
+                new Dictionary<string, JToken>(tokenDict, StringComparer.OrdinalIgnoreCase));
         }
 
         public virtual IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName) => this;

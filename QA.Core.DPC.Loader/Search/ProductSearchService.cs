@@ -26,7 +26,7 @@ namespace QA.Core.DPC.API.Search
 			var condition = new ProductQuery{ Definition = definition.Content, Query = query, ExstensionContentIds = definition.ExstensionContentIds };
 			var products = _articleMatchService.MatchArticles(definition.Content.ContentId, condition, MatchMode.Strict);
 			return products.Select(product => product.Id).ToArray();
-		}
+        }
 
         public int[] ExtendedSearchProducts(string slug, string version, JToken query)
         {

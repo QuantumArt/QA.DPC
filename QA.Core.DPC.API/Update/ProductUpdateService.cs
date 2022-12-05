@@ -173,6 +173,11 @@ namespace QA.Core.DPC.API.Update
             }
         }
 
+        public InsertData[] Create(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false)
+        {
+            return Update(product, definition, isLive, createVersions);
+        }
+
         public void Delete(int productId, ProductDefinition definition)
         {
             using var transaction = _createTransaction();
@@ -273,8 +278,8 @@ namespace QA.Core.DPC.API.Update
                         .ToArray();
 
                     int[] idsToRemove = oldField?.GetArticles(_filter)
+                        .Where(x => field.GetArticles(_filter).All(y => y.Id != x.Id))
                         .Select(x => x.Id)
-                        .Where(x => field.GetArticles(_filter).All(y => y.Id != x))
                         .ToArray() ?? new int[0];
 
                     if (idsToAdd.Any())

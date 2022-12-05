@@ -90,7 +90,7 @@ namespace QA.Core.DPC.API
         public void CreateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
         {
             var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-            _productUpdateService.Update(product, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content }, isLive, createVersions);
+            _productUpdateService.Create(product, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content }, isLive, createVersions);
         }
 
         public void DeleteProduct(string slug, string version, int id)

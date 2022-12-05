@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Unity.Injection;
 using QA.ProductCatalog.Integration.DAL;
 using Unity.Lifetime;
+using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 
 namespace QA.Core.DPC.API.Container
 {
@@ -29,6 +30,7 @@ namespace QA.Core.DPC.API.Container
 			Container.RegisterType<IProductAPIService, ProductAPIService>();
 			Container.RegisterFactory<Func<IProductAPIService>>(c => new Func<IProductAPIService>(() => c.Resolve<IProductAPIService>()));
 			Container.RegisterExpressionArticleMatchService();
+			Container.RegisterArticleMatchService<ConditionBase, ExactMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());
 			Container.RegisterArticleMatchService<ProductQuery, QueryConditionMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());
             Container.RegisterArticleMatchService<ExtendedProductQuery, ExtendedQueryConditionMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());
             Container.RegisterType<IProductSearchService, ProductSearchService>();

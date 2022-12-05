@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Serialization;
 using QA.Core.Cache;
@@ -65,20 +64,24 @@ namespace QA.Core.DPC.Loader.Container
                     c.Resolve<IConnectionProvider>()
                     ));
 
-
             Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));
             Container.RegisterFactory<Func<ITransaction>>(c => new Func<ITransaction>(() => c.Resolve<ITransaction>()));
 
-            Container.RegisterType<IJsonProductService, JsonProductService>();
-            Container.RegisterFactory<JsonProductServiceSettings>((container) =>
-            {
-                if (container.IsRegistered<IHttpContextAccessor>())
-                {
-                    var accessor = container.Resolve<IHttpContextAccessor>();
+            Container.RegisterFactory<IJsonProductService>(
+                CreateTmfAwareFactory(
+                    tmfinstanceFactory: (container) => container.Resolve<TmfProductService>(),
+                    defaultFactory: (container) => container.Resolve<JsonProductService>()));
 
-                    // TODO: Extract to constant in type of settings.
-                    if (accessor?.HttpContext.Items.ContainsKey("tmf") == true)
+            Container.RegisterFactory<IProductDeserializer>(
+                CreateTmfAwareFactory(
+                    tmfinstanceFactory: (container) => container.Resolve<TmfProductDeserializer>(),
+                    defaultFactory: (container) => container.Resolve<ProductDeserializer>()));
+
+            Container.RegisterFactory<JsonProductServiceSettings>(
+                CreateTmfAwareFactory(
+                    tmfinstanceFactory: (container) =>
                     {
+                        var accessor = container.Resolve<IHttpContextAccessor>();
                         var hasFieldsFilter = accessor.HttpContext.Request.Query.TryGetValue("fields", out StringValues fields);
                         var fieldsFilter = hasFieldsFilter
                             ? (ICollection<string>)new HashSet<string>(fields.ToArray(), StringComparer.OrdinalIgnoreCase)
@@ -93,15 +96,10 @@ namespace QA.Core.DPC.Loader.Container
                                 ContractResolver = new CamelCasePropertyNamesContractResolver()
                             }
                         };
-                    }
-                }
-
-                return new JsonProductServiceSettings();
-            });
+                    },
+                    defaultFactory: (_) => new JsonProductServiceSettings()));
 
             Container.RegisterType<IContextStorage, QpCachedContextStorage>();
-
-            Container.RegisterType<IProductDeserializer, ProductDeserializer>();
 
             //Фейк юзер нужен для работы ремоут валидации. Также нужны варианты сервисов с фейк-юзером
             Container.RegisterType<IUserProvider, AlwaysAdminUserProvider>(AlwaysAdminUserProviderName);
@@ -165,6 +163,27 @@ namespace QA.Core.DPC.Loader.Container
                     c.Resolve<VersionedCacheProviderBase>(),
                     c.Resolve<ISettingsService>(),
                     c.Resolve<IConnectionProvider>()));
+        }
+
+        private static Func<IUnityContainer, T> CreateTmfAwareFactory<T>(
+            Func<IUnityContainer, T> tmfinstanceFactory,
+            Func<IUnityContainer, T> defaultFactory)
+        {
+            return (container) =>
+            {
+                if (container.IsRegistered<IHttpContextAccessor>())
+                {
+                    var accessor = container.Resolve<IHttpContextAccessor>();
+
+                    // TODO: Extract to constant in type of settings.
+                    if (accessor?.HttpContext.Items.ContainsKey("tmf") == true)
+                    {
+                        return tmfinstanceFactory(container);
+                    }
+                }
+
+                return defaultFactory(container);
+            };
         }
     }
 

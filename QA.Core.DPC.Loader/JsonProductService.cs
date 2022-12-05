@@ -8,6 +8,7 @@ using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
+using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
 using System;
@@ -69,9 +70,7 @@ namespace QA.Core.DPC.Loader
         {
             var json = JsonConvert.DeserializeObject<JObject>(productJson);
 
-            var typeNode = _settings.IsWrapped
-                ? json.SelectToken("product.Type")
-                : json.SelectToken("type");
+            var typeNode = GetTypeNameNode(json);
 
             return typeNode?.Value<string>();
         }
@@ -81,7 +80,14 @@ namespace QA.Core.DPC.Loader
             return DeserializeProduct(JsonConvert.DeserializeObject<JObject>(productJson), definition);
         }
 
-        public Article DeserializeProduct(JObject rootArticleDictionary, Content definition)
+        protected JToken GetTypeNameNode(JObject root)
+        {
+            return _settings.IsWrapped
+                ? root.SelectToken(_settings.WrapperName + ".Type")
+                : root.Property("type", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private Article DeserializeProduct(JObject rootArticleDictionary, Content definition)
         {
             if (_settings.IsWrapped)
             {
@@ -93,10 +99,15 @@ namespace QA.Core.DPC.Loader
             }
 
             var productDeserializer = ObjectFactoryBase.Resolve<IProductDeserializer>();
-            JsonProductDataSource productDataSource = new(rootArticleDictionary);
-            
-            return productDeserializer.Deserialize(productDataSource, definition);
+            var productDataSource = CreateDataSource(rootArticleDictionary);
+
+            var article = productDeserializer.Deserialize(productDataSource, definition);
+
+            return article;
         }
+
+        protected virtual IProductDataSource CreateDataSource(IDictionary<string, JToken> tokensDict) =>
+            new JsonProductDataSource(tokensDict);
 
         public string SerializeProduct(Article article, IArticleFilter filter, bool includeRegionTags = false)
         {
@@ -117,7 +128,7 @@ namespace QA.Core.DPC.Loader
                     .Where(field => _settings.Fields.Contains(field.Key))
                     .ToDictionary(pair => pair.Key, pair => pair.Value);
             }
-            
+
             sw.Stop();
             _logger.Debug("Product {1} conversion took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
 
@@ -428,7 +439,9 @@ namespace QA.Core.DPC.Loader
 
             contentSchema.Properties.Add(IdProp, new JSchema
             {
-                Type = JSchemaType.Integer, Minimum = 0, ExclusiveMinimum = true
+                Type = JSchemaType.Integer,
+                Minimum = 0,
+                ExclusiveMinimum = true
             });
 
             contentSchema.Required.Add(IdProp);
@@ -459,8 +472,7 @@ namespace QA.Core.DPC.Loader
 
                     if (qpField == null)
                     {
-                        throw new InvalidOperationException($@"There is a field id={
-                            field.FieldId} which specified in product definition and missing in the content id={definition.ContentId}");
+                        throw new InvalidOperationException($@"There is a field id={field.FieldId} which specified in product definition and missing in the content id={definition.ContentId}");
                     }
 
                     if (field is ExtensionField extensionField)
@@ -641,7 +653,8 @@ namespace QA.Core.DPC.Loader
 
                 return AttachFieldData(qpField, new JSchema
                 {
-                    Type = JSchemaType.Array, Items = { backwardItemSchema }
+                    Type = JSchemaType.Array,
+                    Items = { backwardItemSchema }
                 });
             }
             else if (field is EntityField entityField)
@@ -658,7 +671,8 @@ namespace QA.Core.DPC.Loader
 
                     return AttachFieldData(qpField, new JSchema
                     {
-                        Type = JSchemaType.Array, Items = { arrayItemSchema }
+                        Type = JSchemaType.Array,
+                        Items = { arrayItemSchema }
                     });
                 }
             }
@@ -859,12 +873,17 @@ namespace QA.Core.DPC.Loader
 
                     if (value != null && !(value is string && string.IsNullOrEmpty((string)value)))
                     {
-                        dict[field.FieldName] = value;
+                        AssignField(dict, field.FieldName, value);
                     }
                 }
             }
 
             return dict;
+        }
+
+        protected virtual void AssignField(Dictionary<string, object> dict, string name, object value)
+        {
+            dict[name] = value;
         }
 
         private void MergeExtensionFields(
@@ -875,7 +894,7 @@ namespace QA.Core.DPC.Loader
                 return;
             }
 
-            dict[field.FieldName] = field.Item.ContentName;
+            AssignField(dict, field.FieldName, field.Item.ContentName);
 
             foreach (ArticleField childField in field.Item.Fields.Values)
             {
@@ -883,7 +902,7 @@ namespace QA.Core.DPC.Loader
 
                 if (value != null && !(value is string && string.IsNullOrEmpty((string)value)))
                 {
-                    dict[childField.FieldName] = value;
+                    AssignField(dict, childField.FieldName, value);
                 }
             }
         }
