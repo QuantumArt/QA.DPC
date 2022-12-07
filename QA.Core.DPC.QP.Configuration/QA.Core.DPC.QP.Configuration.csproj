@@ -20,7 +20,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.7.15" />
     <PackageReference Include="Quantumart.AspNetCore" Version="5.0.1" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="System.Runtime.Caching" Version="6.0.0" />
     <PackageReference Include="Unity" Version="5.11.10" />
     <PackageReference Include="Unity.Container" Version="5.11.11" />
