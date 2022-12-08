@@ -175,6 +175,7 @@ namespace QA.Core.DPC.API.Update
 
         public InsertData[] Create(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false)
         {
+            product.Id = 0;
             return Update(product, definition, isLive, createVersions);
         }
 

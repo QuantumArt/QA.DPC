@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
+using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.Core.DPC.API
 {
@@ -58,7 +59,7 @@ namespace QA.Core.DPC.API
             Update<Article>(product, url);
         }
 
-        public void CreateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
+        public int? CreateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
         {
 			throw new NotSupportedException();
         }

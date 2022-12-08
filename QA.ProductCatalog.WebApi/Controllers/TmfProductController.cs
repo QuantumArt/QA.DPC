@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Loader;
 using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
@@ -16,7 +17,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
     [ApiController]
     [IdentityResolver]
     [TmfProductFormat]
-    [Route("api/{customerCode}/{version}/{slug}")]
+    [Route(TmfProductService.ApiPrefix + "/{customerCode}/{version}/{slug}")]
     [Produces(MediaTypeNames.Application.Json)]
     public class TmfProductController : Controller
     {
@@ -112,7 +113,6 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="slug">Definition identifier (e.g. productSpecification)</param>
         /// <param name="version">Definition version (e.g. v1)</param>
         /// <param name="tmfProductId">Identifier of product to delete</param>
-        /// <response code="202">Created or updated</response>
         /// <response code="406">Unsupported format</response>
         [HttpDelete("{tmfProductId}")]
         public IActionResult Delete(
@@ -197,9 +197,9 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
         /// <param name="version">Definition version (e.g. V1)</param>
         /// <param name="product">Product in json format</param>
-        /// <response code="202">Created or updated</response>
+        /// <response code="201">Created or updated</response>
         /// <response code="406">Unsupported format</response>
-        [ProducesResponseType(202)]
+        [ProducesResponseType(201)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpPost]
         public ActionResult Create(
@@ -209,15 +209,22 @@ namespace QA.ProductCatalog.WebApi.Controllers
         {
             _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
 
+            HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
+            HttpContext.Items["includeRegionTags"] = false;
+
             var dbProductService = _databaseProductServiceFactory();
 
-            product.Id = 0;
-            _ = SetPlainFieldValue<string>(product.Fields, TmfIdFieldName, null);
+            var createdProductId = dbProductService.CreateProduct(slug, version, product);
 
-            // TODO: Remove id to create new article?
-            dbProductService.CreateProduct(slug, version, product);
+            if (!createdProductId.HasValue)
+            {
+                return BadRequest();
+            }
 
-            return Created(HttpContext.Request.Path + new PathString("/" + product.Id), null);
+            var createdProduct = dbProductService.GetProduct(slug, version, createdProductId.Value);
+            var createdTmfId = ((PlainArticleField)createdProduct.Fields[TmfIdFieldName]).Value;
+
+            return Created(HttpContext.Request.Path + new PathString("/" + createdTmfId), createdProduct);
         }
 
         private static JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys)

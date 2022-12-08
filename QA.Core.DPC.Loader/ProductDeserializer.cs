@@ -68,7 +68,11 @@ namespace QA.Core.DPC.Loader
             }
         }
 
-        private Article DeserializeArticle(IProductDataSource productDataSource, Models.Configuration.Content definition, DBConnector connector, Context context)
+        protected virtual Article DeserializeArticle(
+            IProductDataSource productDataSource,
+            Models.Configuration.Content definition,
+            DBConnector connector,
+            Context context)
         {
             if (productDataSource == null)
                 return null;

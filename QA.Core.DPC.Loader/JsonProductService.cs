@@ -852,7 +852,7 @@ namespace QA.Core.DPC.Loader
             public string AbsoluteUrl { get; set; }
         }
 
-        public Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
+        public virtual Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
         {
             if (article == null || !article.Visible || article.Archived || !filter.Matches(article))
             {

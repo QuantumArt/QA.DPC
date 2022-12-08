@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
@@ -15,6 +16,13 @@ namespace QA.Core.DPC.Loader
 {
     public class TmfProductService : JsonProductService
     {
+        public const string ApiPrefix = "api";
+
+        private static readonly PathString _apiPathPrefix =
+            "/" + ApiPrefix.TrimStart('/');
+
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
         public TmfProductService(
             IConnectionProvider connectionProvider,
             ILogger logger,
@@ -24,9 +32,20 @@ namespace QA.Core.DPC.Loader
             IRegionTagReplaceService regionTagReplaceService,
             IOptions<LoaderProperties> loaderProperties,
             IHttpClientFactory factory,
-            JsonProductServiceSettings settings)
-            : base(connectionProvider, logger, contentService, fieldService, virtualFieldContextService, regionTagReplaceService, loaderProperties, factory, settings)
+            JsonProductServiceSettings settings,
+            IHttpContextAccessor httpContextAccessor)
+            : base(
+                  connectionProvider,
+                  logger,
+                  contentService,
+                  fieldService,
+                  virtualFieldContextService,
+                  regionTagReplaceService,
+                  loaderProperties,
+                  factory,
+                  settings)
         {
+            _httpContextAccessor = httpContextAccessor;
         }
 
         protected override void AssignField(Dictionary<string, object> dict, string name, object value)
@@ -36,6 +55,82 @@ namespace QA.Core.DPC.Loader
                 : name;
 
             base.AssignField(dict, fieldName, value);
+        }
+
+        public override Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
+        {
+            var convertedArticle = base.ConvertArticle(article, filter);
+
+            if (convertedArticle is null)
+            {
+                return convertedArticle;
+            }
+
+            convertedArticle = new Dictionary<string, object>(convertedArticle, StringComparer.OrdinalIgnoreCase);
+
+            _ = convertedArticle.Remove("type");
+            bool hasType = article is not null && !string.IsNullOrEmpty(article.ContentDisplayName);
+            if (hasType)
+            {
+                convertedArticle["@type"] = article.ContentDisplayName;
+            }
+
+            if (article is null)
+            {
+                return convertedArticle;
+            }
+
+            if (hasType && convertedArticle.TryGetValue(nameof(Article.Id), out var resourceId))
+            {
+                var resourceUri = GetResourceUri(article.ContentDisplayName, resourceId.ToString());
+                if (resourceUri is not null)
+                {
+                    convertedArticle["href"] = resourceUri.AbsoluteUri;
+                }
+            }
+
+            convertedArticle["lastUpdate"] = article.Modified;
+
+            return convertedArticle;
+        }
+
+        private Uri GetResourceUri(string type, string resourceId)
+        {
+            var request = _httpContextAccessor.HttpContext.Request;
+
+            (string customerCode, string version, _) = GetTmfRouteValues(request.RouteValues);
+
+            var builder = CreateBuilderFromRequestHost(request);
+            builder.Path = _apiPathPrefix + new PathString($"/{customerCode}/{version}/{type}/{resourceId}");
+
+            return builder.Uri;
+        }
+
+        private static UriBuilder CreateBuilderFromRequestHost(HttpRequest request) =>
+            request.Host.Port.HasValue
+                ? new UriBuilder(request.Scheme, request.Host.Host, request.Host.Port.Value)
+                : new UriBuilder(request.Scheme, request.Host.Host);
+
+        private static (string customerCode, string version, string slug) GetTmfRouteValues(
+            IReadOnlyDictionary<string, object> routeValues)
+        {
+            var customerCode = GetRouteString(routeValues, "customerCode");
+            var version = GetRouteString(routeValues, "version");
+            var slug = GetRouteString(routeValues, "slug");
+
+            return (customerCode, version, slug);
+        }
+
+        private static string GetRouteString(IReadOnlyDictionary<string, object> routeValues, string name) =>
+            TryGetRouteValue<string>(routeValues, name, out var value)
+                ? value
+                : throw new Exception();
+
+        private static bool TryGetRouteValue<TValue>(IReadOnlyDictionary<string, object> routeValues, string name, out TValue typedValue)
+        {
+            var isSuccess = routeValues.TryGetValue(name, out object value) && value is TValue;
+            typedValue = (TValue)value;
+            return isSuccess;
         }
 
         protected override IProductDataSource CreateDataSource(IDictionary<string, JToken> tokensDict) =>

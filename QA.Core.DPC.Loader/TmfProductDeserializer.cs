@@ -7,6 +7,7 @@ using Quantumart.QP8.BLL.Repository.ArticleMatching;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QPublishing.Database;
 using System;
 using System.Linq;
 using Article = QA.Core.Models.Entities.Article;
@@ -37,6 +38,24 @@ namespace QA.Core.DPC.Loader
             TryResolveTmfId(productDataSource, article, field);
         }
 
+        protected override Article DeserializeArticle(
+            IProductDataSource productDataSource,
+            Models.Configuration.Content definition,
+            DBConnector connector,
+            Context context)
+        {
+            var article = base.DeserializeArticle(productDataSource, definition, connector, context);
+
+            if (article is not null
+                && article.Fields.TryGetValue("lifecycleStatus", out var lifecycleStatus)
+                && lifecycleStatus is PlainArticleField plainLifecycleStatus)
+            {
+                plainLifecycleStatus.NativeValue = plainLifecycleStatus.Value = "Active";
+            }
+
+            return article;
+        }
+
         protected override int GetArticleId(IProductDataSource productDataSource, int contentId)
         {
             int articleId = base.GetArticleId(productDataSource, contentId);
@@ -62,16 +81,16 @@ namespace QA.Core.DPC.Loader
                 return;
             }
 
-            string tmfId = productDataSource.GetTmfArticleId();
-            if (string.IsNullOrWhiteSpace(tmfId))
+            string tmfArticleId = productDataSource.GetTmfArticleId();
+            if (string.IsNullOrWhiteSpace(tmfArticleId))
             {
+                plainField.NativeValue = plainField.Value = Guid.NewGuid().ToString();
                 return;
             }
 
-            plainField.Value = tmfId;
-            plainField.NativeValue = tmfId;
+            plainField.NativeValue = plainField.Value = tmfArticleId;
 
-            article.Id = ResolveArticleId(tmfId, articleField.ContentId ?? default);
+            article.Id = ResolveArticleId(tmfArticleId, articleField.ContentId ?? default);
         }
 
         private int ResolveArticleId(string externalId, int contentId)
