@@ -43,7 +43,7 @@
     <PackageReference Include="QP.ConfigurationService.Client" Version="0.2.0" />
     <PackageReference Include="Quantumart.AspNetCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.3.0" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.3.1" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
     <PackageReference Include="Unity.Abstractions" Version="5.11.7" />
