@@ -9,6 +9,7 @@ using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.WebApi.Filters;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.Mime;
 
@@ -26,7 +27,8 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
         private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "fields"
+            "fields",
+            "lastUpdate"
         };
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
@@ -46,17 +48,24 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
         /// <param name="version">Definition version (e.g. V1)</param>
         /// <param name="fields">Fields filter</param>
+        /// <param name="lastUpdate">Last modified date filter</param>
         /// <returns>Product list (untyped)</returns>
         /// <response code="406">Unsupported format</response>
         [HttpGet]
-        public IEnumerable<Article> List(
+        public IActionResult List(
             [FromRoute] string slug,
             [FromRoute] string version,
-            [FromQuery] string[] fields = null)
+            [FromQuery] string[] fields = null,
+            [FromQuery] string lastUpdate = default)
         {
             _ = _logger.LogDebug(() => new { version, slug, fields }.ToString());
             var dbProductService = _databaseProductServiceFactory();
             var filter = ConvertToFilter(Request.Query, _reservedSearchParameters);
+
+            if (!TryParseLastUpdateDate(lastUpdate, out var lastUpdateDate))
+            {
+                return BadRequest();
+            }
 
             HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
             HttpContext.Items["includeRegionTags"] = false;
@@ -67,11 +76,32 @@ namespace QA.ProductCatalog.WebApi.Controllers
                     .Select(product => (int)product["id"])
                     .ToArray();
 
+            List<Article> products = new(productIds.Length);
             foreach (var productId in productIds)
             {
                 // TODO: Optimize (get all of products at ones)
-                yield return dbProductService.GetProduct(slug, version, productId);
+                var product = dbProductService.GetProduct(slug, version, productId);
+
+                if (lastUpdateDate != default && product.Modified != lastUpdateDate)
+                {
+                    continue;
+                }
+
+                products.Add(product);
             }
+
+            return Ok(products);
+        }
+
+        private static bool TryParseLastUpdateDate(string lastUpdate, out DateTime lastUpdateDate)
+        {
+            if (string.IsNullOrEmpty(lastUpdate))
+            {
+                lastUpdateDate = default;
+                return true;
+            }
+
+            return DateTime.TryParse(lastUpdate.Trim('"'), out lastUpdateDate);
         }
 
         /// <summary>
@@ -81,6 +111,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="version">Definition version (e.g. v1)</param>
         /// <param name="tmfProductId">Identifier of product to get details for</param>
         /// <param name="fields">Fields filter</param>
+        /// <param name="lastUpdate">Last modified date filter</param>
         /// <returns>Product details</returns>
         /// <response code="406">Unsupported format</response>
         /// <response code="404">Product not found</response>
@@ -90,9 +121,15 @@ namespace QA.ProductCatalog.WebApi.Controllers
             [FromRoute] string slug,
             [FromRoute] string version,
             [FromRoute] string tmfProductId,
-            [FromQuery] string[] fields = null)
+            [FromQuery] string[] fields = null,
+            [FromQuery] string lastUpdate = default)
         {
             _ = _logger.LogDebug(() => new { version, slug, tmfProductId, fields }.ToString());
+
+            if (!TryParseLastUpdateDate(lastUpdate, out var lastUpdateDate))
+            {
+                return BadRequest();
+            }
 
             var dbProductService = _databaseProductServiceFactory();
 
@@ -104,6 +141,11 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             var product = dbProductService.GetProduct(slug, version, foundArticleId.Value);
 
+            if (lastUpdateDate != default && product.Modified != lastUpdateDate)
+            {
+                return NotFound();
+            }
+
             return Ok(product);
         }
 
@@ -113,6 +155,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="slug">Definition identifier (e.g. productSpecification)</param>
         /// <param name="version">Definition version (e.g. v1)</param>
         /// <param name="tmfProductId">Identifier of product to delete</param>
+        /// <response code="204">Successfully deleted</response>
         /// <response code="406">Unsupported format</response>
         [HttpDelete("{tmfProductId}")]
         public IActionResult Delete(
@@ -131,24 +174,24 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             dbProductService.DeleteProduct(slug, version, foundArticleId.Value);
 
-            return Ok();
+            return NoContent();
         }
 
         /// <summary>
-        /// Create or update product
+        /// Update product
         /// </summary>
         /// <param name="slug">Definition identifier (e.g. productSpecification)</param>
         /// <param name="version">Definition version (e.g. v1)</param>
         /// <param name="tmfProductId">Identifier of product to update</param>
         /// <param name="product">Product in json format</param>
-        /// <response code="202">Created or updated</response>
+        /// <response code="200">Updated</response>
         /// <response code="406">Unsupported format</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpPatch("{tmfProductId}")]
         public ActionResult Update(string slug, string version, [FromRoute] string tmfProductId, [FromBody] Article product)
         {
-            _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
+            _ = _logger.LogDebug(() => new { slug, version, tmfProductId, productContentId = product.ContentId }.ToString());
 
             var dbProductService = _databaseProductServiceFactory();
 
@@ -158,12 +201,19 @@ namespace QA.ProductCatalog.WebApi.Controllers
                 return NotFound();
             }
 
-            product.Id = foundArticleId.Value;
-            _ = SetPlainFieldValue(product.Fields, TmfIdFieldName, tmfProductId);
+            var modifiedProduct = dbProductService.GetProduct(slug, version, foundArticleId.Value);
 
-            dbProductService.UpdateProduct(slug, version, product);
+            foreach ((string fieldName, ArticleField fieldValue) in product.Fields.Where(p => p.Value is PlainArticleField field && field.NativeValue != null))
+            {
+                modifiedProduct.Fields[fieldName] = fieldValue;
+            }
 
-            return Ok();
+            modifiedProduct.Id = foundArticleId.Value;
+            _ = SetPlainFieldValue(modifiedProduct.Fields, TmfIdFieldName, tmfProductId);
+
+            dbProductService.UpdateProduct(slug, version, modifiedProduct);
+
+            return Ok(modifiedProduct);
         }
 
         private static bool SetPlainFieldValue<T>(IReadOnlyDictionary<string, ArticleField> fields, string fieldName, T value)
@@ -192,12 +242,12 @@ namespace QA.ProductCatalog.WebApi.Controllers
         }
 
         /// <summary>
-        /// Create or update product
+        /// Create product
         /// </summary>
         /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
         /// <param name="version">Definition version (e.g. V1)</param>
         /// <param name="product">Product in json format</param>
-        /// <response code="201">Created or updated</response>
+        /// <response code="201">Created</response>
         /// <response code="406">Unsupported format</response>
         [ProducesResponseType(201)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
@@ -234,7 +284,13 @@ namespace QA.ProductCatalog.WebApi.Controllers
             {
                 if (!excludedKeys.Contains(key))
                 {
-                    filter.Add(new JProperty(key, values.Single()));
+                    var fieldName = key[0..1].ToUpper() + key[1..];
+                    if (fieldName.Equals("id", StringComparison.OrdinalIgnoreCase))
+                    {
+                        fieldName = TmfIdFieldName;
+                    }
+
+                    filter.Add(new JProperty(fieldName, values.Single()));
                 }
             }
 
@@ -247,13 +303,13 @@ namespace QA.ProductCatalog.WebApi.Controllers
             HttpContext.Items["includeRegionTags"] = false;
 
             // TODO: Remove duplicated constant TmfId.
-            var foundArticles = dbProductService.SearchProducts(slug, version, $"TmfId={tmfProductId}");
+            var foundArticles = dbProductService.SearchProducts(slug, version, $"{TmfIdFieldName}={tmfProductId}");
 
             return foundArticles.Length switch
             {
                 1 => foundArticles[0],
                 0 => null,
-                _ => throw new InvalidOperationException("Found duplicated id value. Ids should be unique."),
+                _ => throw new InvalidOperationException("Found duplicated id products. Ids should be unique."),
             };
         }
     }

@@ -176,7 +176,12 @@ namespace QA.Core.DPC.API.Update
         public InsertData[] Create(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false)
         {
             product.Id = 0;
-            return Update(product, definition, isLive, createVersions);
+            var inserted = Update(product, definition, isLive, createVersions);
+
+            var newArticleIds = inserted.Select(item => item.CreatedArticleId).ToArray();
+            _articleService.SimplePublish(newArticleIds);
+
+            return inserted;
         }
 
         public void Delete(int productId, ProductDefinition definition)
@@ -192,6 +197,7 @@ namespace QA.Core.DPC.API.Update
                 var qpArticle = _articleService.Read(productId);
 
                 _deleteAction.DeleteProduct(qpArticle, definition, true, false, null);
+                transaction.Commit();
             }
             catch (MessageResultException ex)
             {

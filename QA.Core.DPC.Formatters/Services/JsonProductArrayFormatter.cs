@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System;
@@ -30,11 +31,18 @@ namespace QA.Core.DPC.Formatters.Services
             await writer.WriteStartArrayAsync();
             await writer.FlushAsync();
 
-            foreach (var product in products)
+            using var productEnumerator = products.GetEnumerator();
+            for (int i = 0; productEnumerator.MoveNext(); i++)
             {
-                await _formatter.Write(stream, product);
-            }
+                if (i != 0)
+                {
+                    await sw.WriteAsync(",");
+                    await sw.FlushAsync();
+                }
 
+                await _formatter.Write(stream, productEnumerator.Current);
+            }
+            
             await writer.WriteEndArrayAsync();
             await writer.FlushAsync();
         }

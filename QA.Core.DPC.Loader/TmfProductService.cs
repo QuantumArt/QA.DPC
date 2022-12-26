@@ -68,7 +68,6 @@ namespace QA.Core.DPC.Loader
 
             convertedArticle = new Dictionary<string, object>(convertedArticle, StringComparer.OrdinalIgnoreCase);
 
-            _ = convertedArticle.Remove("type");
             bool hasType = article is not null && !string.IsNullOrEmpty(article.ContentDisplayName);
             if (hasType)
             {

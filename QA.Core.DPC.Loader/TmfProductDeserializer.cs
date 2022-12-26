@@ -1,4 +1,5 @@
-﻿using QA.Core.Cache;
+﻿using Microsoft.AspNetCore.Http;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -9,6 +10,7 @@ using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QPublishing.Database;
 using System;
+using System.IO;
 using System.Linq;
 using Article = QA.Core.Models.Entities.Article;
 
@@ -19,6 +21,7 @@ namespace QA.Core.DPC.Loader
         public const string TmfIdFieldName = "TmfId";
 
         protected readonly IArticleMatchService<ConditionBase> _articleMatchService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TmfProductDeserializer(
             IFieldService fieldService,
@@ -26,10 +29,12 @@ namespace QA.Core.DPC.Loader
             ICacheItemWatcher cacheItemWatcher,
             IContextStorage contextStorage,
             IConnectionProvider connectionProvider,
-            IArticleMatchService<ConditionBase> articleMatchService)
+            IArticleMatchService<ConditionBase> articleMatchService,
+            IHttpContextAccessor httpContextAccessor)
             : base(fieldService, serviceFactory, cacheItemWatcher, contextStorage, connectionProvider)
         {
             _articleMatchService = articleMatchService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         protected override void ApplyArticleField(Article article, ArticleField field, IProductDataSource productDataSource)
@@ -46,14 +51,34 @@ namespace QA.Core.DPC.Loader
         {
             var article = base.DeserializeArticle(productDataSource, definition, connector, context);
 
-            if (article is not null
-                && article.Fields.TryGetValue("lifecycleStatus", out var lifecycleStatus)
-                && lifecycleStatus is PlainArticleField plainLifecycleStatus)
+            if (HttpMethods.IsPost(_httpContextAccessor.HttpContext.Request.Method)
+                && article is not null)
             {
-                plainLifecycleStatus.NativeValue = plainLifecycleStatus.Value = "Active";
+                // TODO: Remove after implementing support for default values in QP.
+                if (TryGetPlainField(article, "PriceType", out var priceType))
+                {
+                    priceType.NativeValue = priceType.Value = "recurring";
+                }
+                else if (TryGetPlainField(article, "LifecycleStatus", out var lifecycleStatus))
+                {
+                    lifecycleStatus.NativeValue = lifecycleStatus.Value = "Active";
+                }
             }
 
             return article;
+        }
+
+        private static bool TryGetPlainField(Article article, string name, out PlainArticleField foundField)
+        {
+            if (article.Fields.TryGetValue(name, out var field)
+                && field is PlainArticleField plainField)
+            {
+                foundField = plainField;
+                return true;
+            }
+
+            foundField = null;
+            return false;
         }
 
         protected override int GetArticleId(IProductDataSource productDataSource, int contentId)
