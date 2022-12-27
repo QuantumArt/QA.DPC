@@ -23,6 +23,8 @@ namespace QA.Core.DPC.Loader
         protected readonly IArticleMatchService<ConditionBase> _articleMatchService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        public int _nonExistentArticleId = -1;
+
         public TmfProductDeserializer(
             IFieldService fieldService,
             IServiceFactory serviceFactory,
@@ -59,7 +61,8 @@ namespace QA.Core.DPC.Loader
                 {
                     priceType.NativeValue = priceType.Value = "recurring";
                 }
-                else if (TryGetPlainField(article, "LifecycleStatus", out var lifecycleStatus))
+
+                if (TryGetPlainField(article, "LifecycleStatus", out var lifecycleStatus))
                 {
                     lifecycleStatus.NativeValue = lifecycleStatus.Value = "Active";
                 }
@@ -132,7 +135,7 @@ namespace QA.Core.DPC.Loader
                 .MatchArticles(contentId, condition, MatchMode.Strict)
                 .SingleOrDefault();
 
-            return productArticle?.Id ?? default;
+            return productArticle?.Id ?? _nonExistentArticleId--;
         }
     }
 }
