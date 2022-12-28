@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using QA.Core.DPC.Loader;
 using QA.Core.Logger;
 using QA.Core.Models;
+using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.WebApi.Filters;
@@ -31,15 +32,18 @@ namespace QA.ProductCatalog.WebApi.Controllers
             "lastUpdate"
         };
 
+        private readonly IContentDefinitionService _contentDefinitionService;
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly ILogger _logger;
 
         public TmfProductController(
             Func<IProductAPIService> databaseProductServiceFactory,
-            ILogger logger)
+            ILogger logger,
+            IContentDefinitionService contentDefinitionService)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _contentDefinitionService = contentDefinitionService;
         }
 
         /// <summary>
@@ -60,11 +64,18 @@ namespace QA.ProductCatalog.WebApi.Controllers
         {
             _ = _logger.LogDebug(() => new { version, slug, fields }.ToString());
             var dbProductService = _databaseProductServiceFactory();
-            var filter = ConvertToFilter(Request.Query, _reservedSearchParameters);
+
+            var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
 
             if (!TryParseLastUpdateDate(lastUpdate, out var lastUpdateDate))
             {
                 return BadRequest();
+            }
+
+            JObject filter = ConvertToFilter(Request.Query, _reservedSearchParameters, definition.Content.Fields);
+            if (filter == null)
+            {
+                return BadRequest(ModelState);
             }
 
             HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
@@ -203,7 +214,8 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             var modifiedProduct = dbProductService.GetProduct(slug, version, foundArticleId.Value);
 
-            foreach ((string fieldName, ArticleField fieldValue) in product.Fields.Where(p => p.Value is PlainArticleField field && field.NativeValue != null))
+            foreach ((string fieldName, ArticleField fieldValue) in product.Fields
+                .Where(p => p.Value is PlainArticleField field && field.NativeValue != null))
             {
                 modifiedProduct.Fields[fieldName] = fieldValue;
             }
@@ -277,21 +289,37 @@ namespace QA.ProductCatalog.WebApi.Controllers
             return Created(HttpContext.Request.Path + new PathString("/" + createdTmfId), createdProduct);
         }
 
-        private static JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys)
+        private static readonly Dictionary<string, string> _fieldToFilterMappings = new()
+        {
+            [TmfIdFieldName] = nameof(Article.Id)
+        };
+
+        private static JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys, IEnumerable<Field> fields)
         {
             var filter = new JObject();
+
+            if (searchParameters.Count == 0)
+            {
+                return filter;
+            }
+
+            var filterToFieldMappings = fields
+                .OfType<PlainField>()
+                .Select(field => field.FieldName)
+                .ToDictionary(
+                    fieldName => _fieldToFilterMappings.TryGetValue(fieldName, out var filter) ? filter : fieldName,
+                    fieldName => fieldName,
+                    StringComparer.OrdinalIgnoreCase);
+
             foreach (var (key, values) in searchParameters)
             {
-                if (!excludedKeys.Contains(key))
+                if (excludedKeys.Contains(key) ||
+                    !filterToFieldMappings.TryGetValue(key, out var fieldName))
                 {
-                    var fieldName = key[0..1].ToUpper() + key[1..];
-                    if (fieldName.Equals("id", StringComparison.OrdinalIgnoreCase))
-                    {
-                        fieldName = TmfIdFieldName;
-                    }
-
-                    filter.Add(new JProperty(fieldName, values.Single()));
+                    continue;
                 }
+
+                filter.Add(new JProperty(fieldName, values.Single()));
             }
 
             return filter;
