@@ -106,7 +106,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
         private static bool TryParseLastUpdateDate(string lastUpdate, out DateTime lastUpdateDate)
         {
-            if (string.IsNullOrEmpty(lastUpdate))
+            if (lastUpdate is null)
             {
                 lastUpdateDate = default;
                 return true;
@@ -144,7 +144,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             var dbProductService = _databaseProductServiceFactory();
 
-            var foundArticleId = FindProductByTmfId(dbProductService, slug, version, tmfProductId);
+            var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
             if (foundArticleId is null)
             {
                 return NotFound();
@@ -177,7 +177,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
             _ = _logger.LogDebug(() => new { version, slug, tmfProductId }.ToString());
             var dbProductService = _databaseProductServiceFactory();
 
-            var foundArticleId = FindProductByTmfId(dbProductService, slug, version, tmfProductId);
+            var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
             if (foundArticleId is null)
             {
                 return NotFound();
@@ -206,7 +206,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             var dbProductService = _databaseProductServiceFactory();
 
-            var foundArticleId = FindProductByTmfId(dbProductService, slug, version, tmfProductId);
+            var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
             if (foundArticleId is null)
             {
                 return NotFound();
@@ -325,7 +325,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
             return filter;
         }
 
-        private int? FindProductByTmfId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
+        private int? ResolveProductId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
         {
             HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
             HttpContext.Items["includeRegionTags"] = false;
