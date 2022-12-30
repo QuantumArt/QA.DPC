@@ -68,15 +68,15 @@ namespace QA.Core.DPC.Loader
 
             convertedArticle = new Dictionary<string, object>(convertedArticle, StringComparer.OrdinalIgnoreCase);
 
-            bool hasType = article is not null && !string.IsNullOrEmpty(article.ContentDisplayName);
-            if (hasType)
-            {
-                convertedArticle["@type"] = article.ContentDisplayName;
-            }
-
             if (article is null)
             {
                 return convertedArticle;
+            }
+
+            bool hasType = !string.IsNullOrEmpty(article.ContentDisplayName);
+            if (hasType)
+            {
+                convertedArticle["@type"] = article.ContentDisplayName;
             }
 
             if (hasType && convertedArticle.TryGetValue(nameof(Article.Id), out var resourceId))
@@ -123,7 +123,7 @@ namespace QA.Core.DPC.Loader
         private static string GetRouteString(IReadOnlyDictionary<string, object> routeValues, string name) =>
             TryGetRouteValue<string>(routeValues, name, out var value)
                 ? value
-                : throw new Exception();
+                : throw new InvalidOperationException($"Missing mandatory route value {name}.");
 
         private static bool TryGetRouteValue<TValue>(IReadOnlyDictionary<string, object> routeValues, string name, out TValue typedValue)
         {

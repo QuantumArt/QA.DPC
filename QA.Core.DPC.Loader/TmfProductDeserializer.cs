@@ -123,19 +123,22 @@ namespace QA.Core.DPC.Loader
 
         private int ResolveArticleId(string externalId, int contentId)
         {
-            _ = _contentService.Read(contentId);
-
             var queryField = new QueryField { ContentId = contentId, Name = TmfIdFieldName };
             var condition = new ComparitionCondition(
                 new[] { queryField },
                 externalId,
                 "=");
 
-            var productArticle = ArticleMatchService
-                .MatchArticles(contentId, condition, MatchMode.Strict)
-                .SingleOrDefault();
+            var foundArticles = ArticleMatchService
+                .MatchArticles(contentId, condition, MatchMode.Strict);
 
-            return productArticle?.Id ?? _nonExistentArticleId--;
+            return foundArticles.Length switch
+            {
+                0 => _nonExistentArticleId--,
+                1 => foundArticles[0].Id,
+                _ => throw new InvalidOperationException(
+                    $"More then one article found with {TmfIdFieldName}={externalId}"),
+            };
         }
     }
 }
