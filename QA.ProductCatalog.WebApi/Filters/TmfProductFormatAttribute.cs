@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
+using QA.Core.DPC.Loader.Container;
 using System;
 
 namespace QA.ProductCatalog.WebApi.Filters
@@ -8,7 +9,7 @@ namespace QA.ProductCatalog.WebApi.Filters
     {
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            context.HttpContext.Items["tmf"] = true;
+            context.HttpContext.Items[LoaderConfigurationExtension.TmfItemIdentifier] = true;
         }
     }
 }

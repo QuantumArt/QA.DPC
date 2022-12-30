@@ -30,6 +30,7 @@ namespace QA.Core.DPC.Loader.Container
         where TLoader : IProductService
     {
         public const string AlwaysAdminUserProviderName = "AlwaysAdminUserProvider";
+        public const string TmfItemIdentifier = "tmf";
 
         //TODO affect to null-service in some cases
         public ITypeLifetimeManager GetHttpContextLifeTimeManager()
@@ -175,8 +176,7 @@ namespace QA.Core.DPC.Loader.Container
                 {
                     var accessor = container.Resolve<IHttpContextAccessor>();
 
-                    // TODO: Extract to constant in type of settings.
-                    if (accessor?.HttpContext.Items.ContainsKey("tmf") == true)
+                    if (accessor?.HttpContext.Items.ContainsKey(TmfItemIdentifier) == true)
                     {
                         return tmfinstanceFactory(container);
                     }
