@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace QA.Core.DPC.Loader
             "/" + ApiPrefix.TrimStart('/');
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string _tmfIdFieldName;
 
         public TmfProductService(
             IConnectionProvider connectionProvider,
@@ -33,7 +35,8 @@ namespace QA.Core.DPC.Loader
             IOptions<LoaderProperties> loaderProperties,
             IHttpClientFactory factory,
             JsonProductServiceSettings settings,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ISettingsService settingsService)
             : base(
                   connectionProvider,
                   logger,
@@ -46,11 +49,12 @@ namespace QA.Core.DPC.Loader
                   settings)
         {
             _httpContextAccessor = httpContextAccessor;
+            _tmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
         }
 
         protected override void AssignField(Dictionary<string, object> dict, string name, object value)
         {
-            string fieldName = name.Equals(TmfProductDeserializer.TmfIdFieldName, StringComparison.OrdinalIgnoreCase)
+            string fieldName = name.Equals(_tmfIdFieldName, StringComparison.OrdinalIgnoreCase)
                 ? nameof(Article.Id)
                 : name;
 

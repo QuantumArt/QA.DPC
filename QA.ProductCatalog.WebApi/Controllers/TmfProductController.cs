@@ -6,6 +6,7 @@ using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.WebApi.Filters;
 using System;
@@ -23,9 +24,6 @@ namespace QA.ProductCatalog.WebApi.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     public class TmfProductController : Controller
     {
-        // TODO: Remove duplicated constant TmfId. (TmfProductDeserializer.TmfIdFieldName)
-        public const string TmfIdFieldName = "TmfId";
-
         private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "fields",
@@ -35,15 +33,23 @@ namespace QA.ProductCatalog.WebApi.Controllers
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly ILogger _logger;
+        private readonly string _tmfIdFieldName;
+        private readonly Dictionary<string, string> _fieldToFilterMappings;
 
         public TmfProductController(
             Func<IProductAPIService> databaseProductServiceFactory,
             ILogger logger,
-            IContentDefinitionService contentDefinitionService)
+            IContentDefinitionService contentDefinitionService,
+            ISettingsService settingsService)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _contentDefinitionService = contentDefinitionService;
+            _tmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
+            _fieldToFilterMappings = new()
+            {
+                [_tmfIdFieldName] = nameof(Article.Id)
+            };
         }
 
         /// <summary>
@@ -221,7 +227,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
             }
 
             modifiedProduct.Id = foundArticleId.Value;
-            _ = SetPlainFieldValue(modifiedProduct.Fields, TmfIdFieldName, tmfProductId);
+            _ = SetPlainFieldValue(modifiedProduct.Fields, _tmfIdFieldName, tmfProductId);
 
             dbProductService.UpdateProduct(slug, version, modifiedProduct);
 
@@ -284,17 +290,12 @@ namespace QA.ProductCatalog.WebApi.Controllers
             }
 
             var createdProduct = dbProductService.GetProduct(slug, version, createdProductId.Value);
-            var createdTmfId = ((PlainArticleField)createdProduct.Fields[TmfIdFieldName]).Value;
+            var createdTmfId = ((PlainArticleField)createdProduct.Fields[_tmfIdFieldName]).Value;
 
             return Created(HttpContext.Request.Path + new PathString("/" + createdTmfId), createdProduct);
         }
 
-        private static readonly Dictionary<string, string> _fieldToFilterMappings = new()
-        {
-            [TmfIdFieldName] = nameof(Article.Id)
-        };
-
-        private static JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys, IEnumerable<Field> fields)
+        private JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys, IEnumerable<Field> fields)
         {
             var filter = new JObject();
 
@@ -331,7 +332,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
             HttpContext.Items["includeRegionTags"] = false;
 
             // TODO: Remove duplicated constant TmfId.
-            var foundArticles = dbProductService.SearchProducts(slug, version, $"{TmfIdFieldName}={tmfProductId}");
+            var foundArticles = dbProductService.SearchProducts(slug, version, $"{_tmfIdFieldName}={tmfProductId}");
 
             return foundArticles.Length switch
             {

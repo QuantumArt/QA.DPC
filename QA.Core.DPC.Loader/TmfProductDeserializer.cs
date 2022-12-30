@@ -3,6 +3,7 @@ using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Repository.ArticleMatching;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
@@ -18,7 +19,7 @@ namespace QA.Core.DPC.Loader
 {
     internal class TmfProductDeserializer : ProductDeserializer
     {
-        public const string TmfIdFieldName = "TmfId";
+        private readonly string _tmfIdFieldName;
 
         protected readonly IArticleMatchService<ConditionBase> ArticleMatchService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -32,11 +33,13 @@ namespace QA.Core.DPC.Loader
             IContextStorage contextStorage,
             IConnectionProvider connectionProvider,
             IArticleMatchService<ConditionBase> articleMatchService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            ISettingsService settingsService)
             : base(fieldService, serviceFactory, cacheItemWatcher, contextStorage, connectionProvider)
         {
             ArticleMatchService = articleMatchService;
             _httpContextAccessor = httpContextAccessor;
+            _tmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
         }
 
         protected override void ApplyArticleField(Article article, ArticleField field, IProductDataSource productDataSource)
@@ -103,7 +106,7 @@ namespace QA.Core.DPC.Loader
 
         private void TryResolveTmfId(IProductDataSource productDataSource, Article article, ArticleField articleField)
         {
-            if (!articleField.FieldName.Equals(TmfIdFieldName, StringComparison.OrdinalIgnoreCase)
+            if (!articleField.FieldName.Equals(_tmfIdFieldName, StringComparison.OrdinalIgnoreCase)
                 || articleField is not PlainArticleField plainField)
             {
                 return;
@@ -123,7 +126,7 @@ namespace QA.Core.DPC.Loader
 
         private int ResolveArticleId(string externalId, int contentId)
         {
-            var queryField = new QueryField { ContentId = contentId, Name = TmfIdFieldName };
+            var queryField = new QueryField { ContentId = contentId, Name = _tmfIdFieldName };
             var condition = new ComparitionCondition(
                 new[] { queryField },
                 externalId,
@@ -137,7 +140,7 @@ namespace QA.Core.DPC.Loader
                 0 => _nonExistentArticleId--,
                 1 => foundArticles[0].Id,
                 _ => throw new InvalidOperationException(
-                    $"More then one article found with {TmfIdFieldName}={externalId}: " +
+                    $"More then one article found with {_tmfIdFieldName}={externalId}: " +
                     string.Join(",", foundArticles.Select(a => $"{a.ContentId}:{a.Id}"))),
             };
         }
