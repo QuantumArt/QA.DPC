@@ -20,10 +20,10 @@ namespace QA.Core.DPC.Loader
     {
         public const string TmfIdFieldName = "TmfId";
 
-        protected readonly IArticleMatchService<ConditionBase> _articleMatchService;
+        protected readonly IArticleMatchService<ConditionBase> ArticleMatchService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public int _nonExistentArticleId = -1;
+        private int _nonExistentArticleId = -1;
 
         public TmfProductDeserializer(
             IFieldService fieldService,
@@ -35,7 +35,7 @@ namespace QA.Core.DPC.Loader
             IHttpContextAccessor httpContextAccessor)
             : base(fieldService, serviceFactory, cacheItemWatcher, contextStorage, connectionProvider)
         {
-            _articleMatchService = articleMatchService;
+            ArticleMatchService = articleMatchService;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -95,7 +95,7 @@ namespace QA.Core.DPC.Loader
             string tmfArticleId = productDataSource.GetTmfArticleId();
             if (string.IsNullOrWhiteSpace(tmfArticleId))
             {
-                return default;
+                return _nonExistentArticleId--;
             }
 
             return ResolveArticleId(tmfArticleId, contentId);
@@ -131,7 +131,7 @@ namespace QA.Core.DPC.Loader
                 externalId,
                 "=");
 
-            var productArticle = _articleMatchService
+            var productArticle = ArticleMatchService
                 .MatchArticles(contentId, condition, MatchMode.Strict)
                 .SingleOrDefault();
 
