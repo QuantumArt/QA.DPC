@@ -29,9 +29,9 @@ namespace QA.Core.DPC.Loader
         private string GetExstensionIdQuery(DatabaseType dbType) => $@"
             select ATTRIBUTE_NAME from CONTENT_ATTRIBUTE
             where
-	            CLASSIFIER_ATTRIBUTE_ID = @attributeId and
-	            CONTENT_ID = @contentId and
-	            AGGREGATED = {SqlQuerySyntaxHelper.ToBoolSql(dbType, true)}";
+                CLASSIFIER_ATTRIBUTE_ID = @attributeId and
+                CONTENT_ID = @contentId and
+                AGGREGATED = {SqlQuerySyntaxHelper.ToBoolSql(dbType, true)}";
 
         public ProductDeserializer(
             IFieldService fieldService,

@@ -13,17 +13,17 @@ using System.Linq;
 namespace QA.Core.DPC.API.Search
 {
     public class ExtendedQueryConditionMapper : IConditionMapper<ExtendedProductQuery>
-	{
+    {
         private const string And = "and";
         private const string Or = "or";
         private const string Not = "not";
 
         private readonly IFieldService _fieldService;
 
-		public ExtendedQueryConditionMapper(IFieldService fieldService)
-		{
-			_fieldService = fieldService;
-		}
+        public ExtendedQueryConditionMapper(IFieldService fieldService)
+        {
+            _fieldService = fieldService;
+        }
 
         public ConditionBase Map(ExtendedProductQuery source)
         {

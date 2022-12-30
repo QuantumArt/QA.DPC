@@ -16,31 +16,31 @@ using QA.ProductCatalog.ContentProviders;
 namespace QA.Core.DPC.Formatters.Services
 {
     public class JsonProductFormatter : IArticleFormatter
-	{
-		private readonly IJsonProductService _jsonProductService;
-		private readonly IContentDefinitionService _contentDefinitionService;
-	    private readonly ISettingsService _settingsService;
+    {
+        private readonly IJsonProductService _jsonProductService;
+        private readonly IContentDefinitionService _contentDefinitionService;
+        private readonly ISettingsService _settingsService;
         private readonly IProductContentResolver _productContentResolver;
         private readonly HttpContext _httpContext;
         private readonly ActionContext _actionContext;
 
 
         public JsonProductFormatter(
-	        IJsonProductService jsonProductService, 
-	        IContentDefinitionService contentDefinitionService, 
-	        ISettingsService settingsService, 
-	        IProductContentResolver productContentResolver,
-	        IHttpContextAccessor httpContextAccessor,
-	        IActionContextAccessor actionContextAccessor
-	    )
-		{
-			_jsonProductService = jsonProductService;
-			_contentDefinitionService = contentDefinitionService;
-		    _settingsService = settingsService;
+            IJsonProductService jsonProductService, 
+            IContentDefinitionService contentDefinitionService, 
+            ISettingsService settingsService, 
+            IProductContentResolver productContentResolver,
+            IHttpContextAccessor httpContextAccessor,
+            IActionContextAccessor actionContextAccessor
+        )
+        {
+            _jsonProductService = jsonProductService;
+            _contentDefinitionService = contentDefinitionService;
+            _settingsService = settingsService;
             _productContentResolver = productContentResolver;
             _httpContext = httpContextAccessor?.HttpContext;
             _actionContext = actionContextAccessor?.ActionContext;
-		}
+        }
 
         public async Task<Article> Read(Stream stream)
         {
@@ -70,23 +70,23 @@ namespace QA.Core.DPC.Formatters.Services
         }
 
         public async Task Write(Stream stream, Article product)
-		{
-			var articleFilter = (IArticleFilter)_httpContext.Items["ArticleFilter"];
-			bool includeRegionTags = (bool)_httpContext.Items["includeRegionTags"];
-			await this.WriteAsync(stream, product, articleFilter, includeRegionTags);
-		}
-		
-		public string Serialize(Article product)
-		{
-			var articleFilter = (IArticleFilter)_httpContext.Items["ArticleFilter"];
-			bool includeRegionTags = (bool)_httpContext.Items["includeRegionTags"];			
-			return Serialize(product, articleFilter, includeRegionTags);
-		}
+        {
+            var articleFilter = (IArticleFilter)_httpContext.Items["ArticleFilter"];
+            bool includeRegionTags = (bool)_httpContext.Items["includeRegionTags"];
+            await this.WriteAsync(stream, product, articleFilter, includeRegionTags);
+        }
+        
+        public string Serialize(Article product)
+        {
+            var articleFilter = (IArticleFilter)_httpContext.Items["ArticleFilter"];
+            bool includeRegionTags = (bool)_httpContext.Items["includeRegionTags"];            
+            return Serialize(product, articleFilter, includeRegionTags);
+        }
 
-		public string Serialize(Article product, IArticleFilter filter, bool includeRegionTags)
-			{
-			string json = _jsonProductService.SerializeProduct(product, filter, includeRegionTags);
-			return json;
-		}
-	}
+        public string Serialize(Article product, IArticleFilter filter, bool includeRegionTags)
+            {
+            string json = _jsonProductService.SerializeProduct(product, filter, includeRegionTags);
+            return json;
+        }
+    }
 }
