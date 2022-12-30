@@ -137,7 +137,8 @@ namespace QA.Core.DPC.Loader
                 0 => _nonExistentArticleId--,
                 1 => foundArticles[0].Id,
                 _ => throw new InvalidOperationException(
-                    $"More then one article found with {TmfIdFieldName}={externalId}"),
+                    $"More then one article found with {TmfIdFieldName}={externalId}: " +
+                    string.Join(",", foundArticles.Select(a => $"{a.ContentId}:{a.Id}"))),
             };
         }
     }
