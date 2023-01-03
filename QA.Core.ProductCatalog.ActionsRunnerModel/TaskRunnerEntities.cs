@@ -1,6 +1,6 @@
-﻿﻿using System;
+﻿ using System;
  using Microsoft.EntityFrameworkCore;
- using QA.Core.DPC.QP.Models;
+ using M = QA.Core.DPC.QP.Models;
  using QA.Core.DPC.QP.Services;
  using QP.ConfigurationService.Models;
 
@@ -21,11 +21,11 @@
         public static TaskRunnerEntities Get(IConnectionProvider provider)
         {
 
-            var customerConfig = provider.GetCustomer(Service.Actions);
+            var customerConfig = provider.GetCustomer(M.Service.Actions);
             return Get(customerConfig);
         }
 
-        public static TaskRunnerEntities Get(Customer customerConfig)
+        public static TaskRunnerEntities Get(M.Customer customerConfig)
         {
             TaskRunnerEntities result = null;
             if (!String.IsNullOrEmpty(customerConfig.ConnectionString))
