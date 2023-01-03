@@ -16,9 +16,8 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.2.1" />
-    <PackageReference Include="Unity" Version="5.11.7" />
-    <PackageReference Include="Unity.Container" Version="5.11.8" />
+    <PackageReference Include="QA.Core.Service.Interaction" Version="3.6.0" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.3.3" />
   </ItemGroup>
 </Project>
 

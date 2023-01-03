@@ -27,17 +27,17 @@ namespace QA.Core.DPC.QP.Services
         {
             return _customer.ConnectionString;
         }
-        public string GetConnection(Service service)
+        public string GetConnection(Models.Service service)
         {
             return _customer.ConnectionString;
         }
 
-        public Customer GetCustomer(Service service)
+        public Customer GetCustomer(Models.Service service)
         {
             return _customer;
         }
 
-        public bool HasConnection(Service service)
+        public bool HasConnection(Models.Service service)
         {
             throw new NotImplementedException();
         }
@@ -47,7 +47,7 @@ namespace QA.Core.DPC.QP.Services
             throw new NotImplementedException();
         }
 
-        public string GetEFConnection(Service service)
+        public string GetEFConnection(Models.Service service)
         {
             throw new NotImplementedException();
         }
