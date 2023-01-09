@@ -46,12 +46,11 @@ namespace QA.Core.DPC.Loader
         {
             base.ApplyArticleField(article, field, productDataSource);
 
-            if (!IsTmfIdArticleField(field))
+            PlainArticleField plainField = CastTmfIdArticleField(field);
+            if (plainField is null)
             {
                 return;
             }
-
-            var plainField = (PlainArticleField)field;
 
             if (!TryReadTmfIdFromDataSource(productDataSource, out var tmfArticleId))
             {
@@ -63,10 +62,11 @@ namespace QA.Core.DPC.Loader
             article.Id = ResolveArticleId(tmfArticleId, field.ContentId ?? default);
         }
 
-        private bool IsTmfIdArticleField(ArticleField articleField)
+        private PlainArticleField CastTmfIdArticleField(ArticleField articleField)
         {
             return articleField.FieldName.Equals(_tmfIdFieldName, StringComparison.OrdinalIgnoreCase)
-                && articleField is PlainArticleField;
+                ? articleField as PlainArticleField
+                : null;
         }
 
         private static bool TryReadTmfIdFromDataSource(IProductDataSource productDataSource, out string tmfArticleId)
