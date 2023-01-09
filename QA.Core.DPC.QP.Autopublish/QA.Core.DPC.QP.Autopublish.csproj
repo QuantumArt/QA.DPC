@@ -19,8 +19,5 @@
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.9" />
-  </ItemGroup>
 </Project>
 
