@@ -22,6 +22,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
     [TmfProductFormat]
     [Route(TmfProductService.ApiPrefix + "/{customerCode}/{version}/{slug}")]
     [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
     public class TmfProductController : Controller
     {
         private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
