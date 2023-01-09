@@ -45,7 +45,34 @@ namespace QA.Core.DPC.Loader
         protected override void ApplyArticleField(Article article, ArticleField field, IProductDataSource productDataSource)
         {
             base.ApplyArticleField(article, field, productDataSource);
-            TryResolveTmfId(productDataSource, article, field);
+
+            if (!IsTmfIdArticleField(field))
+            {
+                return;
+            }
+
+            var plainField = (PlainArticleField)field;
+
+            if (!TryReadTmfIdFromDataSource(productDataSource, out var tmfArticleId))
+            {
+                plainField.NativeValue = plainField.Value = Guid.NewGuid().ToString();
+                return;
+            }
+
+            plainField.NativeValue = plainField.Value = tmfArticleId;
+            article.Id = ResolveArticleId(tmfArticleId, field.ContentId ?? default);
+        }
+
+        private bool IsTmfIdArticleField(ArticleField articleField)
+        {
+            return articleField.FieldName.Equals(_tmfIdFieldName, StringComparison.OrdinalIgnoreCase)
+                && articleField is PlainArticleField;
+        }
+
+        private static bool TryReadTmfIdFromDataSource(IProductDataSource productDataSource, out string tmfArticleId)
+        {
+            tmfArticleId = productDataSource.GetTmfArticleId();
+            return !string.IsNullOrWhiteSpace(tmfArticleId);
         }
 
         protected override Article DeserializeArticle(
@@ -102,26 +129,6 @@ namespace QA.Core.DPC.Loader
             }
 
             return ResolveArticleId(tmfArticleId, contentId);
-        }
-
-        private void TryResolveTmfId(IProductDataSource productDataSource, Article article, ArticleField articleField)
-        {
-            if (!articleField.FieldName.Equals(_tmfIdFieldName, StringComparison.OrdinalIgnoreCase)
-                || articleField is not PlainArticleField plainField)
-            {
-                return;
-            }
-
-            string tmfArticleId = productDataSource.GetTmfArticleId();
-            if (string.IsNullOrWhiteSpace(tmfArticleId))
-            {
-                plainField.NativeValue = plainField.Value = Guid.NewGuid().ToString();
-                return;
-            }
-
-            plainField.NativeValue = plainField.Value = tmfArticleId;
-
-            article.Id = ResolveArticleId(tmfArticleId, articleField.ContentId ?? default);
         }
 
         private int ResolveArticleId(string externalId, int contentId)
