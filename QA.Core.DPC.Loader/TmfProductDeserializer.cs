@@ -46,8 +46,8 @@ namespace QA.Core.DPC.Loader
         {
             base.ApplyArticleField(article, field, productDataSource);
 
-            PlainArticleField plainField = CastTmfIdArticleField(field);
-            if (plainField is null)
+            if (!field.FieldName.Equals(_tmfIdFieldName, StringComparison.OrdinalIgnoreCase)
+                || field is not PlainArticleField plainField)
             {
                 return;
             }
@@ -60,13 +60,6 @@ namespace QA.Core.DPC.Loader
 
             plainField.NativeValue = plainField.Value = tmfArticleId;
             article.Id = ResolveArticleId(tmfArticleId, field.ContentId ?? default);
-        }
-
-        private PlainArticleField CastTmfIdArticleField(ArticleField articleField)
-        {
-            return articleField.FieldName.Equals(_tmfIdFieldName, StringComparison.OrdinalIgnoreCase)
-                ? articleField as PlainArticleField
-                : null;
         }
 
         private static bool TryReadTmfIdFromDataSource(IProductDataSource productDataSource, out string tmfArticleId)
