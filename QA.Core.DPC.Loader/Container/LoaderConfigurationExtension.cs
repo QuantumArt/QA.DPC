@@ -176,7 +176,7 @@ namespace QA.Core.DPC.Loader.Container
                 {
                     var accessor = container.Resolve<IHttpContextAccessor>();
 
-                    if (accessor?.HttpContext.Items.ContainsKey(TmfItemIdentifier) == true)
+                    if (accessor.HttpContext?.Items.ContainsKey(TmfItemIdentifier) == true)
                     {
                         return tmfinstanceFactory(container);
                     }
