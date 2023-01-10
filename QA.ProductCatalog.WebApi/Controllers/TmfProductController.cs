@@ -332,7 +332,6 @@ namespace QA.ProductCatalog.WebApi.Controllers
             HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
             HttpContext.Items["includeRegionTags"] = false;
 
-            // TODO: Remove duplicated constant TmfId.
             var foundArticles = dbProductService.SearchProducts(slug, version, $"{_tmfIdFieldName}={tmfProductId}");
 
             return foundArticles.Length switch
