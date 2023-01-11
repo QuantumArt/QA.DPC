@@ -250,16 +250,21 @@ namespace QA.Core.DPC.API.Update
             }
 
             // TODO: исключаем Readonly поля
-            var updatedFields = newArticle.Fields.Values
-                .OfType<PlainArticleField>()
-                .Where(x => plainFieldIds.Contains(x.FieldId.Value)
+            foreach (var field in newArticle.Fields.Values.OfType<PlainArticleField>())
+            {
+                if (plainFieldIds.Contains(field.FieldId.Value)
                     && (existingArticle == null
                         || existingArticle.Fields.Values
                             .OfType<PlainArticleField>()
-                            .All(y => y.FieldId != x.FieldId || !HasEqualNativeValues(x, y))))
-                .Select(x => new FieldData { Id = x.FieldId.Value, Value = x.Value });
+                            .All(y => !HasEqualNativeValues(field, y))))
+                {
+                    string fieldValue = newArticle.Id <= 0 && field.NativeValue == null
+                        ? field.DefaultValue
+                        : field.Value;
 
-            newArticleUpdateData.Fields.AddRange(updatedFields);
+                    newArticleUpdateData.Fields.Add(new FieldData { Id = field.FieldId.Value, Value = fieldValue });
+                }
+            }
 
             var associationFieldsInfo = (
                 from fieldDef in definition.Fields.OfType<Association>()
@@ -433,6 +438,11 @@ namespace QA.Core.DPC.API.Update
         private static bool HasEqualNativeValues(
             PlainArticleField plainArticleField, PlainArticleField otherPlainArticleField)
         {
+            if (plainArticleField.FieldId != otherPlainArticleField.FieldId)
+            {
+                return false;
+            }
+
             return plainArticleField.NativeValue == null
                     ? otherPlainArticleField.NativeValue == null
                     : plainArticleField.NativeValue.Equals(otherPlainArticleField.NativeValue);

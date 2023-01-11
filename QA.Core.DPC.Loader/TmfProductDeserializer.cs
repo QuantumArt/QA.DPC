@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using QA.Core.Cache;
+﻿using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -9,9 +8,7 @@ using Quantumart.QP8.BLL.Repository.ArticleMatching;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.BLL.Services.API;
-using Quantumart.QPublishing.Database;
 using System;
-using System.IO;
 using System.Linq;
 using Article = QA.Core.Models.Entities.Article;
 
@@ -22,7 +19,6 @@ namespace QA.Core.DPC.Loader
         private readonly string _tmfIdFieldName;
 
         protected readonly IArticleMatchService<ConditionBase> ArticleMatchService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         private int _nonExistentArticleId = -1;
 
@@ -33,12 +29,10 @@ namespace QA.Core.DPC.Loader
             IContextStorage contextStorage,
             IConnectionProvider connectionProvider,
             IArticleMatchService<ConditionBase> articleMatchService,
-            IHttpContextAccessor httpContextAccessor,
             ISettingsService settingsService)
             : base(fieldService, serviceFactory, cacheItemWatcher, contextStorage, connectionProvider)
         {
             ArticleMatchService = articleMatchService;
-            _httpContextAccessor = httpContextAccessor;
             _tmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
         }
 
@@ -66,45 +60,6 @@ namespace QA.Core.DPC.Loader
         {
             tmfArticleId = productDataSource.GetTmfArticleId();
             return !string.IsNullOrWhiteSpace(tmfArticleId);
-        }
-
-        protected override Article DeserializeArticle(
-            IProductDataSource productDataSource,
-            Models.Configuration.Content definition,
-            DBConnector connector,
-            Context context)
-        {
-            var article = base.DeserializeArticle(productDataSource, definition, connector, context);
-
-            if (HttpMethods.IsPost(_httpContextAccessor.HttpContext.Request.Method)
-                && article is not null)
-            {
-                // TODO: Remove after implementing support for default values in QP.
-                if (TryGetPlainField(article, "PriceType", out var priceType))
-                {
-                    priceType.NativeValue = priceType.Value = "recurring";
-                }
-
-                if (TryGetPlainField(article, "LifecycleStatus", out var lifecycleStatus))
-                {
-                    lifecycleStatus.NativeValue = lifecycleStatus.Value = "Active";
-                }
-            }
-
-            return article;
-        }
-
-        private static bool TryGetPlainField(Article article, string name, out PlainArticleField foundField)
-        {
-            if (article.Fields.TryGetValue(name, out var field)
-                && field is PlainArticleField plainField)
-            {
-                foundField = plainField;
-                return true;
-            }
-
-            foundField = null;
-            return false;
         }
 
         protected override int GetArticleId(IProductDataSource productDataSource, int contentId)

@@ -161,7 +161,8 @@ namespace QA.Core.DPC.Loader
         {
             var field = new PlainArticleField
             {
-                PlainFieldType = (PlainFieldType)plainFieldFromQP.ExactType
+                PlainFieldType = (PlainFieldType)plainFieldFromQP.ExactType,
+                DefaultValue = plainFieldFromQP.DefaultValue
             };
 
             switch (field.PlainFieldType)
