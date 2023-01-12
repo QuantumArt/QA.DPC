@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.CodeAnalysis;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -8,7 +6,7 @@ using System.Linq;
 
 namespace QA.ProductCatalog.WebApi.Filters
 {
-    public class TmfAvailabilityFilter : IDocumentFilter, IAuthorizationFilter
+    public class TmfAvailabilityFilter : IDocumentFilter
     {
         private readonly bool _isTmfEnabled;
 
@@ -28,17 +26,6 @@ namespace QA.ProductCatalog.WebApi.Filters
                     var route = "/" + api.RelativePath;
                     _ = swaggerDoc.Paths.Remove(route);
                 }
-            }
-        }
-
-        public void OnAuthorization(AuthorizationFilterContext context)
-        {
-            var isTmfController = HasCustomAttribute<TmfProductFormatAttribute>(
-                context.ActionDescriptor as ControllerActionDescriptor);
-
-            if (isTmfController && !_isTmfEnabled)
-            {
-                context.Result = new NotFoundResult();
             }
         }
 

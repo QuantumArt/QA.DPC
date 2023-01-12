@@ -71,7 +71,6 @@ namespace QA.ProductCatalog.WebApi
                 .AddMvc(options =>
                 {
                     options.Filters.Add(typeof(GlobalExceptionFilterAttribute));
-                    options.Filters.Add<TmfAvailabilityFilter>();
                     options.EnableEndpointRouting = false;
                     RegisterMediaTypes(options.FormatterMappings);
                     RegisterOutputFormatters(options.OutputFormatters);

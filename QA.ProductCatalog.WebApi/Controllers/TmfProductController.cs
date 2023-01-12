@@ -20,7 +20,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 {
     [ApiController]
     [IdentityResolver]
-    [TmfProductFormat]
+    [ServiceFilter(typeof(TmfProductFormatAttribute))]
     [Route(TmfProductService.ApiPrefix + "/{customerCode}/{version}/{slug}")]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
