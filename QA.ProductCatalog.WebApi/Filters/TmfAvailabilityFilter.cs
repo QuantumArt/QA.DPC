@@ -10,7 +10,7 @@ namespace QA.ProductCatalog.WebApi.Filters
     {
         private readonly bool _isTmfEnabled;
 
-        public TmfAvailabilityFilter(TMForumSettings tmfSettings)
+        public TmfAvailabilityFilter(TmfSettings tmfSettings)
         {
             _isTmfEnabled = tmfSettings?.IsEnabled ?? false;
         }

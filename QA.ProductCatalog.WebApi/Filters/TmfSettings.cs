@@ -1,6 +1,6 @@
 ﻿namespace QA.ProductCatalog.WebApi.Filters
 {
-    public class TMForumSettings
+    public class TmfSettings
     {
         public bool IsEnabled { get; set;  }
     }

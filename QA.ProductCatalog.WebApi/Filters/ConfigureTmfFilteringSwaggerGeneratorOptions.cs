@@ -5,9 +5,9 @@ namespace QA.ProductCatalog.WebApi.Filters
 {
     public class ConfigureTmfFilteringSwaggerGeneratorOptions : IConfigureOptions<SwaggerGeneratorOptions>
     {
-        private readonly TMForumSettings _tmfSettings;
+        private readonly TmfSettings _tmfSettings;
 
-        public ConfigureTmfFilteringSwaggerGeneratorOptions(IOptions<TMForumSettings> tmfSettingsOptions)
+        public ConfigureTmfFilteringSwaggerGeneratorOptions(IOptions<TmfSettings> tmfSettingsOptions)
         {
             _tmfSettings = tmfSettingsOptions.Value;
         }
