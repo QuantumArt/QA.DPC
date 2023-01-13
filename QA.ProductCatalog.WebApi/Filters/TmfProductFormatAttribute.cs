@@ -2,29 +2,34 @@
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.Loader.Container;
-using System;
 
 namespace QA.ProductCatalog.WebApi.Filters
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class TmfProductFormatAttribute : Attribute, IAuthorizationFilter
+    public class TmfProductFormatAttribute : TypeFilterAttribute
     {
-        private readonly bool _isTmfEnabled;
-
-        public TmfProductFormatAttribute(IOptions<TMForumSettings> tmfSettingsOptions)
+        public TmfProductFormatAttribute() : base(typeof(TmfProductFormatFilter))
         {
-            _isTmfEnabled = tmfSettingsOptions.Value?.IsEnabled ?? false;
         }
 
-        public void OnAuthorization(AuthorizationFilterContext context)
+        private class TmfProductFormatFilter : IAuthorizationFilter
         {
-            if (_isTmfEnabled)
+            private readonly bool _isTmfEnabled;
+
+            public TmfProductFormatFilter(IOptions<TmfSettings> tmfSettingsOptions)
             {
-                context.HttpContext.Items[LoaderConfigurationExtension.TmfItemIdentifier] = true;
+                _isTmfEnabled = tmfSettingsOptions.Value?.IsEnabled ?? false;
             }
-            else
+
+            public void OnAuthorization(AuthorizationFilterContext context)
             {
-                context.Result = new NotFoundResult();
+                if (_isTmfEnabled)
+                {
+                    context.HttpContext.Items[LoaderConfigurationExtension.TmfItemIdentifier] = true;
+                }
+                else
+                {
+                    context.Result = new NotFoundResult();
+                }
             }
         }
     }
