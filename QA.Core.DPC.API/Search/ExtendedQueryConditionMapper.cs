@@ -53,7 +53,10 @@ namespace QA.Core.DPC.API.Search
                             .ToArray()
                     };
                 }                
-                else if (property.Value.Type == JTokenType.String || property.Value.Type == JTokenType.Integer || property.Value.Type == JTokenType.Float)
+                else if (property.Value.Type == JTokenType.String
+                    || property.Value.Type == JTokenType.Integer
+                    || property.Value.Type == JTokenType.Float
+                    || property.Value.Type == JTokenType.Boolean)
                 {
                     return MapFields(source.GetQuery(property));
                 }              
@@ -199,6 +202,21 @@ namespace QA.Core.DPC.API.Search
                         else
                         {
                             throw new Exception("field " + field.Name + " must be date");
+                        }
+                    }
+                    else if (field.ExactType == FieldExactTypes.Boolean)
+                    {
+                        if (property.Value.Type == JTokenType.Boolean)
+                        {
+                            value = property.Value.Value<bool>();
+                        }
+                        else if (bool.TryParse(stringValue, out var boolValue))
+                        {
+                            value = boolValue;
+                        }
+                        else
+                        {
+                            throw new Exception("field " + field.Name + " must be boolean");
                         }
                     }
                 }
