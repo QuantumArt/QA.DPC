@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
 using QA.Core.DPC.Loader;
 using QA.Core.Logger;
@@ -145,20 +144,33 @@ namespace QA.ProductCatalog.WebApi.Controllers
         {
             _ = _logger.LogDebug(() => new { version, slug, tmfProductId, fields }.ToString());
 
+            HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
+            HttpContext.Items["includeRegionTags"] = false;
+
             if (!TryParseLastUpdateDate(lastUpdate, out var lastUpdateDate))
             {
                 return BadRequest();
             }
 
             var dbProductService = _databaseProductServiceFactory();
+            var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
 
-            var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
-            if (foundArticleId is null)
+            JObject filter = ConvertToFilter(Request.Query, _reservedSearchParameters, definition.Content.Fields);
+            if (filter == null)
+            {
+                return BadRequest(ModelState);
+            }
+
+            filter.Add(_tmfIdFieldName, new JValue(tmfProductId));
+
+            int foundArticleId = dbProductService.ExtendedSearchProducts(slug, version, filter).SingleOrDefault();
+
+            if (foundArticleId == 0)
             {
                 return NotFound();
             }
 
-            var product = dbProductService.GetProduct(slug, version, foundArticleId.Value);
+            var product = dbProductService.GetProduct(slug, version, foundArticleId);
 
             if (lastUpdateDate != default && product.Modified != lastUpdateDate)
             {
