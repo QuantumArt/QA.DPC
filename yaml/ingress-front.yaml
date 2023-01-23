@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-front
@@ -8,11 +8,15 @@ spec:
   - host: '||front_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-front
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-front
+            port:
+              number: 80          
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-search-api
@@ -24,11 +28,15 @@ spec:
   - host: '||search_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-search-api
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-search-api
+            port:
+              number: 80                
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-sync-api
@@ -38,11 +46,15 @@ spec:
   - host: '||sync_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-sync-api
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-sync-api
+            port:
+              number: 80        
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-impact-api
@@ -54,6 +66,10 @@ spec:
   - host: '||impact_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-impact-api
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-impact-api
+            port:
+              number: 80        
