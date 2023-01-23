@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
-using System;
-using System.Collections.Generic;
 using Article = QA.Core.Models.Entities.Article;
 using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
 using IHttpClientFactory = System.Net.Http.IHttpClientFactory;
 
-namespace QA.Core.DPC.Loader
+namespace QA.ProductCatalog.TmForum.Services
 {
     public class TmfProductService : JsonProductService
     {

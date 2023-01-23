@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Loader;
 using QA.Core.Models.Entities;
-using System;
-using System.Collections.Generic;
 
-namespace QA.Core.DPC.Loader
+namespace QA.ProductCatalog.TmForum
 {
     internal class TmfProductDataSource : JsonProductDataSource
     {
@@ -14,21 +13,17 @@ namespace QA.Core.DPC.Loader
 
         public override int GetArticleId()
         {
-            var articleIdToken = GetJToken(nameof(Article.Id));
+            JToken articleIdToken = GetJToken(nameof(Article.Id));
 
-            if (articleIdToken == null)
-            {
+            if (articleIdToken is null || articleIdToken.Type != JTokenType.Integer)
                 return default;
-            }
 
-            return articleIdToken.Type == JTokenType.Integer
-                ? articleIdToken.Value<int>()
-                : default;
+            return articleIdToken.Value<int>();
         }
 
         protected override JsonProductDataSource CreateDataSource(JToken token)
         {
-            var tokenDict = (IDictionary<string, JToken>)token;
+            IDictionary<string, JToken> tokenDict = (IDictionary<string, JToken>)token;
 
             return new TmfProductDataSource(
                 new Dictionary<string, JToken>(tokenDict, StringComparer.OrdinalIgnoreCase));

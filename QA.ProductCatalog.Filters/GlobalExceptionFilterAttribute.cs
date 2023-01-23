@@ -1,3 +1,5 @@
+﻿using System;
+using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Runtime.Serialization;
@@ -9,9 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 
-namespace QA.ProductCatalog.WebApi.Filters
+namespace QA.ProductCatalog.Filters
 {
-
     public class GlobalExceptionFilterAttribute : ExceptionFilterAttribute
     {
 
@@ -33,7 +34,7 @@ namespace QA.ProductCatalog.WebApi.Filters
                 }
                 context.Result = new ContentResult()
                 {
-                    ContentType = WebApiConstants.XmlMediaType, 
+                    ContentType = WebApiConstants.XmlMediaType,
                     Content = content,
                     StatusCode = StatusCodes.Status500InternalServerError
                 };

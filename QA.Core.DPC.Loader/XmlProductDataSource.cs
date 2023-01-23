@@ -7,7 +7,7 @@ using QA.Core.Models.Entities;
 
 namespace QA.Core.DPC.Loader
 {
-    internal class XmlProductDataSource : IProductDataSource
+    public class XmlProductDataSource : IProductDataSource
     {
         private readonly XElement _containerElement;
 

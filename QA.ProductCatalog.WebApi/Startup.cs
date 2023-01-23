@@ -17,8 +17,9 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.Filters;
+using QA.ProductCatalog.TmForum.Extensions;
 using QA.ProductCatalog.WebApi.App_Start;
-using QA.ProductCatalog.WebApi.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,6 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.Configure<Properties>(Configuration.GetSection("Properties"));
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));
-            services.Configure<TmfSettings>(Configuration.GetSection("Tmf"));
 
             services
                 .AddMvc(options =>
@@ -80,6 +80,9 @@ namespace QA.ProductCatalog.WebApi
                 .AddControllersAsServices()
                 .AddNewtonsoftJson();
 
+            //You MUST call unregister methonds only after AddMvc method
+            services.TryUnregisterTmForum(Configuration);
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -93,7 +96,6 @@ namespace QA.ProductCatalog.WebApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-            services.AddTransient<IConfigureOptions<SwaggerGeneratorOptions>, ConfigureTmfFilteringSwaggerGeneratorOptions>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

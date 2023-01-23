@@ -1,21 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
-using QA.Core.DPC.Loader;
 using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.Filters;
 using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.WebApi.Filters;
-using System;
-using System.Collections.Generic;
+using QA.ProductCatalog.TmForum.Filters;
+using QA.ProductCatalog.TmForum.Services;
 using System.Data;
-using System.Linq;
 using System.Net.Mime;
 
-namespace QA.ProductCatalog.WebApi.Controllers
+namespace QA.ProductCatalog.TmForum.Controllers
 {
     [ApiController]
     [IdentityResolver]

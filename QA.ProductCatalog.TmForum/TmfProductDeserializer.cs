@@ -1,4 +1,5 @@
 ﻿using QA.Core.Cache;
+using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -8,11 +9,9 @@ using Quantumart.QP8.BLL.Repository.ArticleMatching;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.BLL.Services.API;
-using System;
-using System.Linq;
 using Article = QA.Core.Models.Entities.Article;
 
-namespace QA.Core.DPC.Loader
+namespace QA.ProductCatalog.TmForum
 {
     internal class TmfProductDeserializer : ProductDeserializer
     {

@@ -18,7 +18,7 @@ using Field = QA.Core.Models.Configuration.Field;
 
 namespace QA.Core.DPC.Loader
 {
-    internal class ProductDeserializer : IProductDeserializer
+    public class ProductDeserializer : IProductDeserializer
     {
         private readonly IFieldService _fieldService;
         protected readonly ContentService _contentService;
@@ -368,50 +368,6 @@ namespace QA.Core.DPC.Loader
             var value = connector.GetRealScalarData(dbCommand);
 
             return (int?)(decimal?)value;
-        }
-    }
-
-    internal class Context
-    {
-        private int _minArticleId;
-        private readonly Dictionary<int, List<Article>> _extensionMap;
-
-        public Context()
-        {
-            _extensionMap = new Dictionary<int, List<Article>>();
-            _minArticleId = 0;
-        }
-
-        public void AddExtensionArticle(int parentId, Article article)
-        {
-            if (!_extensionMap.ContainsKey(parentId))
-            {
-                _extensionMap[parentId] = new List<Article>();
-            }
-
-            _extensionMap[parentId].Add(article);
-        }
-
-        public void TakeIntoAccount(int id)
-        {
-            if (id < _minArticleId)
-            {
-                _minArticleId = id;
-            }
-        }
-
-        public void UpdateExtensionArticles()
-        {
-            var id = _minArticleId;
-            foreach (var list in _extensionMap.Values)
-            {
-                id--;
-
-                foreach (var article in list)
-                {
-                    article.Id = id;
-                }
-            }
         }
     }
 }
