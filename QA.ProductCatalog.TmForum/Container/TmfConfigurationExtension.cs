@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Serialization;
 using QA.Core.DPC.Loader;
+using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Services;
 using Unity;
 using Unity.Extension;
@@ -16,17 +17,17 @@ namespace QA.ProductCatalog.TmForum.Container
         {
             Container.RegisterFactory<IJsonProductService>(
                 CreateTmfAwareFactory(
-                    tmfinstanceFactory: (container) => container.Resolve<TmfProductService>(),
+                    tmfInstanceFactory: (container) => container.Resolve<TmfProductService>(),
                     defaultFactory: (container) => container.Resolve<JsonProductService>()));
 
             Container.RegisterFactory<IProductDeserializer>(
                 CreateTmfAwareFactory(
-                    tmfinstanceFactory: (container) => container.Resolve<TmfProductDeserializer>(),
+                    tmfInstanceFactory: (container) => container.Resolve<TmfProductDeserializer>(),
                     defaultFactory: (container) => container.Resolve<ProductDeserializer>()));
 
             Container.RegisterFactory<JsonProductServiceSettings>(
                 CreateTmfAwareFactory(
-                    tmfinstanceFactory: (container) =>
+                    tmfInstanceFactory: (container) =>
                     {
                         var accessor = container.Resolve<IHttpContextAccessor>();
                         var hasFieldsFilter = accessor.HttpContext.Request.Query.TryGetValue("fields", out StringValues fields);
@@ -45,10 +46,12 @@ namespace QA.ProductCatalog.TmForum.Container
                         };
                     },
                     defaultFactory: (_) => new JsonProductServiceSettings()));
+
+            Container.RegisterType<ITmfService, TmfService>();
         }
 
         private static Func<IUnityContainer, T> CreateTmfAwareFactory<T>(
-            Func<IUnityContainer, T> tmfinstanceFactory,
+            Func<IUnityContainer, T> tmfInstanceFactory,
             Func<IUnityContainer, T> defaultFactory)
         {
             return (container) =>
@@ -59,7 +62,7 @@ namespace QA.ProductCatalog.TmForum.Container
 
                     if (accessor.HttpContext?.Items.ContainsKey(TmfItemIdentifier) == true)
                     {
-                        return tmfinstanceFactory(container);
+                        return tmfInstanceFactory(container);
                     }
                 }
 

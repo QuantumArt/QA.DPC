@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using QA.Core.Logger;
 using QA.Core.Models;
-using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Filters;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.TmForum.Filters;
+using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Services;
 using System.Data;
 using System.Net.Mime;
@@ -23,32 +22,15 @@ namespace QA.ProductCatalog.TmForum.Controllers
     [Consumes(MediaTypeNames.Application.Json)]
     public class TmfProductController : Controller
     {
-        private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "fields",
-            "lastUpdate"
-        };
-
-        private readonly IContentDefinitionService _contentDefinitionService;
-        private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly ILogger _logger;
-        private readonly string _tmfIdFieldName;
-        private readonly Dictionary<string, string> _fieldToFilterMappings;
+        private readonly ITmfService _tmfService;
 
         public TmfProductController(
-            Func<IProductAPIService> databaseProductServiceFactory,
             ILogger logger,
-            IContentDefinitionService contentDefinitionService,
-            ISettingsService settingsService)
+            TmfService tmfService)
         {
-            _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _contentDefinitionService = contentDefinitionService;
-            _tmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
-            _fieldToFilterMappings = new()
-            {
-                [_tmfIdFieldName] = nameof(Article.Id)
-            };
+            _tmfService = tmfService;
         }
 
         /// <summary>
@@ -56,7 +38,6 @@ namespace QA.ProductCatalog.TmForum.Controllers
         /// </summary>
         /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
         /// <param name="version">Definition version (e.g. V1)</param>
-        /// <param name="fields">Fields filter</param>
         /// <param name="lastUpdate">Last modified date filter</param>
         /// <returns>Product list (untyped)</returns>
         /// <response code="406">Unsupported format</response>
@@ -64,60 +45,20 @@ namespace QA.ProductCatalog.TmForum.Controllers
         public IActionResult List(
             [FromRoute] string slug,
             [FromRoute] string version,
-            [FromQuery] string[] fields = null,
             [FromQuery] string lastUpdate = default)
         {
-            _ = _logger.LogDebug(() => new { version, slug, fields }.ToString());
-            var dbProductService = _databaseProductServiceFactory();
-
-            var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            _ = _logger.LogDebug(() => new { version, slug, Request.QueryString }.ToString());
+            
+            SetHttpContextItems();
 
             if (!TryParseLastUpdateDate(lastUpdate, out var lastUpdateDate))
             {
                 return BadRequest();
             }
 
-            JObject filter = ConvertToFilter(Request.Query, _reservedSearchParameters, definition.Content.Fields);
-            if (filter == null)
-            {
-                return BadRequest(ModelState);
-            }
-
-            HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
-            HttpContext.Items["includeRegionTags"] = false;
-
-            int[] productIds = filter.Count > 0
-                ? dbProductService.ExtendedSearchProducts(slug, version, filter)
-                : dbProductService.GetProductsList(slug, version)
-                    .Select(product => (int)product["id"])
-                    .ToArray();
-
-            List<Article> products = new(productIds.Length);
-            foreach (var productId in productIds)
-            {
-                // TODO: Optimize (get all of products at ones)
-                var product = dbProductService.GetProduct(slug, version, productId);
-
-                if (lastUpdateDate != default && product.Modified != lastUpdateDate)
-                {
-                    continue;
-                }
-
-                products.Add(product);
-            }
+            var products = _tmfService.GetProducts(slug, version, lastUpdateDate, Request.Query);
 
             return Ok(products);
-        }
-
-        private static bool TryParseLastUpdateDate(string lastUpdate, out DateTime lastUpdateDate)
-        {
-            if (lastUpdate is null)
-            {
-                lastUpdateDate = default;
-                return true;
-            }
-
-            return DateTime.TryParse(lastUpdate.Trim('"'), out lastUpdateDate);
         }
 
         /// <summary>
@@ -126,8 +67,6 @@ namespace QA.ProductCatalog.TmForum.Controllers
         /// <param name="slug">Definition identifier (e.g. productSpecification)</param>
         /// <param name="version">Definition version (e.g. v1)</param>
         /// <param name="tmfProductId">Identifier of product to get details for</param>
-        /// <param name="fields">Fields filter</param>
-        /// <param name="lastUpdate">Last modified date filter</param>
         /// <returns>Product details</returns>
         /// <response code="406">Unsupported format</response>
         /// <response code="404">Product not found</response>
@@ -136,41 +75,15 @@ namespace QA.ProductCatalog.TmForum.Controllers
         public IActionResult Get(
             [FromRoute] string slug,
             [FromRoute] string version,
-            [FromRoute] string tmfProductId,
-            [FromQuery] string[] fields = null,
-            [FromQuery] string lastUpdate = default)
+            [FromRoute] string tmfProductId)
         {
-            _ = _logger.LogDebug(() => new { version, slug, tmfProductId, fields }.ToString());
+            _ = _logger.LogDebug(() => new { version, slug, tmfProductId, Request.QueryString }.ToString());
 
-            HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
-            HttpContext.Items["includeRegionTags"] = false;
+            SetHttpContextItems();
 
-            if (!TryParseLastUpdateDate(lastUpdate, out var lastUpdateDate))
-            {
-                return BadRequest();
-            }
+            var product = _tmfService.GetProductById(slug, version, tmfProductId);
 
-            var dbProductService = _databaseProductServiceFactory();
-            var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-
-            JObject filter = ConvertToFilter(Request.Query, _reservedSearchParameters, definition.Content.Fields);
-            if (filter == null)
-            {
-                return BadRequest(ModelState);
-            }
-
-            filter.Add(_tmfIdFieldName, new JValue(tmfProductId));
-
-            int foundArticleId = dbProductService.ExtendedSearchProducts(slug, version, filter).SingleOrDefault();
-
-            if (foundArticleId == 0)
-            {
-                return NotFound();
-            }
-
-            var product = dbProductService.GetProduct(slug, version, foundArticleId);
-
-            if (lastUpdateDate != default && product.Modified != lastUpdateDate)
+            if (product is null)
             {
                 return NotFound();
             }
@@ -193,15 +106,15 @@ namespace QA.ProductCatalog.TmForum.Controllers
             [FromRoute] string tmfProductId)
         {
             _ = _logger.LogDebug(() => new { version, slug, tmfProductId }.ToString());
-            var dbProductService = _databaseProductServiceFactory();
 
-            var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
-            if (foundArticleId is null)
+            SetHttpContextItems();
+
+            var deleted = _tmfService.TryDeleteProductById(slug, version, tmfProductId);
+
+            if (!deleted)
             {
                 return NotFound();
             }
-
-            dbProductService.DeleteProduct(slug, version, foundArticleId.Value);
 
             return NoContent();
         }
@@ -222,53 +135,16 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { slug, version, tmfProductId, productContentId = product.ContentId }.ToString());
 
-            var dbProductService = _databaseProductServiceFactory();
+            SetHttpContextItems();
 
-            var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
-            if (foundArticleId is null)
+            var modifiedProduct = _tmfService.TryUpdateProductById(slug, version, tmfProductId, product);
+
+            if (modifiedProduct is null)
             {
                 return NotFound();
             }
 
-            var modifiedProduct = dbProductService.GetProduct(slug, version, foundArticleId.Value);
-
-            foreach ((string fieldName, ArticleField fieldValue) in product.Fields
-                .Where(p => p.Value is PlainArticleField field && field.NativeValue != null))
-            {
-                modifiedProduct.Fields[fieldName] = fieldValue;
-            }
-
-            modifiedProduct.Id = foundArticleId.Value;
-            _ = SetPlainFieldValue(modifiedProduct.Fields, _tmfIdFieldName, tmfProductId);
-
-            dbProductService.UpdateProduct(slug, version, modifiedProduct);
-
             return Ok(modifiedProduct);
-        }
-
-        private static bool SetPlainFieldValue<T>(IReadOnlyDictionary<string, ArticleField> fields, string fieldName, T value)
-        {
-            if (fields is null)
-            {
-                throw new ArgumentNullException(nameof(fields));
-            }
-
-            if (string.IsNullOrEmpty(fieldName))
-            {
-                throw new ArgumentException($"Cannot be null or empty.", fieldName);
-            }
-
-            if (fields.TryGetValue(fieldName, out var idField))
-            {
-                if (idField is PlainArticleField plainIdField)
-                {
-                    plainIdField.NativeValue = value;
-                    plainIdField.Value = value?.ToString();
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -289,68 +165,35 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
 
-            HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
-            HttpContext.Items["includeRegionTags"] = false;
+            SetHttpContextItems();
 
-            var dbProductService = _databaseProductServiceFactory();
+            var createdProduct = _tmfService.TryCreateProduct(slug, version, product);
 
-            var createdProductId = dbProductService.CreateProduct(slug, version, product);
-
-            if (!createdProductId.HasValue)
+            if (createdProduct is null)
             {
                 return BadRequest();
             }
 
-            var createdProduct = dbProductService.GetProduct(slug, version, createdProductId.Value);
-            var createdTmfId = ((PlainArticleField)createdProduct.Fields[_tmfIdFieldName]).Value;
+            var createdTmfId = ((PlainArticleField)createdProduct.Fields[_tmfService.TmfIdFieldName]).Value;
 
             return Created(HttpContext.Request.Path + new PathString("/" + createdTmfId), createdProduct);
         }
 
-        private JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys, IEnumerable<Field> fields)
-        {
-            var filter = new JObject();
-
-            if (searchParameters.Count == 0)
-            {
-                return filter;
-            }
-
-            var filterToFieldMappings = fields
-                .OfType<PlainField>()
-                .Select(field => field.FieldName)
-                .ToDictionary(
-                    fieldName => _fieldToFilterMappings.TryGetValue(fieldName, out var filter) ? filter : fieldName,
-                    fieldName => fieldName,
-                    StringComparer.OrdinalIgnoreCase);
-
-            foreach (var (key, values) in searchParameters)
-            {
-                if (excludedKeys.Contains(key) ||
-                    !filterToFieldMappings.TryGetValue(key, out var fieldName))
-                {
-                    continue;
-                }
-
-                filter.Add(new JProperty(fieldName, values.Single()));
-            }
-
-            return filter;
-        }
-
-        private int? ResolveProductId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
+        private void SetHttpContextItems()
         {
             HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
             HttpContext.Items["includeRegionTags"] = false;
+        }
 
-            var foundArticles = dbProductService.SearchProducts(slug, version, $"{_tmfIdFieldName}={tmfProductId}");
-
-            return foundArticles.Length switch
+        private static bool TryParseLastUpdateDate(string lastUpdate, out DateTime lastUpdateDate)
+        {
+            if (lastUpdate is null)
             {
-                1 => foundArticles[0],
-                0 => null,
-                _ => throw new InvalidOperationException("Found duplicated id products. Ids should be unique."),
-            };
+                lastUpdateDate = default;
+                return true;
+            }
+
+            return DateTime.TryParse(lastUpdate.Trim('"'), out lastUpdateDate);
         }
     }
 }
