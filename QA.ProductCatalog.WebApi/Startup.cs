@@ -80,8 +80,7 @@ namespace QA.ProductCatalog.WebApi
                 .AddControllersAsServices()
                 .AddNewtonsoftJson();
 
-            //You MUST call unregister methonds only after AddMvc method
-            services.TryUnregisterTmForum(Configuration);
+            services.ResolveTmForumRegistration(Configuration);
 
             services.AddSwaggerGen(c =>
             {

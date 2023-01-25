@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QA.Core.Logger;
-using QA.Core.Models;
 using QA.Core.Models.Entities;
-using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Filters;
-using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.TmForum.Filters;
 using QA.ProductCatalog.TmForum.Interfaces;
+using QA.ProductCatalog.TmForum.Models;
 using QA.ProductCatalog.TmForum.Services;
-using System.Data;
 using System.Net.Mime;
 
 namespace QA.ProductCatalog.TmForum.Controllers
@@ -38,27 +35,25 @@ namespace QA.ProductCatalog.TmForum.Controllers
         /// </summary>
         /// <param name="slug">Definition identifier (e.g. Tariffs)</param>
         /// <param name="version">Definition version (e.g. V1)</param>
-        /// <param name="lastUpdate">Last modified date filter</param>
         /// <returns>Product list (untyped)</returns>
         /// <response code="406">Unsupported format</response>
+        /// <response code="200">Ok</response>
+        /// <response code="206">Partial content</response>
+        /// <response code="400">Bad request</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status206PartialContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpGet]
         public IActionResult List(
             [FromRoute] string slug,
-            [FromRoute] string version,
-            [FromQuery] string lastUpdate = default)
+            [FromRoute] string version)
         {
             _ = _logger.LogDebug(() => new { version, slug, Request.QueryString }.ToString());
-            
-            SetHttpContextItems();
 
-            if (!TryParseLastUpdateDate(lastUpdate, out var lastUpdateDate))
-            {
-                return BadRequest();
-            }
+            var result = _tmfService.GetProducts(slug, version, Request.Query, out var products);
 
-            var products = _tmfService.GetProducts(slug, version, lastUpdateDate, Request.Query);
-
-            return Ok(products);
+            return GenerateResult(result, products.Articles, products.TotalCount);
         }
 
         /// <summary>
@@ -71,6 +66,9 @@ namespace QA.ProductCatalog.TmForum.Controllers
         /// <response code="406">Unsupported format</response>
         /// <response code="404">Product not found</response>
         /// <response code="200">Product retrieved successfully</response>
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpGet("{tmfProductId}")]
         public IActionResult Get(
             [FromRoute] string slug,
@@ -79,16 +77,9 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { version, slug, tmfProductId, Request.QueryString }.ToString());
 
-            SetHttpContextItems();
+            var result = _tmfService.GetProductById(slug, version, tmfProductId, out var product);
 
-            var product = _tmfService.GetProductById(slug, version, tmfProductId);
-
-            if (product is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(product);
+            return GenerateResult(result, product);
         }
 
         /// <summary>
@@ -98,7 +89,11 @@ namespace QA.ProductCatalog.TmForum.Controllers
         /// <param name="version">Definition version (e.g. v1)</param>
         /// <param name="tmfProductId">Identifier of product to delete</param>
         /// <response code="204">Successfully deleted</response>
+        /// <response code="404">Product not found</response>
         /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpDelete("{tmfProductId}")]
         public IActionResult Delete(
             [FromRoute] string slug,
@@ -107,16 +102,9 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { version, slug, tmfProductId }.ToString());
 
-            SetHttpContextItems();
+            var result = _tmfService.DeleteProductById(slug, version, tmfProductId);
 
-            var deleted = _tmfService.TryDeleteProductById(slug, version, tmfProductId);
-
-            if (!deleted)
-            {
-                return NotFound();
-            }
-
-            return NoContent();
+            return GenerateResult(result);
         }
 
         /// <summary>
@@ -127,24 +115,19 @@ namespace QA.ProductCatalog.TmForum.Controllers
         /// <param name="tmfProductId">Identifier of product to update</param>
         /// <param name="product">Product in json format</param>
         /// <response code="200">Updated</response>
+        /// <response code="404">Product not found</response>
         /// <response code="406">Unsupported format</response>
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpPatch("{tmfProductId}")]
-        public ActionResult Update(string slug, string version, [FromRoute] string tmfProductId, [FromBody] Article product)
+        public IActionResult Update(string slug, string version, [FromRoute] string tmfProductId, [FromBody] Article product)
         {
             _ = _logger.LogDebug(() => new { slug, version, tmfProductId, productContentId = product.ContentId }.ToString());
 
-            SetHttpContextItems();
+            var result = _tmfService.UpdateProductById(slug, version, tmfProductId, product, out var updatedProduct);
 
-            var modifiedProduct = _tmfService.TryUpdateProductById(slug, version, tmfProductId, product);
-
-            if (modifiedProduct is null)
-            {
-                return NotFound();
-            }
-
-            return Ok(modifiedProduct);
+            return GenerateResult(result, updatedProduct);
         }
 
         /// <summary>
@@ -154,46 +137,48 @@ namespace QA.ProductCatalog.TmForum.Controllers
         /// <param name="version">Definition version (e.g. V1)</param>
         /// <param name="product">Product in json format</param>
         /// <response code="201">Created</response>
+        /// <response code="400">Bad request</response>
         /// <response code="406">Unsupported format</response>
-        [ProducesResponseType(201)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
         [HttpPost]
-        public ActionResult Create(
+        public IActionResult Create(
             string slug,
             string version,
             [FromBody] Article product)
         {
             _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
 
-            SetHttpContextItems();
+            var result = _tmfService.CreateProduct(slug, version, product, out var createdProduct);
 
-            var createdProduct = _tmfService.TryCreateProduct(slug, version, product);
-
-            if (createdProduct is null)
-            {
-                return BadRequest();
-            }
-
-            var createdTmfId = ((PlainArticleField)createdProduct.Fields[_tmfService.TmfIdFieldName]).Value;
-
-            return Created(HttpContext.Request.Path + new PathString("/" + createdTmfId), createdProduct);
+            return GenerateResult(result, createdProduct);
         }
 
-        private void SetHttpContextItems()
+#nullable enable
+        private IActionResult GenerateResult(TmfProcessResult result, object? resultObject = null, int totalCount = 0)
         {
-            HttpContext.Items["ArticleFilter"] = ArticleFilter.DefaultFilter;
-            HttpContext.Items["includeRegionTags"] = false;
-        }
-
-        private static bool TryParseLastUpdateDate(string lastUpdate, out DateTime lastUpdateDate)
-        {
-            if (lastUpdate is null)
+            switch (result)
             {
-                lastUpdateDate = default;
-                return true;
+                case TmfProcessResult.Ok:
+                    return Ok(resultObject);
+                case TmfProcessResult.NotFound:
+                    return NotFound();
+                case TmfProcessResult.BadRequest:
+                    return BadRequest();
+                case TmfProcessResult.Created:
+                    var createdTmfId = ((PlainArticleField)((Article)resultObject!).Fields[_tmfService.TmfIdFieldName]).Value;
+                    var path = HttpContext.Request.Path.Add(new PathString($"/{createdTmfId}"));
+                    return Created(path, resultObject);
+                case TmfProcessResult.NoContent:
+                    return NoContent();
+                case TmfProcessResult.PartialContent:
+                    Response.Headers.Add("X-Total-Count", totalCount.ToString());
+                    Response.StatusCode = StatusCodes.Status206PartialContent;
+                    return new ObjectResult(resultObject);
+                default:
+                    throw new ArgumentException($"Not supported result {result}");
             }
-
-            return DateTime.TryParse(lastUpdate.Trim('"'), out lastUpdateDate);
         }
     }
 }

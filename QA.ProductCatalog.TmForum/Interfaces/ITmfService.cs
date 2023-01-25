@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using QA.Core.Models.Entities;
+using QA.ProductCatalog.TmForum.Models;
 
 namespace QA.ProductCatalog.TmForum.Interfaces
 {
@@ -7,14 +8,14 @@ namespace QA.ProductCatalog.TmForum.Interfaces
     {
         string TmfIdFieldName { get; }
 
-        List<Article> GetProducts(string slug, string version, DateTime lastUpdateDate, IQueryCollection query);
+        TmfProcessResult GetProducts(string slug, string version, IQueryCollection query, out ArticleList products);
 
-        Article GetProductById(string slug, string version, string id);
+        TmfProcessResult GetProductById(string slug, string version, string id, out Article product);
 
-        bool TryDeleteProductById(string slug, string version, string id);
+        TmfProcessResult DeleteProductById(string slug, string version, string id);
 
-        Article TryUpdateProductById(string slug, string version, string id, Article product);
+        TmfProcessResult UpdateProductById(string slug, string version, string id, Article product, out Article updatedProduct);
 
-        Article TryCreateProduct(string slug, string version, Article product);
+        TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct);
     }
 }

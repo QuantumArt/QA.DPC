@@ -1,19 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using QA.ProductCatalog.TmForum.Models;
 
 namespace QA.ProductCatalog.TmForum.Extensions
 {
     public static class ServiceCollectionRegistrationExtension
     {
         /// <summary>
-        /// Удаляет контроллер и всё что было загружено из сборки QA.ProductCatalog.TmForum при работе метода AddMvc
-        /// в случае если в конфигурации Tmf.IsEnabled выставлен в false.
+        /// Если в конфигурации параметр Tmf.IsEnabled выставлен в true - дорегистрирует необходимые компоненты в DI.
+        /// Если false, то удаляет регистрируемый через метод AddMvc контроллер.
         /// </summary>
-        public static IServiceCollection TryUnregisterTmForum(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection ResolveTmForumRegistration(this IServiceCollection services, IConfiguration configuration)
         {
             if (configuration.GetSection("Tmf").GetSection("IsEnabled").Get<bool>())
             {
+                services.Configure<TmfSettings>(configuration.GetSection("Tmf"));
+
                 return services;
             }
 

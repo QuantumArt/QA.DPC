@@ -1,10 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.TmForum.Interfaces;
+using QA.ProductCatalog.TmForum.Models;
 
 namespace QA.ProductCatalog.TmForum.Services
 {
@@ -12,19 +15,26 @@ namespace QA.ProductCatalog.TmForum.Services
     {
         private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "fields",
-            "lastUpdate"
+            FieldsQueryParameterName,
+            OffsetQueryParameterName,
+            LimitQueryParameterName
         };
+
+        private const string FieldsQueryParameterName = "fields";
+        private const string OffsetQueryParameterName = "offset";
+        private const string LimitQueryParameterName = "limit";
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly Dictionary<string, string> _fieldToFilterMappings;
+        private readonly TmfSettings _tmfSettings;
 
         public string TmfIdFieldName { get; }
 
         public TmfService(Func<IProductAPIService> databaseProductServiceFactory,
             IContentDefinitionService contentDefinitionService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IOptions<TmfSettings> tmfSettings)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
@@ -33,9 +43,10 @@ namespace QA.ProductCatalog.TmForum.Services
             {
                 [TmfIdFieldName] = nameof(Article.Id)
             };
+            _tmfSettings = tmfSettings.Value;
         }
 
-        public Article GetProductById(string slug, string version, string id)
+        public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
         {
             IProductAPIService dbProductService = _databaseProductServiceFactory();
 
@@ -48,15 +59,16 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (foundArticleId == 0)
             {
-                return null;
+                product = null;
+                return TmfProcessResult.NotFound;
             }
 
-            Article product = dbProductService.GetProduct(slug, version, foundArticleId);
+            product = dbProductService.GetProduct(slug, version, foundArticleId);
 
-            return product;
+            return TmfProcessResult.Ok;
         }
 
-        public List<Article> GetProducts(string slug, string version, DateTime lastUpdateDate, IQueryCollection query)
+        public TmfProcessResult GetProducts(string slug, string version, IQueryCollection query, out ArticleList products)
         {
             IProductAPIService dbProductService = _databaseProductServiceFactory();
 
@@ -70,65 +82,82 @@ namespace QA.ProductCatalog.TmForum.Services
                     .Select(product => (int)product["id"])
                     .ToArray();
 
-            List<Article> products = new(productIds.Length);
-            foreach (int productId in productIds)
+            int totalCount = productIds.Length;
+            products = new(0);
+
+            if (totalCount == 0)
             {
-                // TODO: Optimize (get all of products at ones)
-                Article product = dbProductService.GetProduct(slug, version, productId);
-
-                if (lastUpdateDate != default && product.Modified != lastUpdateDate)
-                {
-                    continue;
-                }
-
-                products.Add(product);
+                return TmfProcessResult.Ok;
             }
 
-            return products;
+            if (!TryRetrievePagingParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultReturnLimit, out int limit))
+            {
+                return TmfProcessResult.BadRequest;
+            }
+
+            if (!TryRetrievePagingParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
+            {
+                return TmfProcessResult.BadRequest;
+            }
+
+            products = new(CalculateObjectSize(totalCount, limit, offset))
+            {
+                TotalCount = totalCount
+            };
+
+            var productIdsToProcess = productIds.Skip(offset).Take(limit);
+
+            foreach (int productId in productIdsToProcess)
+            {
+                products.Articles.Add(dbProductService.GetProduct(slug, version, productId));
+            }
+
+            return products.IsPartial ? TmfProcessResult.PartialContent : TmfProcessResult.Ok;
         }
 
-        public bool TryDeleteProductById(string slug, string version, string id)
+        public TmfProcessResult DeleteProductById(string slug, string version, string id)
         {
             IProductAPIService dbProductService = _databaseProductServiceFactory();
             int? foundArticleId = ResolveProductId(dbProductService, slug, version, id);
 
             if (foundArticleId is null)
             {
-                return false;
+                return TmfProcessResult.NotFound;
             }
 
             dbProductService.DeleteProduct(slug, version, foundArticleId.Value);
 
-            return true;
+            return TmfProcessResult.NoContent;
         }
 
-        public Article TryUpdateProductById(string slug, string version, string tmfProductId, Article product)
+        public TmfProcessResult UpdateProductById(string slug, string version, string tmfProductId, Article product, out Article updatedProduct)
         {
             var dbProductService = _databaseProductServiceFactory();
             var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
 
             if (foundArticleId is null)
             {
-                return null;
+                updatedProduct = null;
+                return TmfProcessResult.NotFound;
             }
 
-            var modifiedProduct = dbProductService.GetProduct(slug, version, foundArticleId.Value);
+            updatedProduct = dbProductService.GetProduct(slug, version, foundArticleId.Value);
 
             foreach ((string fieldName, ArticleField fieldValue) in product.Fields
                 .Where(p => p.Value is PlainArticleField field && field.NativeValue != null))
             {
-                modifiedProduct.Fields[fieldName] = fieldValue;
+                updatedProduct.Fields[fieldName] = fieldValue;
             }
 
-            modifiedProduct.Id = foundArticleId.Value;
-            _ = SetPlainFieldValue(modifiedProduct.Fields, TmfIdFieldName, tmfProductId);
+            updatedProduct.Id = foundArticleId.Value;
+            _ = SetPlainFieldValue(updatedProduct.Fields, TmfIdFieldName, tmfProductId);
 
-            dbProductService.UpdateProduct(slug, version, modifiedProduct);
+            dbProductService.UpdateProduct(slug, version, updatedProduct);
 
-            return modifiedProduct;
+            return TmfProcessResult.Ok;
         }
 
-        public Article TryCreateProduct(string slug, string version, Article product)
+        public TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct)
         {
             var dbProductService = _databaseProductServiceFactory();
 
@@ -136,12 +165,13 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (!createdProductId.HasValue)
             {
-                return null;
+                createdProduct = null;
+                return TmfProcessResult.BadRequest;
             }
 
-            var createdProduct = dbProductService.GetProduct(slug, version, createdProductId.Value);
+            createdProduct = dbProductService.GetProduct(slug, version, createdProductId.Value);
 
-            return createdProduct;
+            return TmfProcessResult.Created;
         }
 
         private JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys, IEnumerable<Field> fields)
@@ -161,7 +191,7 @@ namespace QA.ProductCatalog.TmForum.Services
                     fieldName => fieldName,
                     StringComparer.OrdinalIgnoreCase);
 
-            foreach ((string key, Microsoft.Extensions.Primitives.StringValues values) in searchParameters)
+            foreach ((string key, StringValues values) in searchParameters)
             {
                 if (excludedKeys.Contains(key) ||
                     !filterToFieldMappings.TryGetValue(key, out string fieldName))
@@ -210,6 +240,30 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             return false;
+        }
+
+        private static bool TryRetrievePagingParamaterFromQuery(IQueryCollection query, string parameterName, int defaultValue, out int retrievedValue)
+        {
+            if (!query.TryGetValue(parameterName, out var valueString))
+            {
+                retrievedValue = defaultValue;
+                return true;
+            }
+
+            if (!int.TryParse(valueString.Single(), out var value))
+            {
+                retrievedValue = defaultValue;
+                return false;
+            }
+
+            retrievedValue = value;
+            return true;
+        }
+
+        private static int CalculateObjectSize(int totalCount, int limit, int offset)
+        {
+            int productsLeft = totalCount - offset;
+            return productsLeft < limit ? productsLeft : limit;
         }
     }
 }

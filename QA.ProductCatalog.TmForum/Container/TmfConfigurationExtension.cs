@@ -12,6 +12,7 @@ namespace QA.ProductCatalog.TmForum.Container
     public class TmfConfigurationExtension : UnityContainerExtension
     {
         public const string TmfItemIdentifier = "tmf";
+        private static string[] _defaultTmfFieldsToSelect = new string[1] { "id" };
 
         protected override void Initialize()
         {
@@ -31,9 +32,13 @@ namespace QA.ProductCatalog.TmForum.Container
                     {
                         var accessor = container.Resolve<IHttpContextAccessor>();
                         var hasFieldsFilter = accessor.HttpContext.Request.Query.TryGetValue("fields", out StringValues fields);
-                        var fieldsFilter = hasFieldsFilter
-                            ? (ICollection<string>)new HashSet<string>(fields.ToArray(), StringComparer.OrdinalIgnoreCase)
-                            : Array.Empty<string>();
+                        ICollection<string> fieldsFilter = Array.Empty<string>();
+                        if (hasFieldsFilter)
+                        {
+                            var filters = new HashSet<string>(fields.ToArray(), StringComparer.OrdinalIgnoreCase);
+                            filters.UnionWith(_defaultTmfFieldsToSelect);
+                            fieldsFilter = filters;
+                        }
 
                         return new JsonProductServiceSettings
                         {
