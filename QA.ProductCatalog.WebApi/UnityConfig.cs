@@ -16,13 +16,13 @@ using System;
 using QA.Core.DocumentGenerator;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Cache;
-using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
 using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using Unity;
-using Unity.Lifetime;
+using QA.ProductCatalog.Filters;
+using QA.ProductCatalog.TmForum.Extensions;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
@@ -50,6 +50,9 @@ namespace QA.ProductCatalog.WebApi.App_Start
             unityContainer.AddNewExtension<FormattersContainerConfiguration>();
 			unityContainer.AddNewExtension<APIContainerConfiguration>();
             unityContainer.AddNewExtension<QPAPIContainerConfiguration>();
+
+            //Register TMForum extension
+            unityContainer.RegisterTmForum();
 
             unityContainer.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             unityContainer.RegisterType<ICustomerProvider, CustomerProvider>();

@@ -1,32 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using QA.Core.Cache;
+﻿using QA.Core.Cache;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
+using QP.ConfigurationService.Models;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QPublishing.Database;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
-using Quantumart.QPublishing.Database;
-using System.Data.SqlClient;
-using QA.Core.DPC.QP.Models;
-using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.Loader
 {
-    internal interface IProductDeserializer
-    {
-        Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition);
-    }
-
-    internal class ProductDeserializer : IProductDeserializer
+    public class ProductDeserializer : IProductDeserializer
     {
         private readonly IFieldService _fieldService;
-        private readonly ContentService _contentService;
+        protected readonly ContentService _contentService;
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IContextStorage _contextStorage;
         private readonly Customer _customer;
@@ -34,11 +29,16 @@ namespace QA.Core.DPC.Loader
         private string GetExstensionIdQuery(DatabaseType dbType) => $@"
             select ATTRIBUTE_NAME from CONTENT_ATTRIBUTE
             where
-	            CLASSIFIER_ATTRIBUTE_ID = @attributeId and
-	            CONTENT_ID = @contentId and
-	            AGGREGATED = {SqlQuerySyntaxHelper.ToBoolSql(dbType, true)}";
+                CLASSIFIER_ATTRIBUTE_ID = @attributeId and
+                CONTENT_ID = @contentId and
+                AGGREGATED = {SqlQuerySyntaxHelper.ToBoolSql(dbType, true)}";
 
-        public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage, IConnectionProvider connectionProvider)
+        public ProductDeserializer(
+            IFieldService fieldService,
+            IServiceFactory serviceFactory,
+            ICacheItemWatcher cacheItemWatcher,
+            IContextStorage contextStorage,
+            IConnectionProvider connectionProvider)
         {
             _fieldService = fieldService;
 
@@ -50,7 +50,6 @@ namespace QA.Core.DPC.Loader
 
             _customer = connectionProvider.GetCustomer();
         }
-
 
         public Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition)
         {
@@ -69,12 +68,16 @@ namespace QA.Core.DPC.Loader
             }
         }
 
-        private Article DeserializeArticle(IProductDataSource productDataSource, Models.Configuration.Content definition, DBConnector connector, Context context)
+        protected virtual Article DeserializeArticle(
+            IProductDataSource productDataSource,
+            Models.Configuration.Content definition,
+            DBConnector connector,
+            Context context)
         {
             if (productDataSource == null)
                 return null;
 
-            int id = productDataSource.GetArticleId();
+            int id = GetArticleId(productDataSource, definition.ContentId);
 
             context.TakeIntoAccount(id);
 
@@ -95,8 +98,7 @@ namespace QA.Core.DPC.Loader
             foreach (Field fieldInDef in definition.Fields.Where(x => !(x is BaseVirtualField) && !(x is Dictionaries)))
             {
                 var field = DeserializeField(fieldInDef, _fieldService.Read(fieldInDef.FieldId), productDataSource, connector, context);
-
-                article.Fields[field.FieldName] = field;
+                ApplyArticleField(article, field, productDataSource);
             }
 
             if (definition.LoadAllPlainFields)
@@ -105,11 +107,29 @@ namespace QA.Core.DPC.Loader
 
                 foreach (var plainFieldFromQp in qpFields.Where(x => x.RelationType == RelationType.None && definition.Fields.All(y => y.FieldId != x.Id)))
                 {
-                    article.Fields[plainFieldFromQp.Name] = DeserializeField(new PlainField { FieldId = plainFieldFromQp.Id }, plainFieldFromQp, productDataSource, connector, context);
+                    PlainField fieldInDefinition = new PlainField
+                    {
+                        FieldId = plainFieldFromQp.Id
+                    };
+
+                    ArticleField articleField = DeserializeField(fieldInDefinition, plainFieldFromQp, productDataSource, connector, context);
+                    ApplyArticleField(article, articleField, productDataSource);
                 }
             }
 
             return article;
+        }
+
+        protected virtual void ApplyArticleField(Article article, ArticleField field, IProductDataSource productDataSource)
+        {
+            article.Fields[field.FieldName] = field;
+        }
+
+        protected virtual int GetArticleId(IProductDataSource productDataSource, int contentId)
+        {
+            var articleId = productDataSource.GetArticleId();
+
+            return articleId > 0 ? articleId : default;
         }
 
         private ArticleField DeserializeField(Field fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource, DBConnector connector, Context context)
@@ -141,7 +161,8 @@ namespace QA.Core.DPC.Loader
         {
             var field = new PlainArticleField
             {
-                PlainFieldType = (PlainFieldType)plainFieldFromQP.ExactType
+                PlainFieldType = (PlainFieldType)plainFieldFromQP.ExactType,
+                DefaultValue = plainFieldFromQP.DefaultValue
             };
 
             switch (field.PlainFieldType)
@@ -166,7 +187,7 @@ namespace QA.Core.DPC.Loader
                         if (plainFieldFromQP.IsInteger ||
                             plainFieldFromQP.RelationType == RelationType.OneToMany)
                         {
-                            number = productDataSource.GetInt(plainFieldFromQP.Name);                       
+                            number = productDataSource.GetInt(plainFieldFromQP.Name);
                         }
                         else
                         {
@@ -340,57 +361,13 @@ namespace QA.Core.DPC.Loader
             var queries = attributes
                 .Select(a =>
                     $"select CONTENT_ITEM_ID id from content_{contentId}_united where {a} = @articleId");
-            
+
             dbCommand = connector.CreateDbCommand(string.Join(" ", queries));
             dbCommand.Parameters.AddWithValue("@articleId", articleId);
-            
+
             var value = connector.GetRealScalarData(dbCommand);
 
             return (int?)(decimal?)value;
-        }
-    }
-
-    internal class Context
-    {
-        private int _minArticleId;
-        private readonly Dictionary<int, List<Article>> _extensionMap;
-
-        public Context()
-        {
-            _extensionMap = new Dictionary<int, List<Article>>();
-            _minArticleId = 0;
-        }
-
-        public void AddExtensionArticle(int parentId, Article article)
-        {
-            if (!_extensionMap.ContainsKey(parentId))
-            {
-                _extensionMap[parentId] = new List<Article>();
-            }
-
-            _extensionMap[parentId].Add(article);
-        }
-
-        public void TakeIntoAccount(int id)
-        {
-            if (id < _minArticleId)
-            {
-                _minArticleId = id;
-            }
-        }
-
-        public void UpdateExtensionArticles()
-        {
-            var id = _minArticleId;
-            foreach (var list in _extensionMap.Values)
-            {
-                id--;
-
-                foreach (var article in list)
-                {
-                    article.Id = id;
-                }
-            }
         }
     }
 }

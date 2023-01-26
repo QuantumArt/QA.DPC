@@ -1,6 +1,4 @@
-﻿using System;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
@@ -10,7 +8,7 @@ using QA.ProductCatalog.ContentProviders;
 using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
-namespace QA.ProductCatalog.WebApi.Filters
+namespace QA.ProductCatalog.Filters
 {
     public class IdentityResolverAttribute : TypeFilterAttribute
     {
@@ -110,7 +108,7 @@ namespace QA.ProductCatalog.WebApi.Filters
                 var token = SqlQuerySyntaxHelper.EscapeEntityName(dbType, "Token User");
                 var fieldName = method == "GET" ? "Read Service" : "Write Service";
                 var field = SqlQuerySyntaxHelper.EscapeEntityName(dbType, fieldName);
-                
+
                 return string.Format(ServiceQueryTemplate, authorizationContentId, tokensContentId,
                     servicesContentId, qp, token, field);
             }
@@ -120,7 +118,7 @@ namespace QA.ProductCatalog.WebApi.Filters
                 int authorizationCoontentId = GetContentId(SettingsTitles.API_AUTHORIZATION_CONTENT_ID);
                 int tokensCoontentId = GetContentId(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
                 var fieldName = method == "GET" ? "Read" : "Write";
-                var field = SqlQuerySyntaxHelper.EscapeEntityName(dbType, fieldName);                
+                var field = SqlQuerySyntaxHelper.EscapeEntityName(dbType, fieldName);
                 var qp = SqlQuerySyntaxHelper.EscapeEntityName(dbType, "Qp User");
                 var token = SqlQuerySyntaxHelper.EscapeEntityName(dbType, "Token User");
                 return string.Format(CommonQueryTemplate, authorizationCoontentId, tokensCoontentId, field, qp, token);
@@ -164,12 +162,12 @@ namespace QA.ProductCatalog.WebApi.Filters
                     dbCommand.Parameters.AddWithValue("@version", version.ToLower());
                 }
 
-                var tokenParameter = dbCommand.Parameters.AddWithValue("@token", (object) token ?? DBNull.Value);
+                var tokenParameter = dbCommand.Parameters.AddWithValue("@token", (object)token ?? DBNull.Value);
                 tokenParameter.DbType = DbType.String;
 
                 var dt = dbConnector.GetRealData(dbCommand);
                 var userIds = dt.AsEnumerable()
-                    .Select(row => row["UserId"] == DBNull.Value ? null : (int?) (decimal?) row["UserId"]).ToArray();
+                    .Select(row => row["UserId"] == DBNull.Value ? null : (int?)(decimal?)row["UserId"]).ToArray();
 
                 if (userIds.Any())
                 {
@@ -194,7 +192,7 @@ namespace QA.ProductCatalog.WebApi.Filters
                 dbCommand.Parameters.AddWithValue("@id", userId);
 
                 var dt = dbConnector.GetRealData(dbCommand);
-                return dt.Rows.Count > 0 ? (string) dt.Rows[0]["name"] : String.Empty;
+                return dt.Rows.Count > 0 ? (string)dt.Rows[0]["name"] : String.Empty;
             }
 
             private bool UseAuthorization()

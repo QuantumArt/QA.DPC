@@ -1,4 +1,4 @@
-﻿namespace QA.ProductCatalog.WebApi
+﻿namespace QA.ProductCatalog.Filters
 {
     public static class WebApiConstants
     {
