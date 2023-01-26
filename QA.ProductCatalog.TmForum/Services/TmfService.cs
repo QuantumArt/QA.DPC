@@ -229,7 +229,7 @@ namespace QA.ProductCatalog.TmForum.Services
                     return false;
                 }
             }
-            // If we are here then something in ContetnDefinition went wrong!
+            // If we are here then something in ContentDefinition went wrong!
             return false;
         }
 
