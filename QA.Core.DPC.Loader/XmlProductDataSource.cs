@@ -63,5 +63,10 @@ namespace QA.Core.DPC.Loader
         }
 
         public IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName) => this;
+
+        public decimal? GetBoolAsDecimal(string fieldName)
+        {
+            return GetDecimal(fieldName);
+        }
     }
 }

@@ -235,7 +235,7 @@ namespace QA.Core.DPC.Loader
 
                 case PlainFieldType.Boolean:
                     {
-                        decimal? number = productDataSource.GetDecimal(plainFieldFromQP.Name);
+                        decimal? number = productDataSource.GetBoolAsDecimal(plainFieldFromQP.Name);
 
                         if (number != null)
                         {
