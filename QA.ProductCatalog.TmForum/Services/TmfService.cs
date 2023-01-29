@@ -211,26 +211,28 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             Content content = definition.Content;
             string[] parameterParts = parameter.Split('.');
+            bool inContent = false;
 
             foreach (string part in parameterParts)
             {
                 Field field = content.Fields.FirstOrDefault(f => string.Equals(f.FieldName, part, StringComparison.CurrentCultureIgnoreCase));
 
-                if (field is EntityField)
+                if (field is EntityField entity)
                 {
-                    content = ((EntityField)field).Content;
+                    content = entity.Content;
                 }
                 else if (field != null)
                 {
-                    return true;
+                    inContent = true;
+                    break;
                 }
                 else
                 {
-                    return false;
+                    break;
                 }
             }
-            // If we are here then something in ContentDefinition went wrong!
-            return false;
+
+            return inContent;
         }
 
         private int? ResolveProductId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
