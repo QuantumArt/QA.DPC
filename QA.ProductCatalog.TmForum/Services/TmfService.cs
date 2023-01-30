@@ -214,13 +214,9 @@ namespace QA.ProductCatalog.TmForum.Services
                 {
                     content = entity.Content;
                 }
-                else if (field != null)
-                {
-                    inContent = true;
-                    break;
-                }
                 else
                 {
+                    inContent = field is PlainField;
                     break;
                 }
             }
