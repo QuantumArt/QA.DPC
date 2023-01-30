@@ -3,6 +3,6 @@
     public class TmfSettings
     {
         public bool IsEnabled { get; set; }
-        public int DefaultReturnLimit { get; set; }
+        public int DefaultLimit { get; set; } = 10;
     }
 }
