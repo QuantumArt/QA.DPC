@@ -4,6 +4,7 @@ using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.TmForum.Extensions;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Repository.ArticleMatching;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;

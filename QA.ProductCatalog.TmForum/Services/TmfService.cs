@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -26,7 +25,6 @@ namespace QA.ProductCatalog.TmForum.Services
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
-        private readonly Dictionary<string, string> _fieldToFilterMappings;
         private readonly TmfSettings _tmfSettings;
 
         public string TmfIdFieldName { get; }
@@ -39,10 +37,6 @@ namespace QA.ProductCatalog.TmForum.Services
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
             TmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
-            _fieldToFilterMappings = new()
-            {
-                [TmfIdFieldName] = nameof(Article.Id)
-            };
             _tmfSettings = tmfSettings.Value;
         }
 
@@ -74,7 +68,13 @@ namespace QA.ProductCatalog.TmForum.Services
 
             ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
 
-            JObject filter = ConvertToFilter(query, _reservedSearchParameters, definition.Content.Fields);
+            JObject filter = ConvertToFilter(query, definition);
+
+            if (filter is null)
+            {
+                products = new(0) { TotalCount = 0 };
+                return TmfProcessResult.BadRequest;
+            }
 
             int[] productIds = filter.Count > 0
                 ? dbProductService.ExtendedSearchProducts(slug, version, filter)
@@ -174,7 +174,7 @@ namespace QA.ProductCatalog.TmForum.Services
             return TmfProcessResult.Created;
         }
 
-        private JObject ConvertToFilter(IQueryCollection searchParameters, ICollection<string> excludedKeys, IEnumerable<Field> fields)
+        private JObject ConvertToFilter(IQueryCollection searchParameters, ServiceDefinition definition)
         {
             JObject filter = new();
 
@@ -183,26 +183,45 @@ namespace QA.ProductCatalog.TmForum.Services
                 return filter;
             }
 
-            Dictionary<string, string> filterToFieldMappings = fields
-                .OfType<PlainField>()
-                .Select(field => field.FieldName)
-                .ToDictionary(
-                    fieldName => _fieldToFilterMappings.TryGetValue(fieldName, out string filter) ? filter : fieldName,
-                    fieldName => fieldName,
-                    StringComparer.OrdinalIgnoreCase);
+            var clearedParameters = searchParameters
+                .Where(x => !_reservedSearchParameters.Contains(x.Key))
+                .ToArray();
 
-            foreach ((string key, StringValues values) in searchParameters)
+            foreach (var parameter in clearedParameters)
             {
-                if (excludedKeys.Contains(key) ||
-                    !filterToFieldMappings.TryGetValue(key, out string fieldName))
+                if (!IsFieldInContent(definition, parameter.Key))
                 {
-                    continue;
+                    return null;
                 }
 
-                filter.Add(new JProperty(fieldName, values.Single()));
+                filter.Add(new JProperty(parameter.Key, parameter.Value.Single()));
             }
 
             return filter;
+        }
+
+        private static bool IsFieldInContent(ServiceDefinition definition, string parameter)
+        {
+            Content content = definition.Content;
+            string[] parameterParts = parameter.Split('.');
+            bool inContent = false;
+
+            foreach (string part in parameterParts)
+            {
+                Field field = content.Fields.FirstOrDefault(f => string.Equals(f.FieldName, part, StringComparison.CurrentCultureIgnoreCase));
+
+                if (field is EntityField entity)
+                {
+                    content = entity.Content;
+                }
+                else
+                {
+                    inContent = field is PlainField;
+                    break;
+                }
+            }
+
+            return inContent;
         }
 
         private int? ResolveProductId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
