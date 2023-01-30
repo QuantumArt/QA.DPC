@@ -82,5 +82,19 @@ namespace QA.Core.DPC.Loader
         }
 
         public virtual IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName) => this;
+
+        public decimal? GetBoolAsDecimal(string fieldName)
+        {
+            JToken token = GetJToken(fieldName);
+
+            if (token is null)
+            {
+                return null;
+            }
+
+            token = Convert.ToBoolean(token);
+
+            return Convert.ToDecimal(token);
+        }
     }
 }
