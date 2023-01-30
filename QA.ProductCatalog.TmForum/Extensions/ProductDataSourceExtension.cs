@@ -1,11 +1,10 @@
 ﻿using QA.Core.Models.Entities;
-using System;
 
-namespace QA.Core.DPC.Loader
+namespace QA.ProductCatalog.TmForum.Extensions
 {
-    public static class ProductDataSourceExtensions
+    internal static class ProductDataSourceExtension
     {
-        public static string GetTmfArticleId(this IProductDataSource productDataSource)
+        internal static string GetTmfArticleId(this IProductDataSource productDataSource)
         {
             if (productDataSource is null)
             {

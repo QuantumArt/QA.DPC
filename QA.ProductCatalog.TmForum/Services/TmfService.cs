@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -8,7 +7,6 @@ using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
-using Quantumart.QP8.Constants;
 
 namespace QA.ProductCatalog.TmForum.Services
 {
@@ -27,7 +25,6 @@ namespace QA.ProductCatalog.TmForum.Services
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
-        private readonly Dictionary<string, string> _fieldToFilterMappings;
         private readonly TmfSettings _tmfSettings;
 
         public string TmfIdFieldName { get; }
@@ -40,10 +37,6 @@ namespace QA.ProductCatalog.TmForum.Services
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
             TmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
-            _fieldToFilterMappings = new()
-            {
-                [TmfIdFieldName] = nameof(Article.Id)
-            };
             _tmfSettings = tmfSettings.Value;
         }
 
