@@ -45,7 +45,6 @@ namespace QA.ProductCatalog.TmForum.Services
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
         {
             product = null;
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
             IProductAPIService dbProductService = _databaseProductServiceFactory();
 
             JObject filter = new()
@@ -64,7 +63,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             foreach (int artricleId in foundArticleIds)
             {
-                var foundProduct = dbProductService.GetProduct(slug, version, artricleId);
+                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId);
                 articles.Add(foundProduct);
             }
 
@@ -74,6 +73,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
             string versionField = definition.Content.Fields
                 .Where(x => string.Equals(x.FieldName, "version", StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.FieldName)
