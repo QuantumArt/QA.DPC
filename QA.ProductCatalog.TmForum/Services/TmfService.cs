@@ -22,6 +22,8 @@ namespace QA.ProductCatalog.TmForum.Services
         private const string FieldsQueryParameterName = "fields";
         private const string OffsetQueryParameterName = "offset";
         private const string LimitQueryParameterName = "limit";
+        private const string ExternalIdFieldName = "id";
+        private const string EntitySeparator = ".";
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
@@ -189,39 +191,52 @@ namespace QA.ProductCatalog.TmForum.Services
 
             foreach (var parameter in clearedParameters)
             {
-                if (!IsFieldInContent(definition, parameter.Key))
+                string fieldName = GetFieldNameFromDefinition(definition, parameter.Key);
+                if (string.IsNullOrWhiteSpace(fieldName))
                 {
                     return null;
                 }
 
-                filter.Add(new JProperty(parameter.Key, parameter.Value.Single()));
+                filter.Add(new JProperty(fieldName, parameter.Value.Single()));
             }
 
             return filter;
         }
 
-        private static bool IsFieldInContent(ServiceDefinition definition, string parameter)
+        private string GetFieldNameFromDefinition(ServiceDefinition definition, string parameter)
         {
             Content content = definition.Content;
-            string[] parameterParts = parameter.Split('.');
-            bool inContent = false;
+            string[] parameterParts = parameter.Split(EntitySeparator);
+            List<string> fieldNames = new();
 
             foreach (string part in parameterParts)
             {
-                Field field = content.Fields.FirstOrDefault(f => string.Equals(f.FieldName, part, StringComparison.CurrentCultureIgnoreCase));
+                Field field = null;
+
+                if (part.Equals(ExternalIdFieldName, StringComparison.OrdinalIgnoreCase))
+                {
+                    field = content.Fields.FirstOrDefault(f => string.Equals(f.FieldName, TmfIdFieldName, StringComparison.CurrentCultureIgnoreCase));
+                }
+
+                field ??= content.Fields.FirstOrDefault(f => string.Equals(f.FieldName, part, StringComparison.CurrentCultureIgnoreCase));
+
+                if (field is PlainField plainField)
+                {
+                    fieldNames.Add(plainField.FieldName);
+                    break;
+                }
 
                 if (field is EntityField entity)
                 {
+                    fieldNames.Add(entity.FieldName);
                     content = entity.Content;
+                    continue;
                 }
-                else
-                {
-                    inContent = field is PlainField;
-                    break;
-                }
+
+                break;
             }
 
-            return inContent;
+            return string.Join(EntitySeparator, fieldNames);
         }
 
         private int? ResolveProductId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
