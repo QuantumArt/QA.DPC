@@ -132,7 +132,7 @@ namespace QA.Core.DPC.API.Search
 
                     if (field is EntityField)
                     {
-                        queryField = new QueryField { Name = fieldName };
+                        queryField = new QueryField { Name = field.FieldName };
                         definition = ((EntityField)field).Content;
                     }
                     else if (field is ExtensionField)
@@ -151,14 +151,14 @@ namespace QA.Core.DPC.API.Search
                         }
                         else
                         {
-                            queryField = new QueryField { Name = fieldName, ContentId = mapping.ContentId };
+                            queryField = new QueryField { Name = field.FieldName, ContentId = mapping.ContentId };
                             definition = mapping.Content;
                         }
                     }
                     else if (field != null)
                     {
                         fieldId = field.FieldId;
-                        queryField = new QueryField { Name = fieldName };
+                        queryField = new QueryField { Name = field.FieldName };
                         definition = null;
                     }
                     else
