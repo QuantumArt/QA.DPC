@@ -68,6 +68,12 @@ namespace QA.ProductCatalog.TmForum.Services
                 articles.Add(foundProduct);
             }
 
+            if (articles.Count == 1)
+            {
+                product = articles.Single();
+                return TmfProcessResult.Ok;
+            }
+
             string versionField = definition.Content.Fields
                 .Where(x => string.Equals(x.FieldName, "version", StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.FieldName)
