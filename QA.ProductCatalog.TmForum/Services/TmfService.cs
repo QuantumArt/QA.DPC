@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
@@ -25,6 +26,8 @@ namespace QA.ProductCatalog.TmForum.Services
         private const string ExternalIdFieldName = "id";
         private const string EntitySeparator = ".";
 
+        private static Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
+
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly TmfSettings _tmfSettings;
@@ -45,51 +48,19 @@ namespace QA.ProductCatalog.TmForum.Services
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
         {
             product = null;
-            IProductAPIService dbProductService = _databaseProductServiceFactory();
+            TmfProcessResult parseResult = ParseId(id, out string productId, out string productVersion);
 
-            JObject filter = new()
+            if (parseResult != TmfProcessResult.Ok)
             {
-                new JProperty(TmfIdFieldName, id)
-            };
-
-            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter);
-
-            if (foundArticleIds.Length == 0)
-            {
-                return TmfProcessResult.NotFound;
+                return parseResult;
             }
 
-            List<Article> articles = new(foundArticleIds.Length);
-
-            foreach (int artricleId in foundArticleIds)
+            if (string.IsNullOrWhiteSpace(productVersion))
             {
-                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId);
-                articles.Add(foundProduct);
+                return GetLatestProductVersionById(slug, version, productId, out product);
             }
 
-            if (articles.Count == 1)
-            {
-                product = articles.Single();
-                return TmfProcessResult.Ok;
-            }
-
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-            string versionField = definition.Content.Fields
-                .Where(x => string.Equals(x.FieldName, "version", StringComparison.OrdinalIgnoreCase))
-                .Select(x => x.FieldName)
-                .FirstOrDefault();
-
-            if (string.IsNullOrWhiteSpace(versionField))
-            {
-                return TmfProcessResult.BadRequest;
-            }
-
-            product = articles.MaxBy(x => x.Fields
-                .Where(f => f.Key == versionField)
-                .Select(v => v.Value.ToString())
-                .Single());
-
-            return TmfProcessResult.Ok;
+            return GetSpecifiedProductVersionById(slug, version, productId, productVersion, out product);
         }
 
         public TmfProcessResult GetProducts(string slug, string version, IQueryCollection query, out ArticleList products)
@@ -326,6 +297,120 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             int productsLeft = totalCount - offset;
             return productsLeft < limit ? productsLeft : limit;
+        }
+
+        private TmfProcessResult GetLatestProductVersionById(string slug, string version, string id, out Article product)
+        {
+            product = null;
+            IProductAPIService dbProductService = _databaseProductServiceFactory();
+            JObject filter = new()
+            {
+                new JProperty(TmfIdFieldName, id)
+            };
+
+            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter);
+
+            if (foundArticleIds.Length == 0)
+            {
+                return TmfProcessResult.NotFound;
+            }
+
+            List<Article> articles = new(foundArticleIds.Length);
+
+            foreach (int artricleId in foundArticleIds)
+            {
+                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId);
+                articles.Add(foundProduct);
+            }
+
+            if (articles.Count == 1)
+            {
+                product = articles.Single();
+                return TmfProcessResult.Ok;
+            }
+
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            string versionField = definition.Content.Fields
+                .Where(x => string.Equals(x.FieldName, "version", StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.FieldName)
+                .FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(versionField))
+            {
+                return TmfProcessResult.BadRequest;
+            }
+
+            product = articles.MaxBy(x => x.Fields
+                .Where(f => f.Key == versionField)
+                .Select(v => v.Value.ToString())
+                .Single());
+
+            return TmfProcessResult.Ok;
+        }
+
+        private TmfProcessResult GetSpecifiedProductVersionById(string slug, string version, string id, string productVersion, out Article product)
+        {
+            product = null;
+            IProductAPIService dbProductService = _databaseProductServiceFactory();
+            JObject filter = new()
+            {
+                new JProperty(TmfIdFieldName, id)
+            };
+
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            string versionField = definition.Content.Fields
+                .Where(x => string.Equals(x.FieldName, "version", StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.FieldName)
+                .FirstOrDefault();
+
+            filter.Add(new JProperty(versionField, productVersion));
+
+            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter);
+
+            switch (foundArticleIds.Length)
+            {
+                case 0:
+                    return TmfProcessResult.NotFound;
+                case 1:
+                    product = dbProductService.GetProduct(slug, version, foundArticleIds.Single());
+                    return TmfProcessResult.Ok;
+                default:
+                    return TmfProcessResult.BadRequest;
+            }
+        }
+
+        private static TmfProcessResult ParseId(string productId, out string id, out string version)
+        {
+            id = string.Empty;
+            version = string.Empty;
+
+            Match matchResult = _idRegex.Match(productId);
+
+            if (matchResult == null || !matchResult.Success)
+            {
+                id = productId;
+                return TmfProcessResult.Ok;
+            }
+
+            string[] keys = matchResult.Groups.Values
+                .Where(x => x.Value != productId)
+                .Select(x => x.Value)
+                .ToArray();
+
+            if (keys.Length != 2)
+            {
+                return TmfProcessResult.BadRequest;
+            }
+
+            id = keys[0];
+            version = keys[1];
+
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return TmfProcessResult.BadRequest;
+            }
+
+            return TmfProcessResult.Ok;
         }
     }
 }
