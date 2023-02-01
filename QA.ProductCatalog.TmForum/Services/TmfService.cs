@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -106,7 +107,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 TotalCount = totalCount
             };
 
-            var productIdsToProcess = productIds.Skip(offset).Take(limit);
+            IEnumerable<int> productIdsToProcess = productIds.Skip(offset).Take(limit);
 
             foreach (int productId in productIdsToProcess)
             {
@@ -118,51 +119,45 @@ namespace QA.ProductCatalog.TmForum.Services
 
         public TmfProcessResult DeleteProductById(string slug, string version, string id)
         {
-            IProductAPIService dbProductService = _databaseProductServiceFactory();
-            int? foundArticleId = ResolveProductId(dbProductService, slug, version, id);
+            TmfProcessResult getProductResult = GetProductById(slug, version, id, out Article product);
 
-            if (foundArticleId is null)
+            if (getProductResult != TmfProcessResult.Ok)
             {
-                return TmfProcessResult.NotFound;
+                return getProductResult;
             }
 
-            dbProductService.DeleteProduct(slug, version, foundArticleId.Value);
+            _databaseProductServiceFactory().DeleteProduct(slug, version, product.Id);
 
             return TmfProcessResult.NoContent;
         }
 
         public TmfProcessResult UpdateProductById(string slug, string version, string tmfProductId, Article product, out Article updatedProduct)
         {
-            var dbProductService = _databaseProductServiceFactory();
-            var foundArticleId = ResolveProductId(dbProductService, slug, version, tmfProductId);
+            TmfProcessResult getProductResult = GetProductById(slug, version, tmfProductId, out updatedProduct);
 
-            if (foundArticleId is null)
+            if (getProductResult != TmfProcessResult.Ok)
             {
-                updatedProduct = null;
-                return TmfProcessResult.NotFound;
+                return getProductResult;
             }
 
-            updatedProduct = dbProductService.GetProduct(slug, version, foundArticleId.Value);
-
             foreach ((string fieldName, ArticleField fieldValue) in product.Fields
-                .Where(p => p.Value is PlainArticleField field && field.NativeValue != null))
+                .Where(p => !p.Key.Equals("id", StringComparison.OrdinalIgnoreCase) 
+                    && p.Value is PlainArticleField field 
+                    && field.NativeValue != null))
             {
                 updatedProduct.Fields[fieldName] = fieldValue;
             }
 
-            updatedProduct.Id = foundArticleId.Value;
-            _ = SetPlainFieldValue(updatedProduct.Fields, TmfIdFieldName, tmfProductId);
-
-            dbProductService.UpdateProduct(slug, version, updatedProduct);
+            _databaseProductServiceFactory().UpdateProduct(slug, version, updatedProduct);
 
             return TmfProcessResult.Ok;
         }
 
         public TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct)
         {
-            var dbProductService = _databaseProductServiceFactory();
+            IProductAPIService dbProductService = _databaseProductServiceFactory();
 
-            var createdProductId = dbProductService.CreateProduct(slug, version, product);
+            int? createdProductId = dbProductService.CreateProduct(slug, version, product);
 
             if (!createdProductId.HasValue)
             {
@@ -184,11 +179,11 @@ namespace QA.ProductCatalog.TmForum.Services
                 return filter;
             }
 
-            var clearedParameters = searchParameters
+            KeyValuePair<string, StringValues>[] clearedParameters = searchParameters
                 .Where(x => !_reservedSearchParameters.Contains(x.Key))
                 .ToArray();
 
-            foreach (var parameter in clearedParameters)
+            foreach (KeyValuePair<string, StringValues> parameter in clearedParameters)
             {
                 string fieldName = GetFieldNameFromDefinition(definition, parameter.Key);
                 if (string.IsNullOrWhiteSpace(fieldName))
@@ -236,43 +231,6 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             return string.Join(EntitySeparator, fieldNames);
-        }
-
-        private int? ResolveProductId(IProductAPIService dbProductService, string slug, string version, string tmfProductId)
-        {
-            int[] foundArticles = dbProductService.SearchProducts(slug, version, $"{TmfIdFieldName}={tmfProductId}");
-
-            return foundArticles.Length switch
-            {
-                1 => foundArticles[0],
-                0 => null,
-                _ => throw new InvalidOperationException("Found duplicated id products. Ids should be unique."),
-            };
-        }
-
-        private static bool SetPlainFieldValue<T>(IReadOnlyDictionary<string, ArticleField> fields, string fieldName, T value)
-        {
-            if (fields is null)
-            {
-                throw new ArgumentNullException(nameof(fields));
-            }
-
-            if (string.IsNullOrEmpty(fieldName))
-            {
-                throw new ArgumentException($"Cannot be null or empty.", fieldName);
-            }
-
-            if (fields.TryGetValue(fieldName, out var idField))
-            {
-                if (idField is PlainArticleField plainIdField)
-                {
-                    plainIdField.NativeValue = value;
-                    plainIdField.Value = value?.ToString();
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         private static bool TryRetrievePagingParamaterFromQuery(IQueryCollection query, string parameterName, int defaultValue, out int retrievedValue)
