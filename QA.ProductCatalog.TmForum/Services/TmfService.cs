@@ -17,12 +17,14 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             FieldsQueryParameterName,
             OffsetQueryParameterName,
-            LimitQueryParameterName
+            LimitQueryParameterName,
+            LastUpdateParameterName
         };
 
         private const string FieldsQueryParameterName = "fields";
         private const string OffsetQueryParameterName = "offset";
         private const string LimitQueryParameterName = "limit";
+        private const string LastUpdateParameterName = "lastUpdate";
         private const string ExternalIdFieldName = "id";
         private const string EntitySeparator = ".";
 
@@ -107,10 +109,18 @@ namespace QA.ProductCatalog.TmForum.Services
             };
 
             var productIdsToProcess = productIds.Skip(offset).Take(limit);
+            var lastUpdate = RetrieveLastUpdateParameterFromQuery(query);
 
             foreach (int productId in productIdsToProcess)
             {
-                products.Articles.Add(dbProductService.GetProduct(slug, version, productId));
+                var product = dbProductService.GetProduct(slug, version, productId);
+
+                if (lastUpdate != null && product.Modified != lastUpdate)
+                {
+                    continue;
+                }
+
+                products.Articles.Add(product);
             }
 
             return products.IsPartial ? TmfProcessResult.PartialContent : TmfProcessResult.Ok;
@@ -291,6 +301,21 @@ namespace QA.ProductCatalog.TmForum.Services
 
             retrievedValue = value;
             return true;
+        }
+
+        private static DateTime? RetrieveLastUpdateParameterFromQuery(IQueryCollection query)
+        {
+            if (!query.TryGetValue(LastUpdateParameterName, out var valueString))
+            {
+                return null;
+            }
+
+            if (!DateTime.TryParse(valueString.Single(), out var value))
+            {
+                return null;
+            }
+
+            return value;
         }
 
         private static int CalculateObjectSize(int totalCount, int limit, int offset)
