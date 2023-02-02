@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
@@ -18,12 +20,14 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             FieldsQueryParameterName,
             OffsetQueryParameterName,
-            LimitQueryParameterName
+            LimitQueryParameterName,
+            LastUpdateParameterName
         };
 
         private const string FieldsQueryParameterName = "fields";
         private const string OffsetQueryParameterName = "offset";
         private const string LimitQueryParameterName = "limit";
+        private const string LastUpdateParameterName = "lastUpdate";
         private const string ExternalIdFieldName = "id";
         private const string EntitySeparator = ".";
 
@@ -92,12 +96,12 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
-            if (!TryRetrievePagingParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
+            if (!TryRetrieveParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
             {
                 return TmfProcessResult.BadRequest;
             }
 
-            if (!TryRetrievePagingParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
+            if (!TryRetrieveParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -108,10 +112,18 @@ namespace QA.ProductCatalog.TmForum.Services
             };
 
             IEnumerable<int> productIdsToProcess = productIds.Skip(offset).Take(limit);
+            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, LastUpdateParameterName, null, out DateTime? lastUpdate);
 
             foreach (int productId in productIdsToProcess)
             {
-                products.Articles.Add(dbProductService.GetProduct(slug, version, productId));
+                var product = dbProductService.GetProduct(slug, version, productId);
+
+                if (hasLastUpdate && lastUpdate != null && product.Modified != lastUpdate)
+                {
+                    continue;
+                }
+
+                products.Articles.Add(product);
             }
 
             return products.IsPartial ? TmfProcessResult.PartialContent : TmfProcessResult.Ok;
@@ -233,22 +245,45 @@ namespace QA.ProductCatalog.TmForum.Services
             return string.Join(EntitySeparator, fieldNames);
         }
 
-        private static bool TryRetrievePagingParamaterFromQuery(IQueryCollection query, string parameterName, int defaultValue, out int retrievedValue)
+        private static bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
         {
+            retrievedValue = defaultValue;
             if (!query.TryGetValue(parameterName, out var valueString))
             {
-                retrievedValue = defaultValue;
                 return true;
             }
 
-            if (!int.TryParse(valueString.Single(), out var value))
+            string parameterValue = valueString.FirstOrDefault();
+            parameterValue = parameterValue.Replace("\"", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(parameterValue))
             {
-                retrievedValue = defaultValue;
                 return false;
             }
 
-            retrievedValue = value;
-            return true;
+            return TryParseParameter(parameterValue, defaultValue, out retrievedValue);
+        }
+
+        private static bool TryParseParameter<T>(string parameter, T defaultValue, out T result)
+        {
+            result = defaultValue;
+
+            try
+            {
+                TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
+                
+                if (converter is not null)
+                {
+                    result = (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, parameter);
+                    return true;
+                }
+
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static int CalculateObjectSize(int totalCount, int limit, int offset)
