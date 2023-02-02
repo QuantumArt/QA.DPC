@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
@@ -93,12 +95,12 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
-            if (!TryRetrievePagingParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
+            if (!TryRetrieveParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
             {
                 return TmfProcessResult.BadRequest;
             }
 
-            if (!TryRetrievePagingParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
+            if (!TryRetrieveParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -108,14 +110,14 @@ namespace QA.ProductCatalog.TmForum.Services
                 TotalCount = totalCount
             };
 
-            var productIdsToProcess = productIds.Skip(offset).Take(limit);
-            var lastUpdate = RetrieveLastUpdateParameterFromQuery(query);
+            IEnumerable<int> productIdsToProcess = productIds.Skip(offset).Take(limit);
+            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, LastUpdateParameterName, null, out DateTime? lastUpdate);
 
             foreach (int productId in productIdsToProcess)
             {
                 var product = dbProductService.GetProduct(slug, version, productId);
 
-                if (lastUpdate != null && product.Modified != lastUpdate)
+                if (hasLastUpdate && lastUpdate != null && product.Modified != lastUpdate)
                 {
                     continue;
                 }
@@ -285,37 +287,45 @@ namespace QA.ProductCatalog.TmForum.Services
             return false;
         }
 
-        private static bool TryRetrievePagingParamaterFromQuery(IQueryCollection query, string parameterName, int defaultValue, out int retrievedValue)
+        private static bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
         {
+            retrievedValue = defaultValue;
             if (!query.TryGetValue(parameterName, out var valueString))
             {
-                retrievedValue = defaultValue;
                 return true;
             }
 
-            if (!int.TryParse(valueString.Single(), out var value))
+            string parameterValue = valueString.FirstOrDefault();
+            parameterValue = parameterValue.Replace("\"", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(parameterValue))
             {
-                retrievedValue = defaultValue;
                 return false;
             }
 
-            retrievedValue = value;
-            return true;
+            return TryParseParameter(parameterValue, defaultValue, out retrievedValue);
         }
 
-        private static DateTime? RetrieveLastUpdateParameterFromQuery(IQueryCollection query)
+        private static bool TryParseParameter<T>(string parameter, T defaultValue, out T result)
         {
-            if (!query.TryGetValue(LastUpdateParameterName, out var valueString))
-            {
-                return null;
-            }
+            result = defaultValue;
 
-            if (!DateTime.TryParse(valueString.Single(), out var value))
+            try
             {
-                return null;
-            }
+                TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
+                
+                if (converter is not null)
+                {
+                    result = (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, parameter);
+                    return true;
+                }
 
-            return value;
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         private static int CalculateObjectSize(int totalCount, int limit, int offset)
