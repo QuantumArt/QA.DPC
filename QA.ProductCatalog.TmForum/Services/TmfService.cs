@@ -24,6 +24,11 @@ namespace QA.ProductCatalog.TmForum.Services
             LastUpdateParameterName
         };
 
+        private static readonly ICollection<string> _notUpdatableFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ExternalIdFieldName
+        };
+
         private const string FieldsQueryParameterName = "fields";
         private const string OffsetQueryParameterName = "offset";
         private const string LimitQueryParameterName = "limit";
@@ -47,6 +52,7 @@ namespace QA.ProductCatalog.TmForum.Services
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
             TmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
+            _notUpdatableFields.Add(TmfIdFieldName);
             _tmfSettings = tmfSettings.Value;
         }
 
@@ -153,7 +159,7 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             foreach ((string fieldName, ArticleField fieldValue) in product.Fields
-                .Where(p => !p.Key.Equals("id", StringComparison.OrdinalIgnoreCase) 
+                .Where(p => !_notUpdatableFields.Contains(p.Key, StringComparer.OrdinalIgnoreCase)
                     && p.Value is PlainArticleField field 
                     && field.NativeValue != null))
             {
