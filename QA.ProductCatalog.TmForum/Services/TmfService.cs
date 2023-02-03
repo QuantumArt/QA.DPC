@@ -255,7 +255,7 @@ namespace QA.ProductCatalog.TmForum.Services
             return string.Join(EntitySeparator, fieldNames);
         }
 
-        private static bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
+        private bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
         {
             retrievedValue = defaultValue;
             if (!query.TryGetValue(parameterName, out var valueString))
