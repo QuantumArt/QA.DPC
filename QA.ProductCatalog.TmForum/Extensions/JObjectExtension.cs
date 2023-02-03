@@ -15,7 +15,6 @@ namespace QA.ProductCatalog.TmForum.Extensions
 
         internal static JObject RemoveUpdateRestrictedFields(this JObject json)
         {
-
             RemoveRestricted(json);
 
             return json;
