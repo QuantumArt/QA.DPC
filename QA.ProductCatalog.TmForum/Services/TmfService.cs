@@ -42,6 +42,7 @@ namespace QA.ProductCatalog.TmForum.Services
         private readonly ILogger<TmfService> _logger;
         private readonly IArticleFormatter _formatter;
         private readonly IJsonProductService _jsonProductService;
+        private readonly JsonMergeSettings _jsonMergeSettings;
 
         public string TmfIdFieldName { get; }
 
@@ -60,6 +61,12 @@ namespace QA.ProductCatalog.TmForum.Services
             _logger = logger;
             _formatter = formatter;
             _jsonProductService = jsonProductService;
+            _jsonMergeSettings = new() 
+            {
+                MergeArrayHandling = MergeArrayHandling.Union,
+                MergeNullValueHandling = MergeNullValueHandling.Merge,
+                PropertyNameComparison = StringComparison.OrdinalIgnoreCase
+            };
         }
 
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
@@ -173,7 +180,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             patch.RemoveUpdateRestrictedFields();
 
-            original.Merge(patch);
+            original.Merge(patch, _jsonMergeSettings);
 
             ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
             Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
