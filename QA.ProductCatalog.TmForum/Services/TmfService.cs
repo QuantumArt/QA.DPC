@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
@@ -30,23 +31,26 @@ namespace QA.ProductCatalog.TmForum.Services
         private const string ExternalIdFieldName = "id";
         private const string EntitySeparator = ".";
 
-        private static Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
+        private static readonly Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly TmfSettings _tmfSettings;
+        private readonly ILogger<TmfService> _logger;
 
         public string TmfIdFieldName { get; }
 
         public TmfService(Func<IProductAPIService> databaseProductServiceFactory,
             IContentDefinitionService contentDefinitionService,
             ISettingsService settingsService,
-            IOptions<TmfSettings> tmfSettings)
+            IOptions<TmfSettings> tmfSettings,
+            ILogger<TmfService> logger)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
             TmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
             _tmfSettings = tmfSettings.Value;
+            _logger = logger;
         }
 
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
@@ -287,7 +291,7 @@ namespace QA.ProductCatalog.TmForum.Services
             return false;
         }
 
-        private static bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
+        private bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
         {
             retrievedValue = defaultValue;
             if (!query.TryGetValue(parameterName, out var valueString))
@@ -306,9 +310,10 @@ namespace QA.ProductCatalog.TmForum.Services
             return TryParseParameter(parameterValue, defaultValue, out retrievedValue);
         }
 
-        private static bool TryParseParameter<T>(string parameter, T defaultValue, out T result)
+        private bool TryParseParameter<T>(string parameter, T defaultValue, out T result)
         {
             result = defaultValue;
+            bool parseResult = false;
 
             try
             {
@@ -317,15 +322,15 @@ namespace QA.ProductCatalog.TmForum.Services
                 if (converter is not null)
                 {
                     result = (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, parameter);
-                    return true;
+                    parseResult = true;
                 }
-
-                return false;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                _logger.LogWarning(ex, "Unable to convert {value} to type {type}. Filter skipped.", parameter, typeof(T).FullName);
             }
+
+            return parseResult;
         }
 
         private static int CalculateObjectSize(int totalCount, int limit, int offset)
