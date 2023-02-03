@@ -1,5 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
@@ -17,32 +20,37 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             FieldsQueryParameterName,
             OffsetQueryParameterName,
-            LimitQueryParameterName
+            LimitQueryParameterName,
+            LastUpdateParameterName
         };
 
         private const string FieldsQueryParameterName = "fields";
         private const string OffsetQueryParameterName = "offset";
         private const string LimitQueryParameterName = "limit";
+        private const string LastUpdateParameterName = "lastUpdate";
         private const string ExternalIdFieldName = "id";
         private const string EntitySeparator = ".";
 
-        private static Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
+        private static readonly Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly TmfSettings _tmfSettings;
+        private readonly ILogger<TmfService> _logger;
 
         public string TmfIdFieldName { get; }
 
         public TmfService(Func<IProductAPIService> databaseProductServiceFactory,
             IContentDefinitionService contentDefinitionService,
             ISettingsService settingsService,
-            IOptions<TmfSettings> tmfSettings)
+            IOptions<TmfSettings> tmfSettings,
+            ILogger<TmfService> logger)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
             TmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
             _tmfSettings = tmfSettings.Value;
+            _logger = logger;
         }
 
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
@@ -91,12 +99,12 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
-            if (!TryRetrievePagingParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
+            if (!TryRetrieveParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
             {
                 return TmfProcessResult.BadRequest;
             }
 
-            if (!TryRetrievePagingParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
+            if (!TryRetrieveParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -106,11 +114,19 @@ namespace QA.ProductCatalog.TmForum.Services
                 TotalCount = totalCount
             };
 
-            var productIdsToProcess = productIds.Skip(offset).Take(limit);
+            IEnumerable<int> productIdsToProcess = productIds.Skip(offset).Take(limit);
+            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, LastUpdateParameterName, null, out DateTime? lastUpdate);
 
             foreach (int productId in productIdsToProcess)
             {
-                products.Articles.Add(dbProductService.GetProduct(slug, version, productId));
+                var product = dbProductService.GetProduct(slug, version, productId);
+
+                if (hasLastUpdate && lastUpdate != null && product.Modified != lastUpdate)
+                {
+                    continue;
+                }
+
+                products.Articles.Add(product);
             }
 
             return products.IsPartial ? TmfProcessResult.PartialContent : TmfProcessResult.Ok;
@@ -275,22 +291,46 @@ namespace QA.ProductCatalog.TmForum.Services
             return false;
         }
 
-        private static bool TryRetrievePagingParamaterFromQuery(IQueryCollection query, string parameterName, int defaultValue, out int retrievedValue)
+        private bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
         {
+            retrievedValue = defaultValue;
             if (!query.TryGetValue(parameterName, out var valueString))
             {
-                retrievedValue = defaultValue;
                 return true;
             }
 
-            if (!int.TryParse(valueString.Single(), out var value))
+            string parameterValue = valueString.FirstOrDefault();
+            parameterValue = parameterValue.Replace("\"", string.Empty);
+
+            if (string.IsNullOrWhiteSpace(parameterValue))
             {
-                retrievedValue = defaultValue;
                 return false;
             }
 
-            retrievedValue = value;
-            return true;
+            return TryParseParameter(parameterValue, defaultValue, out retrievedValue);
+        }
+
+        private bool TryParseParameter<T>(string parameter, T defaultValue, out T result)
+        {
+            result = defaultValue;
+            bool parseResult = false;
+
+            try
+            {
+                TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
+                
+                if (converter is not null)
+                {
+                    result = (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, parameter);
+                    parseResult = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Unable to convert {value} to type {type}. Filter skipped.", parameter, typeof(T).FullName);
+            }
+
+            return parseResult;
         }
 
         private static int CalculateObjectSize(int totalCount, int limit, int offset)
