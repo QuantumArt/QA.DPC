@@ -63,7 +63,7 @@ namespace QA.ProductCatalog.TmForum.Services
             _jsonProductService = jsonProductService;
             _jsonMergeSettings = new() 
             {
-                MergeArrayHandling = MergeArrayHandling.Union,
+                MergeArrayHandling = MergeArrayHandling.Replace,
                 MergeNullValueHandling = MergeNullValueHandling.Merge,
                 PropertyNameComparison = StringComparison.OrdinalIgnoreCase
             };
