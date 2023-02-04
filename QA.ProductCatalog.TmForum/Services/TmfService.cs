@@ -6,10 +6,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Loader;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.TmForum.Extensions;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
 
@@ -25,11 +27,6 @@ namespace QA.ProductCatalog.TmForum.Services
             LastUpdateParameterName
         };
 
-        private static readonly ICollection<string> _notUpdatableFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            ExternalIdFieldName
-        };
-
         private const string FieldsQueryParameterName = "fields";
         private const string OffsetQueryParameterName = "offset";
         private const string LimitQueryParameterName = "limit";
@@ -43,6 +40,9 @@ namespace QA.ProductCatalog.TmForum.Services
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly TmfSettings _tmfSettings;
         private readonly ILogger<TmfService> _logger;
+        private readonly IArticleFormatter _formatter;
+        private readonly IJsonProductService _jsonProductService;
+        private readonly JsonMergeSettings _jsonMergeSettings;
 
         public string TmfIdFieldName { get; }
 
@@ -50,14 +50,23 @@ namespace QA.ProductCatalog.TmForum.Services
             IContentDefinitionService contentDefinitionService,
             ISettingsService settingsService,
             IOptions<TmfSettings> tmfSettings,
-            ILogger<TmfService> logger)
+            ILogger<TmfService> logger,
+            IArticleFormatter formatter,
+            IJsonProductService jsonProductService)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
             TmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
-            _notUpdatableFields.Add(TmfIdFieldName);
             _tmfSettings = tmfSettings.Value;
             _logger = logger;
+            _formatter = formatter;
+            _jsonProductService = jsonProductService;
+            _jsonMergeSettings = new() 
+            {
+                MergeArrayHandling = MergeArrayHandling.Replace,
+                MergeNullValueHandling = MergeNullValueHandling.Merge,
+                PropertyNameComparison = StringComparison.OrdinalIgnoreCase
+            };
         }
 
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
@@ -155,24 +164,30 @@ namespace QA.ProductCatalog.TmForum.Services
 
         public TmfProcessResult UpdateProductById(string slug, string version, string tmfProductId, Article product, out Article updatedProduct)
         {
-            TmfProcessResult getProductResult = GetProductById(slug, version, tmfProductId, out updatedProduct);
+            updatedProduct = null;
+            TmfProcessResult getProductResult = GetProductById(slug, version, tmfProductId, out Article originalProduct);
 
             if (getProductResult != TmfProcessResult.Ok)
             {
                 return getProductResult;
             }
 
-            foreach ((string fieldName, ArticleField fieldValue) in product.Fields
-                .Where(p => !_notUpdatableFields.Contains(p.Key, StringComparer.OrdinalIgnoreCase)
-                    && p.Value is PlainArticleField field 
-                    && field.NativeValue != null))
-            {
-                updatedProduct.Fields[fieldName] = fieldValue;
-            }
+            string originalJson = _formatter.Serialize(originalProduct);
+            string patchJson = _formatter.Serialize(product);
 
-            _databaseProductServiceFactory().UpdateProduct(slug, version, updatedProduct);
+            JObject original = JObject.Parse(originalJson);
+            JObject patch = JObject.Parse(patchJson);
 
-            return TmfProcessResult.Ok;
+            patch.RemoveUpdateRestrictedFields();
+
+            original.Merge(patch, _jsonMergeSettings);
+
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
+            
+            _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct);
+
+            return GetProductById(slug, version, tmfProductId, out updatedProduct);
         }
 
         public TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct)
