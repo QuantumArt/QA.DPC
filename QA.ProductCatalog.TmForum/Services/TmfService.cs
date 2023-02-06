@@ -14,6 +14,7 @@ using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.TmForum.Extensions;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
+using BLL = Quantumart.QP8.BLL;
 
 namespace QA.ProductCatalog.TmForum.Services
 {
@@ -43,6 +44,7 @@ namespace QA.ProductCatalog.TmForum.Services
         private readonly IArticleFormatter _formatter;
         private readonly IJsonProductService _jsonProductService;
         private readonly JsonMergeSettings _jsonMergeSettings;
+        private readonly ITmfValidatonService _tmfValidationService;
 
         public string TmfIdFieldName { get; }
 
@@ -52,7 +54,8 @@ namespace QA.ProductCatalog.TmForum.Services
             IOptions<TmfSettings> tmfSettings,
             ILogger<TmfService> logger,
             IArticleFormatter formatter,
-            IJsonProductService jsonProductService)
+            IJsonProductService jsonProductService,
+            ITmfValidatonService tmfValidationService)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
@@ -61,12 +64,13 @@ namespace QA.ProductCatalog.TmForum.Services
             _logger = logger;
             _formatter = formatter;
             _jsonProductService = jsonProductService;
-            _jsonMergeSettings = new() 
+            _jsonMergeSettings = new()
             {
                 MergeArrayHandling = MergeArrayHandling.Replace,
                 MergeNullValueHandling = MergeNullValueHandling.Merge,
                 PropertyNameComparison = StringComparison.OrdinalIgnoreCase
             };
+            _tmfValidationService = tmfValidationService;
         }
 
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
@@ -162,9 +166,11 @@ namespace QA.ProductCatalog.TmForum.Services
             return TmfProcessResult.NoContent;
         }
 
-        public TmfProcessResult UpdateProductById(string slug, string version, string tmfProductId, Article product, out Article updatedProduct)
+        public TmfProcessResult UpdateProductById(string slug, string version, string tmfProductId, Article product, out Article updatedProduct, out string[] errorList)
         {
             updatedProduct = null;
+            errorList = Array.Empty<string>();
+
             TmfProcessResult getProductResult = GetProductById(slug, version, tmfProductId, out Article originalProduct);
 
             if (getProductResult != TmfProcessResult.Ok)
@@ -179,8 +185,14 @@ namespace QA.ProductCatalog.TmForum.Services
             JObject patch = JObject.Parse(patchJson);
 
             patch.RemoveUpdateRestrictedFields();
-
             original.Merge(patch, _jsonMergeSettings);
+
+            errorList = ValidateRecievedProduct(product);
+
+            if (errorList.Length > 0)
+            {
+                return TmfProcessResult.BadRequest;
+            }
 
             ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
             Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
@@ -190,15 +202,21 @@ namespace QA.ProductCatalog.TmForum.Services
             return GetProductById(slug, version, tmfProductId, out updatedProduct);
         }
 
-        public TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct)
+        public TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct, out string[] errorList)
         {
-            IProductAPIService dbProductService = _databaseProductServiceFactory();
+            createdProduct = null;
+            errorList = ValidateRecievedProduct(product);
 
+            if (errorList.Length > 0)
+            {
+                return TmfProcessResult.BadRequest;
+            }
+
+            IProductAPIService dbProductService = _databaseProductServiceFactory();
             int? createdProductId = dbProductService.CreateProduct(slug, version, product);
 
             if (!createdProductId.HasValue)
             {
-                createdProduct = null;
                 return TmfProcessResult.BadRequest;
             }
 
@@ -430,6 +448,21 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             return TmfProcessResult.Ok;
+        }
+
+        private string[] ValidateRecievedProduct(Article product)
+        {
+            string[] result = Array.Empty<string>();
+            BLL.RulesException errors = new();
+
+            _tmfValidationService.ValidateArticle(errors, product);
+
+            if (errors.Errors.Count != 0)
+            {
+                result = errors.Errors.Select(x => x.Message).ToArray();
+            }
+
+            return result;
         }
     }
 }

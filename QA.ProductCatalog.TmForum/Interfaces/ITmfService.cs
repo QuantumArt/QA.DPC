@@ -14,8 +14,8 @@ namespace QA.ProductCatalog.TmForum.Interfaces
 
         TmfProcessResult DeleteProductById(string slug, string version, string id);
 
-        TmfProcessResult UpdateProductById(string slug, string version, string id, Article product, out Article updatedProduct);
+        TmfProcessResult UpdateProductById(string slug, string version, string id, Article product, out Article updatedProduct, out string[] errorList);
 
-        TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct);
+        TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct, out string[] errorList);
     }
 }
