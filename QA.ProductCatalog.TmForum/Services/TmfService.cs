@@ -187,15 +187,15 @@ namespace QA.ProductCatalog.TmForum.Services
             patch.RemoveUpdateRestrictedFields();
             original.Merge(patch, _jsonMergeSettings);
 
-            errorList = ValidateRecievedProduct(product);
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
+
+            errorList = ValidateRecievedProduct(mergedProduct);
 
             if (errorList.Length > 0)
             {
                 return TmfProcessResult.BadRequest;
             }
-
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-            Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
             
             _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct);
 
