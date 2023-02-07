@@ -34,6 +34,7 @@ namespace QA.ProductCatalog.TmForum.Services
         private const string LastUpdateParameterName = "lastUpdate";
         private const string ExternalIdFieldName = "id";
         private const string EntitySeparator = ".";
+        private const string VersionFieldName = "version";
 
         private static readonly Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
 
@@ -179,13 +180,16 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             string originalJson = _formatter.Serialize(originalProduct);
+            _logger.LogTrace("Original product json is: {product}", originalJson);
             string patchJson = _formatter.Serialize(product);
+            _logger.LogTrace("Patch product json is: {patch}", patchJson);
 
             JObject original = JObject.Parse(originalJson);
             JObject patch = JObject.Parse(patchJson);
 
             patch.RemoveUpdateRestrictedFields();
             original.Merge(patch, _jsonMergeSettings);
+            _logger.LogTrace("Product json after merge is: {merged}", original.ToString());
 
             errorList = ValidateRecievedProduct(product);
 
@@ -217,6 +221,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (!createdProductId.HasValue)
             {
+                _logger.LogWarning("Create product method executed but created product Id was empty.");
                 return TmfProcessResult.BadRequest;
             }
 
@@ -293,6 +298,7 @@ namespace QA.ProductCatalog.TmForum.Services
             retrievedValue = defaultValue;
             if (!query.TryGetValue(parameterName, out var valueString))
             {
+                _logger.LogTrace("Unable to retrieve parameter with name {name} from query. Using default value {default}.", parameterName, defaultValue.ToString());
                 return true;
             }
 
@@ -301,6 +307,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (string.IsNullOrWhiteSpace(parameterValue))
             {
+                _logger.LogWarning("There is parameter named {name} but it's value is empty.", parameterName);
                 return false;
             }
 
@@ -366,13 +373,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-            string versionField = definition.Content.Fields
-                .Where(x => string.Equals(x.FieldName, "version", StringComparison.OrdinalIgnoreCase))
-                .Select(x => x.FieldName)
-                .FirstOrDefault();
-
-            if (string.IsNullOrWhiteSpace(versionField))
+            if (!TryGetVersionFieldName(slug, version, out string versionField))
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -394,11 +395,10 @@ namespace QA.ProductCatalog.TmForum.Services
                 new JProperty(TmfIdFieldName, id)
             };
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-            string versionField = definition.Content.Fields
-                .Where(x => string.Equals(x.FieldName, "version", StringComparison.OrdinalIgnoreCase))
-                .Select(x => x.FieldName)
-                .FirstOrDefault();
+            if (!TryGetVersionFieldName(slug, version, out string versionField))
+            {
+                return TmfProcessResult.BadRequest;
+            }
 
             filter.Add(new JProperty(versionField, productVersion));
 
@@ -412,11 +412,32 @@ namespace QA.ProductCatalog.TmForum.Services
                     product = dbProductService.GetProduct(slug, version, foundArticleIds.Single());
                     return TmfProcessResult.Ok;
                 default:
+                    _logger.LogWarning("Found {count} articles by id {id} and version {version}. That's unexpected.", foundArticleIds.Length, id, productVersion);
                     return TmfProcessResult.BadRequest;
             }
         }
 
-        private static TmfProcessResult ParseId(string productId, out string id, out string version)
+        private bool TryGetVersionFieldName(string slug, string version, out string versionField)
+        {
+            versionField = string.Empty;
+            bool result = true;
+
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            versionField = definition.Content.Fields
+                .Where(x => string.Equals(x.FieldName, VersionFieldName, StringComparison.OrdinalIgnoreCase))
+                .Select(x => x.FieldName)
+                .FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(versionField))
+            {
+                _logger.LogWarning("Unable to find version field name by slug {slug}.", slug);
+                result = false;
+            }
+
+            return result;
+        }
+
+        private TmfProcessResult ParseId(string productId, out string id, out string version)
         {
             id = string.Empty;
             version = string.Empty;
@@ -425,6 +446,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (matchResult == null || !matchResult.Success)
             {
+                _logger.LogTrace("Id value {id} without version. Proceeding with id as is.", productId);
                 id = productId;
                 return TmfProcessResult.Ok;
             }
@@ -436,14 +458,16 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (keys.Length != 2)
             {
+                _logger.LogWarning("Product ID {productId} does not contains id and version numbers.", productId);
                 return TmfProcessResult.BadRequest;
             }
 
             id = keys[0];
             version = keys[1];
 
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(version))
             {
+                _logger.LogWarning("Parsed product id {id} or version number {version} is empty.", id, version);
                 return TmfProcessResult.BadRequest;
             }
 
@@ -460,6 +484,7 @@ namespace QA.ProductCatalog.TmForum.Services
             if (errors.Errors.Count != 0)
             {
                 result = errors.Errors.Select(x => x.Message).ToArray();
+                _logger.LogTrace("Product validation failed with errors {errors}.", string.Join(", ", result));
             }
 
             return result;
