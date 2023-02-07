@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json.Serialization;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
@@ -65,7 +67,9 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));
             Container.RegisterFactory<Func<ITransaction>>(c => new Func<ITransaction>(() => c.Resolve<ITransaction>()));
 
+            Container.RegisterType<IJsonProductService, JsonProductService>();
             Container.RegisterType<IContextStorage, QpCachedContextStorage>();
+            Container.RegisterType<IProductDeserializer, ProductDeserializer>();
 
             //Фейк юзер нужен для работы ремоут валидации. Также нужны варианты сервисов с фейк-юзером
             Container.RegisterType<IUserProvider, AlwaysAdminUserProvider>(AlwaysAdminUserProviderName);

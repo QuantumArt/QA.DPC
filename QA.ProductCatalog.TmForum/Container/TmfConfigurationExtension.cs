@@ -16,6 +16,17 @@ namespace QA.ProductCatalog.TmForum.Container
 
         protected override void Initialize()
         {
+            IContainerRegistration[] toUnregister = Container.Registrations.Where(x =>
+                x.RegisteredType == typeof(IJsonProductService)
+                || x.RegisteredType == typeof(IProductDeserializer)
+                || x.RegisteredType == typeof(JsonProductServiceSettings))
+                .ToArray();
+
+            foreach (IContainerRegistration unregister in toUnregister)
+            {
+                unregister.LifetimeManager.RemoveValue();
+            }
+
             Container.RegisterFactory<IJsonProductService>(
                 CreateTmfAwareFactory(
                     tmfInstanceFactory: (container) => container.Resolve<TmfProductService>(),
