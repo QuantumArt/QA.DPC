@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json.Serialization;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
