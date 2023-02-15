@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
+using QA.ProductCatalog.TmForum.Services;
 
 namespace QA.ProductCatalog.TmForum.Extensions
 {
@@ -16,6 +18,7 @@ namespace QA.ProductCatalog.TmForum.Extensions
             if (configuration.GetSection("Tmf").GetSection("IsEnabled").Get<bool>())
             {
                 services.Configure<TmfSettings>(configuration.GetSection("Tmf"));
+                services.AddScoped<ITmfValidatonService, TmfValidationService>();
 
                 return services;
             }

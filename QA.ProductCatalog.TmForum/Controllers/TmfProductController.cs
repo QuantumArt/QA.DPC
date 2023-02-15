@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.TmForum.Controllers
 
         public TmfProductController(
             ILogger logger,
-            TmfService tmfService)
+            ITmfService tmfService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _tmfService = tmfService;
@@ -125,9 +125,9 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { slug, version, tmfProductId, productContentId = product.ContentId }.ToString());
 
-            var result = _tmfService.UpdateProductById(slug, version, tmfProductId, product, out var updatedProduct);
+            var result = _tmfService.UpdateProductById(slug, version, tmfProductId, product, out ResultArticle resultProduct);
 
-            return GenerateResult(result, updatedProduct);
+            return GenerateResult(result, result == TmfProcessResult.BadRequest ? resultProduct.ValidationErrors : resultProduct.Article);
         }
 
         /// <summary>
@@ -150,9 +150,9 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
 
-            var result = _tmfService.CreateProduct(slug, version, product, out var createdProduct);
+            var result = _tmfService.CreateProduct(slug, version, product, out ResultArticle resultProduct);
 
-            return GenerateResult(result, createdProduct);
+            return GenerateResult(result, result == TmfProcessResult.BadRequest ? resultProduct.ValidationErrors : resultProduct.Article);
         }
 
 #nullable enable
@@ -165,7 +165,7 @@ namespace QA.ProductCatalog.TmForum.Controllers
                 case TmfProcessResult.NotFound:
                     return NotFound();
                 case TmfProcessResult.BadRequest:
-                    return BadRequest();
+                    return BadRequest(resultObject);
                 case TmfProcessResult.Created:
                     var createdTmfId = ((PlainArticleField)((Article)resultObject!).Fields[_tmfService.TmfIdFieldName]).Value;
                     var path = HttpContext.Request.Path.Add(new PathString($"/{createdTmfId}"));
