@@ -198,14 +198,14 @@ namespace QA.ProductCatalog.TmForum.Services
             
             _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct);
 
-            TmfProcessResult getUpdatedArticleResult = GetProductById(slug, version, tmfProductId, out Article updatedArticle);
+            TmfProcessResult updateArticleResult = GetProductById(slug, version, tmfProductId, out Article updatedArticle);
             
             if (getProductResult == TmfProcessResult.Ok)
             {
                 resultProduct.Article = updatedArticle;
             }
 
-            return getUpdatedArticleResult;
+            return updateArticleResult;
         }
 
         public TmfProcessResult CreateProduct(string slug, string version, Article product, out ResultArticle resultProduct)
