@@ -4,7 +4,7 @@ namespace QA.ProductCatalog.TmForum.Models
 {
     public class ResultArticle
     {
-        public Article Article { get; set; } = null;
-        public string[] ValidationErrors { get; set; } = null;
+        public Article Article { get; set; }
+        public string[] ValidationErrors { get; set; }
     }
 }
