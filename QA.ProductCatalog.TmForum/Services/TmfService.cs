@@ -199,9 +199,6 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (resultProduct.ValidationErrors.Length > 0)
             {
-                _logger.LogInformation("Merged product validation failed with errors: {errors}.", 
-                    string.Join(", ", resultProduct.ValidationErrors));
-
                 return TmfProcessResult.BadRequest;
             }
             
@@ -227,8 +224,6 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (resultProduct.ValidationErrors.Length > 0)
             {
-                _logger.LogInformation("Received product validation failed with errors: {errors}.",
-                    string.Join(", ", resultProduct.ValidationErrors));
                 return TmfProcessResult.BadRequest;
             }
 
@@ -237,7 +232,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (!createdProductId.HasValue)
             {
-                _logger.LogWarning("Create product method executed but created product Id was empty.");
+                _logger.LogWarning("Create product method executed but created product Id is empty.");
                 return TmfProcessResult.BadRequest;
             }
 
@@ -315,7 +310,10 @@ namespace QA.ProductCatalog.TmForum.Services
             retrievedValue = defaultValue;
             if (!query.TryGetValue(parameterName, out var valueString))
             {
-                _logger.LogTrace("Unable to retrieve parameter with name {name} from query. Using default value {default}.", parameterName, defaultValue.ToString());
+                _logger.LogTrace("Unable to retrieve parameter with name {name} from query. Using default value {default}.", 
+                    parameterName, 
+                    defaultValue.ToString());
+
                 return true;
             }
 
@@ -436,7 +434,6 @@ namespace QA.ProductCatalog.TmForum.Services
 
         private bool TryGetVersionFieldName(string slug, string version, out string versionField)
         {
-            versionField = string.Empty;
             bool result = true;
 
             ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
@@ -484,7 +481,11 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(version))
             {
-                _logger.LogWarning("Parsed product id {id} or version number {version} is empty.", id, version);
+                _logger.LogWarning("Parsed product id {id} or version number {version} is empty in string {productId}.", 
+                    id, 
+                    version, 
+                    productId);
+
                 return TmfProcessResult.BadRequest;
             }
 
@@ -501,7 +502,7 @@ namespace QA.ProductCatalog.TmForum.Services
             if (errors.Errors.Count != 0)
             {
                 result = errors.Errors.Select(x => x.Message).ToArray();
-                _logger.LogTrace("Product validation failed with errors {errors}.", string.Join(", ", result));
+                _logger.LogWarning("Product validation failed with errors {errors}.", string.Join(", ", result));
             }
 
             return result;
