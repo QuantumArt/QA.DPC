@@ -11,8 +11,6 @@ namespace QA.ProductCatalog.TmForum.Services
 {
     public class TmfValidationService : ITmfValidatonService
     {
-        private const string StatusTypeId = "125";
-
         private readonly IContentService _contentService;
 
         public TmfValidationService(IUnityContainer serviceFactory)
@@ -72,7 +70,7 @@ namespace QA.ProductCatalog.TmForum.Services
                         .Single());
 
             values[FieldName.ContentItemId] = article.Id.ToString();
-            values[FieldName.StatusTypeId] = StatusTypeId;
+            values[FieldName.StatusTypeId] = string.Empty;
 
             try
             {

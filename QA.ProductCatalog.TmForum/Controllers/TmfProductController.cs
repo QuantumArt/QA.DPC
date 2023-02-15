@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.TmForum.Controllers
 
         public TmfProductController(
             ILogger logger,
-            TmfService tmfService)
+            ITmfService tmfService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _tmfService = tmfService;
@@ -125,9 +125,9 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { slug, version, tmfProductId, productContentId = product.ContentId }.ToString());
 
-            var result = _tmfService.UpdateProductById(slug, version, tmfProductId, product, out var updatedProduct, out string[] errors);
+            var result = _tmfService.UpdateProductById(slug, version, tmfProductId, product, out ResultArticle resultProduct);
 
-            return GenerateResult(result, result == TmfProcessResult.BadRequest ? errors : updatedProduct);
+            return GenerateResult(result, result == TmfProcessResult.BadRequest ? resultProduct.ValidationErrors : resultProduct.Article);
         }
 
         /// <summary>
@@ -150,9 +150,9 @@ namespace QA.ProductCatalog.TmForum.Controllers
         {
             _ = _logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId }.ToString());
 
-            var result = _tmfService.CreateProduct(slug, version, product, out var createdProduct, out string[] errors);
+            var result = _tmfService.CreateProduct(slug, version, product, out ResultArticle resultProduct);
 
-            return GenerateResult(result, result == TmfProcessResult.BadRequest ? errors : createdProduct);
+            return GenerateResult(result, result == TmfProcessResult.BadRequest ? resultProduct.ValidationErrors : resultProduct.Article);
         }
 
 #nullable enable
