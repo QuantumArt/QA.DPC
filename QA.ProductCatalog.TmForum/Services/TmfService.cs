@@ -166,10 +166,9 @@ namespace QA.ProductCatalog.TmForum.Services
             return TmfProcessResult.NoContent;
         }
 
-        public TmfProcessResult UpdateProductById(string slug, string version, string tmfProductId, Article product, out Article updatedProduct, out string[] errorList)
+        public TmfProcessResult UpdateProductById(string slug, string version, string tmfProductId, Article product, out ResultArticle resultProduct)
         {
-            updatedProduct = null;
-            errorList = Array.Empty<string>();
+            resultProduct = new();
 
             TmfProcessResult getProductResult = GetProductById(slug, version, tmfProductId, out Article originalProduct);
 
@@ -190,24 +189,33 @@ namespace QA.ProductCatalog.TmForum.Services
             ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
             Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
 
-            errorList = ValidateRecievedProduct(mergedProduct);
+            resultProduct.ValidationErrors = ValidateRecievedProduct(mergedProduct);
 
-            if (errorList.Length > 0)
+            if (resultProduct.ValidationErrors.Length > 0)
             {
                 return TmfProcessResult.BadRequest;
             }
             
             _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct);
 
-            return GetProductById(slug, version, tmfProductId, out updatedProduct);
+            TmfProcessResult getUpdatedArticleResult = GetProductById(slug, version, tmfProductId, out Article updatedArticle);
+            
+            if (getProductResult == TmfProcessResult.Ok)
+            {
+                resultProduct.Article = updatedArticle;
+            }
+
+            return getUpdatedArticleResult;
         }
 
-        public TmfProcessResult CreateProduct(string slug, string version, Article product, out Article createdProduct, out string[] errorList)
+        public TmfProcessResult CreateProduct(string slug, string version, Article product, out ResultArticle resultProduct)
         {
-            createdProduct = null;
-            errorList = ValidateRecievedProduct(product);
+            resultProduct = new()
+            {
+                ValidationErrors = ValidateRecievedProduct(product)
+            };
 
-            if (errorList.Length > 0)
+            if (resultProduct.ValidationErrors.Length > 0)
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -220,7 +228,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.BadRequest;
             }
 
-            createdProduct = dbProductService.GetProduct(slug, version, createdProductId.Value);
+            resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value);
 
             return TmfProcessResult.Created;
         }
