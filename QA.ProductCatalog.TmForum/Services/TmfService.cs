@@ -164,6 +164,8 @@ namespace QA.ProductCatalog.TmForum.Services
 
             _databaseProductServiceFactory().DeleteProduct(slug, version, product.Id);
 
+            _logger.LogInformation("Product with id {id} was deleted.", product.Id);
+
             return TmfProcessResult.NoContent;
         }
 
@@ -197,6 +199,9 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (resultProduct.ValidationErrors.Length > 0)
             {
+                _logger.LogInformation("Merged product validation failed with errors: {errors}.", 
+                    string.Join(", ", resultProduct.ValidationErrors));
+
                 return TmfProcessResult.BadRequest;
             }
             
@@ -207,6 +212,7 @@ namespace QA.ProductCatalog.TmForum.Services
             if (getProductResult == TmfProcessResult.Ok)
             {
                 resultProduct.Article = updatedArticle;
+                _logger.LogInformation("Product with id {id} updated successfully.", resultProduct.Article.Id);
             }
 
             return getUpdatedArticleResult;
@@ -221,6 +227,8 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (resultProduct.ValidationErrors.Length > 0)
             {
+                _logger.LogInformation("Received product validation failed with errors: {errors}.",
+                    string.Join(", ", resultProduct.ValidationErrors));
                 return TmfProcessResult.BadRequest;
             }
 
@@ -234,6 +242,7 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value);
+            _logger.LogInformation("Product with id {id} created.", resultProduct.Article.Id);
 
             return TmfProcessResult.Created;
         }
