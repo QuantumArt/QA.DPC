@@ -96,7 +96,7 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             IProductAPIService dbProductService = _databaseProductServiceFactory();
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
 
             JObject filter = ConvertToFilter(query, definition);
 
@@ -192,7 +192,7 @@ namespace QA.ProductCatalog.TmForum.Services
             original.Merge(patch, _jsonMergeSettings);
             _logger.LogTrace("Product json after merge is: {merged}", original.ToString());
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
             Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
 
             resultProduct.ValidationErrors = ValidateRecievedProduct(mergedProduct);
@@ -436,7 +436,7 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             bool result = true;
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
             versionField = definition.Content.Fields
                 .Where(x => string.Equals(x.FieldName, VersionFieldName, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.FieldName)
