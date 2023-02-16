@@ -35,7 +35,9 @@ namespace QA.ProductCatalog.TmForum.Services
         private const string ExternalIdFieldName = "id";
         private const string EntitySeparator = ".";
         private const string VersionFieldName = "version";
+        private const string ArticleStateErrorText = "Update for product which part is splitted or not published is restricted.";
 
+        private static readonly string[] ArticleStateErrorArray = new string[] { ArticleStateErrorText };
         private static readonly Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
 
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
@@ -178,6 +180,17 @@ namespace QA.ProductCatalog.TmForum.Services
             if (getProductResult != TmfProcessResult.Ok)
             {
                 return getProductResult;
+            }
+
+            var isUpdatable = true;
+            _tmfValidationService.CheckArticleState(originalProduct, ref isUpdatable);
+
+            if (!isUpdatable)
+            {
+                _logger.LogWarning(ArticleStateErrorText);
+
+                resultProduct.ValidationErrors = ArticleStateErrorArray;
+                return TmfProcessResult.BadRequest;
             }
 
             string originalJson = _formatter.Serialize(originalProduct);

@@ -5,6 +5,8 @@ namespace QA.ProductCatalog.TmForum.Interfaces
 {
     public interface ITmfValidatonService
     {
-        public void ValidateArticle(BLL.RulesException errors, Article article);
+        void ValidateArticle(BLL.RulesException errors, Article article);
+
+        void CheckArticleState(Article article, ref bool result);
     }
 }

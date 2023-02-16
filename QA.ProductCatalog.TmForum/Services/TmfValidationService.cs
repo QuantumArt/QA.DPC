@@ -22,11 +22,6 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             BLL.Content content = _contentService.Read(article.ContentId);
 
-            if (article.Id >= 0)
-            {
-                ValidateArticleState(errors, article);
-            }
-
             ValidatePlainArticle(errors, article, content);
 
             foreach (ArticleField field in article.Fields.Values)
@@ -56,16 +51,37 @@ namespace QA.ProductCatalog.TmForum.Services
             }
         }
 
-        private static void ValidateArticleState(BLL.RulesException errors, Article article)
+        public void CheckArticleState(Article article, ref bool result)
         {
-            if (!article.IsPublished)
+            if (!article.IsPublished || article.Splitted)
             {
-                errors.ErrorForModel($"Article with Id {article.Id} is not published.");
+                result = false;
+                return;
             }
 
-            if (article.Splitted)
+            foreach (ArticleField field in article.Fields.Values)
             {
-                errors.ErrorForModel($"Article with id {article.Id} is splitted.");
+                if (field is SingleArticleField single && single.Item is not null)
+                {
+                    CheckArticleState(single.Item, ref result);
+
+                    if (!result)
+                        break;
+                }
+
+                if (field is MultiArticleField multi)
+                {
+                    foreach (KeyValuePair<int, Article> multiArticle in multi.Items)
+                    {
+                        CheckArticleState(multiArticle.Value, ref result);
+
+                        if (!result)
+                            break;
+                    }
+
+                    if (!result)
+                        break;
+                }
             }
         }
 
