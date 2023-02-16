@@ -22,6 +22,16 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             BLL.Content content = _contentService.Read(article.ContentId);
 
+            if (!article.IsPublished)
+            {
+                errors.ErrorForModel($"Article {article.ContentName} is not published.");
+            }
+
+            if (article.Splitted)
+            {
+                errors.ErrorForModel($"Article {article.ContentName} is splitted.");
+            }
+
             ValidatePlainArticle(errors, article, content);
 
             foreach (ArticleField field in article.Fields.Values)
