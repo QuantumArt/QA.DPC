@@ -472,7 +472,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (keys.Length != 2)
             {
-                _logger.LogWarning("Product ID {productId} does not contains id and version numbers.", productId);
+                _logger.LogWarning("Product ID {productId} does not contain id and version numbers.", productId);
                 return TmfProcessResult.BadRequest;
             }
 
@@ -481,7 +481,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(version))
             {
-                _logger.LogWarning("Parsed product id {id} or version number {version} is empty in string {productId}.", 
+                _logger.LogWarning("Either product id {id} or version number {version} is empty in parsed string {productId}.", 
                     id, 
                     version, 
                     productId);
@@ -502,7 +502,7 @@ namespace QA.ProductCatalog.TmForum.Services
             if (errors.Errors.Count != 0)
             {
                 result = errors.Errors.Select(x => x.Message).ToArray();
-                _logger.LogWarning("Product validation failed with errors {errors}.", string.Join(", ", result));
+                _logger.LogWarning("Product validation failed with errors: {errors}.", string.Join(", ", result));
             }
 
             return result;
