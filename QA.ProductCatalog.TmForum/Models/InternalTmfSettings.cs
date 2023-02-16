@@ -22,14 +22,14 @@ namespace QA.ProductCatalog.TmForum.Models
         internal static readonly PathString ApiPathPrefix = "/" + ApiPrefix.TrimStart('/');
         internal static readonly string[] ArticleStateErrorArray = new string[1] { ArticleStateErrorText };
         internal static readonly Regex IdRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
-        internal static readonly ICollection<string> ReservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly IReadOnlyCollection<string> ReservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             FieldsQueryParameterName,
             OffsetQueryParameterName,
             LimitQueryParameterName,
             LastUpdateParameterName
         };
-        internal static readonly ICollection<string> NotUpdatableFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        internal static readonly IReadOnlyCollection<string> NotUpdatableFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "id",
             "href",
