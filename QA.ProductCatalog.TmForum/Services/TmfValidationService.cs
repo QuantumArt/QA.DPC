@@ -22,14 +22,9 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             BLL.Content content = _contentService.Read(article.ContentId);
 
-            if (article.Id >= 0 && !article.IsPublished)
+            if (article.Id >= 0)
             {
-                errors.ErrorForModel($"Article with Id {article.Id} is not published.");
-            }
-
-            if (article.Id >= 0 && article.Splitted)
-            {
-                errors.ErrorForModel($"Article with id {article.Id} is splitted.");
+                ValidateArticleState(errors, article);
             }
 
             ValidatePlainArticle(errors, article, content);
@@ -61,7 +56,20 @@ namespace QA.ProductCatalog.TmForum.Services
             }
         }
 
-        public static void ValidatePlainArticle(BLL.RulesException errors, Article article, BLL.Content content)
+        private static void ValidateArticleState(BLL.RulesException errors, Article article)
+        {
+            if (!article.IsPublished)
+            {
+                errors.ErrorForModel($"Article with Id {article.Id} is not published.");
+            }
+
+            if (article.Splitted)
+            {
+                errors.ErrorForModel($"Article with id {article.Id} is splitted.");
+            }
+        }
+
+        private static void ValidatePlainArticle(BLL.RulesException errors, Article article, BLL.Content content)
         {
             if (content.DisableXamlValidation || string.IsNullOrWhiteSpace(content.XamlValidation))
             {
