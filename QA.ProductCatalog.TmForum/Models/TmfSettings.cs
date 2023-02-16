@@ -4,5 +4,6 @@
     {
         public bool IsEnabled { get; set; }
         public int DefaultLimit { get; set; } = 10;
+        public bool IsLive { get; set; }
     }
 }

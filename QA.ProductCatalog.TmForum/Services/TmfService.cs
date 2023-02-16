@@ -107,8 +107,8 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             int[] productIds = filter.Count > 0
-                ? dbProductService.ExtendedSearchProducts(slug, version, filter)
-                : dbProductService.GetProductsList(slug, version)
+                ? dbProductService.ExtendedSearchProducts(slug, version, filter, _tmfSettings.IsLive)
+                : dbProductService.GetProductsList(slug, version, _tmfSettings.IsLive)
                     .Select(product => (int)product["id"])
                     .ToArray();
 
@@ -140,7 +140,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             foreach (int productId in productIdsToProcess)
             {
-                var product = dbProductService.GetProduct(slug, version, productId);
+                var product = dbProductService.GetProduct(slug, version, productId, _tmfSettings.IsLive);
 
                 if (hasLastUpdate && lastUpdate != null && product.Modified != lastUpdate)
                 {
@@ -202,7 +202,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.BadRequest;
             }
             
-            _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct);
+            _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct, _tmfSettings.IsLive);
 
             TmfProcessResult updateArticleResult = GetProductById(slug, version, tmfProductId, out Article updatedArticle);
             
@@ -228,7 +228,7 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             IProductAPIService dbProductService = _databaseProductServiceFactory();
-            int? createdProductId = dbProductService.CreateProduct(slug, version, product);
+            int? createdProductId = dbProductService.CreateProduct(slug, version, product, _tmfSettings.IsLive);
 
             if (!createdProductId.HasValue)
             {
@@ -236,7 +236,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.BadRequest;
             }
 
-            resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value);
+            resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value, _tmfSettings.IsLive);
             _logger.LogInformation("Product with id {id} created.", resultProduct.Article.Id);
 
             return TmfProcessResult.Created;
@@ -367,7 +367,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 new JProperty(TmfIdFieldName, id)
             };
 
-            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter);
+            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter, _tmfSettings.IsLive);
 
             if (foundArticleIds.Length == 0)
             {
@@ -378,7 +378,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             foreach (int artricleId in foundArticleIds)
             {
-                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId);
+                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId, _tmfSettings.IsLive);
                 articles.Add(foundProduct);
             }
 
@@ -417,14 +417,14 @@ namespace QA.ProductCatalog.TmForum.Services
 
             filter.Add(new JProperty(versionField, productVersion));
 
-            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter);
+            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter, _tmfSettings.IsLive);
 
             switch (foundArticleIds.Length)
             {
                 case 0:
                     return TmfProcessResult.NotFound;
                 case 1:
-                    product = dbProductService.GetProduct(slug, version, foundArticleIds.Single());
+                    product = dbProductService.GetProduct(slug, version, foundArticleIds.Single(), _tmfSettings.IsLive);
                     return TmfProcessResult.Ok;
                 default:
                     _logger.LogWarning("Found {count} articles by id {id} and version {version}. That's unexpected.", foundArticleIds.Length, id, productVersion);
