@@ -22,14 +22,14 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             BLL.Content content = _contentService.Read(article.ContentId);
 
-            if (!article.IsPublished)
+            if (article.Id >= 0 && !article.IsPublished)
             {
-                errors.ErrorForModel($"Article {article.ContentName} is not published.");
+                errors.ErrorForModel($"Article with Id {article.Id} is not published.");
             }
 
-            if (article.Splitted)
+            if (article.Id >= 0 && article.Splitted)
             {
-                errors.ErrorForModel($"Article {article.ContentName} is splitted.");
+                errors.ErrorForModel($"Article with id {article.Id} is splitted.");
             }
 
             ValidatePlainArticle(errors, article, content);
