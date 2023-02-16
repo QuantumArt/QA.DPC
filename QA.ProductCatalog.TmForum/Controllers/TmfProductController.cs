@@ -6,7 +6,6 @@ using QA.ProductCatalog.Filters;
 using QA.ProductCatalog.TmForum.Filters;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
-using QA.ProductCatalog.TmForum.Services;
 using System.Net.Mime;
 
 namespace QA.ProductCatalog.TmForum.Controllers
@@ -14,7 +13,7 @@ namespace QA.ProductCatalog.TmForum.Controllers
     [ApiController]
     [IdentityResolver]
     [TmfProductFormat]
-    [Route(TmfProductService.ApiPrefix + "/{customerCode}/{version}/{slug}")]
+    [Route(InternalTmfSettings.ApiPrefix + "/{customerCode}/{version}/{slug}")]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     public class TmfProductController : Controller

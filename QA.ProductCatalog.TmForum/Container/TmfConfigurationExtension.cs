@@ -3,6 +3,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Serialization;
 using QA.Core.DPC.Loader;
 using QA.ProductCatalog.TmForum.Interfaces;
+using QA.ProductCatalog.TmForum.Models;
 using QA.ProductCatalog.TmForum.Services;
 using Unity;
 using Unity.Extension;
@@ -11,9 +12,6 @@ namespace QA.ProductCatalog.TmForum.Container
 {
     public class TmfConfigurationExtension : UnityContainerExtension
     {
-        public const string TmfItemIdentifier = "tmf";
-        private static string[] _defaultTmfFieldsToSelect = new string[1] { "id" };
-
         protected override void Initialize()
         {
             Container.RegisterFactory<IJsonProductService>(
@@ -36,7 +34,7 @@ namespace QA.ProductCatalog.TmForum.Container
                         if (hasFieldsFilter)
                         {
                             var filters = new HashSet<string>(fields.ToArray(), StringComparer.OrdinalIgnoreCase);
-                            filters.UnionWith(_defaultTmfFieldsToSelect);
+                            filters.UnionWith(InternalTmfSettings.DefaultTmfFieldsToSelect);
                             fieldsFilter = filters;
                         }
 
@@ -65,7 +63,7 @@ namespace QA.ProductCatalog.TmForum.Container
                 {
                     var accessor = container.Resolve<IHttpContextAccessor>();
 
-                    if (accessor.HttpContext?.Items.ContainsKey(TmfItemIdentifier) == true)
+                    if (accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.TmfItemIdentifier) == true)
                     {
                         return tmfInstanceFactory(container);
                     }

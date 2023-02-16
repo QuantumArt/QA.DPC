@@ -20,26 +20,6 @@ namespace QA.ProductCatalog.TmForum.Services
 {
     public class TmfService : ITmfService
     {
-        private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            FieldsQueryParameterName,
-            OffsetQueryParameterName,
-            LimitQueryParameterName,
-            LastUpdateParameterName
-        };
-
-        private const string FieldsQueryParameterName = "fields";
-        private const string OffsetQueryParameterName = "offset";
-        private const string LimitQueryParameterName = "limit";
-        private const string LastUpdateParameterName = "lastUpdate";
-        private const string ExternalIdFieldName = "id";
-        private const string EntitySeparator = ".";
-        private const string VersionFieldName = "version";
-        private const string ArticleStateErrorText = "Update for product which part is splitted or not published is restricted.";
-
-        private static readonly string[] ArticleStateErrorArray = new string[] { ArticleStateErrorText };
-        private static readonly Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
-
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly TmfSettings _tmfSettings;
@@ -122,12 +102,12 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
-            if (!TryRetrieveParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
+            if (!TryRetrieveParamaterFromQuery(query, InternalTmfSettings.LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
             {
                 return TmfProcessResult.BadRequest;
             }
 
-            if (!TryRetrieveParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
+            if (!TryRetrieveParamaterFromQuery(query, InternalTmfSettings.OffsetQueryParameterName, 0, out int offset))
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -138,7 +118,7 @@ namespace QA.ProductCatalog.TmForum.Services
             };
 
             IEnumerable<int> productIdsToProcess = productIds.Skip(offset).Take(limit);
-            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, LastUpdateParameterName, null, out DateTime? lastUpdate);
+            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, InternalTmfSettings.LastUpdateParameterName, null, out DateTime? lastUpdate);
 
             foreach (int productId in productIdsToProcess)
             {
@@ -187,9 +167,9 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (!isUpdatable)
             {
-                _logger.LogWarning(ArticleStateErrorText);
+                _logger.LogWarning(InternalTmfSettings.ArticleStateErrorText);
 
-                resultProduct.ValidationErrors = ArticleStateErrorArray;
+                resultProduct.ValidationErrors = InternalTmfSettings.ArticleStateErrorArray;
                 return TmfProcessResult.BadRequest;
             }
 
@@ -265,7 +245,7 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             KeyValuePair<string, StringValues>[] clearedParameters = searchParameters
-                .Where(x => !_reservedSearchParameters.Contains(x.Key))
+                .Where(x => !InternalTmfSettings.ReservedSearchParameters.Contains(x.Key))
                 .ToArray();
 
             foreach (KeyValuePair<string, StringValues> parameter in clearedParameters)
@@ -285,14 +265,14 @@ namespace QA.ProductCatalog.TmForum.Services
         private string GetFieldNameFromDefinition(ServiceDefinition definition, string parameter)
         {
             Content content = definition.Content;
-            string[] parameterParts = parameter.Split(EntitySeparator);
+            string[] parameterParts = parameter.Split(InternalTmfSettings.EntitySeparator);
             List<string> fieldNames = new();
 
             foreach (string part in parameterParts)
             {
                 Field field = null;
 
-                if (part.Equals(ExternalIdFieldName, StringComparison.OrdinalIgnoreCase))
+                if (part.Equals(InternalTmfSettings.ExternalIdFieldName, StringComparison.OrdinalIgnoreCase))
                 {
                     field = content.Fields.FirstOrDefault(f => string.Equals(f.FieldName, TmfIdFieldName, StringComparison.CurrentCultureIgnoreCase));
                 }
@@ -315,7 +295,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 break;
             }
 
-            return string.Join(EntitySeparator, fieldNames);
+            return string.Join(InternalTmfSettings.EntitySeparator, fieldNames);
         }
 
         private bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
@@ -451,7 +431,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
             versionField = definition.Content.Fields
-                .Where(x => string.Equals(x.FieldName, VersionFieldName, StringComparison.OrdinalIgnoreCase))
+                .Where(x => string.Equals(x.FieldName, InternalTmfSettings.VersionFieldName, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.FieldName)
                 .FirstOrDefault();
 
@@ -469,7 +449,7 @@ namespace QA.ProductCatalog.TmForum.Services
             id = string.Empty;
             version = string.Empty;
 
-            Match matchResult = _idRegex.Match(productId);
+            Match matchResult = InternalTmfSettings.IdRegex.Match(productId);
 
             if (matchResult == null || !matchResult.Success)
             {
