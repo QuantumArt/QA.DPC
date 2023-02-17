@@ -30,6 +30,7 @@
 		<ProjectReference Include="..\QA.Core.DPC.QP.Autopublish\QA.Core.DPC.QP.Autopublish.csproj" />
 		<ProjectReference Include="..\QA.Core.DPC.UI\QA.Core.DPC.UI.csproj" />
 		<ProjectReference Include="..\QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj" />
+		<ProjectReference Include="..\QA.ProductCatalog.TmForum\QA.ProductCatalog.TmForum.csproj" />
 		<ProjectReference Include="..\QA.ProductCatalog.Validation\QA.ProductCatalog.Validation.csproj" />
 
 	</ItemGroup>

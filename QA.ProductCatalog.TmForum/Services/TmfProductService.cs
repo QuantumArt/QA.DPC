@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Services;
@@ -7,7 +6,7 @@ using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.TmForum.Models;
+using QA.ProductCatalog.TmForum.Interfaces;
 using Article = QA.Core.Models.Entities.Article;
 using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
@@ -17,7 +16,7 @@ namespace QA.ProductCatalog.TmForum.Services
 {
     public class TmfProductService : JsonProductService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IProductAddressProvider _productAddressProvider;
         private readonly string _tmfIdFieldName;
 
         public TmfProductService(
@@ -30,8 +29,8 @@ namespace QA.ProductCatalog.TmForum.Services
             IOptions<LoaderProperties> loaderProperties,
             IHttpClientFactory factory,
             JsonProductServiceSettings settings,
-            IHttpContextAccessor httpContextAccessor,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IProductAddressProvider productAddressProvider)
             : base(
                   connectionProvider,
                   logger,
@@ -43,8 +42,8 @@ namespace QA.ProductCatalog.TmForum.Services
                   factory,
                   settings)
         {
-            _httpContextAccessor = httpContextAccessor;
             _tmfIdFieldName = settingsService.GetSetting(SettingsTitles.TMF_ID_FIELD_NAME);
+            _productAddressProvider = productAddressProvider;
         }
 
         protected override void AssignField(Dictionary<string, object> dict, string name, object value)
@@ -80,7 +79,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (hasType && convertedArticle.TryGetValue(nameof(Article.Id), out var resourceId))
             {
-                var resourceUri = GetResourceUri(article.ContentDisplayName, resourceId.ToString());
+                var resourceUri = _productAddressProvider.GetProductAddress(article.ContentDisplayName, resourceId.ToString());// GetResourceUri(article.ContentDisplayName, resourceId.ToString());
                 if (resourceUri is not null)
                 {
                     convertedArticle["href"] = resourceUri.AbsoluteUri;
@@ -90,45 +89,6 @@ namespace QA.ProductCatalog.TmForum.Services
             convertedArticle["lastUpdate"] = article.Modified;
 
             return convertedArticle;
-        }
-
-        private Uri GetResourceUri(string type, string resourceId)
-        {
-            var request = _httpContextAccessor.HttpContext.Request;
-
-            (string customerCode, string version, _) = GetTmfRouteValues(request.RouteValues);
-
-            var builder = CreateBuilderFromRequestHost(request);
-            builder.Path = InternalTmfSettings.ApiPathPrefix + new PathString($"/{customerCode}/{version}/{type}/{resourceId}");
-
-            return builder.Uri;
-        }
-
-        private static UriBuilder CreateBuilderFromRequestHost(HttpRequest request) =>
-            request.Host.Port.HasValue
-                ? new UriBuilder(request.Scheme, request.Host.Host, request.Host.Port.Value)
-                : new UriBuilder(request.Scheme, request.Host.Host);
-
-        private static (string customerCode, string version, string slug) GetTmfRouteValues(
-            IReadOnlyDictionary<string, object> routeValues)
-        {
-            var customerCode = GetRouteString(routeValues, "customerCode");
-            var version = GetRouteString(routeValues, "version");
-            var slug = GetRouteString(routeValues, "slug");
-
-            return (customerCode, version, slug);
-        }
-
-        private static string GetRouteString(IReadOnlyDictionary<string, object> routeValues, string name) =>
-            TryGetRouteValue<string>(routeValues, name, out var value)
-                ? value
-                : throw new InvalidOperationException($"Missing mandatory route value {name}.");
-
-        private static bool TryGetRouteValue<TValue>(IReadOnlyDictionary<string, object> routeValues, string name, out TValue typedValue)
-        {
-            var isSuccess = routeValues.TryGetValue(name, out object value) && value is TValue;
-            typedValue = (TValue)value;
-            return isSuccess;
         }
 
         protected override IProductDataSource CreateDataSource(IDictionary<string, JToken> tokensDict) =>

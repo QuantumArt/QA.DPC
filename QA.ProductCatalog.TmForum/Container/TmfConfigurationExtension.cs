@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QA.Core.DPC.Loader;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
+using QA.ProductCatalog.TmForum.Providers;
 using QA.ProductCatalog.TmForum.Services;
 using Unity;
 using Unity.Extension;
@@ -23,6 +25,21 @@ namespace QA.ProductCatalog.TmForum.Container
                 CreateTmfAwareFactory(
                     tmfInstanceFactory: (container) => container.Resolve<TmfProductDeserializer>(),
                     defaultFactory: (container) => container.Resolve<ProductDeserializer>()));
+
+            Container.RegisterFactory<IProductAddressProvider>((container) =>
+            {
+                if (container.IsRegistered<IHttpContextAccessor>())
+                {
+                    var accessor = container.Resolve<IHttpContextAccessor>();
+
+                    if (accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.QueryResolverContextItemName) == true)
+                    {
+                        return container.Resolve<FakeProductAddressProvider>();
+                    }
+                }
+
+                return container.Resolve<DefaultProductAddressProvider>();
+            });
 
             Container.RegisterFactory<JsonProductServiceSettings>(
                 CreateTmfAwareFactory(
@@ -44,7 +61,8 @@ namespace QA.ProductCatalog.TmForum.Container
                             WrapperName = string.Empty,
                             SerializerSettings = new Newtonsoft.Json.JsonSerializerSettings
                             {
-                                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                                Formatting = Formatting.Indented
                             }
                         };
                     },
