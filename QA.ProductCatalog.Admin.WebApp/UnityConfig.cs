@@ -43,6 +43,7 @@ using System.Reflection;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using ILogger = QA.Core.Logger.ILogger;
+using QA.ProductCatalog.TmForum.Container;
 
 namespace QA.ProductCatalog.Admin.WebApp
 {
@@ -77,6 +78,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             container.AddNewExtension<ActionContainerConfiguration>();
 			container.AddNewExtension<TaskContainerConfiguration>();
 			container.AddNewExtension<ValidationConfiguration>();
+            container.AddNewExtension<TmfConfigurationExtension>();
 			
             container.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             container.RegisterType<ICustomerProvider, CustomerProvider>();
