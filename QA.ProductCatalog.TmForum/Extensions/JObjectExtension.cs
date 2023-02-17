@@ -1,18 +1,10 @@
 ﻿using Newtonsoft.Json.Linq;
+using QA.ProductCatalog.TmForum.Models;
 
 namespace QA.ProductCatalog.TmForum.Extensions
 {
     internal static class JObjectExtension
     {
-        private static readonly ICollection<string> _notUpdatableFields = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "id",
-            "href",
-            "lastUpdate",
-            "@type",
-            "@baseType"
-        };
-
         internal static JObject RemoveUpdateRestrictedFields(this JObject json)
         {
             RemoveRestricted(json);
@@ -34,7 +26,7 @@ namespace QA.ProductCatalog.TmForum.Extensions
                     case JTokenType.Array:
                         break;
                     default:
-                        if (_notUpdatableFields.Contains(property.Name))
+                        if (InternalTmfSettings.NotUpdatableFields.Contains(property.Name))
                         {
                             property.Remove();
                         }

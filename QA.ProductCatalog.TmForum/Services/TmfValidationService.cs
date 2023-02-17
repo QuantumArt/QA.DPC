@@ -51,7 +51,41 @@ namespace QA.ProductCatalog.TmForum.Services
             }
         }
 
-        public static void ValidatePlainArticle(BLL.RulesException errors, Article article, BLL.Content content)
+        public void CheckArticleState(Article article, ref bool result)
+        {
+            if (!article.IsPublished || article.Splitted)
+            {
+                result = false;
+                return;
+            }
+
+            foreach (ArticleField field in article.Fields.Values)
+            {
+                if (field is SingleArticleField single && single.Item is not null)
+                {
+                    CheckArticleState(single.Item, ref result);
+
+                    if (!result)
+                        break;
+                }
+
+                if (field is MultiArticleField multi)
+                {
+                    foreach (KeyValuePair<int, Article> multiArticle in multi.Items)
+                    {
+                        CheckArticleState(multiArticle.Value, ref result);
+
+                        if (!result)
+                            break;
+                    }
+
+                    if (!result)
+                        break;
+                }
+            }
+        }
+
+        private static void ValidatePlainArticle(BLL.RulesException errors, Article article, BLL.Content content)
         {
             if (content.DisableXamlValidation || string.IsNullOrWhiteSpace(content.XamlValidation))
             {

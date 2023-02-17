@@ -7,6 +7,7 @@ using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.TmForum.Models;
 using Article = QA.Core.Models.Entities.Article;
 using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
@@ -16,11 +17,6 @@ namespace QA.ProductCatalog.TmForum.Services
 {
     public class TmfProductService : JsonProductService
     {
-        public const string ApiPrefix = "api";
-
-        private static readonly PathString _apiPathPrefix =
-            "/" + ApiPrefix.TrimStart('/');
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _tmfIdFieldName;
 
@@ -103,7 +99,7 @@ namespace QA.ProductCatalog.TmForum.Services
             (string customerCode, string version, _) = GetTmfRouteValues(request.RouteValues);
 
             var builder = CreateBuilderFromRequestHost(request);
-            builder.Path = _apiPathPrefix + new PathString($"/{customerCode}/{version}/{type}/{resourceId}");
+            builder.Path = InternalTmfSettings.ApiPathPrefix + new PathString($"/{customerCode}/{version}/{type}/{resourceId}");
 
             return builder.Uri;
         }

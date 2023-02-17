@@ -20,24 +20,6 @@ namespace QA.ProductCatalog.TmForum.Services
 {
     public class TmfService : ITmfService
     {
-        private static readonly ICollection<string> _reservedSearchParameters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            FieldsQueryParameterName,
-            OffsetQueryParameterName,
-            LimitQueryParameterName,
-            LastUpdateParameterName
-        };
-
-        private const string FieldsQueryParameterName = "fields";
-        private const string OffsetQueryParameterName = "offset";
-        private const string LimitQueryParameterName = "limit";
-        private const string LastUpdateParameterName = "lastUpdate";
-        private const string ExternalIdFieldName = "id";
-        private const string EntitySeparator = ".";
-        private const string VersionFieldName = "version";
-
-        private static readonly Regex _idRegex = new("(.*)\\([Vv]ersion=(.*)\\)", RegexOptions.Compiled);
-
         private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly TmfSettings _tmfSettings;
@@ -96,7 +78,7 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             IProductAPIService dbProductService = _databaseProductServiceFactory();
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
 
             JObject filter = ConvertToFilter(query, definition);
 
@@ -107,8 +89,8 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             int[] productIds = filter.Count > 0
-                ? dbProductService.ExtendedSearchProducts(slug, version, filter)
-                : dbProductService.GetProductsList(slug, version)
+                ? dbProductService.ExtendedSearchProducts(slug, version, filter, _tmfSettings.IsLive)
+                : dbProductService.GetProductsList(slug, version, _tmfSettings.IsLive)
                     .Select(product => (int)product["id"])
                     .ToArray();
 
@@ -120,12 +102,12 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
-            if (!TryRetrieveParamaterFromQuery(query, LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
+            if (!TryRetrieveParamaterFromQuery(query, InternalTmfSettings.LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
             {
                 return TmfProcessResult.BadRequest;
             }
 
-            if (!TryRetrieveParamaterFromQuery(query, OffsetQueryParameterName, 0, out int offset))
+            if (!TryRetrieveParamaterFromQuery(query, InternalTmfSettings.OffsetQueryParameterName, 0, out int offset))
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -136,11 +118,11 @@ namespace QA.ProductCatalog.TmForum.Services
             };
 
             IEnumerable<int> productIdsToProcess = productIds.Skip(offset).Take(limit);
-            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, LastUpdateParameterName, null, out DateTime? lastUpdate);
+            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, InternalTmfSettings.LastUpdateParameterName, null, out DateTime? lastUpdate);
 
             foreach (int productId in productIdsToProcess)
             {
-                var product = dbProductService.GetProduct(slug, version, productId);
+                var product = dbProductService.GetProduct(slug, version, productId, _tmfSettings.IsLive);
 
                 if (hasLastUpdate && lastUpdate != null && product.Modified != lastUpdate)
                 {
@@ -180,6 +162,17 @@ namespace QA.ProductCatalog.TmForum.Services
                 return getProductResult;
             }
 
+            var isUpdatable = true;
+            _tmfValidationService.CheckArticleState(originalProduct, ref isUpdatable);
+
+            if (!isUpdatable)
+            {
+                _logger.LogWarning(InternalTmfSettings.ArticleStateErrorText);
+
+                resultProduct.ValidationErrors = InternalTmfSettings.ArticleStateErrorArray;
+                return TmfProcessResult.BadRequest;
+            }
+
             string originalJson = _formatter.Serialize(originalProduct);
             _logger.LogTrace("Original product json is: {product}", originalJson);
             string patchJson = _formatter.Serialize(product);
@@ -192,7 +185,7 @@ namespace QA.ProductCatalog.TmForum.Services
             original.Merge(patch, _jsonMergeSettings);
             _logger.LogTrace("Product json after merge is: {merged}", original.ToString());
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
             Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
 
             resultProduct.ValidationErrors = ValidateRecievedProduct(mergedProduct);
@@ -202,7 +195,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.BadRequest;
             }
             
-            _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct);
+            _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct, _tmfSettings.IsLive);
 
             TmfProcessResult updateArticleResult = GetProductById(slug, version, tmfProductId, out Article updatedArticle);
             
@@ -228,7 +221,7 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             IProductAPIService dbProductService = _databaseProductServiceFactory();
-            int? createdProductId = dbProductService.CreateProduct(slug, version, product);
+            int? createdProductId = dbProductService.CreateProduct(slug, version, product, _tmfSettings.IsLive);
 
             if (!createdProductId.HasValue)
             {
@@ -236,7 +229,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.BadRequest;
             }
 
-            resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value);
+            resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value, _tmfSettings.IsLive);
             _logger.LogInformation("Product with id {id} created.", resultProduct.Article.Id);
 
             return TmfProcessResult.Created;
@@ -252,7 +245,7 @@ namespace QA.ProductCatalog.TmForum.Services
             }
 
             KeyValuePair<string, StringValues>[] clearedParameters = searchParameters
-                .Where(x => !_reservedSearchParameters.Contains(x.Key))
+                .Where(x => !InternalTmfSettings.ReservedSearchParameters.Contains(x.Key))
                 .ToArray();
 
             foreach (KeyValuePair<string, StringValues> parameter in clearedParameters)
@@ -272,14 +265,14 @@ namespace QA.ProductCatalog.TmForum.Services
         private string GetFieldNameFromDefinition(ServiceDefinition definition, string parameter)
         {
             Content content = definition.Content;
-            string[] parameterParts = parameter.Split(EntitySeparator);
+            string[] parameterParts = parameter.Split(InternalTmfSettings.EntitySeparator);
             List<string> fieldNames = new();
 
             foreach (string part in parameterParts)
             {
                 Field field = null;
 
-                if (part.Equals(ExternalIdFieldName, StringComparison.OrdinalIgnoreCase))
+                if (part.Equals(InternalTmfSettings.ExternalIdFieldName, StringComparison.OrdinalIgnoreCase))
                 {
                     field = content.Fields.FirstOrDefault(f => string.Equals(f.FieldName, TmfIdFieldName, StringComparison.CurrentCultureIgnoreCase));
                 }
@@ -302,7 +295,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 break;
             }
 
-            return string.Join(EntitySeparator, fieldNames);
+            return string.Join(InternalTmfSettings.EntitySeparator, fieldNames);
         }
 
         private bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
@@ -367,7 +360,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 new JProperty(TmfIdFieldName, id)
             };
 
-            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter);
+            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter, _tmfSettings.IsLive);
 
             if (foundArticleIds.Length == 0)
             {
@@ -378,7 +371,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             foreach (int artricleId in foundArticleIds)
             {
-                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId);
+                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId, _tmfSettings.IsLive);
                 articles.Add(foundProduct);
             }
 
@@ -417,14 +410,14 @@ namespace QA.ProductCatalog.TmForum.Services
 
             filter.Add(new JProperty(versionField, productVersion));
 
-            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter);
+            int[] foundArticleIds = dbProductService.ExtendedSearchProducts(slug, version, filter, _tmfSettings.IsLive);
 
             switch (foundArticleIds.Length)
             {
                 case 0:
                     return TmfProcessResult.NotFound;
                 case 1:
-                    product = dbProductService.GetProduct(slug, version, foundArticleIds.Single());
+                    product = dbProductService.GetProduct(slug, version, foundArticleIds.Single(), _tmfSettings.IsLive);
                     return TmfProcessResult.Ok;
                 default:
                     _logger.LogWarning("Found {count} articles by id {id} and version {version}. That's unexpected.", foundArticleIds.Length, id, productVersion);
@@ -436,9 +429,9 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             bool result = true;
 
-            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+            ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
             versionField = definition.Content.Fields
-                .Where(x => string.Equals(x.FieldName, VersionFieldName, StringComparison.OrdinalIgnoreCase))
+                .Where(x => string.Equals(x.FieldName, InternalTmfSettings.VersionFieldName, StringComparison.OrdinalIgnoreCase))
                 .Select(x => x.FieldName)
                 .FirstOrDefault();
 
@@ -456,7 +449,7 @@ namespace QA.ProductCatalog.TmForum.Services
             id = string.Empty;
             version = string.Empty;
 
-            Match matchResult = _idRegex.Match(productId);
+            Match matchResult = InternalTmfSettings.IdRegex.Match(productId);
 
             if (matchResult == null || !matchResult.Success)
             {
