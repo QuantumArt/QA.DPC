@@ -79,7 +79,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             if (hasType && convertedArticle.TryGetValue(nameof(Article.Id), out var resourceId))
             {
-                var resourceUri = _productAddressProvider.GetProductAddress(article.ContentDisplayName, resourceId.ToString());// GetResourceUri(article.ContentDisplayName, resourceId.ToString());
+                var resourceUri = _productAddressProvider.GetProductAddress(article.ContentDisplayName, resourceId.ToString());
                 if (resourceUri is not null)
                 {
                     convertedArticle["href"] = resourceUri.AbsoluteUri;

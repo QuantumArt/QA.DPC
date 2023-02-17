@@ -59,7 +59,7 @@ namespace QA.ProductCatalog.TmForum.Container
                         {
                             Fields = fieldsFilter,
                             WrapperName = string.Empty,
-                            SerializerSettings = new Newtonsoft.Json.JsonSerializerSettings
+                            SerializerSettings = new JsonSerializerSettings
                             {
                                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                                 Formatting = Formatting.Indented
