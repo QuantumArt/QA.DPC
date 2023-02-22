@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Kafka.Interfaces;
+using QA.Core.DPC.Kafka.Models;
 using QA.Core.DPC.Loader;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -28,6 +32,7 @@ namespace QA.ProductCatalog.TmForum.Services
         private readonly IJsonProductService _jsonProductService;
         private readonly JsonMergeSettings _jsonMergeSettings;
         private readonly ITmfValidatonService _tmfValidationService;
+        private readonly IProducerService<string> _producerService;
 
         public string TmfIdFieldName { get; }
 
@@ -38,7 +43,8 @@ namespace QA.ProductCatalog.TmForum.Services
             ILogger<TmfService> logger,
             IArticleFormatter formatter,
             IJsonProductService jsonProductService,
-            ITmfValidatonService tmfValidationService)
+            ITmfValidatonService tmfValidationService,
+            IServiceProvider serviceProvider)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
@@ -54,6 +60,16 @@ namespace QA.ProductCatalog.TmForum.Services
                 PropertyNameComparison = StringComparison.OrdinalIgnoreCase
             };
             _tmfValidationService = tmfValidationService;
+
+            if (_tmfSettings.SendProductsToKafka)
+            {
+                if (!serviceProvider.GetService<IOptions<KafkaSettings>>().Value.IsEnabled)
+                {
+                    throw new InvalidOperationException("Configure kafka in appsettings before using it!");
+                }
+
+                _producerService = serviceProvider.GetRequiredService<IProducerService<string>>();
+            }
         }
 
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
@@ -205,6 +221,8 @@ namespace QA.ProductCatalog.TmForum.Services
                 _logger.LogInformation("Product with id {id} updated successfully.", resultProduct.Article.Id);
             }
 
+            SendToKafka(resultProduct.Article, _tmfSettings.UpdatedProductsTopic);
+
             return updateArticleResult;
         }
 
@@ -232,7 +250,30 @@ namespace QA.ProductCatalog.TmForum.Services
             resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value, _tmfSettings.IsLive);
             _logger.LogInformation("Product with id {id} created.", resultProduct.Article.Id);
 
+            SendToKafka(resultProduct.Article, _tmfSettings.CreatedProductsTopic);
+
             return TmfProcessResult.Created;
+        }
+
+        private void SendToKafka(Article article, string topic)
+        {
+            if (!_tmfSettings.SendProductsToKafka)
+                return;
+
+            PersistenceStatus result = _producerService.SendSerializedArticle(article.Id.ToString(), article, topic, _formatter).Result;
+
+            switch (result)
+            {
+                case PersistenceStatus.Persisted:
+                    _logger.LogInformation("Message for article id {id} was saved in kafka.", article.Id);
+                    break;
+                case PersistenceStatus.NotPersisted:
+                    _logger.LogWarning("Message for article id {id} was not saved in kafka.", article.Id);
+                    break;
+                case PersistenceStatus.PossiblyPersisted:
+                    _logger.LogWarning("Message for article id {id} was possibly saved in kafka.", article.Id);
+                    break;
+            }
         }
 
         private JObject ConvertToFilter(IQueryCollection searchParameters, ServiceDefinition definition)

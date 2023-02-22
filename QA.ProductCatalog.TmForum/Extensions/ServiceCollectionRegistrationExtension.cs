@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using QA.Core.DPC.Kafka.Extensions;
+using QA.Core.DPC.Kafka.Interfaces;
+using QA.Core.DPC.Kafka.Services;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
 using QA.ProductCatalog.TmForum.Services;
@@ -15,10 +19,19 @@ namespace QA.ProductCatalog.TmForum.Extensions
         /// </summary>
         public static IServiceCollection ResolveTmForumRegistration(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration.GetSection("Tmf").GetSection("IsEnabled").Get<bool>())
+            TmfSettings settings = new();
+            configuration.GetSection("Tmf").Bind(settings);
+
+            if (settings.IsEnabled)
             {
-                services.Configure<TmfSettings>(configuration.GetSection("Tmf"));
+                services.AddSingleton(Options.Create(settings));
                 services.AddScoped<ITmfValidatonService, TmfValidationService>();
+
+                if (settings.SendProductsToKafka)
+                {
+                    services.RegisterKafka(configuration);
+                    services.AddSingleton<IProducerService<string>, ProducerService<string>>();
+                }
 
                 return services;
             }
