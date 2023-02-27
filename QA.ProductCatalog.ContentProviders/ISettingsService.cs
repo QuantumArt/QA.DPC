@@ -69,6 +69,9 @@
         PRODUCTVERSION_TIMEOUT,
         #region TMF
         TMF_ID_FIELD_NAME,
+        TMF_SEND_TO_KAFKA,
+        TMF_KAFKA_CREATED_TOPIC,
+        TMF_KAFKA_UPDATED_TOPIC
         #endregion
     }
 }

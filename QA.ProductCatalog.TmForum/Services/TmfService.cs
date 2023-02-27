@@ -33,6 +33,7 @@ namespace QA.ProductCatalog.TmForum.Services
         private readonly JsonMergeSettings _jsonMergeSettings;
         private readonly ITmfValidatonService _tmfValidationService;
         private readonly IProducerService<string> _producerService;
+        private readonly ISettingsService _settingsService;
 
         public string TmfIdFieldName { get; }
 
@@ -60,8 +61,9 @@ namespace QA.ProductCatalog.TmForum.Services
                 PropertyNameComparison = StringComparison.OrdinalIgnoreCase
             };
             _tmfValidationService = tmfValidationService;
-
-            if (_tmfSettings.SendProductsToKafka)
+            _settingsService = settingsService;
+            
+            if (bool.TryParse(settingsService.GetSetting(SettingsTitles.TMF_SEND_TO_KAFKA), out bool tmfToKafkaEnabled) && tmfToKafkaEnabled)
             {
                 if (!serviceProvider.GetService<IOptions<KafkaSettings>>().Value.IsEnabled)
                 {
@@ -221,7 +223,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 _logger.LogInformation("Product with id {id} updated successfully.", resultProduct.Article.Id);
             }
 
-            SendToKafka(resultProduct.Article, _tmfSettings.UpdatedProductsTopic);
+            SendToKafka(resultProduct.Article, _settingsService.GetSetting(SettingsTitles.TMF_KAFKA_UPDATED_TOPIC));
 
             return updateArticleResult;
         }
@@ -250,14 +252,14 @@ namespace QA.ProductCatalog.TmForum.Services
             resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value, _tmfSettings.IsLive);
             _logger.LogInformation("Product with id {id} created.", resultProduct.Article.Id);
 
-            SendToKafka(resultProduct.Article, _tmfSettings.CreatedProductsTopic);
+            SendToKafka(resultProduct.Article, _settingsService.GetSetting(SettingsTitles.TMF_KAFKA_CREATED_TOPIC));
 
             return TmfProcessResult.Created;
         }
 
         private void SendToKafka(Article article, string topic)
         {
-            if (!_tmfSettings.SendProductsToKafka)
+            if (!bool.TryParse(_settingsService.GetSetting(SettingsTitles.TMF_SEND_TO_KAFKA), out bool tmfToKafkaEnabled) || !tmfToKafkaEnabled)
                 return;
 
             PersistenceStatus result = _producerService.SendSerializedArticle(article.Id.ToString(), article, topic, _formatter).Result;

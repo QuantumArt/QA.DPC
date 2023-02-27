@@ -1,4 +1,5 @@
 ﻿using Confluent.Kafka;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QA.Core.DPC.Kafka.Interfaces;
@@ -11,8 +12,9 @@ namespace QA.Core.DPC.Kafka.Services
     public class ProducerService<TKey> : IProducerService<TKey>
     {
         private readonly IProducer<TKey, string> _producer;
+        private readonly ILogger<ProducerService<TKey>> _logger;
 
-        public ProducerService(IOptions<KafkaSettings> settings)
+        public ProducerService(IOptions<KafkaSettings> settings, ILogger<ProducerService<TKey>> logger)
         {
             ProducerConfig config = new()
             {
@@ -26,10 +28,18 @@ namespace QA.Core.DPC.Kafka.Services
             };
 
             _producer = new ProducerBuilder<TKey, string>(config).Build();
+            _logger = logger;
         }
 
         public async Task<PersistenceStatus> SendString(TKey key, string value, string topic)
         {
+            if (string.IsNullOrWhiteSpace(topic))
+            {
+                _logger.LogError("Kafka topic is empty. Check application configuration.");
+
+                return PersistenceStatus.NotPersisted;
+            }
+
             DeliveryResult<TKey, string>? result = await _producer.ProduceAsync(topic, new Message<TKey, string>() { Key = key, Value = value });
 
             return result.Status;

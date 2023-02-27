@@ -26,12 +26,8 @@ namespace QA.ProductCatalog.TmForum.Extensions
             {
                 services.AddSingleton(Options.Create(settings));
                 services.AddScoped<ITmfValidatonService, TmfValidationService>();
-
-                if (settings.SendProductsToKafka)
-                {
-                    services.RegisterKafka(configuration);
-                    services.AddSingleton<IProducerService<string>, ProducerService<string>>();
-                }
+                services.RegisterKafka(configuration);
+                services.AddSingleton<IProducerService<string>, ProducerService<string>>();
 
                 return services;
             }
