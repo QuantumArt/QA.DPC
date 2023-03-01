@@ -262,7 +262,7 @@ namespace QA.ProductCatalog.TmForum.Services
             if (!bool.TryParse(_settingsService.GetSetting(SettingsTitles.TMF_SEND_TO_KAFKA), out bool tmfToKafkaEnabled) || !tmfToKafkaEnabled)
                 return;
 
-            PersistenceStatus result = _producerService.SendSerializedArticle(article.Id.ToString(), article, topic, _formatter).Result;
+            PersistenceStatus result = _producerService.SendSerializedArticle(article.Id.ToString(), article, topic, _formatter, new(false)).Result;
 
             switch (result)
             {

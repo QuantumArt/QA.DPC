@@ -35,7 +35,10 @@ namespace QA.Core.DPC.Kafka.Services
             _logger = logger;
         }
 
-        public async Task<PersistenceStatus> SendString(TKey key, string value, string topic)
+        public async Task<PersistenceStatus> SendString(TKey key,
+            string value,
+            string topic,
+            CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(topic))
             {
@@ -44,23 +47,32 @@ namespace QA.Core.DPC.Kafka.Services
                 return PersistenceStatus.NotPersisted;
             }
 
-            DeliveryResult<TKey, string>? result = await _producer.ProduceAsync(topic, new Message<TKey, string>() { Key = key, Value = value });
+            DeliveryResult<TKey, string>? result = await _producer.ProduceAsync(topic,
+                new Message<TKey, string>() { Key = key, Value = value },
+                cancellationToken);
 
             return result.Status;
         }
 
-        public async Task<PersistenceStatus> SendSerializedArticle(TKey key, Article article, string topic, IArticleFormatter formatter)
+        public async Task<PersistenceStatus> SendSerializedArticle(TKey key,
+            Article article,
+            string topic,
+            IArticleFormatter formatter,
+            CancellationToken cancellationToken)
         {
             string serializedArticle = formatter.Serialize(article);
 
-            return await SendString(key, serializedArticle, topic);
+            return await SendString(key, serializedArticle, topic, cancellationToken);
         }
 
-        public async Task<PersistenceStatus> SendAsJson(TKey key, object value, string topic)
+        public async Task<PersistenceStatus> SendAsJson(TKey key,
+            object value,
+            string topic,
+            CancellationToken cancellationToken)
         {
             string jsonValue = JsonConvert.SerializeObject(value);
 
-            return await SendString(key, jsonValue, topic);
+            return await SendString(key, jsonValue, topic, cancellationToken);
         }
 
         public void Dispose() => _producer.Dispose();
