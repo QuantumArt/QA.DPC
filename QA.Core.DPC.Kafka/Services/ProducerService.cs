@@ -22,10 +22,14 @@ namespace QA.Core.DPC.Kafka.Services
                 BootstrapServers = settings.Value.BootstrapServers,
                 MessageSendMaxRetries = settings.Value.MessageSendMaxRetries,
                 RetryBackoffMs = settings.Value.RetryBackoffMs,
-                SecurityProtocol = (SecurityProtocol)settings.Value.SecurityProtocol,
-                SaslUsername = settings.Value.SaslUsername,
-                SaslPassword = settings.Value.SaslPassword
+                SecurityProtocol = (SecurityProtocol)settings.Value.SecurityProtocol
             };
+
+            if (config.SecurityProtocol is SecurityProtocol.SaslPlaintext or SecurityProtocol.SaslSsl)
+            {
+                config.SaslUsername = settings.Value.SaslUsername;
+                config.SaslPassword = settings.Value.SaslPassword;
+            }
 
             _producer = new ProducerBuilder<TKey, string>(config).Build();
             _logger = logger;
