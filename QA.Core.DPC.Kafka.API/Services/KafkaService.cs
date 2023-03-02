@@ -64,7 +64,7 @@ public class KafkaService : IKafkaService
             return new()
             {
                 IsSuccess = true,
-                Message = string.Empty
+                Message = InternalSettings.SuccessMessage
             };
         }
         catch (Exception e)
