@@ -16,7 +16,7 @@ namespace QA.ProductCatalog.TmForum.Extensions
         {
             JProperty[] properties = json.Properties().ToArray();
 
-            foreach (var property in properties)
+            foreach (JProperty property in properties)
             {
                 switch (property.Value.Type)
                 {
