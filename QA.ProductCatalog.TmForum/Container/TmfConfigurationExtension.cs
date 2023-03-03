@@ -3,6 +3,7 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using QA.Core.DPC.Loader;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
 using QA.ProductCatalog.TmForum.Providers;
@@ -32,13 +33,13 @@ namespace QA.ProductCatalog.TmForum.Container
                 {
                     var accessor = container.Resolve<IHttpContextAccessor>();
 
-                    if (accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.QueryResolverContextItemName) == true)
+                    if (accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.TmfItemIdentifier) == true)
                     {
-                        return container.Resolve<FakeProductAddressProvider>();
+                        return container.Resolve<DefaultProductAddressProvider>();
                     }
                 }
 
-                return container.Resolve<DefaultProductAddressProvider>();
+                return container.Resolve<FakeProductAddressProvider>();
             });
 
             Container.RegisterFactory<JsonProductServiceSettings>(
@@ -55,16 +56,23 @@ namespace QA.ProductCatalog.TmForum.Container
                             fieldsFilter = filters;
                         }
 
-                        return new JsonProductServiceSettings
+                        JsonProductServiceSettings jsonSettings = new()
                         {
                             Fields = fieldsFilter,
-                            WrapperName = string.Empty,
-                            SerializerSettings = new JsonSerializerSettings
+                            SerializerSettings = new()
                             {
                                 ContractResolver = new CamelCasePropertyNamesContractResolver(),
                                 Formatting = Formatting.Indented
                             }
                         };
+
+                        if (accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.TmfItemIdentifier) == true
+                            || accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.QueryResolverContextItemName) == true)
+                        {
+                            jsonSettings.WrapperName = string.Empty;
+                        }
+
+                        return jsonSettings;
                     },
                     defaultFactory: (_) => new JsonProductServiceSettings()));
 
@@ -77,14 +85,11 @@ namespace QA.ProductCatalog.TmForum.Container
         {
             return (container) =>
             {
-                if (container.IsRegistered<IHttpContextAccessor>())
-                {
-                    var accessor = container.Resolve<IHttpContextAccessor>();
+                ISettingsService settings = container.Resolve<ISettingsService>();
 
-                    if (accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.TmfItemIdentifier) == true)
-                    {
-                        return tmfInstanceFactory(container);
-                    }
+                if (bool.TryParse(settings.GetSetting(SettingsTitles.TMF_ENABLED), out bool tmfEnabled) && tmfEnabled)
+                {
+                    return tmfInstanceFactory(container);
                 }
 
                 return defaultFactory(container);
