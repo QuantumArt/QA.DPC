@@ -19,7 +19,17 @@ namespace QA.ProductCatalog.TmForum.Container
         {
             Container.RegisterFactory<IJsonProductService>(
                 CreateTmfAwareFactory(
-                    tmfInstanceFactory: (container) => container.Resolve<TmfProductService>(),
+                    tmfInstanceFactory: (container) =>
+                    {
+                        IHttpContextAccessor accessor = container.Resolve<IHttpContextAccessor>();
+                    
+                        if (accessor.HttpContext?.Items.ContainsKey(InternalTmfSettings.TmfItemIdentifier) == true)
+                        {
+                            return container.Resolve<TmfProductService>();
+                        }
+                    
+                        return container.Resolve<ExtendedTmfProductService>();
+                    },
                     defaultFactory: (container) => container.Resolve<JsonProductService>()));
 
             Container.RegisterFactory<IProductDeserializer>(

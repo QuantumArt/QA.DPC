@@ -17,5 +17,6 @@
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.Front\QA.Core.DPC.Front.csproj" />
     <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.TmForum\QA.ProductCatalog.TmForum.csproj" />
   </ItemGroup>
 </Project>
