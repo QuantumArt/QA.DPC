@@ -9,9 +9,12 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.TmForum.Factories;
 using QA.ProductCatalog.TmForum.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
+using QA.ProductCatalog.TmForum.Providers;
 using QA.ProductCatalog.TmForum.Services;
 
 namespace QA.ProductCatalog.TmForum.Extensions
@@ -79,6 +82,32 @@ namespace QA.ProductCatalog.TmForum.Extensions
                 
             // Replace DPC Front factory with Tmf specific one
             services.Replace(ServiceDescriptor.Singleton<IProductSerializerFactory, TmfProductSerializerFactory>());
+
+            return services;
+        }
+        
+        public static IServiceCollection ResolveTmForumRegistrationForHighloadApi(this IServiceCollection services, IConfiguration configuration)
+        {
+            TmfSettings settings = GetTmForumSettings(configuration);
+
+            if (!settings.IsEnabled)
+            {
+                RemoveTmForumFromDI(services);
+
+                return services;
+            }
+
+            services.Replace(ServiceDescriptor.Scoped<IProductInfoProvider>(provider =>
+            {
+                ISettingsService siteSettings = provider.GetRequiredService<ISettingsService>();
+
+                if (bool.TryParse(siteSettings.GetSetting(SettingsTitles.TMF_ENABLED), out bool tmfEnabled) && tmfEnabled)
+                {
+                    return new TmfProductInfoProvider();
+                }
+
+                return new ProductInfoProvider();
+            }));
 
             return services;
         }

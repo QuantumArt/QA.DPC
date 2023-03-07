@@ -14,7 +14,10 @@ using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.DI;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
+using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
+using QA.ProductCatalog.TmForum.Extensions;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {
@@ -49,7 +52,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddSingleton(opts4);
             
             services.AddSingleton(new PolicyRegistry());
-            
+            services.AddScoped<IProductInfoProvider, ProductInfoProvider>();
+
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             
             // Add framework services.
@@ -64,6 +68,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
             services.AddMemoryCache();
             services.AddHttpClient();
+            
+            services.ResolveTmForumRegistrationForHighloadApi(Configuration);
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration});

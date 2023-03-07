@@ -4,13 +4,14 @@ using QA.ProductCatalog.HighloadFront.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ElasticProductStore_6 : ElasticProductStore
     {
-        public ElasticProductStore_6(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory)
-            : base(config, options, loggerFactory)
+        public ElasticProductStore_6(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory, IProductInfoProvider productInfoProvider)
+            : base(config, options, loggerFactory, productInfoProvider)
         {
 
         }

@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Elastic\QA.ProductCatalog.HighloadFront.Elastic.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront\QA.ProductCatalog.HighloadFront.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.TmForum\QA.ProductCatalog.TmForum.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Caching" />

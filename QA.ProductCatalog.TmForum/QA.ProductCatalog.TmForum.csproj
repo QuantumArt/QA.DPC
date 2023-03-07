@@ -13,6 +13,8 @@
     <ProjectReference Include="..\QA.Core.DPC.Front\QA.Core.DPC.Front.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Filters\QA.ProductCatalog.Filters.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Elastic\QA.ProductCatalog.HighloadFront.Elastic.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.HighloadFront\QA.ProductCatalog.HighloadFront.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
 
