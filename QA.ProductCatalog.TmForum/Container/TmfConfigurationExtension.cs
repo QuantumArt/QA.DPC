@@ -57,13 +57,18 @@ namespace QA.ProductCatalog.TmForum.Container
                     tmfInstanceFactory: (container) =>
                     {
                         var accessor = container.Resolve<IHttpContextAccessor>();
-                        var hasFieldsFilter = accessor.HttpContext.Request.Query.TryGetValue("fields", out StringValues fields);
                         ICollection<string> fieldsFilter = Array.Empty<string>();
-                        if (hasFieldsFilter)
+
+                        if (accessor.HttpContext is not null)
                         {
-                            var filters = new HashSet<string>(fields.ToArray(), StringComparer.OrdinalIgnoreCase);
-                            filters.UnionWith(InternalTmfSettings.DefaultTmfFieldsToSelect);
-                            fieldsFilter = filters;
+                            bool hasFieldsFilter = accessor.HttpContext.Request.Query.TryGetValue("fields", out StringValues fields);
+                            
+                            if (hasFieldsFilter)
+                            {
+                                var filters = new HashSet<string>(fields.ToArray(), StringComparer.OrdinalIgnoreCase);
+                                filters.UnionWith(InternalTmfSettings.DefaultTmfFieldsToSelect);
+                                fieldsFilter = filters;
+                            }
                         }
 
                         JsonProductServiceSettings jsonSettings = new()
