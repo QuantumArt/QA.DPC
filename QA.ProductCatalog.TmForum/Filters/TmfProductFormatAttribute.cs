@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using QA.Core.Models;
 using QA.ProductCatalog.ContentProviders;
@@ -35,7 +36,11 @@ namespace QA.ProductCatalog.TmForum.Filters
                 }
                 else
                 {
-                    context.Result = new NotFoundResult();
+                    context.Result =
+                        new ObjectResult("TmForum support disabled for your customer code. Enable it or use ProductCatalog API.")
+                        {
+                            StatusCode = StatusCodes.Status404NotFound
+                        };
                 }
             }
         }
