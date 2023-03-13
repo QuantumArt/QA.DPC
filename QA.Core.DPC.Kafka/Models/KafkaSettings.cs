@@ -1,4 +1,6 @@
-﻿namespace QA.Core.DPC.Kafka.Models
+﻿using Confluent.Kafka;
+
+namespace QA.Core.DPC.Kafka.Models
 {
     public class KafkaSettings
     {
@@ -8,7 +10,7 @@
         /// 0 - None
         /// 1 - leader
         /// </summary>
-        public int Acks { get; set; } = -1;
+        public Acks Acks { get; set; } = Acks.All;
         /// <summary>
         /// IP:Port without schema
         /// </summary>
@@ -21,7 +23,7 @@
         /// 2 - SaslPlaintext
         /// 3 - SaslSsl
         /// </summary>
-        public int SecurityProtocol { get; set; } = 0;
+        public SecurityProtocol SecurityProtocol { get; set; } = SecurityProtocol.Plaintext;
         public string SaslUsername { get; set; } = string.Empty;
         public string SaslPassword { get; set; } = string.Empty;
     }

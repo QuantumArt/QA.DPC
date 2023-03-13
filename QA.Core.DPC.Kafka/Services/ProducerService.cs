@@ -18,11 +18,11 @@ namespace QA.Core.DPC.Kafka.Services
         {
             ProducerConfig config = new()
             {
-                Acks = (Acks)settings.Value.Acks,
+                Acks = settings.Value.Acks,
                 BootstrapServers = settings.Value.BootstrapServers,
                 MessageSendMaxRetries = settings.Value.MessageSendMaxRetries,
                 RetryBackoffMs = settings.Value.RetryBackoffMs,
-                SecurityProtocol = (SecurityProtocol)settings.Value.SecurityProtocol
+                SecurityProtocol = settings.Value.SecurityProtocol
             };
 
             if (config.SecurityProtocol is SecurityProtocol.SaslPlaintext or SecurityProtocol.SaslSsl)
