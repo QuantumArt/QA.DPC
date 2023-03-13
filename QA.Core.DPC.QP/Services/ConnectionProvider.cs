@@ -14,30 +14,30 @@ namespace QA.Core.DPC.QP.Services
 
         private readonly ICustomerProvider _customerProvider;
         private readonly IIdentityProvider _identityProvider;        
-        private Dictionary<Service, Customer> _defaultConnections;
-        private readonly Service _defaultService;
+        private Dictionary<Models.Service, Customer> _defaultConnections;
+        private readonly Models.Service _defaultService;
         public bool QPMode { get; private set; }
         public bool UsePostgres { get; }
         public bool UseQPMonitoring { get; private set; }
         
         public TimeSpan TransactionTimeout { get; private set; }
 
-        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
+        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Models.Service defaultService)
         {
-            _defaultConnections = new Dictionary<Service, Customer>();
+            _defaultConnections = new Dictionary<Models.Service, Customer>();
             _customerProvider = customerProvider;
             _identityProvider = identityProvider;
             _defaultService = defaultService;
 
-            QPMode = GetQPMode() || defaultService == Service.HighloadAPI;
+            QPMode = GetQPMode() || defaultService == Models.Service.HighloadAPI;
             UseQPMonitoring = GetUseQPMonitoring();
             TransactionTimeout = GetTransactionTimeout();
 
             if (!QPMode)
             {
-                AddConnection(Service.Admin, AdminKey);
-                AddConnection(Service.Notification, NotificationKey);
-                AddConnection(Service.Actions, ActionsKey);
+                AddConnection(Models.Service.Admin, AdminKey);
+                AddConnection(Models.Service.Notification, NotificationKey);
+                AddConnection(Models.Service.Actions, ActionsKey);
             }
         }
 
@@ -66,7 +66,7 @@ namespace QA.Core.DPC.QP.Services
             return timeout;
         }
 
-        private void AddConnection(Service service, string key)
+        private void AddConnection(Models.Service service, string key)
         {
             var connection = ConfigurationManager.ConnectionStrings[key];
 
@@ -80,12 +80,12 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public Customer GetCustomer(Service service)
+        public Customer GetCustomer(Models.Service service)
         {
             return QPMode ? _customerProvider.GetCustomer(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
         }
 
-        public bool HasConnection(Service service)
+        public bool HasConnection(Models.Service service)
         {
             return _defaultConnections.ContainsKey(service);
         }
@@ -94,7 +94,7 @@ namespace QA.Core.DPC.QP.Services
         {
             return GetConnection(_defaultService);
         }
-        public string GetConnection(Service service)
+        public string GetConnection(Models.Service service)
         {
             return QPMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service].ConnectionString;
         }
@@ -104,7 +104,7 @@ namespace QA.Core.DPC.QP.Services
             return GetEFConnection(_defaultService);
         }
 
-        public string GetEFConnection(Service service)
+        public string GetEFConnection(Models.Service service)
         {
             var connection = GetConnection(service);
 

@@ -1,4 +1,5 @@
-﻿using QA.Core.Cache;
+﻿using Microsoft.AspNetCore.Http;
+using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
@@ -6,14 +7,13 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
-using QA.DPC.Core.Helpers;
-using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;
@@ -50,36 +50,33 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IFreezeService, FreezeService>();
             Container.RegisterType<IValidationService, ValidationService>();
 
-            Container.RegisterFactory(typeof(IFieldService), "FieldServiceAdapterAlwaysAdmin", 
+            Container.RegisterFactory(typeof(IFieldService), "FieldServiceAdapterAlwaysAdmin",
                 c => new FieldServiceAdapter(
                     new FieldService(c.Resolve<IConnectionProvider>().GetConnection(), 1),
                     c.Resolve<IConnectionProvider>()
                 ));
-            
+
             Container.RegisterFactory(typeof(IContentService), "ContentServiceAdapterAlwaysAdmin",
                 c => new ContentServiceAdapter(
-                    new ContentService(c.Resolve<IConnectionProvider>().GetConnection(), 1), 
+                    new ContentService(c.Resolve<IConnectionProvider>().GetConnection(), 1),
                     c.Resolve<IConnectionProvider>()
                     ));
-            
 
             Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));
             Container.RegisterFactory<Func<ITransaction>>(c => new Func<ITransaction>(() => c.Resolve<ITransaction>()));
 
             Container.RegisterType<IJsonProductService, JsonProductService>();
-
             Container.RegisterType<IContextStorage, QpCachedContextStorage>();
-
             Container.RegisterType<IProductDeserializer, ProductDeserializer>();
 
             //Фейк юзер нужен для работы ремоут валидации. Также нужны варианты сервисов с фейк-юзером
             Container.RegisterType<IUserProvider, AlwaysAdminUserProvider>(AlwaysAdminUserProviderName);
             Container.RegisterFactory<IServiceFactory>(
-                "ServiceFactoryFakeUser", 
+                "ServiceFactoryFakeUser",
                 c => new ServiceFactory(c.Resolve<IConnectionProvider>(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))
             );
             Container.RegisterFactory<ArticleService>(
-                "ArticleServiceFakeUser", 
+                "ArticleServiceFakeUser",
                 c => c.Resolve<IServiceFactory>("ServiceFactoryFakeUser").GetArticleService()
              );
             Container.RegisterFactory<IArticleService>("ArticleServiceAdapterFakeUser",
@@ -91,7 +88,7 @@ namespace QA.Core.DPC.Loader.Container
                             c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>()));
 
             Container.RegisterFactory<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter",
-                
+
                     c =>
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
                             c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>()));
@@ -147,7 +144,7 @@ namespace QA.Core.DPC.Loader.Container
 
                 var logger = container.Resolve<ILogger>();
                 var cacheProvider = new VersionedCacheProviderBase(logger);
-                
+
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var connectionProvider = new ExplicitConnectionProvider(customer);
                 var tracker = new StructureCacheTracker(customer.ConnectionString, customer.DatabaseType);

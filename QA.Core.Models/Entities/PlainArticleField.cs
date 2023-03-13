@@ -14,6 +14,8 @@ namespace QA.Core.Models.Entities
 
         public PlainFieldType PlainFieldType { get; set; }
 
+        public string DefaultValue { get; set; }
+
         public override string ToString()
         {
             return Value;
