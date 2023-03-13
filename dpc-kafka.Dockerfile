@@ -5,12 +5,12 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["nuget.config", "."]
-COPY ["QA.Core.DPC.Kafka.API/QA.Core.DPC.Kafka.API.csproj", "QA.Core.DPC.Kafka.API/"]
+ADD projectfiles.tar .
 RUN dotnet restore "QA.Core.DPC.Kafka.API/QA.Core.DPC.Kafka.API.csproj"
 COPY . .
 
 FROM build AS publish
-RUN dotnet publish "QA.Core.DPC.Kafka.API/QA.Core.DPC.Kafka.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "QA.Core.DPC.Kafka.API/QA.Core.DPC.Kafka.API.csproj" -c Release -o /app/publish --no-restore
 
 FROM base AS final
 WORKDIR /app
