@@ -10,7 +10,7 @@ namespace QA.Core.DPC.Loader
         private static readonly JsonSerializerSettings _defaultSerializerSettings
             = new() { Formatting = Formatting.Indented };
 
-        public string WrapperName { get; init; } = DefaultWrapperName;
+        public string WrapperName { get; set; } = DefaultWrapperName;
 
         public JsonSerializerSettings SerializerSettings { get; init; } = _defaultSerializerSettings;
 

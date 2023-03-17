@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -14,11 +14,13 @@ namespace QA.Core.DPC.Front
     public class DpcProductService : QAServiceBase, IDpcProductService, IDpcService
     {
         private readonly DpcModelDataContext _context;
+        private readonly IProductSerializerFactory _productSerializerFactory;
         
-        public DpcProductService(ILogger logger, DpcModelDataContext context)
+        public DpcProductService(ILogger logger, DpcModelDataContext context, IProductSerializerFactory productSerializerFactory)
         {
             Logger = logger;
             _context = context;
+            _productSerializerFactory = productSerializerFactory;
         }
 
         public ServiceResult<bool> HasProductChanged(ProductLocator locator, int id, string data)
@@ -40,7 +42,9 @@ namespace QA.Core.DPC.Front
         {
             try
             {
-                return locator.GetSerialiser().Deserialize(data);
+                IProductSerializer serializer = _productSerializerFactory.Resolve(locator.Format);
+
+                return serializer.Deserialize(data);
             }
             catch (Exception ex)
             {

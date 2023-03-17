@@ -19,6 +19,8 @@ namespace QA.ProductCatalog.TmForum.Models
         internal const string RegionTagsContextItemName = "includeRegionTags";
         internal const string QueryResolverContextItemName = "TmfQueryResolver";
         internal const string FakeDpcApiAddress = "https://dpc-api";
+        internal const string InternalIdFieldName = "dpcProductId";
+        internal const string InternalTypeFieldName = "dpcProductType";
 
         internal static readonly string[] DefaultTmfFieldsToSelect = new string[1] { "id" };
         internal static readonly PathString ApiPathPrefix = "/" + ApiPrefix.TrimStart('/');
