@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -45,11 +46,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             );
         }
 
-        public override async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public override async Task<string> SearchAsync(ProductsOptions options, string language, string state, CancellationToken cancellationToken = default)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
-            return await client.SearchAsync(string.Empty, q);
+            return await client.SearchAsync(string.Empty, q, cancellationToken);
         }
 
         public override async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)

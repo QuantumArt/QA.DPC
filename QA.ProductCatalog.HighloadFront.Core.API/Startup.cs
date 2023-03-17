@@ -1,8 +1,12 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -51,12 +55,39 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddSingleton(new PolicyRegistry());
             
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            
+
             // Add framework services.
             services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
                 options.Filters.Add(typeof(ProcessCustomerCodeAttribute));
+            }).ConfigureApplicationPartManager(apm =>
+            {
+                var extraLibraries = Configuration.GetSection("ExtraLibraries").Get<string[]>();
+                if (extraLibraries == null)
+                {
+                    return;
+                }
+
+                foreach (var library in extraLibraries)
+                {
+                    var assembly = Assembly.LoadFile(Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory ?? string.Empty, library + ".dll"
+                    ));
+                    apm.ApplicationParts.Add(new AssemblyPart(assembly));
+
+                    var serviceTypesToRegister = assembly.GetTypes()
+                        .Where(t =>
+                            t.Namespace != null
+                            && !t.Namespace.Contains(".Models")
+                            && (t.Name.EndsWith("Service") || t.Name.EndsWith("Processor")))
+                        .ToArray();
+
+                    foreach (var serviceType in serviceTypesToRegister)
+                    {
+                        services.AddScoped(serviceType);
+                    }
+                }
             }).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
