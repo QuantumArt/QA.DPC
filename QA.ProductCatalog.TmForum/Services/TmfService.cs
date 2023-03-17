@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Kafka.Interfaces;
+using QA.Core.DPC.Kafka.Models;
 using QA.Core.DPC.Loader;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -28,7 +32,6 @@ namespace QA.ProductCatalog.TmForum.Services
         private readonly IJsonProductService _jsonProductService;
         private readonly JsonMergeSettings _jsonMergeSettings;
         private readonly ITmfValidatonService _tmfValidationService;
-
         public string TmfIdFieldName { get; }
 
         public TmfService(Func<IProductAPIService> databaseProductServiceFactory,
@@ -102,12 +105,12 @@ namespace QA.ProductCatalog.TmForum.Services
                 return TmfProcessResult.Ok;
             }
 
-            if (!TryRetrieveParamaterFromQuery(query, InternalTmfSettings.LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
+            if (!TryRetrieveParameterFromQuery(query, InternalTmfSettings.LimitQueryParameterName, _tmfSettings.DefaultLimit, out int limit))
             {
                 return TmfProcessResult.BadRequest;
             }
 
-            if (!TryRetrieveParamaterFromQuery(query, InternalTmfSettings.OffsetQueryParameterName, 0, out int offset))
+            if (!TryRetrieveParameterFromQuery(query, InternalTmfSettings.OffsetQueryParameterName, 0, out int offset))
             {
                 return TmfProcessResult.BadRequest;
             }
@@ -118,11 +121,14 @@ namespace QA.ProductCatalog.TmForum.Services
             };
 
             IEnumerable<int> productIdsToProcess = productIds.Skip(offset).Take(limit);
-            bool hasLastUpdate = TryRetrieveParamaterFromQuery(query, InternalTmfSettings.LastUpdateParameterName, null, out DateTime? lastUpdate);
+            bool hasLastUpdate = TryRetrieveParameterFromQuery(query,
+                InternalTmfSettings.LastUpdateParameterName,
+                null,
+                out DateTime? lastUpdate);
 
             foreach (int productId in productIdsToProcess)
             {
-                var product = dbProductService.GetProduct(slug, version, productId, _tmfSettings.IsLive);
+                Article product = dbProductService.GetProduct(slug, version, productId, _tmfSettings.IsLive);
 
                 if (hasLastUpdate && lastUpdate != null && product.Modified != lastUpdate)
                 {
@@ -144,7 +150,10 @@ namespace QA.ProductCatalog.TmForum.Services
                 return getProductResult;
             }
 
-            _databaseProductServiceFactory().DeleteProduct(slug, version, product.Id);
+            IProductAPIService productService = _databaseProductServiceFactory();
+
+            productService.DeleteProduct(slug, version, product.Id);
+            productService.CustomAction("DeleteAction", product.Id, product.ContentId);
 
             _logger.LogInformation("Product with id {id} was deleted.", product.Id);
 
@@ -162,7 +171,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return getProductResult;
             }
 
-            var isUpdatable = true;
+            bool isUpdatable = true;
             _tmfValidationService.CheckArticleState(originalProduct, ref isUpdatable);
 
             if (!isUpdatable)
@@ -188,22 +197,27 @@ namespace QA.ProductCatalog.TmForum.Services
             ServiceDefinition definition = _contentDefinitionService.GetServiceDefinition(slug, version, true);
             Article mergedProduct = _jsonProductService.DeserializeProduct(original.ToString(), definition.Content);
 
-            resultProduct.ValidationErrors = ValidateRecievedProduct(mergedProduct);
+            resultProduct.ValidationErrors = ValidateReceivedProduct(mergedProduct);
 
             if (resultProduct.ValidationErrors.Length > 0)
             {
                 return TmfProcessResult.BadRequest;
             }
-            
-            _databaseProductServiceFactory().UpdateProduct(slug, version, mergedProduct, _tmfSettings.IsLive);
+
+            IProductAPIService productService = _databaseProductServiceFactory();
+            productService.UpdateProduct(slug, version, mergedProduct, _tmfSettings.IsLive);
 
             TmfProcessResult updateArticleResult = GetProductById(slug, version, tmfProductId, out Article updatedArticle);
-            
-            if (getProductResult == TmfProcessResult.Ok)
+
+            if (updateArticleResult != TmfProcessResult.Ok)
             {
-                resultProduct.Article = updatedArticle;
-                _logger.LogInformation("Product with id {id} updated successfully.", resultProduct.Article.Id);
+                return updateArticleResult;
             }
+
+            resultProduct.Article = updatedArticle;
+            _logger.LogInformation("Product with id {id} updated successfully.", resultProduct.Article.Id);
+                
+            productService.CustomAction("PublishAction", resultProduct.Article.Id, resultProduct.Article.ContentId);
 
             return updateArticleResult;
         }
@@ -212,7 +226,7 @@ namespace QA.ProductCatalog.TmForum.Services
         {
             resultProduct = new()
             {
-                ValidationErrors = ValidateRecievedProduct(product)
+                ValidationErrors = ValidateReceivedProduct(product)
             };
 
             if (resultProduct.ValidationErrors.Length > 0)
@@ -231,6 +245,8 @@ namespace QA.ProductCatalog.TmForum.Services
 
             resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value, _tmfSettings.IsLive);
             _logger.LogInformation("Product with id {id} created.", resultProduct.Article.Id);
+
+            dbProductService.CustomAction("PublishAction", resultProduct.Article.Id, resultProduct.Article.ContentId);
 
             return TmfProcessResult.Created;
         }
@@ -298,10 +314,13 @@ namespace QA.ProductCatalog.TmForum.Services
             return string.Join(InternalTmfSettings.EntitySeparator, fieldNames);
         }
 
-        private bool TryRetrieveParamaterFromQuery<T>(IQueryCollection query, string parameterName, T defaultValue, out T retrievedValue)
+        private bool TryRetrieveParameterFromQuery<T>(IQueryCollection query,
+            string parameterName,
+            T defaultValue,
+            out T retrievedValue)
         {
             retrievedValue = defaultValue;
-            if (!query.TryGetValue(parameterName, out var valueString))
+            if (!query.TryGetValue(parameterName, out StringValues valueString))
             {
                 _logger.LogTrace("Unable to retrieve parameter with name {name} from query. Using default value {default}.", 
                     parameterName, 
@@ -310,7 +329,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 return true;
             }
 
-            string parameterValue = valueString.FirstOrDefault();
+            string parameterValue = valueString.FirstOrDefault(string.Empty);
             parameterValue = parameterValue.Replace("\"", string.Empty);
 
             if (string.IsNullOrWhiteSpace(parameterValue))
@@ -330,16 +349,15 @@ namespace QA.ProductCatalog.TmForum.Services
             try
             {
                 TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-                
-                if (converter is not null)
-                {
-                    result = (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, parameter);
-                    parseResult = true;
-                }
+
+                result = (T)converter.ConvertFromString(null, CultureInfo.InvariantCulture, parameter);
+                parseResult = true;
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Unable to convert {value} to type {type}. Filter skipped.", parameter, typeof(T).FullName);
+                _logger.LogWarning(ex, "Unable to convert {value} to type {type}. Filter skipped.",
+                    parameter,
+                    typeof(T).FullName);
             }
 
             return parseResult;
@@ -369,9 +387,9 @@ namespace QA.ProductCatalog.TmForum.Services
 
             List<Article> articles = new(foundArticleIds.Length);
 
-            foreach (int artricleId in foundArticleIds)
+            foreach (int articleId in foundArticleIds)
             {
-                Article foundProduct = dbProductService.GetProduct(slug, version, artricleId, _tmfSettings.IsLive);
+                Article foundProduct = dbProductService.GetProduct(slug, version, articleId, _tmfSettings.IsLive);
                 articles.Add(foundProduct);
             }
 
@@ -394,7 +412,11 @@ namespace QA.ProductCatalog.TmForum.Services
             return TmfProcessResult.Ok;
         }
 
-        private TmfProcessResult GetSpecifiedProductVersionById(string slug, string version, string id, string productVersion, out Article product)
+        private TmfProcessResult GetSpecifiedProductVersionById(string slug,
+            string version,
+            string id,
+            string productVersion,
+            out Article product)
         {
             product = null;
             IProductAPIService dbProductService = _databaseProductServiceFactory();
@@ -420,7 +442,10 @@ namespace QA.ProductCatalog.TmForum.Services
                     product = dbProductService.GetProduct(slug, version, foundArticleIds.Single(), _tmfSettings.IsLive);
                     return TmfProcessResult.Ok;
                 default:
-                    _logger.LogWarning("Found {count} articles by id {id} and version {version}. That's unexpected.", foundArticleIds.Length, id, productVersion);
+                    _logger.LogWarning("Found {count} articles by id {id} and version {version}. That's unexpected.",
+                        foundArticleIds.Length,
+                        id,
+                        productVersion);
                     return TmfProcessResult.BadRequest;
             }
         }
@@ -451,7 +476,7 @@ namespace QA.ProductCatalog.TmForum.Services
 
             Match matchResult = InternalTmfSettings.IdRegex.Match(productId);
 
-            if (matchResult == null || !matchResult.Success)
+            if (!matchResult.Success)
             {
                 _logger.LogTrace("Id value {id} without version. Proceeding with id as is.", productId);
                 id = productId;
@@ -485,7 +510,7 @@ namespace QA.ProductCatalog.TmForum.Services
             return TmfProcessResult.Ok;
         }
 
-        private string[] ValidateRecievedProduct(Article product)
+        private string[] ValidateReceivedProduct(Article product)
         {
             string[] result = Array.Empty<string>();
             BLL.RulesException errors = new();
