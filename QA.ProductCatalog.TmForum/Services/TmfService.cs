@@ -1,15 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Confluent.Kafka;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
-using QA.Core.DPC.Kafka.Interfaces;
-using QA.Core.DPC.Kafka.Models;
 using QA.Core.DPC.Loader;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -32,6 +28,7 @@ namespace QA.ProductCatalog.TmForum.Services
         private readonly IJsonProductService _jsonProductService;
         private readonly JsonMergeSettings _jsonMergeSettings;
         private readonly ITmfValidatonService _tmfValidationService;
+        private readonly IHttpContextAccessor _contextAccessor;
         public string TmfIdFieldName { get; }
 
         public TmfService(Func<IProductAPIService> databaseProductServiceFactory,
@@ -41,7 +38,8 @@ namespace QA.ProductCatalog.TmForum.Services
             ILogger<TmfService> logger,
             IArticleFormatter formatter,
             IJsonProductService jsonProductService,
-            ITmfValidatonService tmfValidationService)
+            ITmfValidatonService tmfValidationService,
+            IHttpContextAccessor contextAccessor)
         {
             _databaseProductServiceFactory = databaseProductServiceFactory ?? throw new ArgumentNullException(nameof(databaseProductServiceFactory));
             _contentDefinitionService = contentDefinitionService;
@@ -57,6 +55,7 @@ namespace QA.ProductCatalog.TmForum.Services
                 PropertyNameComparison = StringComparison.OrdinalIgnoreCase
             };
             _tmfValidationService = tmfValidationService;
+            _contextAccessor = contextAccessor;
         }
 
         public TmfProcessResult GetProductById(string slug, string version, string id, out Article product)
@@ -153,7 +152,7 @@ namespace QA.ProductCatalog.TmForum.Services
             IProductAPIService productService = _databaseProductServiceFactory();
 
             productService.DeleteProduct(slug, version, product.Id);
-            productService.CustomAction("DeleteAction", product.Id, product.ContentId);
+            ExecuteCustomAction(productService, "DeleteAction", product.Id, product.ContentId);
 
             _logger.LogInformation("Product with id {id} was deleted.", product.Id);
 
@@ -217,7 +216,10 @@ namespace QA.ProductCatalog.TmForum.Services
             resultProduct.Article = updatedArticle;
             _logger.LogInformation("Product with id {id} updated successfully.", resultProduct.Article.Id);
                 
-            productService.CustomAction("PublishAction", resultProduct.Article.Id, resultProduct.Article.ContentId);
+            ExecuteCustomAction(productService,
+                "PublishAction",
+                resultProduct.Article.Id,
+                resultProduct.Article.ContentId);
 
             return updateArticleResult;
         }
@@ -245,10 +247,20 @@ namespace QA.ProductCatalog.TmForum.Services
 
             resultProduct.Article = dbProductService.GetProduct(slug, version, createdProductId.Value, _tmfSettings.IsLive);
             _logger.LogInformation("Product with id {id} created.", resultProduct.Article.Id);
-
-            dbProductService.CustomAction("PublishAction", resultProduct.Article.Id, resultProduct.Article.ContentId);
+            
+            ExecuteCustomAction(dbProductService,
+                "PublishAction",
+                resultProduct.Article.Id,
+                resultProduct.Article.ContentId);
 
             return TmfProcessResult.Created;
+        }
+
+        private void ExecuteCustomAction(IProductAPIService service, string actionName, int productId, int contentId)
+        {
+            _contextAccessor.HttpContext.Items.Remove(InternalTmfSettings.TmfItemIdentifier);
+            service.CustomAction(actionName, productId, contentId);
+            _contextAccessor.HttpContext.Items[InternalTmfSettings.TmfItemIdentifier] = true;
         }
 
         private JObject ConvertToFilter(IQueryCollection searchParameters, ServiceDefinition definition)

@@ -16,6 +16,7 @@ using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Integration;
+using QA.ProductCatalog.TmForum.Extensions;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 
@@ -69,8 +70,8 @@ namespace QA.Core.ProductCatalog.ActionsService
             {
                 options.EnableEndpointRouting = false;
             });;
-            
 
+            services.ResolveTmForumRegistration(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

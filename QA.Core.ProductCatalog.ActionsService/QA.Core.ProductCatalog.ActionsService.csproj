@@ -24,6 +24,7 @@
     <ProjectReference Include="..\QA.ProductCatalog.Integration\QA.ProductCatalog.Integration.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.TmForum\QA.ProductCatalog.TmForum.csproj" />
   </ItemGroup>
 
   <ItemGroup>

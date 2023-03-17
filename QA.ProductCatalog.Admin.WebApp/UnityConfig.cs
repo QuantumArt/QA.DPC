@@ -1,8 +1,6 @@
-﻿﻿using System;
+﻿using System;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.DPC.API.Update;
 using QA.Core.DPC.Formatters.Configuration;
@@ -20,9 +18,7 @@ using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.Core.Models.UI;
 using QA.Core.ProductCatalog.Actions.Container;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.DPC.Core.Helpers;
-using QA.ProductCatalog.Admin.WebApp.App_Core;
 using QA.ProductCatalog.Admin.WebApp.Core;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
@@ -36,16 +32,16 @@ using Unity.Injection;
 using Unity.Lifetime;
 using ValidationConfiguration = QA.ProductCatalog.Validation.Configuration.ValidationConfiguration;
 using System.Reflection;
- using QA.Core.Cache;
- using QA.Core.ProductCatalog.ActionsRunner;
- using Quantumart.QP8.Configuration;
- using Quantumart.QP8.Constants;
+using QA.Core.Cache;
+using QA.Core.ProductCatalog.ActionsRunner;
+using Quantumart.QP8.Configuration;
+using Quantumart.QP8.Constants;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using ILogger = QA.Core.Logger.ILogger;
-using QA.ProductCatalog.TmForum.Container;
+using QA.ProductCatalog.TmForum.Extensions;
 
-namespace QA.ProductCatalog.Admin.WebApp
+ namespace QA.ProductCatalog.Admin.WebApp
 {
     public static class UnityConfig
     {
@@ -78,7 +74,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             container.AddNewExtension<ActionContainerConfiguration>();
 			container.AddNewExtension<TaskContainerConfiguration>();
 			container.AddNewExtension<ValidationConfiguration>();
-            container.AddNewExtension<TmfConfigurationExtension>();
+            container.RegisterTmForum();
 			
             container.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             container.RegisterType<ICustomerProvider, CustomerProvider>();

@@ -19,6 +19,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private const string BaseSeparator = ",";
         private const string ProductIdField = "ProductId";
 
+        private readonly IProductInfoProvider _productInfoProvider;
+
         protected ElasticConfiguration Configuration { get; }
 
         protected SonicElasticStoreOptions Options { get; }
@@ -32,29 +34,24 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         }
         
-        public ElasticProductStore(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory)
+        public ElasticProductStore(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory,
+            IProductInfoProvider productInfoProvider)
         {
             Configuration = config;
             Options = options;
+            _productInfoProvider = productInfoProvider;
             Logger = loggerFactory.CreateLogger(GetType());
             DateTimeConverter = new IsoDateTimeConverter() { DateTimeFormat = Options.DateFormat };
         }
 
         public string GetId(JObject product)
         {
-
-            if (product == null) throw new ArgumentNullException(nameof(product));
-
-            return product[Options.IdPath]?.ToString();
+            return _productInfoProvider.GetId(product, Options.IdPath);
         }
 
         public virtual string GetType(JObject product)
         {
-            if (product == null) throw new ArgumentNullException(nameof(product));
-
-            string type = product[Options.TypePath]?.ToString();
-            if (type == null) return Options.DefaultType;
-            return type;
+            return _productInfoProvider.GetType(product, Options.TypePath, Options.DefaultType);
         }
 
         protected virtual string BuildRowMetadata(string name, string type, string id)

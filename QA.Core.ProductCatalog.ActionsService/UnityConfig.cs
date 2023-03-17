@@ -17,6 +17,7 @@ using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Configuration;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.TmForum.Extensions;
 using Unity;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml;
@@ -71,6 +72,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             container.RegisterSingleton<ActionsService>();
 			container.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			container.AddNewExtension<FormattersContainerConfiguration>();
+            container.RegisterTmForum();
 
             var autoRegister = false;
             var watcherInterval = TimeSpan.FromMinutes(1);
