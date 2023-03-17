@@ -1,41 +1,29 @@
-﻿using QA.Core.DPC.Front;
+﻿using Microsoft.Extensions.DependencyInjection;
+using QA.Core.DPC.Front;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.TmForum.Factories;
 
 public class TmfProductSerializerFactory : IProductSerializerFactory
 {
-    private readonly IProductSerializer _jsonSerializer;
-    private readonly IProductSerializer _xmlSerializer;
-    private readonly IProductSerializer _tmfSerializer;
     private readonly ISettingsService _settingsService;
+    private readonly IServiceProvider _provider;
     
-    public TmfProductSerializerFactory(ISettingsService settingsService,
-        TmfProductSerializer tmfSerializer,
-        XmlProductSerializer xmlSerializer,
-        JsonProductSerializer jsonSerializer)
+    public TmfProductSerializerFactory(ISettingsService settingsService, IServiceProvider provider)
     {
         _settingsService = settingsService;
-        _tmfSerializer = tmfSerializer;
-        _xmlSerializer = xmlSerializer;
-        _jsonSerializer = jsonSerializer;
+        _provider = provider;
     }
 
     public IProductSerializer Resolve(string format)
     {
         bool tmfEnabledSettingExists = bool.TryParse(_settingsService.GetSetting(SettingsTitles.TMF_ENABLED), out bool tmfEnabled);
 
-        if (format != "json")
+        return format switch
         {
-            return _xmlSerializer;
-        }
-
-        if (tmfEnabledSettingExists && tmfEnabled)
-        {
-            return _tmfSerializer;
-        }
-
-        return _jsonSerializer;
-
+            "json" when tmfEnabledSettingExists && tmfEnabled => _provider.GetRequiredService<TmfProductSerializer>(),
+            "json" => _provider.GetRequiredService<JsonProductSerializer>(),
+            _ => _provider.GetRequiredService<XmlProductSerializer>()
+        };
     }
 }

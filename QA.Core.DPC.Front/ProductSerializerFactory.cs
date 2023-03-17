@@ -1,23 +1,23 @@
-﻿namespace QA.Core.DPC.Front;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace QA.Core.DPC.Front;
 
 public class ProductSerializerFactory : IProductSerializerFactory
 {
-    private readonly IProductSerializer _jsonProductSerializer;
-    private readonly IProductSerializer _xmlProductSerializer;
+    private readonly IServiceProvider _provider;
     
-    public ProductSerializerFactory(JsonProductSerializer jsonProductSerializer, XmlProductSerializer xmlProductSerializer)
+    public ProductSerializerFactory(IServiceProvider provider)
     {
-        _jsonProductSerializer = jsonProductSerializer;
-        _xmlProductSerializer = xmlProductSerializer;
+        _provider = provider;
     }
 
     public IProductSerializer Resolve(string format)
     {
-        if (format == "json")
+        return format switch
         {
-            return _jsonProductSerializer;
-        }
-
-        return _xmlProductSerializer;
+            "json" => _provider.GetRequiredService<JsonProductSerializer>(),
+            _ => _provider.GetRequiredService<XmlProductSerializer>()
+        };
     }
 }
