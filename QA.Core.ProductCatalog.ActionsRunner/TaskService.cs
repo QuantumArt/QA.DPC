@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Fluent;
-using QA.Core.DPC.QP.Models;
+using M = QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
@@ -19,7 +19,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
     public class TaskService : ITaskService
     {
         private readonly IConnectionProvider _provider;
-        private readonly Customer _customer;
+        private readonly M.Customer _customer;
         private readonly ResourceManager _taskRm;
         private readonly static ILogger Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
@@ -29,7 +29,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         public TaskService(IConnectionProvider provider)
         {
             _provider = provider;
-            _customer = _provider.GetCustomer(Service.Actions);
+            _customer = _provider.GetCustomer(M.Service.Actions);
             _taskRm = new ResourceManager(typeof(TaskStrings));
         }
 
@@ -251,12 +251,13 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             using (var context = TaskRunnerEntities.Get(_customer))
             {
+                var intState = (int?) state;
                 var result =
                     context.Tasks.Include("TaskState")
                         .OrderByDescending(x => x.ID)
                         .FirstOrDefault(
                             x => (x.UserID == userId || !userId.HasValue)
-                                 && (x.StateID == (byte?) state || !state.HasValue)
+                                 && (x.StateID == intState || !intState.HasValue)
                                  && (x.Name == key || key == null));
 
                 if (result != null)

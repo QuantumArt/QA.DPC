@@ -11,7 +11,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
         private readonly ProductImporter _importer;
         private readonly ProductManager _manager;
         private readonly ElasticConfiguration _configuration;
-        private readonly Dictionary<string, IProductStore> _stores;        
+        private readonly Dictionary<string, IProductStore> _stores;
         private const int LockTimeoutInMs = 5000;
 
         
@@ -37,8 +37,30 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 {
                     if (_importer.ValidateInstance(language, state))
                     {
-                        _manager.DeleteAllASync(language, state, _stores).Wait();
-                        _importer.ImportAsync(executionContext, language, state, _stores).Wait();
+                        string alias = _configuration.GetElasticIndex(language, state).Name;
+                        var indexesToDelete = _manager.GetIndexesToDeleteAsync(language, state, _stores, alias).Result;
+                        var newIndex = _manager.CreateVersionedIndexAsync(language, state, _stores).Result;
+
+                        if (string.IsNullOrWhiteSpace(newIndex))
+                        {
+                            executionContext.Result = ActionTaskResult.Error("Unable to create new index.");
+                            return;
+                        }
+
+                        _importer.ImportAsync(executionContext, language, state, _stores, newIndex).Wait();
+
+
+                        if (indexesToDelete.Contains(alias))
+                        {
+                            _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
+                            _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, alias, Array.Empty<string>()).Wait();
+                        }
+                        else
+                        {
+                            var indexesInAlias = _manager.GetIndexesInAliasAsync(language, state, _stores).Result;
+                            _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
+                            _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
+                        }
                     }
                     else
                     {

@@ -66,7 +66,7 @@ namespace QA.ProductCatalog.HighloadFront
             return await StoreFactory.GetProductStore(language, state).CreateAsync(product, language, state);
         }
 
-        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state, Dictionary<string, IProductStore> stores)
+        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state, Dictionary<string, IProductStore> stores, string index)
         {
             var filteredData = data.Where(n => n != null).ToArray();
             if (_productPostProcessor != null)
@@ -84,7 +84,7 @@ namespace QA.ProductCatalog.HighloadFront
                     .Where(d => d != null);
                 var products = filteredData.Select(d => d.Product).Concat(regionTagProducts);
 
-                return await store.BulkCreateAsync(products, language, state);              
+                return await store.BulkCreateAsync(products, language, state, index);              
             }
             throw StoreFactory.ElasticVersionNotSupported(version);
         }
@@ -121,15 +121,53 @@ namespace QA.ProductCatalog.HighloadFront
             return expanded;
         }
 
-      
-        public Task<SonicResult> DeleteAllASync(string language, string state, Dictionary<string, IProductStore> stores)
+        private IProductStore GetProductStore(string language, string state, Dictionary<string, IProductStore> stores)
         {
             var version = StoreFactory.GetProductStoreVersion(language, state);
+
             if (stores.TryGetValue(version, out var store))
             {
-                return store.ResetAsync(language, state);
+                return store;
             }
+
             throw StoreFactory.ElasticVersionNotSupported(version);
+        }
+
+        public async Task<List<string>> GetIndexesToDeleteAsync(string language, string state, Dictionary<string, IProductStore> stores, string alias)
+        {
+            IProductStore store = GetProductStore(language, state, stores);
+            string indices = await store.GetIndicesByName(language, state);
+            return store.RetrieveIndexNamesFromIndicesResponse(indices, alias);
+        }
+
+        public async Task<string> CreateVersionedIndexAsync(string language, string state, Dictionary<string, IProductStore> stores)
+        {
+            return await GetProductStore(language, state, stores).CreateVersionedIndexAsync(language, state);
+        }
+
+        public async Task ReplaceIndexesInAliasAsync(string language, string state, Dictionary<string, IProductStore> stores, string newIndex, string alias, string[] oldIndexes)
+        {
+            await GetProductStore(language, state, stores).ReplaceIndexesInAliasAsync(language, state, newIndex, oldIndexes, alias);
+        }
+
+        public async Task DeleteIndexByNameAsync(string language, string state, Dictionary<string, IProductStore> stores, string index)
+        {
+            await GetProductStore(language, state, stores).DeleteIndexByNameAsync(language, state, index);
+        }
+
+        public async Task DeleteIndexesByNamesAsync(string language, string state, Dictionary<string, IProductStore> stores, List<string> indexNames)
+        {
+            var store = GetProductStore(language, state, stores);
+
+            foreach (string indexName in indexNames)
+            {
+                await store.DeleteIndexByNameAsync(language, state, indexName);
+            }
+        }
+
+        public async Task<string[]> GetIndexesInAliasAsync(string language, string state, Dictionary<string, IProductStore> stores)
+        {
+            return await GetProductStore(language, state, stores).GetIndexInAliasAsync(language, state);
         }
 
         public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)

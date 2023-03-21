@@ -209,7 +209,7 @@ namespace QA.Core.DPC.Loader.Services
             productQueryCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, dbConnector.DatabaseType));
 
             var contentIdsData = dbConnector.GetRealData(productQueryCommand);
-            if (!contentIdsData.Rows.Any()) return new ProductDescriptor[0];
+            if (contentIdsData.Rows.Count == 0) return new ProductDescriptor[0];
             List<string> queries = new List<string>(contentIdsData.Rows.Count);
             foreach (DataRow row in contentIdsData.Rows)
             {

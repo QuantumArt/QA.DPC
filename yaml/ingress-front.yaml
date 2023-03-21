@@ -1,0 +1,75 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dpc-front
+  namespace: dpc
+spec:
+  rules:
+  - host: '||front_host||'
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-front
+            port:
+              number: 80          
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dpc-search-api
+  namespace: dpc
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+spec:
+  rules:
+  - host: '||search_host||'
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-search-api
+            port:
+              number: 80                
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dpc-sync-api
+  namespace: dpc
+spec:
+  rules:
+  - host: '||sync_host||'
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-sync-api
+            port:
+              number: 80        
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dpc-impact-api
+  namespace: dpc
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"  
+spec:
+  rules:
+  - host: '||impact_host||'
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-impact-api
+            port:
+              number: 80        

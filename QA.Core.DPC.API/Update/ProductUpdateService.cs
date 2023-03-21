@@ -16,6 +16,8 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API.Models;
 using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
+using Microsoft.AspNetCore.Mvc;
+using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 
 namespace QA.Core.DPC.API.Update
 {
@@ -91,7 +93,7 @@ namespace QA.Core.DPC.API.Update
                         .ListRelated(contentId)
                         .Select(field => _fieldsById[field.Id] = field)
                         .ToList();
-                
+
             }
 
             public Quantumart.QP8.BLL.Field Read(int id)
@@ -103,7 +105,7 @@ namespace QA.Core.DPC.API.Update
         }
 
         #endregion
-        
+
         #region IProductUpdateService
 
         /// <exception cref="ProductUpdateConcurrencyException" />
@@ -116,7 +118,7 @@ namespace QA.Core.DPC.API.Update
             _outdatedArticleIds.Clear();
 
             _filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-            
+
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
 
             if (_outdatedArticleIds.Any())
@@ -124,14 +126,16 @@ namespace QA.Core.DPC.API.Update
                 throw new ProductUpdateConcurrencyException(_outdatedArticleIds.ToArray());
             }
 
+            var updateData = MergeUpdateData(_updateData);
+
             using (var transaction = _createTransaction())
             {
                 _logger.Info()
                     .Message("Batch update for product {id} started", product.Id)
-                    .Property("updateData", _updateData.ToDictionary(n => n.ToString(), m => m.Fields))
+                    .Property("updateData", updateData.ToDictionary(n => n.ToString(), m => m.Fields))
                     .Write();
 
-                InsertData[] idMapping = _articleService.BatchUpdate(_updateData, createVersions);
+                InsertData[] idMapping = _articleService.BatchUpdate(updateData, createVersions);
 
                 _logger.Info("Batch update for product {id} completed", product.Id);
 
@@ -141,7 +145,7 @@ namespace QA.Core.DPC.API.Update
                         .Message("Deleting articles for product {id} started", product.Id)
                         .Property("articlesToDelete", _articlesToDelete.Keys)
                         .Write();
-                    
+
                     foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                     {
                         try
@@ -169,6 +173,43 @@ namespace QA.Core.DPC.API.Update
             }
         }
 
+        public InsertData[] Create(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false)
+        {
+            product.Id = 0;
+            var inserted = Update(product, definition, isLive, createVersions);
+
+            var newArticleIds = inserted.Select(item => item.CreatedArticleId).ToArray();
+            _articleService.SimplePublish(newArticleIds);
+
+            return inserted;
+        }
+
+        public void Delete(int productId, ProductDefinition definition)
+        {
+            using var transaction = _createTransaction();
+
+            _logger.Info()
+                .Message("Deleting articles for product {id} started", productId)
+                .Write();
+
+            try
+            {
+                var qpArticle = _articleService.Read(productId);
+
+                _deleteAction.DeleteProduct(qpArticle, definition, true, false, null);
+                transaction.Commit();
+            }
+            catch (MessageResultException ex)
+            {
+                _logger.Error()
+                    .Exception(ex)
+                    .Message("Cannot remove article {id}", productId)
+                    .Write();
+            }
+
+            _logger.Info("Deleting articles for product {id} completed", productId);
+        }
+
         #endregion
 
         /// <exception cref="ArgumentNullException" />
@@ -183,7 +224,8 @@ namespace QA.Core.DPC.API.Update
             {
                 existingArticle = null;
             }
-            if (definition == null) throw new ArgumentNullException(nameof(definition));
+            if (definition == null)
+                throw new ArgumentNullException(nameof(definition));
 
             ValidateDates(newArticle, existingArticle);
 
@@ -208,16 +250,21 @@ namespace QA.Core.DPC.API.Update
             }
 
             // TODO: исключаем Readonly поля
-            var updatedFields = newArticle.Fields.Values
-                .OfType<PlainArticleField>()
-                .Where(x => plainFieldIds.Contains(x.FieldId.Value)
+            foreach (var field in newArticle.Fields.Values.OfType<PlainArticleField>())
+            {
+                if (plainFieldIds.Contains(field.FieldId.Value)
                     && (existingArticle == null
                         || existingArticle.Fields.Values
                             .OfType<PlainArticleField>()
-                            .All(y => y.FieldId != x.FieldId || !HasEqualNativeValues(x, y))))
-                .Select(x => new FieldData { Id = x.FieldId.Value, Value = x.Value });
+                            .All(y => !HasEqualNativeValues(field, y))))
+                {
+                    string fieldValue = newArticle.Id <= 0 && field.NativeValue == null
+                        ? field.DefaultValue
+                        : field.Value;
 
-            newArticleUpdateData.Fields.AddRange(updatedFields);
+                    newArticleUpdateData.Fields.Add(new FieldData { Id = field.FieldId.Value, Value = fieldValue });
+                }
+            }
 
             var associationFieldsInfo = (
                 from fieldDef in definition.Fields.OfType<Association>()
@@ -243,8 +290,8 @@ namespace QA.Core.DPC.API.Update
                         .ToArray();
 
                     int[] idsToRemove = oldField?.GetArticles(_filter)
+                        .Where(x => field.GetArticles(_filter).All(y => y.Id != x.Id))
                         .Select(x => x.Id)
-                        .Where(x => field.GetArticles(_filter).All(y => y.Id != x))
                         .ToArray() ?? new int[0];
 
                     if (idsToAdd.Any())
@@ -257,7 +304,7 @@ namespace QA.Core.DPC.API.Update
                             {
                                 new FieldData { Id = field.FieldId.Value, ArticleIds = new[] { newArticle.Id } }
                             }
-                        }));          
+                        }));
                     }
 
                     if (idsToRemove.Any())
@@ -269,14 +316,14 @@ namespace QA.Core.DPC.API.Update
                                 _articlesToDelete[idToRemove] = backwardRelationFieldDef.Content;
                             }
                         }
-                        else 
+                        else
                         {
                             _updateData.AddRange(idsToRemove.Select(x => new ArticleData
                             {
                                 Id = x,
                                 ContentId = backwardRelationFieldDef.Content.ContentId
                             }));
-                        }         
+                        }
                     }
 
                 }
@@ -339,7 +386,8 @@ namespace QA.Core.DPC.API.Update
                     {
                         newArticleUpdateData.Fields.Add(new FieldData
                         {
-                            Id = field.FieldId.Value, ArticleIds = items.Select(x => x.Id).ToArray()
+                            Id = field.FieldId.Value,
+                            ArticleIds = items.Select(x => x.Id).ToArray()
                         });
 
                         if (entityFieldDef.DeletingMode == DeletingMode.Delete)
@@ -360,7 +408,7 @@ namespace QA.Core.DPC.API.Update
 
             if (newArticleUpdateData.Fields.Any())
             {
-                _updateData.Add(newArticleUpdateData);                
+                _updateData.Add(newArticleUpdateData);
             }
 
             foreach (var fieldInfo in associationFieldsInfo
@@ -390,6 +438,11 @@ namespace QA.Core.DPC.API.Update
         private static bool HasEqualNativeValues(
             PlainArticleField plainArticleField, PlainArticleField otherPlainArticleField)
         {
+            if (plainArticleField.FieldId != otherPlainArticleField.FieldId)
+            {
+                return false;
+            }
+
             return plainArticleField.NativeValue == null
                     ? otherPlainArticleField.NativeValue == null
                     : plainArticleField.NativeValue.Equals(otherPlainArticleField.NativeValue);
@@ -421,6 +474,22 @@ namespace QA.Core.DPC.API.Update
             {
                 _outdatedArticleIds.Add(newArticle.Id);
             }
+        }
+
+        private IEnumerable<ArticleData> MergeUpdateData(List<ArticleData> articles)
+        {
+            return from article in articles
+                   group article by new { article.Id, article.ContentId } into mergedArticle
+                   select new ArticleData
+                   {
+                       Id = mergedArticle.Key.Id,
+                       ContentId = mergedArticle.Key.ContentId,
+                       Fields = mergedArticle
+                            .SelectMany(a => a.Fields)
+                            .GroupBy(field => field.Id)
+                            .Select(mergedFields => mergedFields.First())
+                            .ToList()
+                   };
         }
     }
 }

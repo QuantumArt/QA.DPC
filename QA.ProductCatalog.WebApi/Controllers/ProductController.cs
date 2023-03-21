@@ -11,10 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
-using QA.ProductCatalog.WebApi.Filters;
 using QA.ProductCatalog.WebApi.Models;
-
+using QA.ProductCatalog.Filters;
+using QA.ProductCatalog.TmForum.Filters;
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
@@ -25,6 +24,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
     [IdentityResolver]
     [Route("api")]
     [FormatFilter]
+    [DisableDefaultApi]
     public class ProductController : Controller
 	{
 		private readonly Func<IProductAPIService> _databaseProductServiceFactory;

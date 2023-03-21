@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -17,7 +18,7 @@ namespace QA.ProductCatalog.Admin.WebApp
         {
 
             NLog.LogManager.LoadConfiguration("NLogClient.config");
-
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             _container = new UnityContainer();
             BuildWebHost(args).Build().Run();
         }

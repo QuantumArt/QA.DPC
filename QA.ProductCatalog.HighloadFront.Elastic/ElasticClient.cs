@@ -50,9 +50,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(searchParams, json);
         }
         
-        public async Task<string> BulkAsync(string commands)
+        public async Task<string> BulkAsync(string commands, string index)
         {
             var searchParams = CreateElasticRequestParams(HttpMethod.Post, "_bulk");
+            searchParams.IndexName = index;
             return await QueryAsync(searchParams, commands);
         }
 
@@ -62,7 +63,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             try
             {
                 await QueryAsync(searchParams, null);
-                return true;                
+                return true;
             }
             catch (Exception)
             {
@@ -73,13 +74,52 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public async Task<string> DeleteIndexAsync()
         {
             var eparams = CreateElasticRequestParams(HttpMethod.Delete);
-            return await QueryAsync(eparams, null);           
+            return await QueryAsync(eparams, null);
+        }
+
+        public async Task<string> DeleteIndexByNameAsync(string indexName)
+        {
+            var esparams = CreateElasticRequestParams(HttpMethod.Delete);
+            esparams.IndexName = indexName;
+            return await QueryAsync(esparams, null);
         }
         
         public async Task<string> CreateIndexAsync(string json)
         {
             var eparams = CreateElasticRequestParams(HttpMethod.Put);
-            return await QueryAsync(eparams, json);          
+            return await QueryAsync(eparams, json);
+        }
+
+        public async Task<string> ReplaceIndexesInAliasAsync(string json)
+        {
+            var esparams = CreateElasticRequestParams(HttpMethod.Post, type: "_aliases", systemRequest: true);
+
+            esparams.IndexName = string.Empty;
+
+            return await QueryAsync(esparams, json);
+        }
+
+        public async Task<string> GetAliasByNameAsync()
+        {
+            var esparams = CreateElasticRequestParams(HttpMethod.Get, type: "_alias", systemRequest: true);
+            esparams.ThrowNotFound = false;
+            return await QueryAsync(esparams, null);
+        }
+
+        public async Task<string> CreateVersionedIndexAsync(string json)
+        {
+            ElasticRequestParams esparams = CreateElasticRequestParams(HttpMethod.Put);
+
+            string version = DateTime.Now
+                    .ToUniversalTime()
+                    .ToString("s")
+                    .Replace(":", "-")
+                    .ToLower();
+
+            esparams.IndexName = $"{esparams.IndexName}.{version}";
+
+            _ = await QueryAsync(esparams, json);
+            return esparams.IndexName;
         }
 
         public async Task<bool> DocumentExistsAsync(string id, string type)
@@ -88,7 +128,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             try
             {
                 await QueryAsync(searchParams, null);
-                return true;                
+                return true;
             }
             catch (Exception)
             {
@@ -96,16 +136,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }         
         }
 
-        public async Task<string> FindSourceByIdAsync(string id, string[] filter)
+        public async Task<string> FindSourceByIdAsync(string operation, string type, string[] filters)
         {
-            var operation = $"{id}/_source";
-            var eparams = CreateElasticRequestParams(HttpMethod.Get, operation, "_all");
-            if (filter != null)
+            var esparams = CreateElasticRequestParams(HttpMethod.Get, operation, type);
+            if (filters != null)
             {
-                eparams.UrlParams.Add("_source_include", String.Join(",", filter));
+                esparams.UrlParams.Add("_source_include", String.Join(",", filters));
             }
-            
-            return await QueryAsync(eparams, null);
+
+            return await QueryAsync(esparams, null);
         }
 
         public async Task<string> FindSourceByIdsAsync(int[] ids)
@@ -136,9 +175,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(eparams, json);
         }
 
-        public async Task<string> UpdateAsync(string id, string type, string json)
+        public async Task<string> UpdateAsync(string operation, string type, string json)
         {
-            var eparams = CreateElasticRequestParams(HttpMethod.Post, $"{id}/_update", type);
+            var eparams = CreateElasticRequestParams(HttpMethod.Post, operation, type);
             return await QueryAsync(eparams, json);
         }
 
@@ -146,12 +185,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var eparams = CreateElasticRequestParams(HttpMethod.Delete, id, type);
             eparams.ThrowNotFound = false;
-            return await QueryAsync(eparams, null);            
+            return await QueryAsync(eparams, null);
         }
 
-        private ElasticRequestParams CreateElasticRequestParams(HttpMethod verb, string operation="", string type="")
+        public async Task<string> GetIndicesByName()
         {
-            return new ElasticRequestParams(verb, _indexName, operation, type);
+            var esparams = CreateElasticRequestParams(HttpMethod.Get, "indices", "_cat", true);
+            esparams.IndexName = $"{esparams.IndexName}*";
+            return await QueryAsync(esparams, null);
+        }
+
+        private ElasticRequestParams CreateElasticRequestParams(HttpMethod verb, string operation = "", string type = "", bool systemRequest = false)
+        {
+            return new ElasticRequestParams(verb, _indexName, operation, type, systemRequest);
         }
 
         private async Task<string> QueryAsync(ElasticRequestParams eparams, string json)
@@ -232,8 +278,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private async Task<HttpResponseMessage> GetHttpResponse(string baseUri, ElasticRequestParams eparams, string json)
         {
             HttpResponseMessage response = null;
-            var indexUri = $"{baseUri}/{_indexName}";
-            var policy = GetOrCreatePolicy(indexUri);
+            var requestUri = eparams.IsRequestSystemMethod ? $"{baseUri}" : $"{baseUri}/{_indexName}";
+            var policy = GetOrCreatePolicy(requestUri);
             var client = CreateClient(baseUri);
             try
             {
@@ -241,22 +287,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             catch (HttpRequestException ex)
             {
-                _logger.Error(ex, "Elastic connection error for {indexUri}", indexUri);
+                _logger.Error(ex, "Elastic connection error for {indexUri}", requestUri);
                 _exceptions.Add(ex);
             }
             catch (BrokenCircuitException ex)
             {
-                _logger.Error(ex, "Circuit broken for {indexUri}", indexUri);
+                _logger.Error(ex, "Circuit broken for {indexUri}", requestUri);
                 _exceptions.Add(ex);
             }
             catch (OperationCanceledException ex)
             {
-                _logger.Info(ex, "Elastic connection timeout for {indexUri}", indexUri);
+                _logger.Info(ex, "Elastic connection timeout for {indexUri}", requestUri);
                 _exceptions.Add(ex);
             }
             catch (Exception ex)
             {
-                _logger.Info(ex, "Unexpected exception for {indexUri}", indexUri);
+                _logger.Info(ex, "Unexpected exception for {indexUri}", requestUri);
                 _exceptions.Add(ex);
             }
 
@@ -272,7 +318,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         )
         {
             HttpRequestMessage request = new HttpRequestMessage(method, uri);
-            if (!String.IsNullOrEmpty(json))
+            if (!string.IsNullOrWhiteSpace(json))
             {
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
             }

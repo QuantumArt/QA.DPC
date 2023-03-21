@@ -1,97 +1,73 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-admin
   namespace: dpc
 spec:
   rules:
-  - host: dpc-admin.dev.qsupport.ru
+  - host: '||admin_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-admin
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-admin
+            port:
+              number: 80              
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-api
   namespace: dpc
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   rules:
-  - host: dpc-api.dev.qsupport.ru
+  - host: '||api_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-api
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-api
+            port:
+              number: 80              
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-notification-sender
   namespace: dpc
 spec:
   rules:
-  - host: dpc-notification-sender.dev.qsupport.ru
+  - host: '||notify_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-notification-sender
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-notification-sender
+            port:
+              number: 80            
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-actions-service
   namespace: dpc
 spec:
   rules:
-  - host: dpc-actions-service.dev.qsupport.ru
+  - host: '||actions_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-actions-service
-          servicePort: 80
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: dpc-front
-  namespace: dpc
-spec:
-  rules:
-  - host: dpc-front.dev.qsupport.ru
-    http:
-      paths:
-      - backend:
-          serviceName: dpc-front
-          servicePort: 80
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: dpc-search-api
-  namespace: dpc
-spec:
-  rules:
-  - host: dpc-search-api.dev.qsupport.ru
-    http:
-      paths:
-      - backend:
-          serviceName: dpc-search-api
-          servicePort: 80
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: dpc-sync-api
-  namespace: dpc
-spec:
-  rules:
-  - host: dpc-sync-api.dev.qsupport.ru
-    http:
-      paths:
-      - backend:
-          serviceName: dpc-sync-api
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-actions-service
+            port:
+              number: 80           

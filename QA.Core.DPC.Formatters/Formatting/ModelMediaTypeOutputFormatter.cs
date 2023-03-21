@@ -22,7 +22,7 @@ namespace QA.Core.DPC.Formatters.Formatting
 
         protected override bool CanWriteType(Type type)
         {
-            return type == typeof(T);
+            return type.IsAssignableTo(typeof(T));
         }
 
         public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)

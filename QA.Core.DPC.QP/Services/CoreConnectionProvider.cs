@@ -12,10 +12,10 @@ namespace QA.Core.DPC.QP.Services
     {
         private readonly ICustomerProvider _customerProvider;
         private readonly IIdentityProvider _identityProvider;        
-        private readonly Dictionary<Service, Customer> _defaultConnections;
-        private readonly Service _defaultService;
+        private readonly Dictionary<Models.Service, Customer> _defaultConnections;
+        private readonly Models.Service _defaultService;
         private readonly ConnectionProperties _cnnProps;
-        public bool QPMode => _cnnProps.QpMode || _defaultService == Service.HighloadAPI;
+        public bool QPMode => _cnnProps.QpMode || _defaultService == Models.Service.HighloadAPI;
         
         public bool UseQPMonitoring => _cnnProps.UseQpMonitoring;
 
@@ -27,9 +27,9 @@ namespace QA.Core.DPC.QP.Services
             IIdentityProvider identityProvider, 
             IOptions<ConnectionProperties> cnnProps,
 
-            Service defaultService = Service.Admin)
+            Models.Service defaultService = Models.Service.Admin)
         {
-            _defaultConnections = new Dictionary<Service, Customer>();
+            _defaultConnections = new Dictionary<Models.Service, Customer>();
             _customerProvider = customerProvider;
             _identityProvider = identityProvider;
             _defaultService = defaultService;
@@ -37,19 +37,19 @@ namespace QA.Core.DPC.QP.Services
             if (!QPMode)
             {
                 var dbType = _cnnProps.GetDatabaseType();
-                _defaultConnections.Add(Service.Admin, new Customer{ 
+                _defaultConnections.Add(Models.Service.Admin, new Customer{ 
                     ConnectionString = _cnnProps.DpcConnectionString,
                     DatabaseType = dbType});
-                _defaultConnections.Add(Service.Actions, new Customer{ 
+                _defaultConnections.Add(Models.Service.Actions, new Customer{ 
                     ConnectionString = _cnnProps.TasksConnectionString,
                     DatabaseType = dbType});
-                _defaultConnections.Add(Service.Notification, new Customer{ 
+                _defaultConnections.Add(Models.Service.Notification, new Customer{ 
                     ConnectionString = _cnnProps.NotificationsConnectionString,
                     DatabaseType = dbType});
             }
         }
 
-        public bool HasConnection(Service service)
+        public bool HasConnection(Models.Service service)
         {
             return _defaultConnections.ContainsKey(service);
         }
@@ -61,7 +61,7 @@ namespace QA.Core.DPC.QP.Services
         }
         
         [Obsolete("This method doesn't provide database type information. Use method GetCustomer instead.")]
-        public string GetConnection(Service service)
+        public string GetConnection(Models.Service service)
         {
             return QPMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service].ConnectionString;
         }
@@ -71,7 +71,7 @@ namespace QA.Core.DPC.QP.Services
             return GetCustomer(_defaultService);
         }
         
-        public Customer GetCustomer(Service service)
+        public Customer GetCustomer(Models.Service service)
         {
             return QPMode ? _customerProvider.GetCustomer(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
         }
@@ -83,7 +83,7 @@ namespace QA.Core.DPC.QP.Services
         }
 
         [Obsolete]
-        public string GetEFConnection(Service service)
+        public string GetEFConnection(Models.Service service)
         {
             var connection = GetConnection(service);
 

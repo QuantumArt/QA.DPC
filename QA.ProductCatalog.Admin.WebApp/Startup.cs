@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.HttpOverrides;
 using Unity;
+using QA.ProductCatalog.TmForum.Extensions;
 
 namespace QA.ProductCatalog.Admin.WebApp
 {
@@ -97,6 +98,8 @@ namespace QA.ProductCatalog.Admin.WebApp
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
                 .AddXmlSerializerFormatters().AddControllersAsServices().AddNewtonsoftJson();
+
+            services.ResolveTmForumRegistration(Configuration);
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -108,7 +111,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             }
             else
             {
-                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory, ErrorPage).Action);
+                app.UseExceptionHandler(new GlobalExceptionHandler(ErrorPage).Action);
             }
 
             app.UseStaticFiles();

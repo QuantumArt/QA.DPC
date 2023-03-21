@@ -28,6 +28,7 @@ using Unity;
 using QA.ProductCatalog.Admin.WebApp.Filters;
 using ActionContext = QA.Core.ProductCatalog.Actions.ActionContext;
 using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
+using QA.ProductCatalog.TmForum.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -215,6 +216,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         // ReSharper disable once InconsistentNaming
+        [TmfProductCustomAction]
         public ActionResult GetProductData(int content_item_id, string formatter, bool live = false, string lang = null, bool simple = false)
         {
             var product = simple

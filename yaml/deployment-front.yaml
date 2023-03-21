@@ -1,0 +1,230 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-front
+  namespace: dpc
+  labels:
+    app: dpc-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-front
+  template:
+    metadata:
+      labels:
+        app: dpc-front
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-front
+          image: '||registry||/dpc-front:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
+          env:
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Data__InstanceId
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: INSTANCE_ID
+            - name: Data__UseProductVersions
+              value: "true"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-search-api
+  namespace: dpc
+  labels:
+    app: dpc-search-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-search-api
+  template:
+    metadata:
+      labels:
+        app: dpc-search-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-search-api
+          image: '||registry||/dpc-highload-front:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
+          env:
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Data__CanUpdate
+              value: "false"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-sync-api
+  namespace: dpc
+  labels:
+    app: dpc-sync-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-sync-api
+  template:
+    metadata:
+      labels:
+        app: dpc-sync-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-sync-api
+          image: '||registry||/dpc-highload-front:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-config          
+          env:
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Data__InstanceId
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: INSTANCE_ID
+            - name: Data__CanUpdate
+              value: "true"
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap: 
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ
+---              
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-impact-api
+  namespace: dpc
+  labels:
+    app: dpc-impact-api
+    logging: enabled
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-impact-api
+  template:
+    metadata:
+      labels:
+        app: dpc-impact-api
+    spec:
+      containers:
+      - name: dpc-impact-api
+        image: '||registry||/dpc-impact:||version||'
+        envFrom:
+        - configMapRef:
+            name: dpc-impact-config
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: time-config
+          mountPath: /etc/localtime
+          subPathExpr: $(TZ)
+        - name: timezone-config
+          mountPath: /etc/timezone
+          subPath: TZ
+      volumes:
+      - name: time-config
+        hostPath:
+          path: /usr/share/zoneinfo
+      - name: timezone-config
+        configMap: 
+          name: dpc-impact-config
+          items:
+          - key: TZ
+            path: TZ
+
+
+
+
+
+

@@ -7,7 +7,7 @@ using QA.Core.Models.Entities;
 
 namespace QA.Core.DPC.Loader
 {
-    internal class XmlProductDataSource : IProductDataSource
+    public class XmlProductDataSource : IProductDataSource
     {
         private readonly XElement _containerElement;
 
@@ -63,5 +63,10 @@ namespace QA.Core.DPC.Loader
         }
 
         public IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName) => this;
+
+        public decimal? GetBoolAsDecimal(string fieldName)
+        {
+            return GetDecimal(fieldName);
+        }
     }
 }

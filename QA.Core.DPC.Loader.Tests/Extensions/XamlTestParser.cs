@@ -60,7 +60,7 @@ namespace QA.Core.DPC.Loader.Tests.Extensions
 
         private static string GetFullFilename(string filename)
         {
-            var executable = new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath;
+            var executable = new Uri(Assembly.GetExecutingAssembly().Location).LocalPath;
             var filePath = Path.Combine(Path.GetDirectoryName(executable) ?? string.Empty, filename.Replace('\\', Path.DirectorySeparatorChar));
             return Path.GetFullPath(filePath);
         }

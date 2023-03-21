@@ -4,13 +4,14 @@ using QA.ProductCatalog.HighloadFront.Options;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ElasticProductStore_6 : ElasticProductStore
     {
-        public ElasticProductStore_6(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory)
-            : base(config, options, loggerFactory)
+        public ElasticProductStore_6(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory, IProductInfoProvider productInfoProvider)
+            : base(config, options, loggerFactory, productInfoProvider)
         {
 
         }
@@ -29,8 +30,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         protected override JObject GetMapping(string type, string[] fields)
         {
-            var formats = new JArray(Options.DynamicDateFormats);
+            var formats = new JArray(GetDynamicDateFormatsFromConfig("Default"));
             var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+            templates = AddEdgeNgramTemplates(templates, type);
             templates.Add(GetTextTemplate());
 
             return new JObject(
@@ -46,7 +48,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var indexSettings = new JObject(
                 new JProperty("settings", new JObject(
                     new JProperty("max_result_window", Options.MaxResultWindow),
-                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit)
+                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit),
+                    new JProperty("index", GetIndexAnalyzers())
                 )),
                 new JProperty("mappings", GetMappings(new[] { "_doc" }, Options.NotAnalyzedFields))
             );

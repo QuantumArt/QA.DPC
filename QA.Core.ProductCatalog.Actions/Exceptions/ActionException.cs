@@ -24,7 +24,6 @@ namespace QA.Core.ProductCatalog.Actions.Exceptions
 			Context = (ActionContext)info.GetValue(ContextKey, typeof(ActionContext));
 		}
 
-		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
 		public override void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue(ContextKey, Context, typeof(ActionContext));

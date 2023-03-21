@@ -30,7 +30,6 @@ namespace QA.Core.DPC.API.Update
             ArticleIds = (int[])info.GetValue(ArticleIdsKey, typeof(int[]));
         }
 
-        [SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             if (info == null)

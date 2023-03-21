@@ -49,6 +49,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask").ExternallyOwned();
             builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*").ExternallyOwned();
             builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*").ExternallyOwned();
+            builder.RegisterType<ElasticProductStore_8>().Named<IProductStore>("8.*").ExternallyOwned();
             builder.RegisterType<ProductImporter>().ExternallyOwned();
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
@@ -95,7 +96,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 
                             return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>(), new Dictionary<string, IProductStore>() {
                                     { "5.*", c.ResolveNamed<IProductStore>("5.*")},
-                                    { "6.*", c.ResolveNamed<IProductStore>("6.*") }
+                                    { "6.*", c.ResolveNamed<IProductStore>("6.*") },
+                                    { "8.*", c.ResolveNamed<IProductStore>("8.*") }
                             });
                         }
                     );
