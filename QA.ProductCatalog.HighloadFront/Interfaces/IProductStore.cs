@@ -11,6 +11,7 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
         
         Task<string> SearchAsync(ProductsOptions options, string language, string state);
         Task<string> FindByIdAsync(ProductsOptions options, string language, string state);
+        Task<string> FindSourceByIdsAsync(int[] ids, string language, string state);
         Task<string> GetIndicesByName(string language, string state);
         List<string> RetrieveIndexNamesFromIndicesResponse(string indices, string alias);
         Task<string> CreateVersionedIndexAsync(string language, string state);
