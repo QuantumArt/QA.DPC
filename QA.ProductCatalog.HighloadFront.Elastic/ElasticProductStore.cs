@@ -129,6 +129,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.FindSourceByIdAsync(options.Id.ToString(), options?.PropertiesFilter?.ToArray());
         }
 
+        public async Task<string> FindSourceByIdsAsync(int[] ids, string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            return await client.FindSourceByIdsAsync(ids);
+        }
+
 
         public async Task<SonicResult> CreateAsync(JObject product, string language, string state)
         {

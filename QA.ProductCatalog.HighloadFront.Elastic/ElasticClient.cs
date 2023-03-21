@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Fluent;
 using Polly;
@@ -13,6 +6,14 @@ using Polly.CircuitBreaker;
 using Polly.Extensions.Http;
 using Polly.Registry;
 using QA.ProductCatalog.HighloadFront.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -105,6 +106,21 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             
             return await QueryAsync(eparams, null);
+        }
+
+        public async Task<string> FindSourceByIdsAsync(int[] ids)
+        {
+            var eparams = CreateElasticRequestParams(HttpMethod.Get, "_mget", "_all");
+
+            var filter = JObject.FromObject(new
+            {
+                docs = ids.Select(id => new
+                {
+                    _id = id
+                })
+            });
+
+            return await QueryAsync(eparams, filter.ToString());
         }
 
         public async Task<string> GetInfo()

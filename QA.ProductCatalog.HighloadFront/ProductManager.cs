@@ -1,29 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace QA.ProductCatalog.HighloadFront
 {
     public class ProductManager
     {
-        private readonly IProductPostProcessor _productPostProcessor;
+        private readonly IProductWritePostProcessor _productPostProcessor;
+        private readonly IProductReadPostProcessor _readProcessor;
 
         protected IProductStoreFactory StoreFactory { get; }
 
-        public ProductManager(IProductStoreFactory storeFactory, IProductPostProcessor productPostProcessor)
+        public ProductManager(IProductStoreFactory storeFactory, IProductWritePostProcessor productPostProcessor, IProductReadPostProcessor readProcessor)
         {
             StoreFactory = storeFactory ?? throw new ArgumentNullException(nameof(storeFactory));
             _productPostProcessor = productPostProcessor;
+            _readProcessor = readProcessor;
         }
 
-        public Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
-        {            
-            return StoreFactory.GetProductStore(language, state).FindByIdAsync(options, language, state);
+        public async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
+        {
+            var store = StoreFactory.GetProductStore(language, state);
+            var product = await store.FindByIdAsync(options, language, state);
+            return await Expand(store, options, language, state, product);
         }
 
         public async Task<SonicResult> CreateAsync(JObject product, RegionTag[] regionTags, string language, string state)
@@ -92,9 +96,29 @@ namespace QA.ProductCatalog.HighloadFront
         }
 
         
-        public Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public async Task<string> SearchAsync(ProductsOptions options, string language, string state)
         {
-            return StoreFactory.GetProductStore(language, state).SearchAsync(options, language, state);
+            var store = StoreFactory.GetProductStore(language, state);
+            var products = await store.SearchAsync(options, language, state);
+            products = await _readProcessor.GetResult(products, options);
+            return await Expand(store, options, language, state, products);
+        }
+
+        private async Task<string> Expand(IProductStore store, ProductsOptions options, string language, string state, string document)
+        {
+            var expanded = document;
+
+            if (options.Expand != null && options.Expand.Any())
+            {
+                var ids = _readProcessor.GetExpandIds(document, options);
+                if (ids.Any())
+                {
+                    var expandSource = await store.FindSourceByIdsAsync(ids, language, state);
+                    expanded = _readProcessor.Expand(expanded, expandSource, options);
+                }
+            }
+
+            return expanded;
         }
 
       

@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
+using NLog;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
-using NLog;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -51,7 +51,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         private readonly SonicElasticStoreOptions _options;
 
         private readonly IMemoryCache _cache;
-        
 
         public ProductsController(
             ProductManager manager, 
@@ -259,7 +258,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         private async Task<ActionResult> GetByIdActionResult(ProductsOptions options, string language, string state)
         {
             var result = await Manager.FindByIdAsync(options, language, state);
-            return Content(result, "application/json");
+            return Json(result);
         }
         
         private async Task<ActionResult> GetSearchActionResult(ProductsOptions options, string language, string state)
@@ -277,15 +276,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             if (readData)
             {
                 var searchResult = await Manager.SearchAsync(options, language, state);
-                
-                if (options.DataFilters.Any())
-                {
-                    result = PostProcess(searchResult, options.DataFilters);
-                }
-                else
-                {
-                    result = await GetResponse(searchResult);
-                }
+
+                result = Json(searchResult);
 
                 if (useCaching)
                 {
@@ -301,30 +293,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var options = new MemoryCacheEntryOptions();
             options.SetAbsoluteExpiration(TimeSpan.FromSeconds(value));
             return options;
-        }
-
-        private ActionResult PostProcess(string input, Dictionary<string, string> optionsDataFilters)
-        {
-            const string sourceQuery = "hits.hits.[?(@._source)]._source";
-            var hits = JObject.Parse(input).SelectTokens(sourceQuery).ToArray();
-            foreach (var df in optionsDataFilters)
-            {
-                foreach (var hit in hits)
-                {
-                    var jArrays = hit.SelectTokens(df.Key).OfType<JArray>().ToArray();
-                    foreach (var jArray in jArrays)
-                    {
-                        var relevantTokens = jArray.SelectTokens(df.Value).ToArray();
-                        jArray.Clear();
-                        foreach (var rToken in relevantTokens)
-                        {
-                            jArray.Add(rToken);
-                        }                    
-                    }
-                }
-            }
-            
-            return Json(new JArray(hits.Select(n => (object)n)));
         }
 
         private JObject GetQueryJson(string alias)
@@ -417,7 +385,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return s.Split(',').All(n => decimal.TryParse(n.Trim(), out _));
         }
 
-
         private bool ValidateParam(string value, Dictionary<string, string> constraints)
         {
             var result = true;
@@ -504,18 +471,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return BadRequest($"Unexpected error occurred. Reason: {ex.Message}");
         }
 
-
-        private async Task<ActionResult> GetResponse(string text, bool filter = true)
-        {
-            var result = text;
-            if (filter)
-            {
-                var sb = new StringBuilder();
-                await JsonFragmentExtractor.ExtractJsonFragment("_source", text, sb, 4);
-                result = sb.ToString();
-            }
-            return Content(result, "application/json");
-        }
+        private ActionResult Json(string text) => Content(text, "application/json");
 
     }
 }

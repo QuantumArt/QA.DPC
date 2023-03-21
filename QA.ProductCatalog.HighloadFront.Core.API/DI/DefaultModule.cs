@@ -131,15 +131,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 builder.RegisterScoped<ElasticConfiguration, JsonElasticConfiguration>();
             }
 
+            builder.RegisterScoped<IProductReadPostProcessor, ContentProcessor>();
 
-
-            builder.RegisterType<ArrayIndexer>().Named<IProductPostProcessor>("array");
-            builder.RegisterType<DateIndexer>().Named<IProductPostProcessor>("date");
+            builder.RegisterType<ArrayIndexer>().Named<IProductWritePostProcessor>("array");
+            builder.RegisterType<DateIndexer>().Named<IProductWritePostProcessor>("date");
             builder.Register(c => new IndexerDecorator(new[]
             {
-                c.ResolveNamed<IProductPostProcessor>("array"),
-                c.ResolveNamed<IProductPostProcessor>("date")
-            })).As<IProductPostProcessor>();
+                c.ResolveNamed<IProductWritePostProcessor>("array"),
+                c.ResolveNamed<IProductWritePostProcessor>("date")
+            })).As<IProductWritePostProcessor>();
 
         }
     }

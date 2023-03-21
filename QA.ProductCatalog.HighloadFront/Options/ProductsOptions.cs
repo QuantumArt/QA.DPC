@@ -30,8 +30,9 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private const string QUERY = "query";
         private const string DATA_FILTERS = "data_filters";
         private const string CACHE_FOR_SECONDS = "cache_for_seconds";
-        
-        
+        private const string EXPAND = "expand";
+
+
         private const string FREE_QUERY = "q";
         private const string OR_QUERY = "or";
         private const string AND_QUERY = "and";
@@ -53,7 +54,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
             DISABLE_LIKE,
             QUERY,
             DATA_FILTERS,
-            CACHE_FOR_SECONDS
+            CACHE_FOR_SECONDS,
+            EXPAND
         };
         
         public ProductsOptions(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
@@ -62,7 +64,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             ElasticOptions = options ?? new SonicElasticStoreOptions();
             
             Filters = new List<IElasticFilter>();
-            DataFilters = new Dictionary<string, string>();
+            DataFilters = new Dictionary<string, string>();             
             
             if (!(json is JObject jobj)) return;
 
@@ -74,6 +76,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             CacheForSeconds = (decimal?) jobj.SelectToken(CACHE_FOR_SECONDS) ?? 0;
             
             PropertiesFilter = JTokenToStringArray(jobj.SelectToken(FIELDS));
+            Expand = JTokenToStringArray(jobj.SelectToken(EXPAND));
             DisableOr = JTokenToStringArray(jobj.SelectToken(DISABLE_OR));
             DisableNot = JTokenToStringArray(jobj.SelectToken(DISABLE_NOT));
             DisableLike = JTokenToStringArray(jobj.SelectToken(DISABLE_LIKE));
@@ -138,7 +141,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
         
         [BindNever]
         public IList<string> PropertiesFilter { get; set; }
-        
+
+        [BindNever]
+        public IList<string> Expand { get; set; }
+
         [BindNever]
         public Dictionary<string, string> DataFilters { get; set; }
         
