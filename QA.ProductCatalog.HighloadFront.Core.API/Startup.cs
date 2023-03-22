@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -38,23 +40,23 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            
+
             var opts = new HarvesterOptions();
             Configuration.Bind("Harvester", opts);
             services.AddSingleton(opts);
-            
+
             var opts2 = new SonicElasticStoreOptions();
             Configuration.Bind("SonicElasticStore", opts2);
             services.AddSingleton(opts2);
-            
+
             var opts3 = new DataOptions();
             Configuration.Bind("Data", opts3);
             services.AddSingleton(opts3);
-            
+
             var opts4 = new TaskRunnerDelays();
             Configuration.Bind("ReindexDelays", opts4);
             services.AddSingleton(opts4);
-            
+
             services.AddSingleton(new PolicyRegistry());
             services.AddScoped<IProductInfoProvider, ProductInfoProvider>();
 
@@ -78,24 +80,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                     var assembly = Assembly.LoadFile(Path.Combine(
                         AppDomain.CurrentDomain.BaseDirectory ?? string.Empty, library + ".dll"
                     ));
+
                     apm.ApplicationParts.Add(new AssemblyPart(assembly));
 
-                    var serviceTypesToRegister = assembly.GetTypes()
-                        .Where(t =>
-                            t.Namespace != null
-                            && !t.Namespace.Contains(".Models")
-                            && (t.Name.EndsWith("Service") || t.Name.EndsWith("Processor")))
-                        .ToArray();
-
-                    foreach (var serviceType in serviceTypesToRegister)
-                    {
-                        services.AddScoped(serviceType);
-                    }
+                    RegisterSpecificExtraLibraryDependencies(services, assembly);
                 }
             }).AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
+
+            services.AddFluentValidationAutoValidation();
 
             services.AddMemoryCache();
             services.AddHttpClient();
@@ -134,6 +129,26 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             var canUpdate = bool.TryParse(config["Data:CanUpdate"], out var parsed) && parsed;
             var logger = loggerFactory.CreateLogger(GetType());
             logger.LogInformation("{appName} started", canUpdate ? syncName : searchName);         
+        }
+
+        private void RegisterSpecificExtraLibraryDependencies(IServiceCollection services, Assembly assembly)
+        {
+            if (assembly.GetName().Name.EndsWith("HighloadFront.Core.MTS.API"))
+            {
+                services.AddValidatorsFromAssembly(assembly);
+
+                var serviceTypesToRegister = assembly.GetTypes()
+                    .Where(t =>
+                        t.Namespace != null
+                        && !t.Namespace.Contains(".Models")
+                        && (t.Name.EndsWith("Service") || t.Name.EndsWith("Processor")))
+                    .ToArray();
+
+                foreach (var serviceType in serviceTypesToRegister)
+                {
+                    services.AddScoped(serviceType);
+                }
+            }
         }
     }
 }
