@@ -136,12 +136,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }         
         }
 
-        public async Task<string> FindSourceByIdAsync(string operation, string type, string[] filters)
+        public async Task<string> FindSourceByIdAsync(string operation, string type, string parameterName, string[] filters)
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Get, operation, type);
             if (filters != null)
             {
-                esparams.UrlParams.Add("_source_include", String.Join(",", filters));
+                esparams.UrlParams.Add(parameterName, String.Join(",", filters));
             }
 
             return await QueryAsync(esparams, null);

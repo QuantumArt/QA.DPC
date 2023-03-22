@@ -57,7 +57,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public override async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
-            return await client.FindSourceByIdAsync($"_source/{options.Id}", string.Empty, options?.PropertiesFilter?.ToArray());
+            return await client.FindSourceByIdAsync($"_source/{options.Id}", string.Empty, "_source_includes", options?.PropertiesFilter?.ToArray());
         }
 
         public override async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
