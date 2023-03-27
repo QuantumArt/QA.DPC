@@ -260,7 +260,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private void HandleErrorResult(HttpStatusCode code, string result)
         {
             var message = $"HTTP Error. Code: {code}. Response: {result}";
-            _exceptions.Add(new HttpRequestException(message));
+            _exceptions.Add(new HttpRequestException(message, null, code));
             _logger.Info(message);
         }
 
@@ -290,7 +290,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             catch (OperationCanceledException ex)
             {
-                _logger.Info(ex, "Elastic connection timeout for {indexUri}", requestUri);
+                _logger.Info(ex, "Elastic connection timeout for {indexUri} or operation was signaled to be canceled", requestUri);
                 _exceptions.Add(ex);
             }
             catch (Exception ex)
