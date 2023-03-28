@@ -141,12 +141,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<string> FindSourceByIdAsync(string operation, string type, string[] filters, CancellationToken cancellationToken = default)
+        public async Task<string> FindSourceByIdAsync(string operation, string type, string parameterName, string[] filters, CancellationToken cancellationToken = default)
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Get, operation, type);
             if (filters != null)
             {
-                esparams.UrlParams.Add("_source_include", string.Join(",", filters));
+                esparams.UrlParams.Add(parameterName, string.Join(",", filters));
             }
 
             return await QueryAsync(esparams, null, cancellationToken);
