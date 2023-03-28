@@ -1,14 +1,9 @@
 ﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -17,6 +12,8 @@ using Newtonsoft.Json.Serialization;
 using Polly.Registry;
 using QA.Core.DPC.QP.Models;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.DotNetCore.Caching;
+using QA.DotNetCore.Caching.Interfaces;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.DI;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
@@ -67,38 +64,24 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             {
                 options.EnableEndpointRouting = false;
                 options.Filters.Add(typeof(ProcessCustomerCodeAttribute));
-            }).ConfigureApplicationPartManager(apm =>
-            {
-                var extraLibraries = Configuration.GetSection("ExtraLibraries").Get<string[]>();
-                if (extraLibraries == null)
-                {
-                    return;
-                }
-
-                foreach (var library in extraLibraries)
-                {
-                    var assembly = Assembly.LoadFile(Path.Combine(
-                        AppDomain.CurrentDomain.BaseDirectory ?? string.Empty, library + ".dll"
-                    ));
-
-                    apm.ApplicationParts.Add(new AssemblyPart(assembly));
-
-                    RegisterSpecificExtraLibraryDependencies(services, assembly);
-                }
-            }).AddNewtonsoftJson(options =>
+            })
+            .AddCustomModules(Configuration, services)
+            .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
+
+            services.AddSingleton<ICacheProvider, VersionedCacheCoreProvider>();
 
             services.AddFluentValidationAutoValidation();
 
             services.AddMemoryCache();
             services.AddHttpClient();
-            
+
             services.ResolveTmForumRegistrationForHighloadApi(Configuration);
 
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration});
+            containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration });
             containerBuilder.Populate(services);
             var container = containerBuilder.Build();
             return new AutofacServiceProvider(container);
@@ -129,26 +112,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             var canUpdate = bool.TryParse(config["Data:CanUpdate"], out var parsed) && parsed;
             var logger = loggerFactory.CreateLogger(GetType());
             logger.LogInformation("{appName} started", canUpdate ? syncName : searchName);         
-        }
-
-        private void RegisterSpecificExtraLibraryDependencies(IServiceCollection services, Assembly assembly)
-        {
-            if (assembly.GetName().Name.EndsWith("HighloadFront.Core.MTS.API"))
-            {
-                services.AddValidatorsFromAssembly(assembly);
-
-                var serviceTypesToRegister = assembly.GetTypes()
-                    .Where(t =>
-                        t.Namespace != null
-                        && !t.Namespace.Contains(".Models")
-                        && (t.Name.EndsWith("Service") || t.Name.EndsWith("Processor")))
-                    .ToArray();
-
-                foreach (var serviceType in serviceTypesToRegister)
-                {
-                    services.AddScoped(serviceType);
-                }
-            }
         }
     }
 }
