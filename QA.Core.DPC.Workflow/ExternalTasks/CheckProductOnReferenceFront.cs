@@ -23,12 +23,12 @@ namespace QA.Core.DPC.Workflow.ExternalTasks
         {
             try
             {
-                int productId = processInstance.GetVariableByName<int>(InternalSettings.ProductIdParameterName);
-                bool isLive = processInstance.GetVariableByName<bool>(InternalSettings.IsLiveParameterName);
-                string culture = processInstance.GetVariableByName<string>(InternalSettings.CultureParameterName);
-                string retryCountVariableName = processInstance.GetVariableByName<string>(InternalSettings.RetryCountParameterName);
-                string resultVariableName = processInstance.GetVariableByName<string>(InternalSettings.ResultParameterName);
-                string publishDateVariableName = processInstance.GetVariableByName<string>(InternalSettings.PublishDateParameterName);
+                int productId = processInstance.GetVariableByName<int>(InternalSettings.ProductId);
+                bool isLive = processInstance.GetVariableByName<bool>(InternalSettings.IsLive);
+                string culture = processInstance.GetVariableByName<string>(InternalSettings.Culture);
+                string retryCountVariableName = processInstance.GetVariableByName<string>(InternalSettings.RetryCountVariable);
+                string resultVariableName = processInstance.GetVariableByName<string>(InternalSettings.ResultVariable);
+                string publishDateVariableName = processInstance.GetVariableByName<string>(InternalSettings.PublishDateVariable);
 
                 DateTime publishDate = processInstance.GetVariableByName<DateTime>(publishDateVariableName);
                 int retryCount = processInstance.GetVariableByNameOrDefault<int>(retryCountVariableName);

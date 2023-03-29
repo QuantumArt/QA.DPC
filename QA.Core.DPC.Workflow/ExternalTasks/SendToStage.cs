@@ -29,8 +29,8 @@ public class SendToStage : IExternalTaskHandler
 
     public Task<Dictionary<string, object>> Handle(string taskKey, ProcessInstanceData processInstance)
     {
-        string resultVariable = processInstance.GetVariableByName<string>(InternalSettings.PublishDateParameterName);
-        int item = processInstance.GetVariableByName<int>(InternalSettings.ProductIdParameterName);
+        string resultVariable = processInstance.GetVariableByName<string>(InternalSettings.PublishDateVariable);
+        int item = processInstance.GetVariableByName<int>(InternalSettings.ProductId);
         DateTime processDate = DateTime.Now;
 
         _identityProvider.Identity = new(processInstance.TenantId);

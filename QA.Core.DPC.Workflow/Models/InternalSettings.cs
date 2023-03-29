@@ -2,13 +2,17 @@
 {
     internal static class InternalSettings
     {
-        internal const string ProductIdParameterName = "ContentItemId";
-        internal const string IsLiveParameterName = "IsLive";
-        internal const string CultureParameterName = "Culture";
-        internal const string PublishDateParameterName = "PublishDateVariableName";
-        internal const string RefPublishedParameterName = "RefPublished";
-        internal const string RefPublishCheckCountParameterName = "RefPublishCheckCount";
-        internal const string ResultParameterName = "ResultVariableName";
-        internal const string RetryCountParameterName = "RetryCountVariableName";
+        //Fixed variables
+        internal const string ProductId = "ContentItemId";
+        internal const string IsLive = "IsLive";
+        internal const string Culture = "Culture";
+        internal const string HighloadApiVersion = "HighloadVersion";
+        internal const string HighloadStateName = "HighloadState";
+        //Names of dynamic variables
+        internal const string PublishDateVariable = "PublishDateVariableName";
+        internal const string RefPublishedVariable = "RefPublished";
+        internal const string RefPublishCheckCountVariable = "RefPublishCheckCount";
+        internal const string ResultVariable = "ResultVariableName";
+        internal const string RetryCountVariable = "RetryCountVariableName";
     }
 }

@@ -6,7 +6,6 @@ using QA.Core.DPC.Workflow.Models;
 using QA.Core.DPC.Workflow.Services;
 using QA.Workflow.TaskWorker.Extensions;
 using QA.Workflow.TaskWorker.Interfaces;
-using QA.Workflow.TaskWorker.Models;
 
 namespace QA.Core.DPC.Workflow.Extensions;
 
@@ -37,6 +36,9 @@ public static class ServiceCollectionExtension
         // Register check product on reference front task
         services.AddSingleton<CheckProductOnReferenceFront>();
         taskCollection.Register<CheckProductOnReferenceFront>();
+        // Register check product on HL front task
+        services.AddSingleton<CheckProductOnHighloadFront>();
+        taskCollection.Register<CheckProductOnHighloadFront>();
 
         return services;
     }
