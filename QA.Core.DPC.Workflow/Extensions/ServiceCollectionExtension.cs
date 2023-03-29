@@ -34,11 +34,6 @@ public static class ServiceCollectionExtension
         // Register send product on stage task
         services.AddSingleton<SendToStage>();
         taskCollection.Register<SendToStage>();
-        
-        // Add tenants to listen in camunda
-        // ToDo: move to it's actual location before merge
-        WorkflowTenants tenants = new();
-        services.AddSingleton(tenants);
 
         return services;
     }
