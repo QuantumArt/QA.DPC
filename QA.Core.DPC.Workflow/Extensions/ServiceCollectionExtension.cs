@@ -34,6 +34,9 @@ public static class ServiceCollectionExtension
         // Register send product on stage task
         services.AddSingleton<SendToStage>();
         taskCollection.Register<SendToStage>();
+        // Register check product on reference front task
+        services.AddSingleton<CheckProductOnReferenceFront>();
+        taskCollection.Register<CheckProductOnReferenceFront>();
 
         return services;
     }

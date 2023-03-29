@@ -1,4 +1,5 @@
 ﻿using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Workflow.Models;
 using QA.ProductCatalog.Infrastructure;
 using QA.Workflow.Extensions;
 using QA.Workflow.Models;
@@ -24,11 +25,13 @@ public class PublishProduct : IExternalTaskHandler
     
     public Task<Dictionary<string, object>> Handle(string taskKey, ProcessInstanceData processInstance)
     {
-        int item = processInstance.GetVariableByName<int>("ContentItemId");
+        string resultVariable = processInstance.GetVariableByName<string>(InternalSettings.PublishDateParameterName);
+        int item = processInstance.GetVariableByName<int>(InternalSettings.ProductIdParameterName);
+        DateTime processDate = DateTime.Now;
 
         _identityProvider.Identity = new(processInstance.TenantId);
         _databaseProductServiceFactory().CustomAction("PublishAction", item, _actionParameters);
 
-        return Task.FromResult<Dictionary<string, object>>(new());
+        return Task.FromResult<Dictionary<string, object>>(new() { { resultVariable, processDate } });
     }
 }

@@ -3,6 +3,7 @@ using QA.ProductCatalog.Infrastructure;
 using QA.Workflow.Models;
 using QA.Workflow.TaskWorker.Interfaces;
 using QA.Workflow.Extensions;
+using QA.Core.DPC.Workflow.Models;
 
 namespace QA.Core.DPC.Workflow.ExternalTasks;
 
@@ -28,11 +29,13 @@ public class SendToStage : IExternalTaskHandler
 
     public Task<Dictionary<string, object>> Handle(string taskKey, ProcessInstanceData processInstance)
     {
-        int item = processInstance.GetVariableByName<int>("ContentItemId");
+        string resultVariable = processInstance.GetVariableByName<string>(InternalSettings.PublishDateParameterName);
+        int item = processInstance.GetVariableByName<int>(InternalSettings.ProductIdParameterName);
+        DateTime processDate = DateTime.Now;
 
         _identityProvider.Identity = new(processInstance.TenantId);
         _databaseProductServiceFactory().CustomAction("SendProductAction", item, _actionParameters);
 
-        return Task.FromResult<Dictionary<string, object>>(new());
+        return Task.FromResult<Dictionary<string, object>>(new() { { resultVariable, processDate } });
     }
 }
