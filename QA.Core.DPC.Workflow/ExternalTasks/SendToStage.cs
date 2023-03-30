@@ -30,11 +30,12 @@ public class SendToStage : IExternalTaskHandler
     public Task<Dictionary<string, object>> Handle(string taskKey, ProcessInstanceData processInstance)
     {
         string resultVariable = processInstance.GetVariableByName<string>(InternalSettings.PublishDateVariable);
-        int item = processInstance.GetVariableByName<int>(InternalSettings.ProductId);
+        int productId = processInstance.GetVariableByName<int>(InternalSettings.ProductId);
+        int contentId = processInstance.GetVariableByNameOrDefault<int>(InternalSettings.ContentId);
         DateTime processDate = DateTime.Now;
 
         _identityProvider.Identity = new(processInstance.TenantId);
-        _databaseProductServiceFactory().CustomAction("SendProductAction", item, _actionParameters);
+        _databaseProductServiceFactory().CustomAction("SendProductAction", productId,  _actionParameters, contentId);
 
         return Task.FromResult<Dictionary<string, object>>(new() { { resultVariable, processDate } });
     }

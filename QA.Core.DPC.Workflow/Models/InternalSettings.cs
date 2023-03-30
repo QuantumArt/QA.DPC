@@ -4,14 +4,13 @@
     {
         //Fixed variables
         internal const string ProductId = "ContentItemId";
+        internal const string ContentId = "ContentId";
         internal const string IsLive = "IsLive";
         internal const string Culture = "Culture";
         internal const string HighloadApiVersion = "HighloadVersion";
         internal const string HighloadStateName = "HighloadState";
         //Names of dynamic variables
         internal const string PublishDateVariable = "PublishDateVariableName";
-        internal const string RefPublishedVariable = "RefPublished";
-        internal const string RefPublishCheckCountVariable = "RefPublishCheckCount";
         internal const string ResultVariable = "ResultVariableName";
         internal const string RetryCountVariable = "RetryCountVariableName";
     }
