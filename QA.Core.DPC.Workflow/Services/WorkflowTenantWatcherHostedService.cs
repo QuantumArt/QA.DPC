@@ -73,7 +73,7 @@ namespace QA.Core.DPC.Workflow.Services
             {
                 try
                 {
-                    Customer[]? customers = _customerProvider.GetCustomers();
+                    Customer[] customers = _customerProvider.GetCustomers();
 
                     foreach (Customer customer in customers)
                     {
@@ -81,7 +81,7 @@ namespace QA.Core.DPC.Workflow.Services
                         {
                             _identityProvider.Identity = new(customer.CustomerCode);
                             ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
-                            string? camundaSetting = settingsService.GetSetting(SettingsTitles.EXTERNAL_WORKFLOW);
+                            string camundaSetting = settingsService.GetSetting(SettingsTitles.EXTERNAL_WORKFLOW);
 
                             if (string.IsNullOrWhiteSpace(camundaSetting))
                             {
