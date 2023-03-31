@@ -55,8 +55,8 @@ namespace QA.ProductCatalog.WebApi.App_Start
             //Register TMForum extension
             unityContainer.RegisterTmForum();
 
-			//Workflow
-			unityContainer.RegisterWorkflow();
+            //Workflow
+            unityContainer.RegisterWorkflow();
 
             unityContainer.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             unityContainer.RegisterType<ICustomerProvider, CustomerProvider>();
