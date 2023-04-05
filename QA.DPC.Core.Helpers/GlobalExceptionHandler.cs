@@ -99,12 +99,12 @@ namespace QA.DPC.Core.Helpers
         private bool IsConsolidationError(IApplicationBuilder options, HttpContext context, out CustomerState customerState)
         {
             var provider = options.ApplicationServices.GetService<IIdentityProvider>();
-            var customerCode = provider.Identity?.CustomerCode;
+            var customerCode = provider?.Identity?.CustomerCode;
             
-            if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key)
+            if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key || provider is CoreIdentityFixedProvider)
             {
                 Logger.Debug()
-                    .Message("Customer code is not defined")
+                    .Message("Customer code is fixed or not defined")
                     .Property("httpRequest", context.Request)
                     .Write();
                 customerState = CustomerState.NotDefined;
