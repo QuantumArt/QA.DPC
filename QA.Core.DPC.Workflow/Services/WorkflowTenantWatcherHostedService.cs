@@ -14,7 +14,7 @@ namespace QA.Core.DPC.Workflow.Services
     public class WorkflowTenantWatcherHostedService : IHostedService
     {
         private readonly CancellationTokenSource _cancellationToken;
-        private readonly ILogger<ExternalTaskHostedService> _logger;
+        private readonly ILogger<WorkflowTenantWatcherHostedService> _logger;
         private readonly ICustomerProvider _customerProvider;
         private readonly ExtendedCamundaSettings _camundaSettings;
         private readonly WorkflowTenants _workflowTenants;
@@ -22,7 +22,7 @@ namespace QA.Core.DPC.Workflow.Services
         private readonly IServiceProvider _serviceProvider;
         private Task _executionTask;
 
-        public WorkflowTenantWatcherHostedService(ILogger<ExternalTaskHostedService> logger,
+        public WorkflowTenantWatcherHostedService(ILogger<WorkflowTenantWatcherHostedService> logger,
             ICustomerProvider customerProvider,
             IOptions<ExtendedCamundaSettings> camundaSettings,
             WorkflowTenants workflowTenants,
