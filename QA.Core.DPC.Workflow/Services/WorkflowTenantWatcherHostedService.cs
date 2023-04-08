@@ -43,7 +43,7 @@ namespace QA.Core.DPC.Workflow.Services
         {
             _executionTask = Watch(_cancellationToken.Token);
 
-            _logger.LogInformation("Workflow external task worker started.");
+            _logger.LogInformation("Workflow tenant watcher worker started");
             return _executionTask.IsCompleted ? _executionTask : Task.CompletedTask;
         }
 
