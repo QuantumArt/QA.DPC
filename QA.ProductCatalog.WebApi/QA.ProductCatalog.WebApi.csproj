@@ -25,6 +25,7 @@
     <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.QP.Autopublish\QA.Core.DPC.QP.Autopublish.csproj" />
+    <ProjectReference Include="..\QA.Core.DPC.Workflow\QA.Core.DPC.Workflow.csproj" />
     <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Filters\QA.ProductCatalog.Filters.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.TmForum\QA.ProductCatalog.TmForum.csproj" />

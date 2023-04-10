@@ -23,6 +23,7 @@ using QA.Validation.Xaml.Extensions.Rules;
 using Unity;
 using QA.ProductCatalog.Filters;
 using QA.ProductCatalog.TmForum.Extensions;
+using QA.Core.DPC.Workflow.Extensions;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
@@ -53,6 +54,9 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
             //Register TMForum extension
             unityContainer.RegisterTmForum();
+
+            //Workflow
+            unityContainer.RegisterWorkflow();
 
             unityContainer.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             unityContainer.RegisterType<ICustomerProvider, CustomerProvider>();
