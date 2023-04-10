@@ -3,6 +3,7 @@ using QA.Core.DPC.Workflow.Models;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.DAL;
 using QA.Workflow.Extensions;
+using QA.Workflow.Integration.QP.Models;
 using QA.Workflow.Models;
 using QA.Workflow.TaskWorker.Interfaces;
 
@@ -23,7 +24,7 @@ namespace QA.Core.DPC.Workflow.ExternalTasks
         {
             try
             {
-                int productId = processInstance.GetVariableByName<int>(InternalSettings.ProductId);
+                int productId = processInstance.GetVariableByName<int>(ExternalWorkflowQpDpcSettings.ContentItemId);
                 bool isLive = processInstance.GetVariableByName<bool>(InternalSettings.IsLive);
                 string culture = processInstance.GetVariableByName<string>(InternalSettings.Culture);
                 string retryCountVariableName = processInstance.GetVariableByName<string>(InternalSettings.RetryCountVariable);
@@ -38,7 +39,7 @@ namespace QA.Core.DPC.Workflow.ExternalTasks
                 IMonitoringRepository repository = _monitoringRepository(isLive, culture);
                 ProductInfo[] products = repository.GetByIds(new[] { productId });
 
-                ProductInfo product = products.OrderByDescending(p => p.Updated).FirstOrDefault();
+                ProductInfo product = products.MaxBy(p => p.Updated);
                 bool productUpdated = false;
 
                 if (product != default)

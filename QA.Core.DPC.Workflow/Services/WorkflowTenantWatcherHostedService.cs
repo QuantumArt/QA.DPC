@@ -1,144 +1,57 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.Workflow.Models;
 using QA.ProductCatalog.ContentProviders;
-using QA.Workflow.TaskWorker;
+using QA.Workflow.Integration.QP;
+using QA.Workflow.Integration.QP.Models;
 using QA.Workflow.TaskWorker.Models;
 
 namespace QA.Core.DPC.Workflow.Services
 {
-    public class WorkflowTenantWatcherHostedService : IHostedService
+    public class WorkflowTenantWatcherHostedService : WorkflowTenantWatcher
     {
-        private readonly CancellationTokenSource _cancellationToken;
-        private readonly ILogger<WorkflowTenantWatcherHostedService> _logger;
         private readonly ICustomerProvider _customerProvider;
-        private readonly ExtendedCamundaSettings _camundaSettings;
-        private readonly WorkflowTenants _workflowTenants;
         private readonly IIdentityProvider _identityProvider;
         private readonly IServiceProvider _serviceProvider;
-        private Task _executionTask;
 
-        public WorkflowTenantWatcherHostedService(ILogger<WorkflowTenantWatcherHostedService> logger,
+        public WorkflowTenantWatcherHostedService(ILogger<WorkflowTenantWatcher> logger,
             ICustomerProvider customerProvider,
             IOptions<ExtendedCamundaSettings> camundaSettings,
             WorkflowTenants workflowTenants,
             IIdentityProvider identityProvider,
             IServiceProvider serviceProvider)
+        : base(logger, camundaSettings.Value, workflowTenants) 
         {
-            _logger = logger;
-            _cancellationToken = new();
             _customerProvider = customerProvider;
-            _camundaSettings = camundaSettings.Value;
-            _workflowTenants = workflowTenants;
             _identityProvider = identityProvider;
             _serviceProvider = serviceProvider;
         }
 
-
-        public Task StartAsync(CancellationToken cancellationToken)
+        public override Task<List<string>> LoadCustomerCodes()
         {
-            _executionTask = Watch(_cancellationToken.Token);
+            Customer[] customerCodes = _customerProvider.GetCustomers();
 
-            _logger.LogInformation("Workflow tenant watcher worker started");
-            return _executionTask.IsCompleted ? _executionTask : Task.CompletedTask;
+            return Task.FromResult(customerCodes.Select(c => c.CustomerCode)
+               .ToList());
         }
 
-        public async Task StopAsync(CancellationToken cancellationToken)
+        public override Task<bool> IsExternalWorkflowEnabled(string customerCode)
         {
-            if (_executionTask == null)
-            {
-                return;
-            }
-
             try
             {
-                _cancellationToken.Cancel();
+                _identityProvider.Identity = new(customerCode);
+                ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
+                string camundaSetting = settingsService.GetSetting(SettingsTitles.EXTERNAL_WORKFLOW);
+
+                return Task.FromResult(!string.IsNullOrWhiteSpace(camundaSetting) &&
+                    bool.TryParse(camundaSetting, out bool camundaEnabled) &&
+                    camundaEnabled);
             }
             finally
             {
-                await Task.WhenAny(_executionTask, Task.Delay(Timeout.Infinite, cancellationToken));
-            }
-        }
-
-        private async Task Watch(CancellationToken cancellationToken)
-        {
-            // Wait some time for customer_codes registration
-            await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
-
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                try
-                {
-                    Customer[] customers = _customerProvider.GetCustomers();
-
-                    foreach (Customer customer in customers)
-                    {
-                        try
-                        {
-                            _identityProvider.Identity = new(customer.CustomerCode);
-                            ISettingsService settingsService = _serviceProvider.GetRequiredService<ISettingsService>();
-                            string camundaSetting = settingsService.GetSetting(SettingsTitles.EXTERNAL_WORKFLOW);
-
-                            if (string.IsNullOrWhiteSpace(camundaSetting))
-                            {
-                                ResolveTenant(customer.CustomerCode, TenantAction.Remove);
-                                continue;
-                            }
-
-                            if (!bool.TryParse(camundaSetting, out bool camundaEnabled) || !camundaEnabled)
-                            {
-                                ResolveTenant(customer.CustomerCode, TenantAction.Remove);
-                                continue;
-                            }
-
-                            ResolveTenant(customer.CustomerCode, TenantAction.Add);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError(ex, "Error while reading settings for tenant {tenant}", customer.CustomerCode);
-                        }
-                        finally
-                        {
-                            _identityProvider.Identity = null;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Error while loading tenants for workflow from config.");
-                }
-                finally
-                {
-                    _identityProvider.Identity = null;
-                    await Task.Delay(_camundaSettings.TenantWatcherWaitTime, cancellationToken);
-                }
-            }
-        }
-
-        private void ResolveTenant(string tenant, TenantAction action)
-        {
-            switch (action)
-            {
-                case TenantAction.Add:
-                    if (!_workflowTenants.Tenants.Contains(tenant))
-                    {
-                        _workflowTenants.Tenants.Add(tenant);
-                        _logger.LogInformation("Customer code {code} was added to workflow tenant list.", tenant);
-                    }
-                    break;
-                case TenantAction.Remove:
-                    if (_workflowTenants.Tenants.Contains(tenant))
-                    {
-                        _workflowTenants.Tenants.Remove(tenant);
-                        _logger.LogInformation("Customer code {code} was removed from workflow tenant list.", tenant);
-                    }
-                    break;
-                default:
-                    throw new InvalidOperationException($"Unsupported action {action} for tenant {tenant}");
+                _identityProvider.Identity = null;
             }
         }
     }

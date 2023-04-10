@@ -2,6 +2,7 @@
 using QA.Core.DPC.Workflow.Models;
 using QA.ProductCatalog.Infrastructure;
 using QA.Workflow.Extensions;
+using QA.Workflow.Integration.QP.Models;
 using QA.Workflow.Models;
 using QA.Workflow.TaskWorker.Interfaces;
 
@@ -26,8 +27,8 @@ public class PublishProduct : IExternalTaskHandler
     public Task<Dictionary<string, object>> Handle(string taskKey, ProcessInstanceData processInstance)
     {
         string resultVariable = processInstance.GetVariableByName<string>(InternalSettings.PublishDateVariable);
-        int productId = processInstance.GetVariableByName<int>(InternalSettings.ProductId);
-        int contentId = processInstance.GetVariableByNameOrDefault<int>(InternalSettings.ContentId);
+        int productId = processInstance.GetVariableByName<int>(ExternalWorkflowQpDpcSettings.ContentItemId);
+        int contentId = processInstance.GetVariableByNameOrDefault<int>(ExternalWorkflowQpDpcSettings.ContentId);
         DateTime processDate = DateTime.Now;
 
         _identityProvider.Identity = new(processInstance.TenantId);

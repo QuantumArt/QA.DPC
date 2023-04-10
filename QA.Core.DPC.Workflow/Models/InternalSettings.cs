@@ -3,8 +3,6 @@
     internal static class InternalSettings
     {
         //Fixed variables
-        internal const string ProductId = "ContentItemId";
-        internal const string ContentId = "ContentId";
         internal const string IsLive = "IsLive";
         internal const string Culture = "Culture";
         internal const string HighloadApiVersion = "HighloadVersion";

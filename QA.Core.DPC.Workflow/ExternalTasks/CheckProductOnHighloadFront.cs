@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.Workflow.Models;
 using QA.Workflow.Extensions;
+using QA.Workflow.Integration.QP.Models;
 using QA.Workflow.Models;
 using QA.Workflow.TaskWorker.Interfaces;
 
@@ -24,7 +25,7 @@ namespace QA.Core.DPC.Workflow.ExternalTasks
 
         public async Task<Dictionary<string, object>> Handle(string taskKey, ProcessInstanceData processInstance)
         {
-            int productId = processInstance.GetVariableByName<int>(InternalSettings.ProductId);
+            int productId = processInstance.GetVariableByName<int>(ExternalWorkflowQpDpcSettings.ContentItemId);
             string state = processInstance.GetVariableByName<string>(InternalSettings.HighloadStateName);
             string version = processInstance.GetVariableByName<string>(InternalSettings.HighloadApiVersion);
             string culture = processInstance.GetVariableByName<string>(InternalSettings.Culture);

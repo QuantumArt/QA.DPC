@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.Workflow.ExternalTasks;
-using QA.Core.DPC.Workflow.Models;
 using QA.Core.DPC.Workflow.Services;
+using QA.Workflow.Integration.QP.Models;
 using QA.Workflow.TaskWorker.Extensions;
 using QA.Workflow.TaskWorker.Interfaces;
 
