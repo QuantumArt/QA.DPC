@@ -67,7 +67,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("{type}")]
-        public async Task<ActionResult> GetByType(ProductsOptions options, string language = null, string state = null)
+        public async Task<ActionResult> GetByType(ProductsOptionsRoot options, string language = null, string state = null)
         {
             CorrectProductOptions(options);
             try
@@ -91,7 +91,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            var options = new ProductsOptions(json, _options)
+            var options = new ProductsOptionsRoot(json, _options)
             {
                 Type = type?.TrimStart('@'),
                 CacheForSeconds = 0
@@ -119,7 +119,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            var options = new ProductsOptions(json, _options)
+            var options = new ProductsOptionsRoot(json, _options)
             {
                 Id = id,
                 CacheForSeconds = 0                
@@ -141,7 +141,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
         [Route("{id:int}"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
-        public async Task<ActionResult> GetById(ProductsOptions options, string language = null, string state = null)
+        public async Task<ActionResult> GetById(ProductsOptionsRoot options, string language = null, string state = null)
         {
             CorrectProductOptions(options);
             try
@@ -170,7 +170,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            var options = new ProductsOptions(json, _options) {CacheForSeconds = 0};
+            var options = new ProductsOptionsRoot(json, _options) {CacheForSeconds = 0};
             try
             {
                 return await GetSearchActionResult(options, language, state);
@@ -184,7 +184,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
         [Route("search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<ActionResult> Search(ProductsOptions options, string language = null, string state = null)
+        public async Task<ActionResult> Search(ProductsOptionsRoot options, string language = null, string state = null)
         {
             CorrectProductOptions(options);
             try
@@ -197,7 +197,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
         }
 
-        private void CorrectProductOptions(ProductsOptions options)
+        private void CorrectProductOptions(ProductsOptionsRoot options)
         {
             options.ElasticOptions = _options;
             options.ApplyQueryCollection(Request.Query);
@@ -220,7 +220,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return ParseBadRequest(ex);
             }
             
-            var options = new ProductsOptions(json, _options, id, skip, take);
+            var options = new ProductsOptionsRoot(json, _options, id, skip, take);
             
             try
             {
@@ -243,7 +243,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            var options = new ProductsOptions(json, _options) {Type = type?.TrimStart('@')};
+            var options = new ProductsOptionsRoot(json, _options) {Type = type?.TrimStart('@')};
             
             try
             {
@@ -255,13 +255,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
         }
 
-        private async Task<ActionResult> GetByIdActionResult(ProductsOptions options, string language, string state)
+        private async Task<ActionResult> GetByIdActionResult(ProductsOptionsRoot options, string language, string state)
         {
             var result = await Manager.FindByIdAsync(options, language, state);
             return Json(result);
         }
         
-        private async Task<ActionResult> GetSearchActionResult(ProductsOptions options, string language, string state)
+        private async Task<ActionResult> GetSearchActionResult(ProductsOptionsRoot options, string language, string state)
         {
             bool readData = true;
             ActionResult result = null; 

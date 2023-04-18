@@ -23,7 +23,7 @@ namespace QA.ProductCatalog.HighloadFront
             _readProcessor = readProcessor;
         }
 
-        public async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
+        public async Task<string> FindByIdAsync(ProductsOptionsBase options, string language, string state)
         {
             var store = StoreFactory.GetProductStore(language, state);
             var product = await store.FindByIdAsync(options, language, state);
@@ -96,7 +96,7 @@ namespace QA.ProductCatalog.HighloadFront
         }
 
         
-        public async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state)
         {
             var store = StoreFactory.GetProductStore(language, state);
             var products = await store.SearchAsync(options, language, state);
@@ -104,22 +104,52 @@ namespace QA.ProductCatalog.HighloadFront
             return await Expand(store, options, language, state, products);
         }
 
-        private async Task<string> Expand(IProductStore store, ProductsOptions options, string language, string state, string document)
+        private async Task<string> Expand(IProductStore store, ProductsOptionsBase options, string language, string state, string document)
         {
             var expanded = document;
 
-            if (options.Expand != null && options.Expand.Any())
+            if (options.Expand != null)
             {
-                var ids = _readProcessor.GetExpandIds(document, options);
-                if (ids.Any())
+                foreach(var expandOptions in options.Expand)
                 {
-                    var expandSource = await store.FindSourceByIdsAsync(ids, language, state);
-                    expanded = _readProcessor.Expand(expanded, expandSource, options);
+                    var ids = _readProcessor.GetExpandIds(document, expandOptions);
+
+                    if (ids.Any())
+                    {
+                        expandOptions.FilterByIds(ids);
+                        var expandSource = await store.SearchAsync(expandOptions, language, state);
+                        //expandSource = await Expand(store, expandOptions, language, state, expandSource);
+
+                        var xx = _readProcessor.GetExpand(expandSource);
+                        var yy = await Expand(store, expandOptions, language, state, xx.ToString());
+
+
+                        expanded = _readProcessor.Expand(expanded, yy, expandOptions);
+                    }
                 }
             }
 
             return expanded;
         }
+
+
+        //private async Task<string> ExpandDeprecate(IProductStore store, ProductsOptionsBase options, string language, string state, string document)
+        //{
+
+        //    var expanded = document;
+
+        //    if (options.Expand != null && options.Expand.Any())
+        //    {
+        //        var ids = _readProcessor.GetExpandIds(document, options);
+        //        if (ids.Any())
+        //        {
+        //            var expandSource = await store.FindSourceByIdsAsync(ids, language, state);
+        //            expanded = _readProcessor.Expand(expanded, expandSource, options);
+        //        }
+        //    }
+
+        //    return expanded;
+        //}
 
         private IProductStore GetProductStore(string language, string state, Dictionary<string, IProductStore> stores)
         {

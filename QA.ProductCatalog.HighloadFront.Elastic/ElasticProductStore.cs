@@ -125,7 +125,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public virtual async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
+        public virtual async Task<string> FindByIdAsync(ProductsOptionsBase options, string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
             return await client.FindSourceByIdAsync( $"{options.Id}/_source", "_all", "_source_include", options?.PropertiesFilter?.ToArray());
@@ -406,14 +406,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     new JProperty("tokenizer", "lowercase")));
         }
 
-        public virtual async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public virtual async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
             return await client.SearchAsync(options.ActualType, q);
         }
 
-        protected JObject GetQuery(ProductsOptions options)
+        protected JObject GetQuery(ProductsOptionsBase options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -512,7 +512,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return result;
         }
 
-        protected virtual void SetQuery(JObject json, ProductsOptions productsOptions)
+        protected virtual void SetQuery(JObject json, ProductsOptionsBase productsOptions)
         {
             JProperty query = null;
             var filters = productsOptions.Filters;
@@ -630,7 +630,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return new JProperty(elem.Name, content);
         }
 
-        private void SetSorting(JObject json, ProductsOptions options)
+        private void SetSorting(JObject json, ProductsOptionsBase options)
         {
             if (!String.IsNullOrEmpty(options.Sort))
             {
@@ -814,7 +814,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             ));
         }
 
-        private string[] GetFields(ProductsOptions options)
+        private string[] GetFields(ProductsOptionsBase options)
         {
             string[] fields = null;
 

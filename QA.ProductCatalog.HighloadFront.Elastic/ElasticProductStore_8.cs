@@ -47,14 +47,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             );
         }
 
-        public override async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public override async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
             return await client.SearchAsync(string.Empty, q);
         }
 
-        public override async Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
+        public override async Task<string> FindByIdAsync(ProductsOptionsBase options, string language, string state)
         {
             var client = Configuration.GetElasticClient(language, state);
             return await client.FindSourceByIdAsync($"_source/{options.Id}", string.Empty, "_source_includes", options?.PropertiesFilter?.ToArray());

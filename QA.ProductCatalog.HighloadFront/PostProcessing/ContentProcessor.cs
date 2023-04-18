@@ -10,7 +10,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 {
     public class ContentProcessor : IProductReadPostProcessor
     {
-        public async Task<string> GetResult(string input, ProductsOptions options)
+        public async Task<string> GetResult(string input, ProductsOptionsBase options)
         {
             if (options.DataFilters.Any())
             {
@@ -60,7 +60,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             return new JArray(hits.Select(n => (object)n));
         }
 
-        public string Expand(string input, string expanded, ProductsOptions options)
+        public string Expand(string input, string expanded, ProductsOptionsExpand options)
         {
             var expandDictionary = GetExpand(expanded).ToDictionary(x => GetId(x));
 
@@ -87,42 +87,46 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             return token.ToString();
         }
 
-        private void Expand(Dictionary<int, JToken> expandDictionary, JToken product, ProductsOptions options)
+        private void Expand(Dictionary<int, JToken> expandDictionary, JToken product, ProductsOptionsExpand options)
         {
-            foreach (var path in options.Expand)
+            foreach (var token in product.SelectTokens(options.Path).ToArray())
             {
-                foreach (var token in product.SelectTokens(path).ToArray())
+                if (token is JArray)
                 {
-                    if (token is JArray)
+                    foreach (var item in token.ToArray())
                     {
-                        foreach (var item in token.ToArray())
+                        if (expandDictionary.TryGetValue(GetId(item), out var value))
                         {
-                            if (expandDictionary.TryGetValue(GetId(item), out var value))
-                            {
-                                item.Replace(value);
-                            }
+                            item.Replace(value);
                         }
                     }
-                    if (token is JObject)
+                }
+                if (token is JObject)
+                {
+                    if (expandDictionary.TryGetValue(GetId(token), out var value))
                     {
-                        if (expandDictionary.TryGetValue(GetId(token), out var value))
-                        {
-                            token.Replace(value);
+                        token.Replace(value);
 
-                        }
                     }
                 }
             }
         }
 
-        private JArray GetExpand(string input)
+        private JArray GetExpandOld(string input)
         {
             const string sourceQuery = "docs.[?(@._source)]._source";
             var hits = JObject.Parse(input).SelectTokens(sourceQuery);
             return new JArray(hits);
         }
 
-        public int[] GetExpandIds(string input, ProductsOptions options)
+        public JArray GetExpand(string input)
+        {
+            const string sourceQuery = "hits.hits.[?(@._source)]._source";
+            var hits = JObject.Parse(input).SelectTokens(sourceQuery);
+            return new JArray(hits);
+        }
+
+        public int[] GetExpandIds(string input, ProductsOptionsExpand options)
         {
             var ids = new HashSet<int>();
             var token = JToken.Parse(input);
@@ -142,23 +146,20 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             return ids.ToArray();
         }
 
-        private void UpdateExpandIds(HashSet<int> ids, JToken product, ProductsOptions options)
+        private void UpdateExpandIds(HashSet<int> ids, JToken product, ProductsOptionsExpand options)
         {
-            foreach (var path in options.Expand)
+            foreach (var token in product.SelectTokens(options.Path))
             {
-                foreach (var token in product.SelectTokens(path))
+                if (token is JArray)
                 {
-                    if (token is JArray)
+                    foreach (var item in token)
                     {
-                        foreach(var item in token)
-                        {
-                            ids.Add(GetId(item));
-                        }
+                        ids.Add(GetId(item));
                     }
-                    if (token is JObject)
-                    {
-                        ids.Add(GetId(token));
-                    }
+                }
+                if (token is JObject)
+                {
+                    ids.Add(GetId(token));
                 }
             }
         }
