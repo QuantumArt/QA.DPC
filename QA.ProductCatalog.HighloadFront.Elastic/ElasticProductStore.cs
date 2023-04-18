@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Logging;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
-using Newtonsoft.Json.Converters;
-using System.Net.Http;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -400,11 +400,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     new JProperty("tokenizer", "lowercase")));
         }
 
-        public virtual async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public virtual async Task<string> SearchAsync(ProductsOptions options, string language, string state, CancellationToken cancellationToken = default)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
-            return await client.SearchAsync(options.ActualType, q);
+            return await client.SearchAsync(options.ActualType, q, cancellationToken);
         }
 
         protected JObject GetQuery(ProductsOptions options)

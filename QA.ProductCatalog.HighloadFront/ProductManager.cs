@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
@@ -92,9 +93,9 @@ namespace QA.ProductCatalog.HighloadFront
         }
 
         
-        public Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public Task<string> SearchAsync(ProductsOptions options, string language, string state, CancellationToken cancellationToken = default)
         {
-            return StoreFactory.GetProductStore(language, state).SearchAsync(options, language, state);
+            return StoreFactory.GetProductStore(language, state).SearchAsync(options, language, state, cancellationToken);
         }
 
         private IProductStore GetProductStore(string language, string state, Dictionary<string, IProductStore> stores)
