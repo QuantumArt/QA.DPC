@@ -48,6 +48,11 @@ spec:
                 configMapKeyRef:
                   name: dpc-config
                   key: CONFIGURATION_SERVICE_TOKEN
+            - name: Tmf__IsEnabled
+              valueFrom:
+                configMapKeyRef:
+                  key: TMF_ENABLED
+                  name: dpc-config
           ports:
             - containerPort: 80
           volumeMounts:
@@ -91,7 +96,7 @@ spec:
           image: '||registry||/dpc-api:||version||'
           envFrom:
             - configMapRef:
-                name: dpc-config          
+                name: dpc-config
           env:
             - name: Integration__RestNotificationUrl
               valueFrom:
@@ -113,6 +118,11 @@ spec:
                 configMapKeyRef:
                   name: dpc-config
                   key: CONFIGURATION_SERVICE_TOKEN
+            - name: Tmf__IsEnabled
+              valueFrom:
+                configMapKeyRef:
+                  key: TMF_ENABLED
+                  name: dpc-config
           ports:
             - containerPort: 80
           volumeMounts:
@@ -243,6 +253,11 @@ spec:
                 configMapKeyRef:
                   name: dpc-config
                   key: CONFIGURATION_SERVICE_TOKEN
+            - name: Tmf__IsEnabled
+              valueFrom:
+                configMapKeyRef:
+                  key: TMF_ENABLED
+                  name: dpc-config
           ports:
             - containerPort: 80
           volumeMounts:
