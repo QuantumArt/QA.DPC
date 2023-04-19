@@ -164,6 +164,11 @@ spec:
                   key: INSTANCE_ID
             - name: Data__CanUpdate
               value: "true"
+            - name: Tmf__IsEnabled
+              valueFrom:
+                configMapKeyRef:
+                  key: TMF_ENABLED
+                  name: dpc-config
           ports:
             - containerPort: 80
           volumeMounts:
