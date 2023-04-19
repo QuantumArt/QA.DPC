@@ -28,6 +28,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private const string CACHE_FOR_SECONDS = "cache_for_seconds";
         private const string EXPAND = "expand";
         protected const string PATH = "path";
+        protected const string NAME = "name";
 
 
         private const string FREE_QUERY = "q";
@@ -53,7 +54,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
             DATA_FILTERS,
             CACHE_FOR_SECONDS,
             EXPAND,
-            PATH
+            PATH,
+            NAME
         };
         
         protected ProductsOptionsBase(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)

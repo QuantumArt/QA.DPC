@@ -60,9 +60,9 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             return new JArray(hits.Select(n => (object)n));
         }
 
-        public string Expand(string input, string expanded, ProductsOptionsExpand options)
+        public string Expand(string input, JArray expanded, ProductsOptionsExpand options)
         {
-            var expandDictionary = GetExpand(expanded).ToDictionary(x => GetId(x));
+            var expandDictionary = expanded.ToDictionary(x => GetId(x));
 
             if (!expandDictionary.Any())
             {
@@ -89,34 +89,49 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 
         private void Expand(Dictionary<int, JToken> expandDictionary, JToken product, ProductsOptionsExpand options)
         {
+            if (string.IsNullOrEmpty(options.Name))
+            {
+                ExpandInPlace(expandDictionary, product, options);
+            }
+            else
+            {
+                ExpandInField(expandDictionary, product, options);
+            }
+        }
+
+        private void ExpandInPlace(Dictionary<int, JToken> expandDictionary, JToken product, ProductsOptionsExpand options)
+        {
             foreach (var token in product.SelectTokens(options.Path).ToArray())
             {
                 if (token is JArray)
                 {
                     foreach (var item in token.ToArray())
                     {
-                        if (expandDictionary.TryGetValue(GetId(item), out var value))
-                        {
-                            item.Replace(value);
-                        }
+                        AddExpandValue(expandDictionary, item);
                     }
                 }
                 if (token is JObject)
                 {
-                    if (expandDictionary.TryGetValue(GetId(token), out var value))
-                    {
-                        token.Replace(value);
-
-                    }
+                    AddExpandValue(expandDictionary, token);
                 }
             }
         }
 
-        private JArray GetExpandOld(string input)
+        private void ExpandInField(Dictionary<int, JToken> expandDictionary, JToken product, ProductsOptionsExpand options)
         {
-            const string sourceQuery = "docs.[?(@._source)]._source";
-            var hits = JObject.Parse(input).SelectTokens(sourceQuery);
-            return new JArray(hits);
+            var ids = new HashSet<int>();
+            UpdateExpandIds(ids, product, options);
+            var values = ids.Where(id => expandDictionary.ContainsKey(id)).Select(id => expandDictionary[id]).ToArray();
+            var valuesObject = new JArray(values);
+            product[options.Name] = valuesObject;
+        }
+
+        private void AddExpandValue(Dictionary<int, JToken> expandDictionary, JToken expandable)
+        {
+            if (expandDictionary.TryGetValue(GetId(expandable), out var value))
+            {
+                expandable.Replace(value);
+            }            
         }
 
         public JArray GetExpand(string input)

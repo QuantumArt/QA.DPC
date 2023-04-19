@@ -118,38 +118,16 @@ namespace QA.ProductCatalog.HighloadFront
                     {
                         expandOptions.FilterByIds(ids);
                         var expandSource = await store.SearchAsync(expandOptions, language, state);
-                        //expandSource = await Expand(store, expandOptions, language, state, expandSource);
 
-                        var xx = _readProcessor.GetExpand(expandSource);
-                        var yy = await Expand(store, expandOptions, language, state, xx.ToString());
-
-
-                        expanded = _readProcessor.Expand(expanded, yy, expandOptions);
+                        var products = _readProcessor.GetExpand(expandSource);
+                        var expandedProducts = await Expand(store, expandOptions, language, state, products.ToString());
+                        expanded = _readProcessor.Expand(expanded, JArray.Parse(expandedProducts), expandOptions);
                     }
                 }
             }
 
             return expanded;
         }
-
-
-        //private async Task<string> ExpandDeprecate(IProductStore store, ProductsOptionsBase options, string language, string state, string document)
-        //{
-
-        //    var expanded = document;
-
-        //    if (options.Expand != null && options.Expand.Any())
-        //    {
-        //        var ids = _readProcessor.GetExpandIds(document, options);
-        //        if (ids.Any())
-        //        {
-        //            var expandSource = await store.FindSourceByIdsAsync(ids, language, state);
-        //            expanded = _readProcessor.Expand(expanded, expandSource, options);
-        //        }
-        //    }
-
-        //    return expanded;
-        //}
 
         private IProductStore GetProductStore(string language, string state, Dictionary<string, IProductStore> stores)
         {

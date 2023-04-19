@@ -12,8 +12,12 @@ namespace QA.ProductCatalog.HighloadFront.Options
         {
             if (!(json is JObject jobj)) return;
 
+            Name = (string)jobj.SelectToken(NAME);
             Path = (string)jobj.SelectToken(PATH);
         }
+
+        [ModelBinder(Name = NAME)]
+        public string Name { get; set; }
 
         [ModelBinder(Name = PATH)]
         public string Path { get; set; }
