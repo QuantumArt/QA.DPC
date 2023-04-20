@@ -151,7 +151,6 @@ namespace QA.ProductCatalog.TmForum.Services
 
             IProductAPIService productService = _databaseProductServiceFactory();
 
-            productService.DeleteProduct(slug, version, product.Id);
             ExecuteCustomAction(productService, "DeleteAction", product.Id, product.ContentId);
 
             _logger.LogInformation("Product with id {id} was deleted.", product.Id);
