@@ -81,7 +81,7 @@ namespace QA.ProductCatalog.TmForum.Extensions
             });
 
             // Replace DPC Front factory with Tmf specific one
-            services.Replace(ServiceDescriptor.Singleton<IProductSerializerFactory, TmfProductSerializerFactory>());
+            services.Replace(ServiceDescriptor.Scoped<IProductSerializerFactory, TmfProductSerializerFactory>());
 
             return services;
         }

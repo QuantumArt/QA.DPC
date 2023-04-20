@@ -65,7 +65,7 @@ namespace QA.ProductCatalog.Front.Core.API
             services.AddScoped(typeof(IDpcService), typeof(DpcProductService));
             services.AddSingleton<JsonProductSerializer>();
             services.AddSingleton<XmlProductSerializer>();
-            services.AddSingleton<IProductSerializerFactory, ProductSerializerFactory>();
+            services.AddScoped<IProductSerializerFactory, ProductSerializerFactory>();
 
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
 
