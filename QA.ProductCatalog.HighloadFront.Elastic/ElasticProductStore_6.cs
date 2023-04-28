@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using QA.ProductCatalog.HighloadFront.Options;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
+using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -21,11 +22,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return "_doc";
         }
 
-        public override async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state)
+        public override async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
-            return await client.SearchAsync("_doc", q);
+            return await client.SearchAsync("_doc", q, cancellationToken);
         }
 
         protected override JObject GetMapping(string type, string[] fields)

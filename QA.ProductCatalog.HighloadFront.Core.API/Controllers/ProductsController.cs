@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
 
@@ -32,11 +33,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         Route("api/{customerCode}/{version:decimal}/products"),
         Route("api/{customerCode}/{version:decimal}"),
         Route("api/{customerCode}/{version:decimal}/{language}/{state}/products"),
-        Route("api/{customerCode}/{version:decimal}/{language}/{state}"),
-
+        Route("api/{customerCode}/{version:decimal}/{language}/{state}")
     ]
     [OnlyAuthUsers]
-    public class ProductsController : BaseController
+    public class ProductsController : BaseProductsController
     {
         private static readonly Regex ParamsToReplace = new Regex(
             @"\|\|(?<name>[\w]+)\:*(?<constraints>(?:[^|]|\|(?!\|))+)?\|\|", 
@@ -54,25 +54,24 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         public ProductsController(
             ProductManager manager, 
-            SonicElasticStoreOptions options, 
-            ElasticConfiguration configuration, 
-            IMemoryCache cache
-        ) : base(manager, configuration)
+            ElasticConfiguration configuration,
+            SonicElasticStoreOptions elasticOptions,
+            IMemoryCache cache)
+            : base(manager, configuration, elasticOptions, cache)
         {
-            _options = options;
-            _cache = cache;
+            
         }
-
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("{type}")]
-        public async Task<ActionResult> GetByType(ProductsOptionsRoot options, string language = null, string state = null)
+        public async Task<ActionResult> GetByType(ProductsOptionsRoot options, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
         {
             CorrectProductOptions(options);
             try
             {
-                return await GetSearchActionResult(options, language, state);
+                return await GetSearchActionResult(options, language, state, cancellationToken);
             }
             catch (ElasticClientException ex)
             {
@@ -83,7 +82,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("{type}"), HttpPost]
-        public async Task<ActionResult> GetByType([FromBody]object json, string type, string language = null, string state = null)
+        public async Task<ActionResult> GetByType([FromBody]object json, string type, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
         {
             var modelStateResult = ModelStateBadRequest();
             if (modelStateResult != null)
@@ -98,15 +98,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             };
             try
             {
-                return await GetSearchActionResult(options, language, state);
+                return await GetSearchActionResult(options, language, state, cancellationToken);
             }
             catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
         }
-
-
 
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
@@ -162,7 +160,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
         [Route("search"), HttpPost]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<ActionResult> Search([FromBody]object json, string language = null, string state = null)
+        public async Task<ActionResult> Search([FromBody]object json, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
         {
             var modelStateResult = ModelStateBadRequest();
             if (modelStateResult != null)
@@ -170,10 +169,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            var options = new ProductsOptionsRoot(json, _options) {CacheForSeconds = 0};
+            var options = new ProductsOptionsRoot(json, _options) { CacheForSeconds = 0 };
             try
             {
-                return await GetSearchActionResult(options, language, state);
+                return await GetSearchActionResult(options, language, state, cancellationToken);
             }
             catch (ElasticClientException ex)
             {
@@ -184,31 +183,25 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
         [Route("search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<ActionResult> Search(ProductsOptionsRoot options, string language = null, string state = null)
+        public async Task<ActionResult> Search(ProductsOptionsRoot options, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
         {
             CorrectProductOptions(options);
             try
             {
-                return await GetSearchActionResult(options, language, state);
+                return await GetSearchActionResult(options, language, state, cancellationToken);
             }
             catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
         }
-
-        private void CorrectProductOptions(ProductsOptionsRoot options)
-        {
-            options.ElasticOptions = _options;
-            options.ApplyQueryCollection(Request.Query);
-            options.ComputeArrays();
-        }
-        
         
         [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[]{"alias"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("query/{alias}")]
-        public async Task<ActionResult> Query(string alias, int? id, int? skip, int? take, string language = null, string state = null)
+        public async Task<ActionResult> Query(string alias, int? id, int? skip, int? take, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
         {
             JObject json = null;
             try
@@ -224,7 +217,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             
             try
             {
-                return await GetSearchActionResult(options, language, state);
+                return await GetSearchActionResult(options, language, state, cancellationToken);
             }
             catch (ElasticClientException ex)
             {
@@ -235,7 +228,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[]{"alias"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("query/{alias}"), HttpPost]
-        public async Task<ActionResult> Query([FromBody]object json, string type, string language = null, string state = null)
+        public async Task<ActionResult> Query([FromBody]object json, string type, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
         {
             var modelStateResult = ModelStateBadRequest();
             if (modelStateResult != null)
@@ -243,11 +237,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            var options = new ProductsOptionsRoot(json, _options) {Type = type?.TrimStart('@')};
+            var options = new ProductsOptionsRoot(json, _options) { Type = type?.TrimStart('@') };
             
             try
             {
-                return await GetSearchActionResult(options, language, state);
+                return await GetSearchActionResult(options, language, state, cancellationToken);
             }
             catch (ElasticClientException ex)
             {
@@ -255,44 +249,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
         }
 
+        private void CorrectProductOptions(ProductsOptionsRoot options)
+        {
+            options.ElasticOptions = ElasticOptions;
+            options.ApplyQueryCollection(Request.Query);
+            options.ComputeArrays();
+        }
+
         private async Task<ActionResult> GetByIdActionResult(ProductsOptionsRoot options, string language, string state)
         {
             var result = await Manager.FindByIdAsync(options, language, state);
             return Json(result);
-        }
-        
-        private async Task<ActionResult> GetSearchActionResult(ProductsOptionsRoot options, string language, string state)
-        {
-            bool readData = true;
-            ActionResult result = null; 
-            var key = options.GetKey();
-            var useCaching = options.CacheForSeconds > 0 && key != null;
-            if (useCaching && _cache.TryGetValue(key, out var value))
-            {
-                result = (ActionResult)value;
-                readData = false;
-            }
-
-            if (readData)
-            {
-                var searchResult = await Manager.SearchAsync(options, language, state);
-
-                result = Json(searchResult);
-
-                if (useCaching)
-                {
-                    _cache.Set(key, result, GetCacheOptions((int)options.CacheForSeconds));
-                }
-            }
-
-            return result;
-        }
-
-        private MemoryCacheEntryOptions GetCacheOptions(int value)
-        {
-            var options = new MemoryCacheEntryOptions();
-            options.SetAbsoluteExpiration(TimeSpan.FromSeconds(value));
-            return options;
         }
 
         private JObject GetQueryJson(string alias)
@@ -442,13 +409,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
             
             return result; 
-        }
-
-        private BadRequestObjectResult ElasticBadRequest(ElasticClientException ex, int id = 0)
-        {
-
-            LogException(ex, "Elastic Search error occurred: ");
-            return BadRequest($"Elastic search error occurred: Reason: {ex.Message}");
         }
         
         private BadRequestObjectResult ParseBadRequest(Exception ex)

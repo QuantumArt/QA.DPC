@@ -53,8 +53,8 @@ namespace QA.ProductCatalog.TmForum.Extensions
 
                 return services;
             }
-            
-            services.Configure<ConnectionProperties>(configuration.GetSection("Connection"));
+
+            services.Configure<ConnectionProperties>(configuration.GetSection("Data"));
             services.Configure<IntegrationProperties>(configuration.GetSection("Integration"));
             services.AddHttpContextAccessor();
             services.TryAddScoped<IIdentityProvider, CoreIdentityProvider>();
@@ -62,11 +62,11 @@ namespace QA.ProductCatalog.TmForum.Extensions
             services.TryAddScoped<IConnectionProvider, CoreConnectionProvider>();
             services.AddScoped<VersionedCacheProviderBase>();
             services.AddSingleton<TmfProductSerializer>();
-                
+
             services.TryAddScoped<ISettingsService>(provider =>
             {
                 _ = int.TryParse(configuration["Data:SettingsContentId"], out int result);
-                
+
                 if (result > 0)
                 {
                     return new SettingsFromContentCoreService(
@@ -74,18 +74,18 @@ namespace QA.ProductCatalog.TmForum.Extensions
                         provider.GetRequiredService<IConnectionProvider>(),
                         result);
                 }
-                
+
                 return new SettingsFromQpCoreService(
                     provider.GetRequiredService<VersionedCacheProviderBase>(),
                     provider.GetRequiredService<IConnectionProvider>());
             });
-                
+
             // Replace DPC Front factory with Tmf specific one
-            services.Replace(ServiceDescriptor.Singleton<IProductSerializerFactory, TmfProductSerializerFactory>());
+            services.Replace(ServiceDescriptor.Scoped<IProductSerializerFactory, TmfProductSerializerFactory>());
 
             return services;
         }
-        
+
         public static IServiceCollection ResolveTmForumRegistrationForHighloadApi(this IServiceCollection services, IConfiguration configuration)
         {
             TmfSettings settings = GetTmForumSettings(configuration);

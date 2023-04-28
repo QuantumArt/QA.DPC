@@ -35,13 +35,13 @@ namespace QA.ProductCatalog.Admin.WebApp
         {
             var loaderProps = new LoaderProperties();
             Configuration.Bind("Loader", loaderProps);
-            
+
             var props = new Properties();
             Configuration.Bind("Properties", props);
-            
+
             var integrationProps = new IntegrationProperties();
             Configuration.Bind("Integration", integrationProps);
-            
+
             UnityConfig.Configure(container, loaderProps, integrationProps, props);
         }
 
@@ -52,28 +52,30 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.AddHttpContextAccessor();
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
             services.AddTransient<QPHelper>();
-            
+
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            services.Configure<Properties>(Configuration.GetSection("Properties"));              
+            services.Configure<Properties>(Configuration.GetSection("Properties"));
             services.Configure<QPOptions>(Configuration.GetSection("QP"));
-            
+
+            services.FillQpConfiguration(Configuration);
+
             var props = new IntegrationProperties();
             Configuration.Bind("Integration", props);
-            
+
             services.Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedProtoHeaderName = "X-FORWARDED-PROTO";
                 options.ForwardedHeaders =
                     ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                 // Only loopback proxies are allowed by default.
-                // Clear that restriction because forwarders are enabled by explicit 
+                // Clear that restriction because forwarders are enabled by explicit
                 // configuration.
                 options.KnownNetworks.Clear();
                 options.KnownProxies.Clear();
             });
-            
+
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
 
@@ -81,15 +83,15 @@ namespace QA.ProductCatalog.Admin.WebApp
             {
                 options.Secure = CookieSecurePolicy.SameAsRequest;
                 options.MinimumSameSitePolicy = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax;
-            }); 
-            
+            });
+
             services.AddSession(options =>
             {
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = props.UseSameSiteNone ? SameSiteMode.None : SameSiteMode.Lax;
             });
-            
+
             services.AddResponseCaching();
             services
                 .AddMvc(options =>
@@ -101,7 +103,7 @@ namespace QA.ProductCatalog.Admin.WebApp
 
             services.ResolveTmForumRegistration(Configuration);
         }
-        
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
@@ -118,10 +120,10 @@ namespace QA.ProductCatalog.Admin.WebApp
             app.UseCookiePolicy();
             app.UseSession();
             app.UseResponseCaching();
-            
+
             app.UseForwardedHeaders();
             app.UseMvcWithDefaultRoute();
-            
+
             LogStart(app, loggerFactory);
 
         }
@@ -131,7 +133,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
             var name = config["Properties:Name"];
             var logger = loggerFactory.CreateLogger(GetType());
-            logger.LogInformation("{appName} started", name);         
+            logger.LogInformation("{appName} started", name);
         }
 
     }

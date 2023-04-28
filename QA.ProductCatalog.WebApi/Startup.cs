@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using QA.Core.DPC.Formatters.Formatting;
@@ -20,12 +19,13 @@ using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Filters;
 using QA.ProductCatalog.TmForum.Extensions;
 using QA.ProductCatalog.WebApi.App_Start;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using QA.Core.DPC.Workflow.Extensions;
+using Quantumart.QP8.Configuration;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi
@@ -67,6 +67,8 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<Properties>(Configuration.GetSection("Properties"));
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));
 
+            services.FillQpConfiguration(Configuration);
+
             services
                 .AddMvc(options =>
                 {
@@ -95,6 +97,8 @@ namespace QA.ProductCatalog.WebApi
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+
+            services.RegisterWorkflow(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
@@ -111,7 +115,7 @@ namespace QA.ProductCatalog.WebApi
 
             app.UseSwagger();
 
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {

@@ -69,7 +69,8 @@
         PRODUCTVERSION_TIMEOUT,
         #region TMF
         TMF_ID_FIELD_NAME,
-        TMF_ENABLED
+        TMF_ENABLED,
         #endregion
+        EXTERNAL_WORKFLOW
     }
 }

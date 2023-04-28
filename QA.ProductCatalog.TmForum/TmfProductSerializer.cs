@@ -29,11 +29,6 @@ public class TmfProductSerializer : IProductSerializer
 
         string productName = json["name"]?.ToString();
 
-        if (string.IsNullOrWhiteSpace(productName))
-        {
-            throw new FormatException($"Unable to find product name in document: {json}");
-        }
-
         Product product = new()
         {
             Id = productId,

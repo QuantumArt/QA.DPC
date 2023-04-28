@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Options;
@@ -9,7 +10,7 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
     public interface IProductStore : IDisposable
     {
         
-        Task<string> SearchAsync(ProductsOptionsBase options, string language, string state);
+        Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default);
         Task<string> FindByIdAsync(ProductsOptionsBase options, string language, string state);
         Task<string> FindSourceByIdsAsync(int[] ids, string language, string state);
         Task<string> GetIndicesByName(string language, string state);

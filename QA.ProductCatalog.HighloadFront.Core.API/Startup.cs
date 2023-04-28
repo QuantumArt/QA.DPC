@@ -1,6 +1,7 @@
 ﻿using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,8 @@ using Newtonsoft.Json.Serialization;
 using Polly.Registry;
 using QA.Core.DPC.QP.Models;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.DotNetCore.Caching;
+using QA.DotNetCore.Caching.Interfaces;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.DI;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
@@ -34,45 +37,51 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            
+
             var opts = new HarvesterOptions();
             Configuration.Bind("Harvester", opts);
             services.AddSingleton(opts);
-            
+
             var opts2 = new SonicElasticStoreOptions();
             Configuration.Bind("SonicElasticStore", opts2);
             services.AddSingleton(opts2);
-            
+
             var opts3 = new DataOptions();
             Configuration.Bind("Data", opts3);
             services.AddSingleton(opts3);
-            
+
             var opts4 = new TaskRunnerDelays();
             Configuration.Bind("ReindexDelays", opts4);
             services.AddSingleton(opts4);
-            
+
             services.AddSingleton(new PolicyRegistry());
             services.AddScoped<IProductInfoProvider, ProductInfoProvider>();
 
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            
+
             // Add framework services.
             services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
                 options.Filters.Add(typeof(ProcessCustomerCodeAttribute));
-            }).AddNewtonsoftJson(options =>
+            })
+            .AddCustomModules(Configuration, services)
+            .AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
 
+            services.AddSingleton<ICacheProvider, VersionedCacheCoreProvider>();
+
+            services.AddFluentValidationAutoValidation();
+
             services.AddMemoryCache();
             services.AddHttpClient();
-            
+
             services.ResolveTmForumRegistrationForHighloadApi(Configuration);
 
             var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration});
+            containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration });
             containerBuilder.Populate(services);
             var container = containerBuilder.Build();
             return new AutofacServiceProvider(container);

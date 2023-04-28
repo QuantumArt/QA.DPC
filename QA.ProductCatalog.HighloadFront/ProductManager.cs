@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace QA.ProductCatalog.HighloadFront
 {
@@ -96,10 +97,10 @@ namespace QA.ProductCatalog.HighloadFront
         }
 
         
-        public async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state)
+        public async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
         {
             var store = StoreFactory.GetProductStore(language, state);
-            var products = await store.SearchAsync(options, language, state);
+            var products = await store.SearchAsync(options, language, state, cancellationToken);
             products = await _readProcessor.GetResult(products, options);
             return await Expand(store, options, language, state, products);
         }
