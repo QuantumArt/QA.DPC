@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using QA.Core.DPC.Workflow.Extensions;
+using Quantumart.QP8.Configuration;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi
@@ -65,6 +66,10 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.Configure<Properties>(Configuration.GetSection("Properties"));
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));
+
+            QPConfiguration.ConfigServiceUrl = Configuration.GetSection("Integration").GetValue<string>("ConfigurationServiceUrl");
+            QPConfiguration.ConfigServiceToken = Configuration.GetSection("Integration").GetValue<string>("ConfigurationServiceToken");
+            QPConfiguration.Options = new() { QpConfigPollingInterval = TimeSpan.FromMinutes(1) };
 
             services
                 .AddMvc(options =>
@@ -112,7 +117,7 @@ namespace QA.ProductCatalog.WebApi
 
             app.UseSwagger();
 
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
