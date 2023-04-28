@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.Workflow.ExternalTasks;
 using QA.Core.DPC.Workflow.Services;
@@ -21,7 +22,7 @@ public static class ServiceCollectionExtension
             return services;
         }
 
-        services.AddSingleton(Options.Create(settings));
+        services.TryAddSingleton(Options.Create(settings));
 
         services.AddHostedService<WorkflowTenantWatcherHostedService>();
 
