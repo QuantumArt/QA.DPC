@@ -35,7 +35,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             var loaderProps = new LoaderProperties();
             Configuration.Bind("Loader", loaderProps);
-            
+
             UnityConfig.Configure(container, loaderProps);
         }
 
@@ -45,23 +45,25 @@ namespace QA.Core.ProductCatalog.ActionsService
             services.AddOptions();
             services.AddHttpContextAccessor();
             services.AddHttpClient();
-            services.AddTransient<IActionContextAccessor, ActionContextAccessor>();            
-            
+            services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
             services.Configure<ActionsServiceProperties>(Configuration.GetSection("Properties"));
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
 
+            services.FillQpConfiguration(Configuration);
+
             services.AddSingleton<ActionsService>();
             services.AddSingleton<IHostedService>(x => x.GetRequiredService<ActionsService>());
-            
+
             var props = new ConnectionProperties();
             Configuration.Bind("Connection", props);
             if (!String.IsNullOrEmpty(props.DesignConnectionString))
             {
                 services.AddDbContext<NpgSqlTaskRunnerEntities>(options =>
                     options.UseNpgsql(props.DesignConnectionString));
-            
+
                 services.AddDbContext<SqlServerTaskRunnerEntities>(options =>
                     options.UseSqlServer(props.DesignConnectionString));
             }

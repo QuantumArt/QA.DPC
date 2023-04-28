@@ -67,9 +67,7 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<Properties>(Configuration.GetSection("Properties"));
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));
 
-            QPConfiguration.ConfigServiceUrl = Configuration.GetSection("Integration").GetValue<string>("ConfigurationServiceUrl");
-            QPConfiguration.ConfigServiceToken = Configuration.GetSection("Integration").GetValue<string>("ConfigurationServiceToken");
-            QPConfiguration.Options = new() { QpConfigPollingInterval = TimeSpan.FromMinutes(1) };
+            services.FillQpConfiguration(Configuration);
 
             services
                 .AddMvc(options =>
