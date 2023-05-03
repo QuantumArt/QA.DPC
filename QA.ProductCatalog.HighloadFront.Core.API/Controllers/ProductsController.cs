@@ -427,8 +427,5 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             LogException(ex, "Unexpected error occured");
             return BadRequest($"Unexpected error occurred. Reason: {ex.Message}");
         }
-
-        private ActionResult Json(string text) => Content(text, "application/json");
-
     }
 }

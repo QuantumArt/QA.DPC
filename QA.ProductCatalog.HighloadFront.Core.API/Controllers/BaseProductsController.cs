@@ -65,5 +65,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             options.SetAbsoluteExpiration(TimeSpan.FromSeconds(value));
             return options;
         }
+
+        protected ActionResult Json(string text) => Content(text, "application/json");
     }
 }
