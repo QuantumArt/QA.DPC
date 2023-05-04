@@ -313,4 +313,4 @@ namespace QA.ProductCatalog.HighloadFront.Options
             return key;
         }
     }
-};
+}

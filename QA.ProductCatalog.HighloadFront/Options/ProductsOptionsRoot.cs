@@ -37,4 +37,4 @@ namespace QA.ProductCatalog.HighloadFront.Options
          
         }
     }
-};
+}

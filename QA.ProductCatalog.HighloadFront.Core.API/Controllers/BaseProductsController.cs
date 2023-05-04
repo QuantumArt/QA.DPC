@@ -54,7 +54,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         protected BadRequestObjectResult ElasticBadRequest(ElasticClientException ex, int id = 0)
         {
-
             LogException(ex, "Elastic Search error occurred: ");
             return BadRequest($"Elastic search error occurred: Reason: {ex.Message}");
         }

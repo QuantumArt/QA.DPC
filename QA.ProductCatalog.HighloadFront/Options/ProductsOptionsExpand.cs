@@ -28,4 +28,4 @@ namespace QA.ProductCatalog.HighloadFront.Options
             Filters.Add(idsFilter);
         }
     }
-};
+}
