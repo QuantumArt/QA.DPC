@@ -25,7 +25,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         }
 
         protected async Task<ActionResult> GetSearchActionResult(
-            ProductsOptionsRoot options, string language, string state, CancellationToken cancellationToken)
+            ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken)
         {
             bool readData = true;
             ActionResult result = null;
@@ -64,7 +64,5 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             options.SetAbsoluteExpiration(TimeSpan.FromSeconds(value));
             return options;
         }
-
-        protected ActionResult Json(string text) => Content(text, "application/json");
     }
 }

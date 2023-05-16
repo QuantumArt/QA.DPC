@@ -134,6 +134,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             }
 
             builder.RegisterScoped<IProductReadPostProcessor, ContentProcessor>();
+            builder.RegisterScoped<IProductReadExpandPostProcessor, ExpandReadProcessor>();
+            builder.RegisterScoped<IProductWriteExpandPostProcessor, ExpandWriteProcessor>();
 
             builder.RegisterType<ArrayIndexer>().Named<IProductWritePostProcessor>("array");
             builder.RegisterType<DateIndexer>().Named<IProductWritePostProcessor>("date");

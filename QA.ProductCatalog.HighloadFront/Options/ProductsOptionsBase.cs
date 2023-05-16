@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -26,10 +27,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private const string QUERY = "query";
         private const string DATA_FILTERS = "data_filters";
         private const string CACHE_FOR_SECONDS = "cache_for_seconds";
+        private const string IS_REQUIRED = "is_required";
         private const string EXPAND = "expand";
         protected const string PATH = "path";
         protected const string NAME = "name";
-
 
         private const string FREE_QUERY = "q";
         private const string OR_QUERY = "or";
@@ -53,6 +54,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             QUERY,
             DATA_FILTERS,
             CACHE_FOR_SECONDS,
+            IS_REQUIRED,
             EXPAND,
             PATH,
             NAME
@@ -95,7 +97,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         #region Bound properties
 
-       
+        
         [ModelBinder(Name = "type")]
         public string Type { get; set; }
         
@@ -131,19 +133,19 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         [ModelBinder(Name = DISABLE_LIKE)]
         public string[] DisableLike { get; set; }
-        
+
+        [ModelBinder(Name = IS_REQUIRED)]
+        public bool IsRequired { get; set; }
+
         #endregion
-        
+
         #region Computed properties
-        
+
         [BindNever]
         public IList<IElasticFilter> Filters { get; set; }
         
         [BindNever]
         public IList<string> PropertiesFilter { get; set; }
-
-        [BindNever]
-        public IList<ProductsOptionsExpand> Expand { get; set; }
 
         [BindNever]
         public Dictionary<string, string> DataFilters { get; set; }
@@ -179,8 +181,16 @@ namespace QA.ProductCatalog.HighloadFront.Options
                     .Select(f => f.Value).FirstOrDefault();
             }
         }
-        
+
+        [BindNever]
+        public IList<ProductsOptionsExpand> Expand { get; set; }
+
         #endregion
+
+        public virtual string GetKey()
+        {
+            return _json != null ? $"Id: {Id}, Skip: {Skip}, Take:{Take}" + _json : null;
+        }
 
         private Dictionary<string, string> GetDataFilters(JObject jobj)
         {
@@ -222,16 +232,21 @@ namespace QA.ProductCatalog.HighloadFront.Options
             return result;
         }
 
-        IList<ProductsOptionsExpand> GetExpand(JToken valuesToken)
+        private IList<ProductsOptionsExpand> GetExpand(JToken valuesToken)
         {
-            if (valuesToken == null) return new ProductsOptionsExpand[0];
+            if (valuesToken == null)
+            {
+                return null;
+            }
 
             if (valuesToken is JArray array)
             {
-                return array.Select(jobj => new ProductsOptionsExpand(jobj, ElasticOptions)).ToArray();
+                return array
+                    .Select(jobj => new ProductsOptionsExpand(jobj, ElasticOptions))
+                    .ToArray();
             }
 
-            return new ProductsOptionsExpand[0];
+            return null;
         }
 
         private string[] JTokenToStringArray(JToken valuesToken, bool skipSplit = false)

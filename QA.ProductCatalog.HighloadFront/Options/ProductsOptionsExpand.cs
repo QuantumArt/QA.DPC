@@ -10,7 +10,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public ProductsOptionsExpand(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
             : base(json, options, id, skip, take)
         {
-            if (!(json is JObject jobj)) return;
+            if (!(json is JObject jobj))
+            {
+                return;
+            }
 
             Name = (string)jobj.SelectToken(NAME);
             Path = (string)jobj.SelectToken(PATH);
