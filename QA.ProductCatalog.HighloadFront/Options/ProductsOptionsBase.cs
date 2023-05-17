@@ -27,7 +27,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private const string QUERY = "query";
         private const string DATA_FILTERS = "data_filters";
         private const string CACHE_FOR_SECONDS = "cache_for_seconds";
-        private const string IS_REQUIRED = "is_required";
         private const string EXPAND = "expand";
         protected const string PATH = "path";
         protected const string NAME = "name";
@@ -54,7 +53,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
             QUERY,
             DATA_FILTERS,
             CACHE_FOR_SECONDS,
-            IS_REQUIRED,
             EXPAND,
             PATH,
             NAME
@@ -66,7 +64,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             ElasticOptions = options ?? new SonicElasticStoreOptions();
             
             Filters = new List<IElasticFilter>();
-            DataFilters = new Dictionary<string, string>();             
+            DataFilters = new Dictionary<string, string>();
             
             if (!(json is JObject jobj)) return;
 
@@ -134,8 +132,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         [ModelBinder(Name = DISABLE_LIKE)]
         public string[] DisableLike { get; set; }
 
-        [ModelBinder(Name = IS_REQUIRED)]
-        public bool IsRequired { get; set; }
+        [ModelBinder(Name = EXPAND)]
+        public ProductsOptionsExpand[] Expand { get; set; }
 
         #endregion
 
@@ -181,9 +179,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
                     .Select(f => f.Value).FirstOrDefault();
             }
         }
-
-        [BindNever]
-        public IList<ProductsOptionsExpand> Expand { get; set; }
 
         #endregion
 
@@ -232,7 +227,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             return result;
         }
 
-        private IList<ProductsOptionsExpand> GetExpand(JToken valuesToken)
+        private ProductsOptionsExpand[] GetExpand(JToken valuesToken)
         {
             if (valuesToken == null)
             {

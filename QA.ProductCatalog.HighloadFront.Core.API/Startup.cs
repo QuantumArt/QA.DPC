@@ -38,21 +38,25 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         {
             services.AddOptions();
 
-            var opts = new HarvesterOptions();
-            Configuration.Bind("Harvester", opts);
-            services.AddSingleton(opts);
+            var harvesterOptions = new HarvesterOptions();
+            Configuration.Bind("Harvester", harvesterOptions);
+            services.AddSingleton(harvesterOptions);
 
-            var opts2 = new SonicElasticStoreOptions();
-            Configuration.Bind("SonicElasticStore", opts2);
-            services.AddSingleton(opts2);
+            var elasticStoreOptions = new SonicElasticStoreOptions();
+            Configuration.Bind("SonicElasticStore", elasticStoreOptions);
+            services.AddSingleton(elasticStoreOptions);
 
-            var opts3 = new DataOptions();
-            Configuration.Bind("Data", opts3);
-            services.AddSingleton(opts3);
+            var apiRestrictions = new ApiRestrictionOptions();
+            Configuration.Bind("ApiRestrictions", apiRestrictions);
+            services.AddSingleton(apiRestrictions);
 
-            var opts4 = new TaskRunnerDelays();
-            Configuration.Bind("ReindexDelays", opts4);
-            services.AddSingleton(opts4);
+            var dataOptions = new DataOptions();
+            Configuration.Bind("Data", dataOptions);
+            services.AddSingleton(dataOptions);
+
+            var taskRunnerDelayOptions = new TaskRunnerDelays();
+            Configuration.Bind("ReindexDelays", taskRunnerDelayOptions);
+            services.AddSingleton(taskRunnerDelayOptions);
 
             services.AddSingleton(new PolicyRegistry());
             services.AddScoped<IProductInfoProvider, ProductInfoProvider>();
@@ -72,8 +76,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             });
 
             services.AddSingleton<ICacheProvider, VersionedCacheCoreProvider>();
-
-            services.AddFluentValidationAutoValidation();
 
             services.AddMemoryCache();
             services.AddHttpClient();
