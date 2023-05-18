@@ -96,11 +96,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
 
-            var options = new ProductsOptionsRoot(json, ElasticOptions)
+            var options = new ProductsOptionsRoot
             {
                 Type = type?.TrimStart('@'),
                 CacheForSeconds = 0
-            };
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
             var modelValidationResult = ValidateModel(options);
             if (modelValidationResult != null)
@@ -129,11 +129,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
 
-            var options = new ProductsOptionsRoot(json, ElasticOptions)
+            var options = new ProductsOptionsRoot
             {
                 Id = id,
                 CacheForSeconds = 0
-            };
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
             var modelValidationResult = ValidateModel(options);
             if (modelValidationResult != null)
@@ -194,7 +194,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
 
-            var options = new ProductsOptionsRoot(json, ElasticOptions) { CacheForSeconds = 0 };
+            var options = new ProductsOptionsRoot
+            {
+                CacheForSeconds = 0
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
             var modelValidationResult = ValidateModel(options);
             if (modelValidationResult != null)
@@ -252,7 +255,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return ParseBadRequest(ex);
             }
 
-            var options = new ProductsOptionsRoot(json, ElasticOptions, id, skip, take);
+            var options = new ProductsOptionsRoot()
+                .BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions, id, skip, take);
 
             var modelValidationResult = ValidateModel(options);
             if (modelValidationResult != null)
@@ -282,7 +286,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
 
-            var options = new ProductsOptionsRoot(json, ElasticOptions) { Type = type?.TrimStart('@') };
+            var options = new ProductsOptionsRoot
+            {
+                Type = type?.TrimStart('@')
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
             var modelValidationResult = ValidateModel(options);
             if (modelValidationResult != null)

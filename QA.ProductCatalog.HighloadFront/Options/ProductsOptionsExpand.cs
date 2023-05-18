@@ -1,22 +1,22 @@
-// ReSharper disable InconsistentNaming
-
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
     public class ProductsOptionsExpand : ProductsOptionsBase
-    { 
-        public ProductsOptionsExpand(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
-            : base(json, options, id, skip, take)
+    {
+        protected override ProductsOptionsBase BuildFromJson(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
         {
-            if (!(json is JObject jobj))
+            base.BuildFromJson(json, options, id, skip, take);
+
+            if (Jobj == null)
             {
-                return;
+                return this;
             }
 
-            Name = (string)jobj.SelectToken(NAME);
-            Path = (string)jobj.SelectToken(PATH);
+            Name = (string)Jobj.SelectToken(NAME);
+            Path = (string)Jobj.SelectToken(PATH);
+
+            return this;
         }
 
         [ModelBinder(Name = NAME)]

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -6,14 +5,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-// ReSharper disable InconsistentNaming
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
     public abstract class ProductsOptionsBase
     {
-        private static Regex RangeFilterRegex { get; } = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
-        
         private const string PAGE = "page";
         private const string PER_PAGE = "per_page";
         private const string SKIP = "skip";
@@ -28,15 +24,12 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private const string DATA_FILTERS = "data_filters";
         private const string CACHE_FOR_SECONDS = "cache_for_seconds";
         private const string EXPAND = "expand";
-        protected const string PATH = "path";
-        protected const string NAME = "name";
-
         private const string FREE_QUERY = "q";
         private const string OR_QUERY = "or";
         private const string AND_QUERY = "and";
 
-        public SonicElasticStoreOptions ElasticOptions { get; set; }
-        protected object _json;
+        protected const string PATH = "path";
+        protected const string NAME = "name";
 
         private static readonly HashSet<string> FirstLevelReservedKeywords = new HashSet<string>()
         {
@@ -57,45 +50,25 @@ namespace QA.ProductCatalog.HighloadFront.Options
             PATH,
             NAME
         };
+
+        private static readonly Regex _rangeFilterRegex = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
+
+        private object _json;
+        private JObject _jObj;
+
+        protected JObject Jobj => _jObj;
         
-        protected ProductsOptionsBase(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+        protected ProductsOptionsBase()
         {
-            _json = json;
-            ElasticOptions = options ?? new SonicElasticStoreOptions();
-            
+            ElasticOptions = new SonicElasticStoreOptions();
             Filters = new List<IElasticFilter>();
             DataFilters = new Dictionary<string, string>();
-            
-            if (!(json is JObject jobj)) return;
-
-            Id = id ?? 0;
-            Page = (decimal?) jobj.SelectToken(PAGE);
-            PerPage = (decimal?) jobj.SelectToken(PER_PAGE);
-            Skip = skip ?? (decimal?) jobj.SelectToken(SKIP);
-            Take = take ?? (decimal?) jobj.SelectToken(TAKE);
-            CacheForSeconds = (decimal?) jobj.SelectToken(CACHE_FOR_SECONDS) ?? 0;
-            
-            PropertiesFilter = JTokenToStringArray(jobj.SelectToken(FIELDS));            
-            DisableOr = JTokenToStringArray(jobj.SelectToken(DISABLE_OR));
-            DisableNot = JTokenToStringArray(jobj.SelectToken(DISABLE_NOT));
-            DisableLike = JTokenToStringArray(jobj.SelectToken(DISABLE_LIKE));
-            
-            Sort = (string) jobj.SelectToken(SORT);
-            OrderDirection = (string) jobj.SelectToken(ORDER);            
-            Filters = GetFilters(jobj, Id);
-            DataFilters = GetDataFilters(jobj);
-            Expand = GetExpand(jobj.SelectToken(EXPAND));
         }
 
-        public void ApplyQueryCollection(IQueryCollection collection)
-        {
-            Filters = collection.Where(n => !FirstLevelReservedKeywords.Contains(n.Key))
-                .Select(n => ProductOptionsParser.CreateFilter(n, ElasticOptions)).ToArray();
-        }
+        public SonicElasticStoreOptions ElasticOptions { get; set; }
 
         #region Bound properties
 
-        
         [ModelBinder(Name = "type")]
         public string Type { get; set; }
         
@@ -168,7 +141,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
         {
             get
             {
-
                 if (!string.IsNullOrEmpty(Type))
                 {
                     return Type;
@@ -176,15 +148,60 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
                 return SimpleFilters
                     .Where(f => f.Name == ElasticOptions.TypePath)
-                    .Select(f => f.Value).FirstOrDefault();
+                    .Select(f => f.Value)
+                    .FirstOrDefault();
             }
         }
 
         #endregion
 
+        public T BuildFromJson<T>(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+            where T : ProductsOptionsBase
+        {
+            return (T)BuildFromJson(json, options, id, skip, take);
+        }
+
+        public void ApplyQueryCollection(IQueryCollection collection)
+        {
+            Filters = collection.Where(n => !FirstLevelReservedKeywords.Contains(n.Key))
+                .Select(n => ProductOptionsParser.CreateFilter(n, ElasticOptions)).ToArray();
+        }
+
         public virtual string GetKey()
         {
             return _json != null ? $"Id: {Id}, Skip: {Skip}, Take:{Take}" + _json : null;
+        }
+
+        protected virtual ProductsOptionsBase BuildFromJson(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+        {
+            ElasticOptions = options ?? new SonicElasticStoreOptions();
+
+            if (!(json is JObject))
+            {
+                return this;
+            }
+
+            _jObj = (JObject)json;
+
+            Id = id ?? 0;
+            Page = (decimal?)_jObj.SelectToken(PAGE);
+            PerPage = (decimal?)_jObj.SelectToken(PER_PAGE);
+            Skip = skip ?? (decimal?)_jObj.SelectToken(SKIP);
+            Take = take ?? (decimal?)_jObj.SelectToken(TAKE);
+            CacheForSeconds = (decimal?)_jObj.SelectToken(CACHE_FOR_SECONDS) ?? 0;
+
+            PropertiesFilter = JTokenToStringArray(_jObj.SelectToken(FIELDS));
+            DisableOr = JTokenToStringArray(_jObj.SelectToken(DISABLE_OR));
+            DisableNot = JTokenToStringArray(_jObj.SelectToken(DISABLE_NOT));
+            DisableLike = JTokenToStringArray(_jObj.SelectToken(DISABLE_LIKE));
+
+            Sort = (string)_jObj.SelectToken(SORT);
+            OrderDirection = (string)_jObj.SelectToken(ORDER);
+            Filters = GetFilters(_jObj, Id);
+            DataFilters = GetDataFilters(_jObj);
+            Expand = GetExpand(_jObj.SelectToken(EXPAND));
+
+            return this;
         }
 
         private Dictionary<string, string> GetDataFilters(JObject jobj)
@@ -237,7 +254,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             if (valuesToken is JArray array)
             {
                 return array
-                    .Select(jobj => new ProductsOptionsExpand(jobj, ElasticOptions))
+                    .Select(jobj => new ProductsOptionsExpand().BuildFromJson<ProductsOptionsExpand>(jobj, ElasticOptions))
                     .ToArray();
             }
 
@@ -283,7 +300,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                     IsDisjunction = isDisjunction
                 };
             }
-            var match = RangeFilterRegex.Match(value);
+            var match = _rangeFilterRegex.Match(value);
             if (match.Success)
             {
                 return new RangeFilter
