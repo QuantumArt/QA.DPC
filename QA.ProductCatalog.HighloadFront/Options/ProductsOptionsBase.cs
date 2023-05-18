@@ -163,8 +163,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public void ApplyQueryCollection(IQueryCollection collection)
         {
-            Filters = collection.Where(n => !FirstLevelReservedKeywords.Contains(n.Key))
-                .Select(n => ProductOptionsParser.CreateFilter(n, ElasticOptions)).ToArray();
+            Filters = collection
+                .Where(n => !FirstLevelReservedKeywords.Contains(n.Key))
+                .Select(n => ProductOptionsParser.CreateFilter(n, ElasticOptions))
+                .ToArray();
         }
 
         public virtual string GetKey()

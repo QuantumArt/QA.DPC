@@ -216,6 +216,8 @@ namespace QA.ProductCatalog.HighloadFront
 
             foreach (var expandOptions in options.Expand)
             {
+                _productReadExpandPostProcessor.EnsureExpandIsPossible(input, expandOptions);
+
                 var expandIds = _productReadExpandPostProcessor.GetExpandIds(input, expandOptions);
                 if (!expandIds.Any())
                 {

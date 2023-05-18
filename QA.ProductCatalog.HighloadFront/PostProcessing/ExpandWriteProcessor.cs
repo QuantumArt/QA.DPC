@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 
         private void Expand(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
         {
-            if (string.IsNullOrEmpty(options.Name))
+            if (options.Name == null)
             {
                 ExpandInPlace(expandableNode, extraNodesDict, options);
             }
