@@ -13,6 +13,7 @@ using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Options;
+using QA.ProductCatalog.HighloadFront.Validation;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
@@ -47,17 +48,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             RegexOptions.Compiled | RegexOptions.Singleline
         );
 
-        private readonly ApiRestrictionOptions _apiRestrictionOptions;
+        private readonly ProductsOptionsCommonValidationHelper _productsOptionsCommonValidationHelper;
 
         public ProductsController(
             ProductManager manager,
             ElasticConfiguration configuration,
             SonicElasticStoreOptions elasticOptions,
-            ApiRestrictionOptions apiRestrictionOptions,
+            ProductsOptionsCommonValidationHelper productsOptionsCommonValidationHelper,
             IMemoryCache cache)
             : base(manager, configuration, elasticOptions, cache)
         {
-            _apiRestrictionOptions = apiRestrictionOptions;
+            _productsOptionsCommonValidationHelper = productsOptionsCommonValidationHelper;
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetByType" })]
@@ -68,10 +69,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
             CorrectProductOptions(options);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            ValidateModel(options);
+
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -90,7 +93,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public async Task<ActionResult> GetByType([FromBody] object json, string type, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
-            var modelStateResult = HandleBadJsonRequest();
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
@@ -102,10 +105,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 CacheForSeconds = 0
             }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -123,7 +128,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{id:int}"), HttpPost]
         public async Task<ActionResult> GetById([FromBody] object json, int id, string language = null, string state = null)
         {
-            var modelStateResult = HandleBadJsonRequest();
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
@@ -135,10 +140,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 CacheForSeconds = 0
             }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -162,10 +169,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
             CorrectProductOptions(options);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            ValidateModel(options);
+
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -188,7 +197,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public async Task<ActionResult> Search([FromBody] object json, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
-            var modelStateResult = HandleBadJsonRequest();
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
@@ -199,10 +208,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 CacheForSeconds = 0
             }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -222,11 +233,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             CancellationToken cancellationToken = default)
         {
             CorrectProductOptions(options);
+            
+            ValidateModel(options);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -258,10 +271,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var options = new ProductsOptionsRoot()
                 .BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions, id, skip, take);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            ValidateModel(options);
+
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -280,7 +295,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public async Task<ActionResult> Query([FromBody] object json, string type, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
-            var modelStateResult = HandleBadJsonRequest();
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
@@ -291,10 +306,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 Type = type?.TrimStart('@')
             }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
-            var modelValidationResult = ValidateModel(options);
-            if (modelValidationResult != null)
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
             {
-                return modelValidationResult;
+                return modelStateResult;
             }
 
             try
@@ -450,7 +467,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         }
 
-        private BadRequestObjectResult HandleBadJsonRequest()
+        private BadRequestObjectResult HandleBadRequest()
         {
             if (ModelState.IsValid)
             {
@@ -494,49 +511,29 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return BadRequest($"Unexpected error occurred. Reason: {ex.Message}");
         }
 
-        private BadRequestObjectResult ValidateModel(ProductsOptionsRoot model)
+        private void ValidateModel(ProductsOptionsRoot model)
         {
-            var isPost = HttpMethods.IsPost(Request.Method);
-            var maxExpandDepth = isPost
-                ? _apiRestrictionOptions.MaxExpandDepth ?? HighloadConstants.MaxExpandDepthDefault
-                : HighloadConstants.MaxExpandDepthForGetRequests;
-
-            if (!IsValidExpandDepth(model, maxExpandDepth))
+            if (!_productsOptionsCommonValidationHelper.IsAllowedExpandDepth(model))
             {
-                return new BadRequestObjectResult($"Max expand depth = {maxExpandDepth} is exceeded");
+                AddModelError($"Max expand depth = {_productsOptionsCommonValidationHelper.MaxExpandDepth} is exceeded");
             }
 
-            return null;
-        }
-
-        private bool IsValidExpandDepth(ProductsOptionsRoot model, int maxExpandDepth)
-        {
-            var initialDepth = 0;
-            return IsValidExpandDepthRecursive(model, maxExpandDepth, ref initialDepth);
-        }
-
-        private bool IsValidExpandDepthRecursive(ProductsOptionsBase model, int maxExpandDepth, ref int currentDepth)
-        {
-            if (model.Expand != null)
+            if (!_productsOptionsCommonValidationHelper.IsNonEmptyExpandNameEverywhere(model))
             {
-                currentDepth++;
-
-                if (currentDepth > maxExpandDepth)
-                {
-                    return false;
-                }
-
-                foreach (var childExpandModel in model.Expand)
-                {
-                    var currentDepthCopy = currentDepth;
-                    if (!IsValidExpandDepthRecursive(childExpandModel, maxExpandDepth, ref currentDepthCopy))
-                    {
-                        return false;
-                    }
-                }
+                AddModelError($"Parameter '{HighloadConstants.NameParam}' for section '{HighloadConstants.ExpandSection}' must be either not specified or be non-empty");
             }
 
-            return currentDepth <= maxExpandDepth;
+            if (!_productsOptionsCommonValidationHelper.IsUniqueNamesInSameExpandArray(model))
+            {
+                AddModelError($"'{HighloadConstants.ExpandSection}' array elements on the same level must have unique '{HighloadConstants.NameParam}' parameter values");
+            }
+
+            if (!_productsOptionsCommonValidationHelper.IsExpandPathSpecifiedEverywhere(model))
+            {
+                AddModelError($"For section '{HighloadConstants.ExpandSection}' the value for parameter '{HighloadConstants.PathParam}' must be specified in JsonPath format");
+            }
         }
+
+        private void AddModelError(string error) => ModelState.AddModelError(Guid.NewGuid().ToString(), error);
     }
 }

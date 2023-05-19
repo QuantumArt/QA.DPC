@@ -13,6 +13,7 @@ using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.HighloadFront.PostProcessing;
+using QA.ProductCatalog.HighloadFront.Validation;
 using System;
 using System.Collections.Generic;
 using Service = QA.Core.DPC.QP.Models.Service;
@@ -23,10 +24,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
     {
         public IConfiguration Configuration { get; set; }
 
-        public bool IsQpMode => !String.Equals(Configuration["Data:QpMode"], "false"
+        public bool IsQpMode => !string.Equals(Configuration["Data:QpMode"], "false"
             , StringComparison.InvariantCultureIgnoreCase);
         
-        public int SettingsContentId => Int32.TryParse(Configuration["Data:SettingsContentId"], out var result) ? result : 0;
+        public int SettingsContentId => int.TryParse(Configuration["Data:SettingsContentId"], out var result) ? result : 0;
 
 
         protected override void Load(ContainerBuilder builder)
@@ -145,6 +146,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 c.ResolveNamed<IProductWritePostProcessor>("date")
             })).As<IProductWritePostProcessor>();
 
+            builder.RegisterScoped<ProductsOptionsCommonValidationHelper>();
         }
     }
 }
