@@ -6,8 +6,16 @@ using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.PostProcessing
 {
-    public class ExpandWriteProcessor : ExpandBaseProcessor, IProductWriteExpandPostProcessor
+    public class ExpandWriteProcessor : IProductWriteExpandPostProcessor
     {
+        private readonly IProductReadExpandPostProcessor _productReadExpandPostProcessor;
+
+        public ExpandWriteProcessor(
+            IProductReadExpandPostProcessor productReadExpandPostProcessor)
+        {
+            _productReadExpandPostProcessor = productReadExpandPostProcessor;
+        }
+
         public void WriteExtraNodes(JToken input, JArray extraNodes, ProductsOptionsExpand options)
         {
             if (!extraNodes.Any())
@@ -15,7 +23,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
                 return;
             }
 
-            var extraNodesDict = extraNodes.ToDictionary(GetId);
+            var extraNodesDict = extraNodes.ToDictionary(_productReadExpandPostProcessor.GetId);
 
             if (input is JArray)
             {
@@ -62,7 +70,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 
         private void TryReplaceNode(JToken node, Dictionary<int, JToken> extraNodesDict)
         {
-            if (extraNodesDict.TryGetValue(GetId(node), out var value))
+            if (extraNodesDict.TryGetValue(_productReadExpandPostProcessor.GetId(node), out var value))
             {
                 node.Replace(value);
             }
@@ -70,13 +78,13 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 
         private void ExpandInField(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
         {
-            var ids = new HashSet<int>();
-            CollectIds(ids, expandableNode, options);
+            var ids = _productReadExpandPostProcessor.GetExpandIds(expandableNode, options);
 
             var values = ids
                 .Where(id => extraNodesDict.ContainsKey(id))
                 .Select(id => extraNodesDict[id])
                 .ToArray();
+
             expandableNode[options.Name] = new JArray(values);
         }
     }

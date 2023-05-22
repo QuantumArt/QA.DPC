@@ -1,15 +1,11 @@
-﻿using System;
-
-namespace QA.ProductCatalog.HighloadFront.Exceptions
+﻿namespace QA.ProductCatalog.HighloadFront.Exceptions
 {
-    public class NamedPropertyBusyExpandException : Exception
+    public class NamedPropertyBusyExpandException : BaseLocalizedException
     {
-        public string LocalizedMessage { get; init; }
-
         public NamedPropertyBusyExpandException(string message, string localizedMessage)
-            : base(message)
+            : base(message, localizedMessage)
         {
-            LocalizedMessage = localizedMessage;
+            
         }
     }
 }

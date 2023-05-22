@@ -112,7 +112,12 @@ namespace QA.ProductCatalog.HighloadFront
             var store = StoreFactory.GetProductStore(language, state);
             var productsRawData = await store.SearchAsync(options, language, state, cancellationToken);
             var products = await _productReadPostProcessor.ReadSourceNodes(productsRawData, options);
-            await Expand(store, products, options, language, state);
+            
+            if (products.Any())
+            {
+                await Expand(store, products, options, language, state);
+            }
+
             return products;
         }
 
@@ -216,9 +221,7 @@ namespace QA.ProductCatalog.HighloadFront
 
             foreach (var expandOptions in options.Expand)
             {
-                _productReadExpandPostProcessor.EnsureExpandIsPossible(input, expandOptions);
-
-                var expandIds = _productReadExpandPostProcessor.GetExpandIds(input, expandOptions);
+                var expandIds = _productReadExpandPostProcessor.GetExpandIdsWithVerification(input, expandOptions);
                 if (!expandIds.Any())
                 {
                     continue;

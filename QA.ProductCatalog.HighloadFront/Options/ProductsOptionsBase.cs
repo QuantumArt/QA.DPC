@@ -52,6 +52,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         };
 
         private static readonly Regex _rangeFilterRegex = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
+        private static readonly Regex _expandGetParamRegex = new Regex(@$"^{HighloadConstants.ExpandSection}\[\d+\]\.");
 
         private object _json;
         private JObject _jObj;
@@ -164,8 +165,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public void ApplyQueryCollection(IQueryCollection collection)
         {
             Filters = collection
-                .Where(n => !FirstLevelReservedKeywords.Contains(n.Key))
-                .Select(n => ProductOptionsParser.CreateFilter(n, ElasticOptions))
+                .Where(x => !FirstLevelReservedKeywords.Contains(x.Key) && !_expandGetParamRegex.IsMatch(x.Key))
+                .Select(x => ProductOptionsParser.CreateFilter(x, ElasticOptions))
                 .ToArray();
         }
 
@@ -256,7 +257,12 @@ namespace QA.ProductCatalog.HighloadFront.Options
             if (valuesToken is JArray array)
             {
                 return array
-                    .Select(jobj => new ProductsOptionsExpand().BuildFromJson<ProductsOptionsExpand>(jobj, ElasticOptions))
+                    .Select(jobj =>
+                    {
+                        var expandOptions = new ProductsOptionsExpand().BuildFromJson<ProductsOptionsExpand>(jobj, ElasticOptions);
+                        expandOptions.Take = HighloadConstants.ExpandTakeAsAll;
+                        return expandOptions;
+                    })
                     .ToArray();
             }
 

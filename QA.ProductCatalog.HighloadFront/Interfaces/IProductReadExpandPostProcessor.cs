@@ -5,8 +5,10 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
 {
     public interface IProductReadExpandPostProcessor
     {
-        void EnsureExpandIsPossible(JToken input, ProductsOptionsExpand expandOptions);
+        int[] GetExpandIdsWithVerification(JToken input, ProductsOptionsExpand options);
 
-        int[] GetExpandIds(JToken input, ProductsOptionsExpand options);
+        int[] GetExpandIds(JToken expandableNode, ProductsOptionsExpand options);
+
+        int GetId(JToken token);
     }
 }

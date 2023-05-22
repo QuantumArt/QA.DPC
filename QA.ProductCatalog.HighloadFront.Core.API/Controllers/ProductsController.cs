@@ -12,6 +12,7 @@ using NLog;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Exceptions;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.HighloadFront.Validation;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
@@ -54,8 +55,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             ProductManager manager,
             ElasticConfiguration configuration,
             SonicElasticStoreOptions elasticOptions,
-            ProductsOptionsCommonValidationHelper productsOptionsCommonValidationHelper,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            ProductsOptionsCommonValidationHelper productsOptionsCommonValidationHelper)
             : base(manager, configuration, elasticOptions, cache)
         {
             _productsOptionsCommonValidationHelper = productsOptionsCommonValidationHelper;
@@ -84,6 +85,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
+            }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
             }
         }
 
@@ -121,6 +127,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
         }
 
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
@@ -156,6 +167,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex, id);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
             catch (Exception ex)
             {
                 return UnexpectedBadRequest(ex);
@@ -184,6 +200,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
+            }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
             }
             catch (Exception ex)
             {
@@ -224,6 +245,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
@@ -249,6 +275,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
+            }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
             }
         }
 
@@ -287,6 +318,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
         }
 
         [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[] { "alias" })]
@@ -322,13 +358,34 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
         }
 
         private void CorrectProductOptions(ProductsOptionsRoot options)
         {
             options.ElasticOptions = ElasticOptions;
             options.ApplyQueryCollection(Request.Query);
+            CorrectExpandOptions(options);
             options.ComputeArrays();
+        }
+
+        private void CorrectExpandOptions(ProductsOptionsBase options)
+        {
+            if (options.Expand == null)
+            {
+                return;
+            }
+
+            foreach (var expandOptions in options.Expand)
+            {
+                expandOptions.ElasticOptions = ElasticOptions;
+                expandOptions.Take = HighloadConstants.ExpandTakeAsAll;
+                CorrectExpandOptions(expandOptions);
+            }
         }
 
         private async Task<ActionResult> GetByIdActionResult(ProductsOptionsRoot options, string language, string state)
