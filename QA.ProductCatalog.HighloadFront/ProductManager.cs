@@ -231,6 +231,11 @@ namespace QA.ProductCatalog.HighloadFront
                 var extraNodesRawData = await store.SearchAsync(expandOptions, language, state);
 
                 var extraNodes = await _productReadPostProcessor.ReadSourceNodes(extraNodesRawData, expandOptions);
+                if (!extraNodes.Any())
+                {
+                    continue;
+                }
+
                 await Expand(store, extraNodes, expandOptions, language, state);
                 _productWriteExpandPostProcessor.WriteExtraNodes(input, extraNodes, expandOptions);
             }
