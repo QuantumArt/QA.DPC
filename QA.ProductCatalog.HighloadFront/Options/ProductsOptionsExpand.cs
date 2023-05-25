@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using QA.ProductCatalog.HighloadFront.Constants;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
@@ -13,16 +14,16 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 return this;
             }
 
-            Name = (string)Jobj.SelectToken(NAME);
-            Path = (string)Jobj.SelectToken(PATH);
+            Name = (string)Jobj.SelectToken(HighloadParams.Name);
+            Path = (string)Jobj.SelectToken(HighloadParams.Path);
 
             return this;
         }
 
-        [ModelBinder(Name = NAME)]
+        [ModelBinder(Name = HighloadParams.Name)]
         public string Name { get; set; }
 
-        [ModelBinder(Name = PATH)]
+        [ModelBinder(Name = HighloadParams.Path)]
         public string Path { get; set; }
 
         public void FilterByIds(int[] ids)

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Validation
@@ -15,8 +16,8 @@ namespace QA.ProductCatalog.HighloadFront.Validation
         {
             var isPost = HttpMethods.IsPost(httpContextAccessor.HttpContext.Request.Method);
             _maxExpandDepth = isPost
-                ? apiRestrictionOptions.MaxExpandDepth ?? HighloadConstants.MaxExpandDepthDefault
-                : HighloadConstants.MaxExpandDepthForGetRequests;
+                ? apiRestrictionOptions.MaxExpandDepth ?? HighloadCommonConstants.MaxExpandDepthDefault
+                : HighloadCommonConstants.MaxExpandDepthForGetRequests;
         }
 
         public int MaxExpandDepth => _maxExpandDepth;

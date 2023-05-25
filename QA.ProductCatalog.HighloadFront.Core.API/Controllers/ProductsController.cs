@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using NLog;
+using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
@@ -383,7 +384,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             foreach (var expandOptions in options.Expand)
             {
                 expandOptions.ElasticOptions = ElasticOptions;
-                expandOptions.Take = HighloadConstants.ExpandTakeAsAll;
+                expandOptions.Take = HighloadCommonConstants.ExpandTakeAsAll;
                 CorrectExpandOptions(expandOptions);
             }
         }
@@ -577,17 +578,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             if (!_productsOptionsCommonValidationHelper.IsNonEmptyExpandNameEverywhere(model))
             {
-                AddModelError($"Parameter '{HighloadConstants.NameParam}' for section '{HighloadConstants.ExpandSection}' must be either not specified or be non-empty");
+                AddModelError($"Parameter '{HighloadParams.Name}' for section '{HighloadParams.Expand}' must be either not specified or be non-empty");
             }
 
             if (!_productsOptionsCommonValidationHelper.IsUniqueNamesInSameExpandArray(model))
             {
-                AddModelError($"'{HighloadConstants.ExpandSection}' array elements on the same level must have unique '{HighloadConstants.NameParam}' parameter values");
+                AddModelError($"'{HighloadParams.Expand}' array elements on the same level must have unique '{HighloadParams.Name}' parameter values");
             }
 
             if (!_productsOptionsCommonValidationHelper.IsExpandPathSpecifiedEverywhere(model))
             {
-                AddModelError($"For section '{HighloadConstants.ExpandSection}' the value for parameter '{HighloadConstants.PathParam}' must be specified in JsonPath format");
+                AddModelError($"For section '{HighloadParams.Expand}' the value for parameter '{HighloadParams.Path}' must be specified in JsonPath format");
             }
         }
 

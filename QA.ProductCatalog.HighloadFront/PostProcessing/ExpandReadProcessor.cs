@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Exceptions;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
@@ -83,7 +84,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             }
         }
 
-        private JToken GetIdToken(JToken token) => token[HighloadConstants.IdField];
+        private JToken GetIdToken(JToken token) => token[HighloadFields.Id];
 
         private void EnsureUnusedProperty(JToken expandableNode, string propertyName)
         {
@@ -104,8 +105,8 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             if (idToken == null)
             {
                 throw new MissingIdExpandException(
-                    $"Unable to expand data because expandable object {token.Path} doesn't contain '{HighloadConstants.IdField}' field required for this operation",
-                    $"Не удалось дозагрузить данные, т.к. объект источника {token.Path} не содержит свойство '{HighloadConstants.IdField}', необходимое для данной операции");
+                    $"Unable to expand data because expandable object {token.Path} doesn't contain '{HighloadFields.Id}' field required for this operation",
+                    $"Не удалось дозагрузить данные, т.к. объект источника {token.Path} не содержит свойство '{HighloadFields.Id}', необходимое для данной операции");
             }
 
             ids.Add(idToken.Value<int>());

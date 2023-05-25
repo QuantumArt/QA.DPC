@@ -5,54 +5,34 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
+using QA.ProductCatalog.HighloadFront.Constants;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
     public abstract class ProductsOptionsBase
     {
-        private const string PAGE = "page";
-        private const string PER_PAGE = "per_page";
-        private const string SKIP = "skip";
-        private const string TAKE = "take";
-        private const string FIELDS = "fields";
-        private const string SORT = "sort";
-        private const string ORDER = "order";
-        private const string DISABLE_OR = "disable_or";
-        private const string DISABLE_NOT = "disable_not";
-        private const string DISABLE_LIKE = "disable_like";
-        private const string QUERY = "query";
-        private const string DATA_FILTERS = "data_filters";
-        private const string CACHE_FOR_SECONDS = "cache_for_seconds";
-        private const string EXPAND = "expand";
-        private const string FREE_QUERY = "q";
-        private const string OR_QUERY = "or";
-        private const string AND_QUERY = "and";
-
-        protected const string PATH = "path";
-        protected const string NAME = "name";
-
         private static readonly HashSet<string> FirstLevelReservedKeywords = new HashSet<string>()
         {
-            PAGE,
-            PER_PAGE,
-            SKIP,
-            TAKE,
-            FIELDS,
-            SORT,
-            ORDER,
-            DISABLE_OR,
-            DISABLE_NOT,
-            DISABLE_LIKE,
-            QUERY,
-            DATA_FILTERS,
-            CACHE_FOR_SECONDS,
-            EXPAND,
-            PATH,
-            NAME
+            HighloadParams.Page,
+            HighloadParams.PerPage,
+            HighloadParams.Skip,
+            HighloadParams.Take,
+            HighloadParams.Fields,
+            HighloadParams.Sort,
+            HighloadParams.Order,
+            HighloadParams.DisableOr,
+            HighloadParams.DisableNot,
+            HighloadParams.DisableLike,
+            HighloadParams.Query,
+            HighloadParams.DataFilters,
+            HighloadParams.CacheForSeconds,
+            HighloadParams.Expand,
+            HighloadParams.Path,
+            HighloadParams.Name
         };
 
         private static readonly Regex _rangeFilterRegex = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
-        private static readonly Regex _expandGetParamRegex = new Regex(@$"^{HighloadConstants.ExpandSection}\[\d+\]\.");
+        private static readonly Regex _expandGetParamRegex = new Regex(@$"^{HighloadParams.Expand}\[\d+\]\.");
 
         private object _json;
         private JObject _jObj;
@@ -73,40 +53,40 @@ namespace QA.ProductCatalog.HighloadFront.Options
         [ModelBinder(Name = "type")]
         public string Type { get; set; }
         
-        [ModelBinder(Name = "id")]
+        [ModelBinder(Name = HighloadParams.Id)]
         public int Id { get; set; }
         
-        [ModelBinder(Name = FIELDS)]
+        [ModelBinder(Name = HighloadParams.Fields)]
         public string Fields { get; set; }
         
-        [ModelBinder(Name = PAGE)]
+        [ModelBinder(Name = HighloadParams.Page)]
         public decimal? Page { get; set; }
         
-        [ModelBinder(Name = PER_PAGE)]
+        [ModelBinder(Name = HighloadParams.PerPage)]
         public decimal? PerPage { get; set; }
         
-        [ModelBinder(Name = SKIP)]
+        [ModelBinder(Name = HighloadParams.Skip)]
         public decimal? Skip { get; set; }
 
-        [ModelBinder(Name = TAKE)]
+        [ModelBinder(Name = HighloadParams.Take)]
         public decimal? Take { get; set; }
 
-        [ModelBinder(Name = SORT)]
+        [ModelBinder(Name = HighloadParams.Sort)]
         public string Sort { get; set; }
 
-        [ModelBinder(Name = ORDER)]
+        [ModelBinder(Name = HighloadParams.Order)]
         public string OrderDirection { get; set; }
 
-        [ModelBinder(Name = DISABLE_OR)]
+        [ModelBinder(Name = HighloadParams.DisableOr)]
         public string[] DisableOr { get; set; }
 
-        [ModelBinder(Name = DISABLE_NOT)]
+        [ModelBinder(Name = HighloadParams.DisableNot)]
         public string[] DisableNot { get; set; }
 
-        [ModelBinder(Name = DISABLE_LIKE)]
+        [ModelBinder(Name = HighloadParams.DisableLike)]
         public string[] DisableLike { get; set; }
 
-        [ModelBinder(Name = EXPAND)]
+        [ModelBinder(Name = HighloadParams.Expand)]
         public ProductsOptionsExpand[] Expand { get; set; }
 
         #endregion
@@ -187,22 +167,22 @@ namespace QA.ProductCatalog.HighloadFront.Options
             _jObj = (JObject)json;
 
             Id = id ?? 0;
-            Page = (decimal?)_jObj.SelectToken(PAGE);
-            PerPage = (decimal?)_jObj.SelectToken(PER_PAGE);
-            Skip = skip ?? (decimal?)_jObj.SelectToken(SKIP);
-            Take = take ?? (decimal?)_jObj.SelectToken(TAKE);
-            CacheForSeconds = (decimal?)_jObj.SelectToken(CACHE_FOR_SECONDS) ?? 0;
+            Page = (decimal?)_jObj.SelectToken(HighloadParams.Page);
+            PerPage = (decimal?)_jObj.SelectToken(HighloadParams.PerPage);
+            Skip = skip ?? (decimal?)_jObj.SelectToken(HighloadParams.Skip);
+            Take = take ?? (decimal?)_jObj.SelectToken(HighloadParams.Take);
+            CacheForSeconds = (decimal?)_jObj.SelectToken(HighloadParams.CacheForSeconds) ?? 0;
 
-            PropertiesFilter = JTokenToStringArray(_jObj.SelectToken(FIELDS));
-            DisableOr = JTokenToStringArray(_jObj.SelectToken(DISABLE_OR));
-            DisableNot = JTokenToStringArray(_jObj.SelectToken(DISABLE_NOT));
-            DisableLike = JTokenToStringArray(_jObj.SelectToken(DISABLE_LIKE));
+            PropertiesFilter = JTokenToStringArray(_jObj.SelectToken(HighloadParams.Fields));
+            DisableOr = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableOr));
+            DisableNot = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableNot));
+            DisableLike = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableLike));
 
-            Sort = (string)_jObj.SelectToken(SORT);
-            OrderDirection = (string)_jObj.SelectToken(ORDER);
+            Sort = (string)_jObj.SelectToken(HighloadParams.Sort);
+            OrderDirection = (string)_jObj.SelectToken(HighloadParams.Order);
             Filters = GetFilters(_jObj, Id);
             DataFilters = GetDataFilters(_jObj);
-            Expand = GetExpand(_jObj.SelectToken(EXPAND));
+            Expand = GetExpand(_jObj.SelectToken(HighloadParams.Expand));
 
             return this;
         }
@@ -210,7 +190,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private Dictionary<string, string> GetDataFilters(JObject jobj)
         {
             var result = new Dictionary<string, string>();
-            var dfToken = jobj.SelectToken(DATA_FILTERS);
+            var dfToken = jobj.SelectToken(HighloadParams.DataFilters);
             if (dfToken != null)
             {
                 return dfToken.Children().OfType<JProperty>()
@@ -227,7 +207,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 result.Add(CreateFilter("Id", id));
             }            
             
-            var queryToken = jobj.SelectToken(QUERY);
+            var queryToken = jobj.SelectToken(HighloadParams.Query);
             JProperty[] filterProperties;
             if (queryToken != null)
             {
@@ -260,7 +240,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                     .Select(jobj =>
                     {
                         var expandOptions = new ProductsOptionsExpand().BuildFromJson<ProductsOptionsExpand>(jobj, ElasticOptions);
-                        expandOptions.Take = HighloadConstants.ExpandTakeAsAll;
+                        expandOptions.Take = HighloadCommonConstants.ExpandTakeAsAll;
                         return expandOptions;
                     })
                     .ToArray();
@@ -287,12 +267,12 @@ namespace QA.ProductCatalog.HighloadFront.Options
         {
             var name = GetParameterName(key, out var isDisjunction);
 
-            if (name == OR_QUERY || name == AND_QUERY)
+            if (name == HighloadOperators.Or || name == HighloadOperators.And)
             {
                 var childProperties = token.Children().OfType<JProperty>().ToArray();
                 return new GroupFilter()
                 {
-                    IsDisjunction = name == OR_QUERY,
+                    IsDisjunction = name == HighloadOperators.Or,
                     Filters = childProperties.Select(n => CreateFilter(n.Name, n.Value)).ToArray()
                 };
             }
@@ -300,7 +280,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             var values = JTokenToStringArray(token, true);
             var value = values.First();
             
-            if (name == FREE_QUERY)
+            if (name == HighloadParams.FreeQuery)
             {
                 return new QueryFilter()
                 {
