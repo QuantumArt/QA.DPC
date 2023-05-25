@@ -40,15 +40,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     [OnlyAuthUsers]
     public class ProductsController : BaseProductsController
     {
-        private static readonly Regex ParamsToReplace = new Regex(
+        private static readonly Regex ParamsToReplaceRegex = new Regex(
             @"\|\|(?<name>[\w]+)\:*(?<constraints>(?:[^|]|\|(?!\|))+)?\|\|",
             RegexOptions.Compiled | RegexOptions.Singleline
         );
 
-        private static readonly Regex ConstaintsToProcess = new Regex(
+        private static readonly Regex ConstaintsToProcessRegex = new Regex(
             @"((?<name>\w+)\((?<value>(?:[^\)\:]|(?<!\))\)|(?<!\))\:)+)\))+",
             RegexOptions.Compiled | RegexOptions.Singleline
         );
+
+        private static readonly Regex GetRequestIdParamRegex = new Regex(
+            @$"^(?:{HighloadParams.Expand}\[\d+\]\.)*{HighloadParams.Id}$");
 
         private readonly ProductsOptionsCommonValidationHelper _productsOptionsCommonValidationHelper;
 
@@ -411,7 +414,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
 
             var result = new Dictionary<string, string>();
-            var matches = ParamsToReplace.Matches(json);
+            var matches = ParamsToReplaceRegex.Matches(json);
             foreach (Match m in matches)
             {
                 var key = m.Groups[0].Value;
@@ -419,7 +422,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
                 var name = m.Groups["name"].Value;
                 var constr = m.Groups["constraints"].Value;
-                var constraints = FillConstraints(ConstaintsToProcess.Matches(constr), out var defaultValue);
+                var constraints = FillConstraints(ConstaintsToProcessRegex.Matches(constr), out var defaultValue);
                 string[] values = requestQuery[name];
                 var param = string.Join(",", values);
                 var replaceValue = GetReplaceValue(param, constraints, defaultValue);
@@ -532,7 +535,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return null;
             }
 
+            var isGet = HttpMethods.IsGet(Request.Method);
+
             var errors = ModelState
+                .Where(kvp => !isGet || !GetRequestIdParamRegex.IsMatch(kvp.Key))
                 .SelectMany(
                     kvp => kvp.Value.Errors,
                     (kvp, error) => error.Exception?.Message ?? error.ErrorMessage)

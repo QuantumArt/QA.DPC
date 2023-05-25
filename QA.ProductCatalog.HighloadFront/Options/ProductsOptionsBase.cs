@@ -31,8 +31,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
             HighloadParams.Name
         };
 
-        private static readonly Regex _rangeFilterRegex = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
-        private static readonly Regex _expandGetParamRegex = new Regex(@$"^{HighloadParams.Expand}\[\d+\]\.");
+        private static readonly Regex RangeFilterRegex = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
+        private static readonly Regex GetRequestExpandParamRegex = new Regex(@$"^{HighloadParams.Expand}\[\d+\]\.");
 
         private object _json;
         private JObject _jObj;
@@ -145,7 +145,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public void ApplyQueryCollection(IQueryCollection collection)
         {
             Filters = collection
-                .Where(x => !FirstLevelReservedKeywords.Contains(x.Key) && !_expandGetParamRegex.IsMatch(x.Key))
+                .Where(x => !FirstLevelReservedKeywords.Contains(x.Key) && !GetRequestExpandParamRegex.IsMatch(x.Key))
                 .Select(x => ProductOptionsParser.CreateFilter(x, ElasticOptions))
                 .ToArray();
         }
@@ -288,7 +288,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                     IsDisjunction = isDisjunction
                 };
             }
-            var match = _rangeFilterRegex.Match(value);
+            var match = RangeFilterRegex.Match(value);
             if (match.Success)
             {
                 return new RangeFilter
