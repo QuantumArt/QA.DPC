@@ -1,0 +1,82 @@
+﻿version: "3.7"
+services:
+  dpc-admin:
+    container_name: dpc-admin
+    image: qpcms/dpc-admin:0.9.0.2
+    restart: always
+    ports:
+      - "7000:80"
+    environment:
+      - Integration__RestNotificationUrl=http://dpc-notification-sender
+      - Integration__HighloadFrontSyncUrl=http://dpc-sync:80
+      - Integration__ConfigurationServiceUrl=config_address
+      - Integration__ConfigurationServiceToken=config_token
+      - TZ=Europe/Moscow
+  dpc-api:
+    container_name: dpc-api
+    image: qpcms/dpc-api:0.9.0.2
+    restart: always
+    ports:
+      - "7100:80"
+    environment:
+      - Integration__RestNotificationUrl=http://dpc-notification-sender
+      - Integration__ConfigurationServiceUrl=config_address
+      - Integration__ConfigurationServiceToken=config_token
+      - TZ=Europe/Moscow
+  dpc-notification-sender:
+    container_name: dpc-notification-sender
+    image: qpcms/dpc-notification-sender:0.9.0.2
+    restart: always
+    ports:
+      - "7200:80"
+    environment:
+      - Integration__DpcWebApiUrl=http://dpc-api
+      - Integration__ConfigurationServiceUrl=config_address
+      - Integration__ConfigurationServiceToken=config_token
+      - Properties__InstanceId=dpc-docker
+      - TZ=Europe/Moscow
+  dpc-actions-service:
+    container_name: dpc-actions-service
+    image: qpcms/dpc-actions-service:0.9.0.2
+    restart: always
+    ports:
+      - "7300:80"
+    environment:
+      - Integration__RestNotificationUrl=http://dpc-notification-sender
+      - Integration__ConfigurationServiceUrl=config_address
+      - Integration__ConfigurationServiceToken=config_token
+      - TZ=Europe/Moscow
+  dpc-front:
+    container_name: dpc-front
+    image: qpcms/dpc-front:0.9.0.2
+    restart: always
+    ports:
+      - "7400:80"
+    environment:
+      - Integration__ConfigurationServiceUrl=config_address
+      - Integration__ConfigurationServiceToken=config_token
+      - Properties__InstanceId=dpc-docker
+      - Data__UseProductVersions="true"
+      - TZ=Europe/Moscow
+  dpc-search-api:
+    container_name: dpc-search-api
+    image: qpcms/dpc-highload-front:0.9.0.2
+    restart: always
+    ports:
+      - "7500:80"
+    environment:
+      - Integration__ConfigurationServiceUrl=config_address
+      - Integration__ConfigurationServiceToken=config_token
+      - Data__CanUpdate="false"
+      - TZ=Europe/Moscow
+  dpc-sync-api:
+    container_name: dpc-sync-api
+    image: qpcms/dpc-highload-front:0.9.0.2
+    restart: always
+    ports:
+      - "7600:80"
+    environment:
+      - Integration__ConfigurationServiceUrl=config_address
+      - Integration__ConfigurationServiceToken=config_token
+      - Data__CanUpdate="true"
+      - TZ=Europe/Moscow

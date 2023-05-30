@@ -1,0 +1,249 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-admin
+  namespace: dpc
+  labels:
+    app: dpc-admin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-admin
+  template:
+    metadata:
+      labels:
+        app: dpc-admin
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-admin
+          image: qpcms/dpc-admin:0.9.0.2
+          envFrom:
+            - configMapRef:
+                name: dpc-config
+          env:
+            - name: Integration__RestNotificationUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: NOTIFICATION_SENDER_HOST
+            - name: Integration__HighloadFrontSyncUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: SYNC_API_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap:
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-api
+  namespace: dpc
+  labels:
+    app: dpc-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-api
+  template:
+    metadata:
+      labels:
+        app: dpc-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-api
+          image: qpcms/dpc-api:0.9.0.2
+          envFrom:
+            - configMapRef:
+                name: dpc-config
+          env:
+            - name: Integration__RestNotificationUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: NOTIFICATION_SENDER_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap:
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-notification-sender
+  namespace: dpc
+  labels:
+    app: dpc-notification-sender
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-notification-sender
+  template:
+    metadata:
+      labels:
+        app: dpc-notification-sender
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-notification-sender
+          image: qpcms/dpc-notification-sender:0.9.0.2
+          envFrom:
+            - configMapRef:
+                name: dpc-config
+          env:
+            - name: Integration__DpcWebApiUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: API_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+            - name: Properties__InstanceId
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: INSTANCE_ID
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap:
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-actions-service
+  namespace: dpc
+  labels:
+    app: dpc-actions-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-actions-service
+  template:
+    metadata:
+      labels:
+        app: dpc-actions-service
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-actions-service
+          image: qpcms/dpc-actions-service:0.9.0.2
+          envFrom:
+            - configMapRef:
+                name: dpc-config
+          env:
+            - name: Integration__RestNotificationUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: NOTIFICATION_SENDER_HOST
+            - name: Integration__ConfigurationServiceUrl
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_HOST
+            - name: Integration__ConfigurationServiceToken
+              valueFrom:
+                configMapKeyRef:
+                  name: dpc-config
+                  key: CONFIGURATION_SERVICE_TOKEN
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap:
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ
