@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-front
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-front
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-search-api
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-search-api
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-sync-api
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-sync-api
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-impact-api
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-impact-api
+  ports:
+  - port: 80
+    targetPort: 80    
