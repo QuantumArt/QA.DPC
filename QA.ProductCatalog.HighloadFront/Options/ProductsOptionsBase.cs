@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -152,19 +153,22 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public virtual string GetKey()
         {
-            return _json != null ? $"Id: {Id}, Skip: {Skip}, Take:{Take}" + _json : null;
+            return _json == null
+                ? null
+                : $"Id: {Id}, Skip: {Skip}, Take: {Take} {_json}";
         }
 
         protected virtual ProductsOptionsBase BuildFromJson(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
         {
+            _json = json;
             ElasticOptions = options ?? new SonicElasticStoreOptions();
 
-            if (!(json is JObject))
+            if (json is not JObject jObj)
             {
                 return this;
             }
 
-            _jObj = (JObject)json;
+            _jObj = jObj;
 
             Id = id ?? 0;
             Page = (decimal?)_jObj.SelectToken(HighloadParams.Page);
@@ -229,11 +233,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         private ProductsOptionsExpand[] GetExpand(JToken valuesToken)
         {
-            if (valuesToken == null)
-            {
-                return null;
-            }
-
             if (valuesToken is JArray array)
             {
                 return array
@@ -251,16 +250,25 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         private string[] JTokenToStringArray(JToken valuesToken, bool skipSplit = false)
         {
-            if (valuesToken == null) return new string[] {};
+            if (valuesToken == null)
+            {
+                return Array.Empty<string>();
+            }
             
             if (valuesToken is JArray array)
             {
-                return array.Select(n => n.Value<string>()).ToArray();
+                return array
+                    .Select(x => x.Value<string>())
+                    .ToArray();
             }
 
             var values = (string) valuesToken;
 
-            return skipSplit ? new[] { values } : values.Split(',').Select(n => n.Trim()).ToArray();
+            return skipSplit
+                ? new[] { values }
+                : values.Split(',')
+                    .Select(x => x.Trim())
+                    .ToArray();
         }
         
         private IElasticFilter CreateFilter(string key, JToken token)
@@ -307,7 +315,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 IsDisjunction = isDisjunction,
                 FromJson = true
             };
-
         }
 
         private string GetParameterName(string key, out bool isDisjunction)

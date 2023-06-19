@@ -90,7 +90,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
@@ -131,7 +131,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
@@ -171,7 +171,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex, id);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
@@ -205,7 +205,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
@@ -249,7 +249,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
@@ -280,7 +280,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
@@ -322,7 +322,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
@@ -362,7 +362,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
-            catch (Exception ex) when (ex is NamedPropertyBusyExpandException || ex is MissingIdExpandException)
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();

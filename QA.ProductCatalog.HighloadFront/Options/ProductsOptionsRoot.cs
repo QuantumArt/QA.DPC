@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace QA.ProductCatalog.HighloadFront.Options
@@ -9,15 +10,15 @@ namespace QA.ProductCatalog.HighloadFront.Options
             PropertiesFilter = Fields?.Split(',').ToArray();
 
             DisableOr = (DisableOr == null || !DisableOr.Any())
-                ? new string[] { }
+                ? Array.Empty<string>()
                 : DisableOr.SelectMany(n => n.Split(',')).ToArray();
 
             DisableNot = (DisableNot == null || !DisableNot.Any())
-                ? new string[] { }
+                ? Array.Empty<string>()
                 : DisableNot.SelectMany(n => n.Split(',')).ToArray();
 
             DisableLike = (DisableLike == null || !DisableLike.Any())
-                ? new string[] { }
+                ? Array.Empty<string>()
                 : DisableLike.SelectMany(n => n.Split(',')).ToArray();
         }
     }
