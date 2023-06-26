@@ -13,6 +13,7 @@ using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.HighloadFront.PostProcessing;
+using QA.ProductCatalog.HighloadFront.Validation;
 using System;
 using System.Collections.Generic;
 using Service = QA.Core.DPC.QP.Models.Service;
@@ -23,10 +24,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
     {
         public IConfiguration Configuration { get; set; }
 
-        public bool IsQpMode => !String.Equals(Configuration["Data:QpMode"], "false"
+        public bool IsQpMode => !string.Equals(Configuration["Data:QpMode"], "false"
             , StringComparison.InvariantCultureIgnoreCase);
         
-        public int SettingsContentId => Int32.TryParse(Configuration["Data:SettingsContentId"], out var result) ? result : 0;
+        public int SettingsContentId => int.TryParse(Configuration["Data:SettingsContentId"], out var result) ? result : 0;
 
 
         protected override void Load(ContainerBuilder builder)
@@ -133,16 +134,19 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 builder.RegisterScoped<ElasticConfiguration, JsonElasticConfiguration>();
             }
 
+            builder.RegisterScoped<IProductReadPostProcessor, ContentProcessor>();
+            builder.RegisterScoped<IProductReadExpandPostProcessor, ExpandReadProcessor>();
+            builder.RegisterScoped<IProductWriteExpandPostProcessor, ExpandWriteProcessor>();
 
-
-            builder.RegisterType<ArrayIndexer>().Named<IProductPostProcessor>("array");
-            builder.RegisterType<DateIndexer>().Named<IProductPostProcessor>("date");
+            builder.RegisterType<ArrayIndexer>().Named<IProductWritePostProcessor>("array");
+            builder.RegisterType<DateIndexer>().Named<IProductWritePostProcessor>("date");
             builder.Register(c => new IndexerDecorator(new[]
             {
-                c.ResolveNamed<IProductPostProcessor>("array"),
-                c.ResolveNamed<IProductPostProcessor>("date")
-            })).As<IProductPostProcessor>();
+                c.ResolveNamed<IProductWritePostProcessor>("array"),
+                c.ResolveNamed<IProductWritePostProcessor>("date")
+            })).As<IProductWritePostProcessor>();
 
+            builder.RegisterScoped<ProductsOptionsCommonValidationHelper>();
         }
     }
 }

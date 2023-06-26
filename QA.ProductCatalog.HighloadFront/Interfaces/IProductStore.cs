@@ -10,8 +10,9 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
     public interface IProductStore : IDisposable
     {
         
-        Task<string> SearchAsync(ProductsOptions options, string language, string state, CancellationToken cancellationToken = default);
-        Task<string> FindByIdAsync(ProductsOptions options, string language, string state);
+        Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default);
+        Task<string> FindByIdAsync(ProductsOptionsBase options, string language, string state);
+        Task<string> FindSourceByIdsAsync(int[] ids, string language, string state);
         Task<string> GetIndicesByName(string language, string state);
         List<string> RetrieveIndexNamesFromIndicesResponse(string indices, string alias);
         Task<string> CreateVersionedIndexAsync(string language, string state);

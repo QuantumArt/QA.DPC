@@ -4,10 +4,10 @@ using QA.ProductCatalog.HighloadFront.Models;
 
 namespace QA.ProductCatalog.HighloadFront.PostProcessing
 {
-    public class IndexerDecorator : IProductPostProcessor
+    public class IndexerDecorator : IProductWritePostProcessor
     {
-        private readonly IProductPostProcessor[] _processors;
-        public IndexerDecorator(IProductPostProcessor[] processors)
+        private readonly IProductWritePostProcessor[] _processors;
+        public IndexerDecorator(IProductWritePostProcessor[] processors)
         {
             _processors = processors;
         }

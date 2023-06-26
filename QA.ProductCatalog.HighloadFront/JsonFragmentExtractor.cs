@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QA.ProductCatalog.HighloadFront.Elastic
+namespace QA.ProductCatalog.HighloadFront
 {
     public static class JsonFragmentExtractor
     {

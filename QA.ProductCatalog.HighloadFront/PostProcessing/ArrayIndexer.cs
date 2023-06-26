@@ -9,7 +9,7 @@ using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.PostProcessing
 {
-    public class ArrayIndexer : IProductPostProcessor
+    public class ArrayIndexer : IProductWritePostProcessor
     {
         private readonly ArrayIndexingSettings[] _arrayIndexingSettings;
 

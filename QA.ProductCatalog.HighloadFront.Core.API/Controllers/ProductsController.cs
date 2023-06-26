@@ -9,10 +9,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using NLog;
+using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Exceptions;
 using QA.ProductCatalog.HighloadFront.Options;
+using QA.ProductCatalog.HighloadFront.Validation;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
@@ -20,13 +23,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     [Produces("application/json")]
     [
         Route("api/products"),
-        
+
         Route("api/{version:decimal}/products"),
         Route("api/{version:decimal}"),
-        
+
         Route("api/{version:decimal}/{language}/{state}/products"),
         Route("api/{version:decimal}/{language}/{state}"),
-        
+
         Route("api/{customerCode}/products"),
         Route("api/{customerCode}/{language}/{state}/products"),
         Route("api/{customerCode}/{version:decimal}/products"),
@@ -37,60 +40,48 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     [OnlyAuthUsers]
     public class ProductsController : BaseProductsController
     {
-        private static readonly Regex ParamsToReplace = new Regex(
-            @"\|\|(?<name>[\w]+)\:*(?<constraints>(?:[^|]|\|(?!\|))+)?\|\|", 
+        private static readonly Regex ParamsToReplaceRegex = new Regex(
+            @"\|\|(?<name>[\w]+)\:*(?<constraints>(?:[^|]|\|(?!\|))+)?\|\|",
             RegexOptions.Compiled | RegexOptions.Singleline
         );
-        
-        private static readonly Regex ConstaintsToProcess = new Regex(
-            @"((?<name>\w+)\((?<value>(?:[^\)\:]|(?<!\))\)|(?<!\))\:)+)\))+", 
+
+        private static readonly Regex ConstaintsToProcessRegex = new Regex(
+            @"((?<name>\w+)\((?<value>(?:[^\)\:]|(?<!\))\)|(?<!\))\:)+)\))+",
             RegexOptions.Compiled | RegexOptions.Singleline
         );
+
+        private static readonly Regex GetRequestIdParamRegex = new Regex(
+            @$"^(?:{HighloadParams.Expand}\[\d+\]\.)*{HighloadParams.Id}$");
+
+        private readonly ProductsOptionsCommonValidationHelper _productsOptionsCommonValidationHelper;
 
         public ProductsController(
-            ProductManager manager, 
+            ProductManager manager,
             ElasticConfiguration configuration,
             SonicElasticStoreOptions elasticOptions,
-            IMemoryCache cache)
+            IMemoryCache cache,
+            ProductsOptionsCommonValidationHelper productsOptionsCommonValidationHelper)
             : base(manager, configuration, elasticOptions, cache)
         {
-            
+            _productsOptionsCommonValidationHelper = productsOptionsCommonValidationHelper;
         }
 
-        [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
+        [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetByType" })]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("{type}")]
-        public async Task<ActionResult> GetByType(ProductsOptions options, string language = null, string state = null,
+        public async Task<ActionResult> GetByType(ProductsOptionsRoot options, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
             CorrectProductOptions(options);
-            try
-            {
-                return await GetSearchActionResult(options, language, state, cancellationToken);
-            }
-            catch (ElasticClientException ex)
-            {
-                return ElasticBadRequest(ex);
-            }
-        }
-        
-        [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
-        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        [Route("{type}"), HttpPost]
-        public async Task<ActionResult> GetByType([FromBody]object json, string type, string language = null, string state = null,
-            CancellationToken cancellationToken = default)
-        {
-            var modelStateResult = ModelStateBadRequest();
+
+            ValidateModel(options);
+
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
             }
-            
-            var options = new ProductsOptions(json, ElasticOptions)
-            {
-                Type = type?.TrimStart('@'),
-                CacheForSeconds = 0
-            };
+
             try
             {
                 return await GetSearchActionResult(options, language, state, cancellationToken);
@@ -98,25 +89,80 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
+            }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
+        }
+
+        [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetByType" })]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+        [Route("{type}"), HttpPost]
+        public async Task<ActionResult> GetByType([FromBody] object json, string type, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
+        {
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
+            var options = new ProductsOptionsRoot
+            {
+                Type = type?.TrimStart('@'),
+                CacheForSeconds = 0
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
+
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
+            try
+            {
+                return await GetSearchActionResult(options, language, state, cancellationToken);
+            }
+            catch (ElasticClientException ex)
+            {
+                return ElasticBadRequest(ex);
+            }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
             }
         }
 
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
         [Route("{id:int}"), HttpPost]
-        public async Task<ActionResult> GetById([FromBody]object json, int id, string language = null, string state = null)
+        public async Task<ActionResult> GetById([FromBody] object json, int id, string language = null, string state = null)
         {
-            var modelStateResult = ModelStateBadRequest();
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
             }
-            
-            var options = new ProductsOptions(json, ElasticOptions)
+
+            var options = new ProductsOptionsRoot
             {
                 Id = id,
-                CacheForSeconds = 0                
-            };
+                CacheForSeconds = 0
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
+
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
             try
             {
                 return await GetByIdActionResult(options, language, state);
@@ -125,18 +171,32 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex, id);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
             catch (Exception ex)
             {
                 return UnexpectedBadRequest(ex);
-            }            
+            }
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
         [Route("{id:int}"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
-        public async Task<ActionResult> GetById(ProductsOptions options, string language = null, string state = null)
+        public async Task<ActionResult> GetById(ProductsOptionsRoot options, string language = null, string state = null)
         {
             CorrectProductOptions(options);
+
+            ValidateModel(options);
+
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
             try
             {
                 return await GetByIdActionResult(options, language, state);
@@ -145,26 +205,42 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
             catch (Exception ex)
             {
                 return UnexpectedBadRequest(ex);
             }
-
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
         [Route("search"), HttpPost]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<ActionResult> Search([FromBody]object json, string language = null, string state = null,
+        public async Task<ActionResult> Search([FromBody] object json, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
-            var modelStateResult = ModelStateBadRequest();
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
             }
-            
-            var options = new ProductsOptions(json, ElasticOptions) {CacheForSeconds = 0};
+
+            var options = new ProductsOptionsRoot
+            {
+                CacheForSeconds = 0
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
+
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
             try
             {
                 return await GetSearchActionResult(options, language, state, cancellationToken);
@@ -173,15 +249,29 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
         }
-        
+
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
         [Route("search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<ActionResult> Search(ProductsOptions options, string language = null, string state = null,
+        public async Task<ActionResult> Search(ProductsOptionsRoot options, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
             CorrectProductOptions(options);
+            
+            ValidateModel(options);
+
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
             try
             {
                 return await GetSearchActionResult(options, language, state, cancellationToken);
@@ -190,9 +280,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
         }
-        
-        [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[]{"alias"})]
+
+        [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[] { "alias" })]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("query/{alias}")]
         public async Task<ActionResult> Query(string alias, int? id, int? skip, int? take, string language = null, string state = null,
@@ -207,33 +302,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ParseBadRequest(ex);
             }
-            
-            var options = new ProductsOptions(json, ElasticOptions, id, skip, take);
-            
-            try
-            {
-                return await GetSearchActionResult(options, language, state, cancellationToken);
-            }
-            catch (ElasticClientException ex)
-            {
-                return ElasticBadRequest(ex);
-            }
-        }
-        
-        [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[]{"alias"})]
-        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        [Route("query/{alias}"), HttpPost]
-        public async Task<ActionResult> Query([FromBody]object json, string type, string language = null, string state = null,
-            CancellationToken cancellationToken = default)
-        {
-            var modelStateResult = ModelStateBadRequest();
+
+            var options = new ProductsOptionsRoot()
+                .BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions, id, skip, take);
+
+            ValidateModel(options);
+
+            var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
             {
                 return modelStateResult;
             }
-            
-            var options = new ProductsOptions(json, ElasticOptions) {Type = type?.TrimStart('@')};
-            
+
             try
             {
                 return await GetSearchActionResult(options, language, state, cancellationToken);
@@ -242,19 +322,80 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
         }
 
-        private void CorrectProductOptions(ProductsOptions options)
+        [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[] { "alias" })]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+        [Route("query/{alias}"), HttpPost]
+        public async Task<ActionResult> Query([FromBody] object json, string type, string language = null, string state = null,
+            CancellationToken cancellationToken = default)
+        {
+            var modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
+            var options = new ProductsOptionsRoot
+            {
+                Type = type?.TrimStart('@')
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
+
+            ValidateModel(options);
+
+            modelStateResult = HandleBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+
+            try
+            {
+                return await GetSearchActionResult(options, language, state, cancellationToken);
+            }
+            catch (ElasticClientException ex)
+            {
+                return ElasticBadRequest(ex);
+            }
+            catch (Exception ex) when (ex is NamedPropertyBusyExpandException or MissingIdExpandException)
+            {
+                AddModelError(ex.Message);
+                return HandleBadRequest();
+            }
+        }
+
+        private void CorrectProductOptions(ProductsOptionsRoot options)
         {
             options.ElasticOptions = ElasticOptions;
             options.ApplyQueryCollection(Request.Query);
+            CorrectExpandOptions(options);
             options.ComputeArrays();
         }
 
-        private async Task<ActionResult> GetByIdActionResult(ProductsOptions options, string language, string state)
+        private void CorrectExpandOptions(ProductsOptionsBase options)
+        {
+            if (options.Expand == null)
+            {
+                return;
+            }
+
+            foreach (var expandOptions in options.Expand)
+            {
+                expandOptions.ElasticOptions = ElasticOptions;
+                expandOptions.Take = HighloadCommonConstants.ExpandTakeAsAll;
+                CorrectExpandOptions(expandOptions);
+            }
+        }
+
+        private async Task<ActionResult> GetByIdActionResult(ProductsOptionsRoot options, string language, string state)
         {
             var result = await Manager.FindByIdAsync(options, language, state);
-            return Content(result, "application/json");
+            return Json(result);
         }
 
         private JObject GetQueryJson(string alias)
@@ -273,22 +414,22 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
 
             var result = new Dictionary<string, string>();
-            var matches = ParamsToReplace.Matches(json);
+            var matches = ParamsToReplaceRegex.Matches(json);
             foreach (Match m in matches)
             {
                 var key = m.Groups[0].Value;
                 if (result.ContainsKey(key)) continue;
-                
+
                 var name = m.Groups["name"].Value;
                 var constr = m.Groups["constraints"].Value;
-                var constraints = FillConstraints(ConstaintsToProcess.Matches(constr), out var defaultValue);
+                var constraints = FillConstraints(ConstaintsToProcessRegex.Matches(constr), out var defaultValue);
                 string[] values = requestQuery[name];
-                var param = String.Join(",", values);
+                var param = string.Join(",", values);
                 var replaceValue = GetReplaceValue(param, constraints, defaultValue);
                 if (replaceValue == null)
                 {
-                    string message = !String.IsNullOrEmpty(param) ? 
-                        $"Validation of parameter '{name}' failed and no default value has been provided" : 
+                    string message = !string.IsNullOrEmpty(param) ?
+                        $"Validation of parameter '{name}' failed and no default value has been provided" :
                         $"Neither parameter '{name}' nor default value has been provided";
                     throw new ParseJsonException(message) { Json = json };
                 }
@@ -324,8 +465,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         private string GetReplaceValue(string param, Dictionary<string, string> constraints, string defaultValue)
         {
             string replaceValue = null;
-            
-            if (!String.IsNullOrEmpty(param) && ValidateParam(param, constraints))
+
+            if (!string.IsNullOrEmpty(param) && ValidateParam(param, constraints))
             {
                 replaceValue = param;
             }
@@ -341,12 +482,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
             return s.Split(',').All(n => int.TryParse(n.Trim(), out _));
         }
-        
+
         private static bool AllDecimal(string s)
         {
             return s.Split(',').All(n => decimal.TryParse(n.Trim(), out _));
         }
-
 
         private bool ValidateParam(string value, Dictionary<string, string> constraints)
         {
@@ -366,14 +506,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                                 result &= decimal.TryParse(value, out _);
                                 break;
                             case "list_int":
-                                result &= AllInt(value); 
+                                result &= AllInt(value);
                                 break;
                             case "list_decimal":
-                                result &= AllDecimal(value); 
-                                break;                                
+                                result &= AllDecimal(value);
+                                break;
                         }
                         break;
-                    
+
                     case "regex":
                         Regex re = new Regex(constraint.Replace(@"\\", @"\"));
                         result &= re.IsMatch(value);
@@ -388,43 +528,76 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         }
 
-        private BadRequestObjectResult ModelStateBadRequest()
+        private BadRequestObjectResult HandleBadRequest()
         {
-            BadRequestObjectResult result = null;
-
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var errors = ModelState
-                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception?.Message).ToArray();
-                if (errors.Any(n => !String.IsNullOrEmpty(n)))
-                {
-                    result = BadRequest(errors);
-                    var errorstr = string.Join(",", errors);
-                    Logger.Error($"Model has errors: {errorstr}");                    
-                }
+                return null;
             }
-            
-            return result; 
+
+            var isGet = HttpMethods.IsGet(Request.Method);
+
+            var errors = ModelState
+                .Where(kvp => !isGet || !GetRequestIdParamRegex.IsMatch(kvp.Key))
+                .SelectMany(
+                    kvp => kvp.Value.Errors,
+                    (kvp, error) => error.Exception?.Message ?? error.ErrorMessage)
+                .Where(x => !string.IsNullOrEmpty(x))
+                .ToArray();
+            if (!errors.Any())
+            {
+                return null;
+            }
+
+            var result = BadRequest(errors);
+            var errorsStr = string.Join(",", errors);
+            Logger.Error($"Model has errors: {errorsStr}");
+            return result;
         }
-        
+
         private BadRequestObjectResult ParseBadRequest(Exception ex)
         {
             if (ex is ParseJsonException pex)
             {
-                LogException(pex, $"Parsing JSON query error for JSON: {pex.Json}");            
+                LogException(pex, $"Parsing JSON query error for JSON: {pex.Json}");
             }
             else
             {
-                LogException(ex, $"Parsing JSON query error");                 
+                LogException(ex, $"Parsing JSON query error");
             }
-            
+
             return BadRequest($"Parsing JSON query error: {ex.Message}");
         }
-        
+
         private BadRequestObjectResult UnexpectedBadRequest(Exception ex)
         {
             LogException(ex, "Unexpected error occured");
             return BadRequest($"Unexpected error occurred. Reason: {ex.Message}");
         }
+
+        private void ValidateModel(ProductsOptionsRoot model)
+        {
+            if (!_productsOptionsCommonValidationHelper.IsAllowedExpandDepth(model))
+            {
+                AddModelError($"Max expand depth = {_productsOptionsCommonValidationHelper.MaxExpandDepth} is exceeded");
+            }
+
+            if (!_productsOptionsCommonValidationHelper.IsNonEmptyExpandNameEverywhere(model))
+            {
+                AddModelError($"Parameter '{HighloadParams.Name}' for section '{HighloadParams.Expand}' must be either not specified or be non-empty");
+            }
+
+            if (!_productsOptionsCommonValidationHelper.IsUniqueNamesInSameExpandArray(model))
+            {
+                AddModelError($"'{HighloadParams.Expand}' array elements on the same level must have unique '{HighloadParams.Name}' parameter values");
+            }
+
+            if (!_productsOptionsCommonValidationHelper.IsExpandPathSpecifiedEverywhere(model))
+            {
+                AddModelError($"For section '{HighloadParams.Expand}' the value for parameter '{HighloadParams.Path}' must be specified in JsonPath format");
+            }
+        }
+
+        private void AddModelError(string error) => ModelState.AddModelError(Guid.NewGuid().ToString(), error);
     }
 }

@@ -22,7 +22,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return "_doc";
         }
 
-        public override async Task<string> SearchAsync(ProductsOptions options, string language, string state, CancellationToken cancellationToken = default)
+        public override async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
@@ -57,7 +57,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return indexSettings;
         }
 
-        protected override void SetQuery(JObject json, ProductsOptions productsOptions)
+        protected override void SetQuery(JObject json, ProductsOptionsBase productsOptions)
         {
             JProperty query = null;
             var shouldGroups = new List<List<JProperty>>();

@@ -1,12 +1,11 @@
-﻿using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.PostProcessing
 {
-    public class DateIndexer : IProductPostProcessor
+    public class DateIndexer : IProductWritePostProcessor
     {
         private SonicElasticStoreOptions Options { get; set; }
 

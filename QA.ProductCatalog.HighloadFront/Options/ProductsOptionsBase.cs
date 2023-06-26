@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -5,140 +6,100 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
-// ReSharper disable InconsistentNaming
+using QA.ProductCatalog.HighloadFront.Constants;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
-    public class ProductsOptions
+    public abstract class ProductsOptionsBase
     {
-        public ProductsOptions() : this(null, null)
-        {
-        }
-
-        private static Regex RangeFilterRegex { get; } = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
-        
-        private const string PAGE = "page";
-        private const string PER_PAGE = "per_page";
-        private const string SKIP = "skip";
-        private const string TAKE = "take";
-        private const string FIELDS = "fields";
-        private const string SORT = "sort";
-        private const string ORDER = "order";
-        private const string DISABLE_OR = "disable_or";
-        private const string DISABLE_NOT = "disable_not";
-        private const string DISABLE_LIKE = "disable_like";
-        private const string QUERY = "query";
-        private const string DATA_FILTERS = "data_filters";
-        private const string CACHE_FOR_SECONDS = "cache_for_seconds";
-        
-        
-        private const string FREE_QUERY = "q";
-        private const string OR_QUERY = "or";
-        private const string AND_QUERY = "and";
-
-        public SonicElasticStoreOptions ElasticOptions { get; set; }
-        private object _json;
-
         private static readonly HashSet<string> FirstLevelReservedKeywords = new HashSet<string>()
         {
-            PAGE,
-            PER_PAGE,
-            SKIP,
-            TAKE,
-            FIELDS,
-            SORT,
-            ORDER,
-            DISABLE_OR,
-            DISABLE_NOT,
-            DISABLE_LIKE,
-            QUERY,
-            DATA_FILTERS,
-            CACHE_FOR_SECONDS
+            HighloadParams.Page,
+            HighloadParams.PerPage,
+            HighloadParams.Skip,
+            HighloadParams.Take,
+            HighloadParams.Fields,
+            HighloadParams.Sort,
+            HighloadParams.Order,
+            HighloadParams.DisableOr,
+            HighloadParams.DisableNot,
+            HighloadParams.DisableLike,
+            HighloadParams.Query,
+            HighloadParams.DataFilters,
+            HighloadParams.CacheForSeconds,
+            HighloadParams.Expand,
+            HighloadParams.Path,
+            HighloadParams.Name
         };
+
+        private static readonly Regex RangeFilterRegex = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
+        private static readonly Regex GetRequestExpandParamRegex = new Regex(@$"^{HighloadParams.Expand}\[\d+\]\.");
+
+        private object _json;
+        private JObject _jObj;
+
+        protected JObject Jobj => _jObj;
         
-        public ProductsOptions(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+        protected ProductsOptionsBase()
         {
-            _json = json;
-            ElasticOptions = options ?? new SonicElasticStoreOptions();
-            
+            ElasticOptions = new SonicElasticStoreOptions();
             Filters = new List<IElasticFilter>();
             DataFilters = new Dictionary<string, string>();
-            
-            if (!(json is JObject jobj)) return;
-
-            Id = id ?? 0;
-            Page = (decimal?) jobj.SelectToken(PAGE);
-            PerPage = (decimal?) jobj.SelectToken(PER_PAGE);
-            Skip = skip ?? (decimal?) jobj.SelectToken(SKIP);
-            Take = take ?? (decimal?) jobj.SelectToken(TAKE);
-            CacheForSeconds = (decimal?) jobj.SelectToken(CACHE_FOR_SECONDS) ?? 0;
-            
-            PropertiesFilter = JTokenToStringArray(jobj.SelectToken(FIELDS));
-            DisableOr = JTokenToStringArray(jobj.SelectToken(DISABLE_OR));
-            DisableNot = JTokenToStringArray(jobj.SelectToken(DISABLE_NOT));
-            DisableLike = JTokenToStringArray(jobj.SelectToken(DISABLE_LIKE));
-            
-            Sort = (string) jobj.SelectToken(SORT);
-            OrderDirection = (string) jobj.SelectToken(ORDER);            
-            Filters = GetFilters(jobj, Id);
-            DataFilters = GetDataFilters(jobj);
         }
 
-        public void ApplyQueryCollection(IQueryCollection collection)
-        {
-            Filters = collection.Where(n => !FirstLevelReservedKeywords.Contains(n.Key))
-                .Select(n => ProductOptionsParser.CreateFilter(n, ElasticOptions)).ToArray();
-        }
+        public SonicElasticStoreOptions ElasticOptions { get; set; }
 
         #region Bound properties
 
-       
         [ModelBinder(Name = "type")]
         public string Type { get; set; }
         
-        [ModelBinder(Name = "id")]
+        [ModelBinder(Name = HighloadParams.Id)]
         public int Id { get; set; }
         
-        [ModelBinder(Name = FIELDS)]
+        [ModelBinder(Name = HighloadParams.Fields)]
         public string Fields { get; set; }
         
-        [ModelBinder(Name = PAGE)]
+        [ModelBinder(Name = HighloadParams.Page)]
         public decimal? Page { get; set; }
         
-        [ModelBinder(Name = PER_PAGE)]
+        [ModelBinder(Name = HighloadParams.PerPage)]
         public decimal? PerPage { get; set; }
         
-        [ModelBinder(Name = SKIP)]
+        [ModelBinder(Name = HighloadParams.Skip)]
         public decimal? Skip { get; set; }
 
-        [ModelBinder(Name = TAKE)]
+        [ModelBinder(Name = HighloadParams.Take)]
         public decimal? Take { get; set; }
 
-        [ModelBinder(Name = SORT)]
+        [ModelBinder(Name = HighloadParams.Sort)]
         public string Sort { get; set; }
 
-        [ModelBinder(Name = ORDER)]
+        [ModelBinder(Name = HighloadParams.Order)]
         public string OrderDirection { get; set; }
 
-        [ModelBinder(Name = DISABLE_OR)]
+        [ModelBinder(Name = HighloadParams.DisableOr)]
         public string[] DisableOr { get; set; }
 
-        [ModelBinder(Name = DISABLE_NOT)]
+        [ModelBinder(Name = HighloadParams.DisableNot)]
         public string[] DisableNot { get; set; }
 
-        [ModelBinder(Name = DISABLE_LIKE)]
+        [ModelBinder(Name = HighloadParams.DisableLike)]
         public string[] DisableLike { get; set; }
-        
+
+        [ModelBinder(Name = HighloadParams.Expand)]
+        public ProductsOptionsExpand[] Expand { get; set; }
+
         #endregion
-        
+
         #region Computed properties
-        
+
         [BindNever]
         public IList<IElasticFilter> Filters { get; set; }
         
         [BindNever]
         public IList<string> PropertiesFilter { get; set; }
-        
+
         [BindNever]
         public Dictionary<string, string> DataFilters { get; set; }
         
@@ -162,7 +123,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
         {
             get
             {
-
                 if (!string.IsNullOrEmpty(Type))
                 {
                     return Type;
@@ -170,16 +130,71 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
                 return SimpleFilters
                     .Where(f => f.Name == ElasticOptions.TypePath)
-                    .Select(f => f.Value).FirstOrDefault();
+                    .Select(f => f.Value)
+                    .FirstOrDefault();
             }
         }
-        
+
         #endregion
+
+        public T BuildFromJson<T>(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+            where T : ProductsOptionsBase
+        {
+            return (T)BuildFromJson(json, options, id, skip, take);
+        }
+
+        public void ApplyQueryCollection(IQueryCollection collection)
+        {
+            Filters = collection
+                .Where(x => !FirstLevelReservedKeywords.Contains(x.Key) && !GetRequestExpandParamRegex.IsMatch(x.Key))
+                .Select(x => ProductOptionsParser.CreateFilter(x, ElasticOptions))
+                .ToArray();
+        }
+
+        public virtual string GetKey()
+        {
+            return _json == null
+                ? null
+                : $"Id: {Id}, Skip: {Skip}, Take: {Take} {_json}";
+        }
+
+        protected virtual ProductsOptionsBase BuildFromJson(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+        {
+            _json = json;
+            ElasticOptions = options ?? new SonicElasticStoreOptions();
+
+            if (json is not JObject jObj)
+            {
+                return this;
+            }
+
+            _jObj = jObj;
+
+            Id = id ?? 0;
+            Page = (decimal?)_jObj.SelectToken(HighloadParams.Page);
+            PerPage = (decimal?)_jObj.SelectToken(HighloadParams.PerPage);
+            Skip = skip ?? (decimal?)_jObj.SelectToken(HighloadParams.Skip);
+            Take = take ?? (decimal?)_jObj.SelectToken(HighloadParams.Take);
+            CacheForSeconds = (decimal?)_jObj.SelectToken(HighloadParams.CacheForSeconds) ?? 0;
+
+            PropertiesFilter = JTokenToStringArray(_jObj.SelectToken(HighloadParams.Fields));
+            DisableOr = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableOr));
+            DisableNot = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableNot));
+            DisableLike = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableLike));
+
+            Sort = (string)_jObj.SelectToken(HighloadParams.Sort);
+            OrderDirection = (string)_jObj.SelectToken(HighloadParams.Order);
+            Filters = GetFilters(_jObj, Id);
+            DataFilters = GetDataFilters(_jObj);
+            Expand = GetExpand(_jObj.SelectToken(HighloadParams.Expand));
+
+            return this;
+        }
 
         private Dictionary<string, string> GetDataFilters(JObject jobj)
         {
             var result = new Dictionary<string, string>();
-            var dfToken = jobj.SelectToken(DATA_FILTERS);
+            var dfToken = jobj.SelectToken(HighloadParams.DataFilters);
             if (dfToken != null)
             {
                 return dfToken.Children().OfType<JProperty>()
@@ -196,7 +211,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 result.Add(CreateFilter("Id", id));
             }            
             
-            var queryToken = jobj.SelectToken(QUERY);
+            var queryToken = jobj.SelectToken(HighloadParams.Query);
             JProperty[] filterProperties;
             if (queryToken != null)
             {
@@ -216,30 +231,56 @@ namespace QA.ProductCatalog.HighloadFront.Options
             return result;
         }
 
+        private ProductsOptionsExpand[] GetExpand(JToken valuesToken)
+        {
+            if (valuesToken is JArray array)
+            {
+                return array
+                    .Select(jobj =>
+                    {
+                        var expandOptions = new ProductsOptionsExpand().BuildFromJson<ProductsOptionsExpand>(jobj, ElasticOptions);
+                        expandOptions.Take = HighloadCommonConstants.ExpandTakeAsAll;
+                        return expandOptions;
+                    })
+                    .ToArray();
+            }
+
+            return null;
+        }
+
         private string[] JTokenToStringArray(JToken valuesToken, bool skipSplit = false)
         {
-            if (valuesToken == null) return new string[] {};
+            if (valuesToken == null)
+            {
+                return Array.Empty<string>();
+            }
             
             if (valuesToken is JArray array)
             {
-                return array.Select(n => n.Value<string>()).ToArray();
+                return array
+                    .Select(x => x.Value<string>())
+                    .ToArray();
             }
 
             var values = (string) valuesToken;
 
-            return skipSplit ? new[] { values } : values.Split(',').Select(n => n.Trim()).ToArray();
+            return skipSplit
+                ? new[] { values }
+                : values.Split(',')
+                    .Select(x => x.Trim())
+                    .ToArray();
         }
         
         private IElasticFilter CreateFilter(string key, JToken token)
         {
             var name = GetParameterName(key, out var isDisjunction);
 
-            if (name == OR_QUERY || name == AND_QUERY)
+            if (name == HighloadOperators.Or || name == HighloadOperators.And)
             {
                 var childProperties = token.Children().OfType<JProperty>().ToArray();
                 return new GroupFilter()
                 {
-                    IsDisjunction = name == OR_QUERY,
+                    IsDisjunction = name == HighloadOperators.Or,
                     Filters = childProperties.Select(n => CreateFilter(n.Name, n.Value)).ToArray()
                 };
             }
@@ -247,7 +288,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             var values = JTokenToStringArray(token, true);
             var value = values.First();
             
-            if (name == FREE_QUERY)
+            if (name == HighloadParams.FreeQuery)
             {
                 return new QueryFilter()
                 {
@@ -274,7 +315,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 IsDisjunction = isDisjunction,
                 FromJson = true
             };
-
         }
 
         private string GetParameterName(string key, out bool isDisjunction)
@@ -294,28 +334,5 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
             return key;
         }
-
-        public string GetKey()
-        {
-            return _json != null ? $"Id: {Id}, Skip: {Skip}, Take:{Take}" + _json : null;
-        }
-
-        public void ComputeArrays()
-        {
-            PropertiesFilter = Fields?.Split(',').ToArray();
-            
-            DisableOr = (DisableOr == null || !DisableOr.Any())
-                ? new string[] { }
-                : DisableOr.SelectMany(n => n.Split(',')).ToArray();
-            
-            DisableNot = (DisableNot == null || !DisableNot.Any())
-                ? new string[] { }
-                : DisableNot.SelectMany(n => n.Split(',')).ToArray();
-            
-            DisableLike = (DisableLike == null || !DisableLike.Any())
-                ? new string[] { }
-                : DisableLike.SelectMany(n => n.Split(',')).ToArray();             
-         
-        }
     }
-};
+}
