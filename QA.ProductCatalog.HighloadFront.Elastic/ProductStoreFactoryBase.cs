@@ -4,6 +4,7 @@ using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 using System;
 using QA.Core.Cache;
+using QA.ProductCatalog.HighloadFront.Models;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -26,19 +27,23 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             return _versionFactory(GetProductStoreVersion(language, state));
         }
-        
+
         public string GetProductStoreVersion(string language, string state)
         {
             var key = GetKey(language, state);
-            var serviceVersion = _cacheProvider.GetOrAdd(key, _expiration,  () =>
+            var engine = _cacheProvider.GetOrAdd(key, _expiration,  () =>
             {
                 var client = _configuration.GetElasticClient(language, state);
                 var info = client.GetInfo().Result;
-                var version = JObject.Parse(info).SelectToken("version.number").Value<string>();
-                return version;
+                var searchEngine = new SearchEngine()
+                {
+                    Name = JObject.Parse(info).SelectToken("version.distribution")?.Value<string>() ?? "elasticsearch",
+                    Version = JObject.Parse(info).SelectToken("version.number")?.Value<string>()
+                };
+                return searchEngine;
             });
 
-            return MapVersion(serviceVersion);
+            return MapVersion(engine);
 
         }
 
@@ -47,11 +52,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return $"VersionNumber_{language}_{state}";
         }
 
-        protected abstract string MapVersion(string serviceVersion);
+        protected abstract string MapVersion(SearchEngine engine);
 
         public NotImplementedException ElasticVersionNotSupported(string serviceVersion)
         {
-            return new NotImplementedException($"Elasticsearch version {serviceVersion} is not supported");
+            return new NotImplementedException($"Search engine version {serviceVersion} is not supported");
         }
     }
 }
