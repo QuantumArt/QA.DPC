@@ -176,10 +176,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 AddModelError(ex.Message);
                 return HandleBadRequest();
             }
-            catch (Exception ex)
-            {
-                return UnexpectedBadRequest(ex);
-            }
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
@@ -209,10 +205,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
-            }
-            catch (Exception ex)
-            {
-                return UnexpectedBadRequest(ex);
             }
         }
 
@@ -263,7 +255,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             CancellationToken cancellationToken = default)
         {
             CorrectProductOptions(options);
-            
+
             ValidateModel(options);
 
             var modelStateResult = HandleBadRequest();
