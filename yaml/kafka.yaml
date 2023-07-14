@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-kafka-api
+  namespace: dpc
+  labels:
+    app: dpc-kafka-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-kafka-api
+  template:
+    metadata:
+      labels:
+        app: dpc-kafka-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-kafka-api
+          image: '||registry||/dpc-kafka-api:||version||'
+          envFrom:
+            - configMapRef:
+                name: dpc-kafka
+          env:
+            - name: Kafka__IsEnabled
+              valueFrom:
+                configMapKeyRef:
+                  key: IS_ENABLED
+                  name: dpc-kafka
+            - name: Kafka__Acks
+              valueFrom:
+                configMapKeyRef:
+                  key: ACKS
+                  name: dpc-kafka
+            - name: Kafka__BootstrapServers
+              valueFrom:
+                configMapKeyRef:
+                  key: SERVERS
+                  name: dpc-kafka
+            - name: Kafka__MessageSendMaxRetries
+              valueFrom:
+                configMapKeyRef:
+                  key: SEND_RETRIES
+                  name: dpc-kafka
+            - name: Kafka__RetryBackoffMs
+              valueFrom:
+                configMapKeyRef:
+                  key: BACKOFF_LIMIT_MS
+                  name: dpc-kafka
+            - name: Kafka__SecurityProtocol
+              valueFrom:
+                configMapKeyRef:
+                  key: SECURITY_PROTOCOL
+                  name: dpc-kafka
+            - name: Kafka__SaslUsername
+              valueFrom:
+                configMapKeyRef:
+                  key: SASL_USERNAME
+                  name: dpc-kafka
+            - name: Kafka__SaslPassword
+              valueFrom:
+                configMapKeyRef:
+                  key: SASL_PASSWORD
+                  name: dpc-kafka
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap:
+            name: dpc-kafka
+            items:
+              - key: TZ
+                path: TZ
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dpc-kafka-api
+  namespace: dpc
+spec:
+  type: ClusterIP
+  selector:
+    app: dpc-kafka-api
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dpc-kafka-api
+  namespace: dpc
+spec:
+  rules:
+    - host: '||kafka_api_host||'
+      http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: dpc-kafka-api
+              port:
+                number: 80

@@ -71,21 +71,4 @@ spec:
             name: dpc-actions-service
             port:
               number: 80           
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: dpc-kafka-api
-  namespace: dpc
-spec:
-  rules:
-    - host: '||kafka_api_host||'
-      http:
-        paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: dpc-kafka-api
-              port:
-                number: 80
+
