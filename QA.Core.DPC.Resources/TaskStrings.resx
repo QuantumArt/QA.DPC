@@ -471,4 +471,7 @@
   <data name="Prompt" xml:space="preserve">
     <value>Are your sure?</value>
   </data>
+  <data name="AllowConcurrentTasks" xml:space="preserve">
+    <value>Allow concurrent tasks execution</value>
+  </data>
 </root>

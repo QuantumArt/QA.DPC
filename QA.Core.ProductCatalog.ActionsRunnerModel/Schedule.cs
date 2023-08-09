@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace QA.Core.ProductCatalog.ActionsRunnerModel
@@ -12,6 +11,7 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
     
         public int ID { get; set; }
         public bool Enabled { get; set; }
+        public bool AllowConcurrentTasks { get; set; }
         public string CronExpression { get; set; }
     
         public ICollection<Task> Tasks { get; set; }

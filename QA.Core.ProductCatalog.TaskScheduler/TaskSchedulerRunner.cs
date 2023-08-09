@@ -134,7 +134,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			{
 				using (var taskService = _taskServiceFunc())
 				{
-					taskService.SaveSchedule(task.ID, false, null);
+					taskService.SaveSchedule(task.ID, false, true, null);
 				}
 
 				_logger.Info("Onetime schedule for {customerCode} has been removed from database for task {taskId} ", CustomerCode, task.ID);

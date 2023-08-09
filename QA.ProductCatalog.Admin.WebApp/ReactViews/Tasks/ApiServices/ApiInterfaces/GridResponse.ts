@@ -24,4 +24,5 @@ export interface IGridTask {
   StateId: number;
   UserName: string;
   ScheduleEnabled: boolean;
+  AllowConcurrentTasks: boolean;
 }

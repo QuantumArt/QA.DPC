@@ -106,7 +106,7 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
             throw new NotImplementedException();
         }
 
-        public void SaveSchedule(int taskId, bool enabled, string cronExpression)
+        public void SaveSchedule(int taskId, bool enabled, bool allowConcurrentTasks, string cronExpression)
         {
             throw new NotImplementedException();
         }

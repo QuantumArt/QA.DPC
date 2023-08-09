@@ -386,12 +386,19 @@ export class TaskStore {
   setSchedule = async (
     taskId: number,
     isEnabled: boolean,
+    allowConcurrentTasks: boolean,
     cronExpression: string,
     repeatType = "on"
   ): Promise<void> =>
     this.priorityRequestInSameTime(async () => {
       try {
-        await apiService.fetchSchedule(taskId, isEnabled, cronExpression, repeatType);
+        await apiService.fetchSchedule(
+          taskId,
+          isEnabled,
+          allowConcurrentTasks,
+          cronExpression,
+          repeatType
+        );
         await this.fetchGridData();
       } catch (e) {
         console.error(e);

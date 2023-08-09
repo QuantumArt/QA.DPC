@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using QA.Core.DPC.Resources;
+﻿using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
 {
@@ -56,8 +55,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 	    public bool HasSchedule { get; set; }
         public bool ScheduleEnabled { get; set; }
 	    public string ScheduleCronExpression { get; set; }
+        public bool AllowConcurrentTasks { get; set; }
 
-	    public TaskModel()
+        public TaskModel()
         {
         }
 
@@ -91,7 +91,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
             
             ScheduleEnabled = HasSchedule && (efTask.Schedule?.Enabled ?? false);
 
-	        ScheduleCronExpression = HasSchedule ? efTask.Schedule?.CronExpression : null;
+            AllowConcurrentTasks = efTask.Schedule?.AllowConcurrentTasks ?? true;
+
+            ScheduleCronExpression = HasSchedule ? efTask.Schedule?.CronExpression : null;
         }
     }
 }

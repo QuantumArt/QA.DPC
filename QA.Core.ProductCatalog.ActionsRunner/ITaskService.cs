@@ -25,7 +25,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
 		Task[] GetScheduledTasks();
 
-		void SaveSchedule(int taskId, bool enabled, string cronExpression);
+		void SaveSchedule(int taskId, bool enabled, bool allowConcurrentTasks, string cronExpression);
 
 		void CancelRequestedTasks();
 

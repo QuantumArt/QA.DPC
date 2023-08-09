@@ -6,6 +6,7 @@ interface IProps {
   taskIdNumber: number;
   hasSchedule: boolean;
   isScheduleEnabled: boolean;
+  allowConcurrentTasks: boolean;
   scheduleCronExpression: string;
   intent: Intent;
   className?: string;

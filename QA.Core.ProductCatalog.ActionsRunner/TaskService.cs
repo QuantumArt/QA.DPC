@@ -300,8 +300,18 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                     sourceTask.Name, sourceTask.Data, sourceTask.UserID, sourceTask.UserName,
                     sourceTask.DisplayName, sourceTaskId);
 
-                AddTask(context, task);                 
+                if (CanSpawnTask(context, sourceTask))
+                {
+                    AddTask(context, task);
+                }
             }
+        }
+
+        private bool CanSpawnTask(TaskRunnerEntities ctx, Task task)
+        {
+            var allowConcurrent = task.Schedule?.AllowConcurrentTasks ?? true;
+
+            return allowConcurrent || !ctx.Tasks.Any(t => t.StateID == (int)State.New && t.ScheduledFromTaskID == task.ID);
         }
 
         public Task[] GetScheduledTasks()
@@ -314,7 +324,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         }
 
-        public void SaveSchedule(int taskId, bool enabled, string cronExpression)
+        public void SaveSchedule(int taskId, bool enabled, bool allowConcurrentTasks, string cronExpression)
         {
             using (var context = TaskRunnerEntities.Get(_customer))
             {
@@ -339,7 +349,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         task.Schedule = new Schedule();
 
                     task.Schedule.Enabled = enabled;
-
+                    task.Schedule.AllowConcurrentTasks = allowConcurrentTasks;
                     task.Schedule.CronExpression = cronExpression;
                 }
 

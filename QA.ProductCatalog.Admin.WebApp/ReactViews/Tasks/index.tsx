@@ -110,6 +110,7 @@ export const Tasks = observer(() => {
                 hasSchedule={showSchedule}
                 isScheduleEnabled={gridElement.ScheduleEnabled}
                 intent={gridElement.ScheduleEnabled ? Intent.SUCCESS : Intent.PRIMARY}
+                allowConcurrentTasks={gridElement.AllowConcurrentTasks}
               />
             );
           }

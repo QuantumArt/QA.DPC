@@ -15,4 +15,5 @@ export interface Task {
   StateId: number;
   UserName: string;
   ScheduleEnabled: boolean;
+  AllowConcurrentTasks: boolean;
 }
