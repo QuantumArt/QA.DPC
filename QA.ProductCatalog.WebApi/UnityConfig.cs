@@ -24,6 +24,7 @@ using Unity;
 using QA.ProductCatalog.Filters;
 using QA.ProductCatalog.TmForum.Extensions;
 using QA.Core.DPC.Workflow.Extensions;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
@@ -71,7 +72,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 				unityContainer.RegisterType<IUserProvider, ConfigurableUserProvider>();
 			}
 
-			unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+			unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>();
 
 			unityContainer.RegisterType<IRegionTagReplaceService, RegionTagService>();
 
@@ -96,10 +97,10 @@ namespace QA.ProductCatalog.WebApi.App_Start
             switch (loaderProps.SettingsSource)
             {
 	            case SettingsSource.Content:
-		            unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+		            unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>();
 		            break;
 	            case SettingsSource.AppSettings:
-		            unityContainer.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+		            unityContainer.RegisterType<ISettingsService, SettingsFromQpCoreServiceDeprecated>();
 		            break;
             }
             

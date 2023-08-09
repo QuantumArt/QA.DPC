@@ -1,35 +1,39 @@
 ﻿using System;
+using Microsoft.Extensions.Caching.Memory;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
-using QA.DotNetCore.Caching.Interfaces;
 using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.ContentProviders.Deprecated
 {
-    public class SettingsFromContentCoreService : SettingsServiceBase
+    [Obsolete(@"This class is deprecated. Please use SettingsFromContentCoreService class instead.
+QA.DotNetCore.Caching.VersionedCacheCoreProvider should be registered as dependency for QA.DotNetCore.Caching.Interfaces.ICacheProvider")]
+    public class SettingsFromContentCoreServiceDeprecated : SettingsServiceBaseDeprecated
     {
-        private const string FIELD_NAME_TITLE = "Title";
-        private const string FIELD_NAME_VALUE = "Value";
+        private readonly VersionedCacheProviderBase _cacheProvider;
 
         private readonly int _settingsContentId;
-        private readonly TimeSpan _cachePeriod = new TimeSpan(3, 10, 0);
 
-        public SettingsFromContentCoreService(
+        public SettingsFromContentCoreServiceDeprecated(VersionedCacheProviderBase cacheProvider,
             IConnectionProvider connectionProvider,
-            ICacheProvider cacheProvider,
             int settingsContentId)
             : base(connectionProvider, cacheProvider)
         {
+            _cacheProvider = cacheProvider;
             _settingsContentId = settingsContentId;
         }
+
+        private const string FIELD_NAME_TITLE = "Title";
+
+        private const string FIELD_NAME_VALUE = "Value";
+
+        private readonly TimeSpan _cachePeriod = new TimeSpan(3, 10, 0);
 
         public override string GetSetting(string title)
         {
             var key = string.Format("GetSetting_{0}", title);
-            return CacheProvider.GetOrAdd(
-                key,
-                new[] { _settingsContentId.ToString() },
-                _cachePeriod,
-                () => GetSettingValue(title));
+            return _cacheProvider.GetOrAdd(key, new[] { _settingsContentId.ToString() }, _cachePeriod,
+                () => GetSettingValue(title), true, CacheItemPriority.NeverRemove);
         }
 
         private string GetSettingValue(string title)

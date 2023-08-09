@@ -175,7 +175,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             PerPage = (decimal?)_jObj.SelectToken(HighloadParams.PerPage);
             Skip = skip ?? (decimal?)_jObj.SelectToken(HighloadParams.Skip);
             Take = take ?? (decimal?)_jObj.SelectToken(HighloadParams.Take);
-            CacheForSeconds = (decimal?)_jObj.SelectToken(HighloadParams.CacheForSeconds) ?? 0;
+            CacheForSeconds = GetCacheForSeconds();
 
             PropertiesFilter = JTokenToStringArray(_jObj.SelectToken(HighloadParams.Fields));
             DisableOr = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableOr));
@@ -189,6 +189,11 @@ namespace QA.ProductCatalog.HighloadFront.Options
             Expand = GetExpand(_jObj.SelectToken(HighloadParams.Expand));
 
             return this;
+        }
+
+        protected virtual decimal GetCacheForSeconds()
+        {
+            return (decimal?)_jObj.SelectToken(HighloadParams.CacheForSeconds) ?? 0;
         }
 
         private Dictionary<string, string> GetDataFilters(JObject jobj)

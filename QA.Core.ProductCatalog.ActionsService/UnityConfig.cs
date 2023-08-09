@@ -23,6 +23,7 @@ using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml;
 using Unity.Injection;
 using Unity.Lifetime;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -100,10 +101,10 @@ namespace QA.Core.ProductCatalog.ActionsService
             switch (loaderProps.SettingsSource)
             {
                 case SettingsSource.Content:
-                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+                    container.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>();
                     break;
                 case SettingsSource.AppSettings:
-                    container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+                    container.RegisterType<ISettingsService, SettingsFromQpCoreServiceDeprecated>();
                     break;
             }
             

@@ -40,8 +40,9 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using ILogger = QA.Core.Logger.ILogger;
 using QA.ProductCatalog.TmForum.Extensions;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 
- namespace QA.ProductCatalog.Admin.WebApp
+namespace QA.ProductCatalog.Admin.WebApp
 {
     public static class UnityConfig
     {
@@ -152,10 +153,10 @@ using QA.ProductCatalog.TmForum.Extensions;
             switch (loaderProperties.SettingsSource)
             {
                 case SettingsSource.Content:
-                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>(new InjectionConstructor(typeof(VersionedCacheProviderBase), typeof(IConnectionProvider), loaderProperties.SettingsContentId));
+                    container.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>(new InjectionConstructor(typeof(VersionedCacheProviderBase), typeof(IConnectionProvider), loaderProperties.SettingsContentId));
                     break;
                 case SettingsSource.AppSettings:
-                    container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+                    container.RegisterType<ISettingsService, SettingsFromQpCoreServiceDeprecated>();
                     break;
             }
             

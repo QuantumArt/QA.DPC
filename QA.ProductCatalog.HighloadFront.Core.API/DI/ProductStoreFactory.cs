@@ -1,16 +1,19 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;
-using QA.ProductCatalog.HighloadFront.Options;
-using System;
-using QA.Core.Cache;
 using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 {
     public class ProductStoreFactory : ProductStoreFactoryBase
     {
-        public ProductStoreFactory(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, VersionedCacheProviderBase cache, DataOptions options)
+        public ProductStoreFactory(
+            Func<string, IProductStore> versionFactory,
+            ElasticConfiguration configuration,
+            ICacheProvider cache,
+            DataOptions options)
             : base(versionFactory, configuration, cache, options)
         {
         }

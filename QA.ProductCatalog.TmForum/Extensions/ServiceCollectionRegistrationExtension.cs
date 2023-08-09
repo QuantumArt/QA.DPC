@@ -9,6 +9,7 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.TmForum.Factories;
@@ -69,13 +70,13 @@ namespace QA.ProductCatalog.TmForum.Extensions
 
                 if (result > 0)
                 {
-                    return new SettingsFromContentCoreService(
+                    return new SettingsFromContentCoreServiceDeprecated(
                         provider.GetRequiredService<VersionedCacheProviderBase>(),
                         provider.GetRequiredService<IConnectionProvider>(),
                         result);
                 }
 
-                return new SettingsFromQpCoreService(
+                return new SettingsFromQpCoreServiceDeprecated(
                     provider.GetRequiredService<VersionedCacheProviderBase>(),
                     provider.GetRequiredService<IConnectionProvider>());
             });

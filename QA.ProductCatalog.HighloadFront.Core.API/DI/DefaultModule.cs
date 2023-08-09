@@ -1,21 +1,22 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using Autofac;
 using Autofac.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.DotNetCore.Caching.Interfaces;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.HighloadFront.PostProcessing;
 using QA.ProductCatalog.HighloadFront.Validation;
-using System;
-using System.Collections.Generic;
 using Service = QA.Core.DPC.QP.Models.Service;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.DI
@@ -24,11 +25,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
     {
         public IConfiguration Configuration { get; set; }
 
-        public bool IsQpMode => !string.Equals(Configuration["Data:QpMode"], "false"
-            , StringComparison.InvariantCultureIgnoreCase);
-        
-        public int SettingsContentId => int.TryParse(Configuration["Data:SettingsContentId"], out var result) ? result : 0;
+        public bool IsQpMode => !string.Equals(Configuration["Data:QpMode"], "false", StringComparison.InvariantCultureIgnoreCase);
 
+        public int SettingsContentId => int.TryParse(Configuration["Data:SettingsContentId"], out var result) ? result : 0;
 
         protected override void Load(ContainerBuilder builder)
         {
@@ -54,8 +53,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterType<ProductImporter>().ExternallyOwned();
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
-            builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityFixedProvider(
-                c.Resolve<IHttpContextAccessor>(), 
+            builder.RegisterScoped<IIdentityProvider>(c => new CoreIdentityFixedProvider(
+                c.Resolve<IHttpContextAccessor>(),
                 c.Resolve<DataOptions>().FixedCustomerCode
             ));
             builder.RegisterScoped<IConnectionProvider>(c =>
@@ -113,20 +112,20 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 if (SettingsContentId != 0)
                 {
                     builder.RegisterScoped<ISettingsService>(c => new SettingsFromContentCoreService(
-                        c.Resolve<VersionedCacheProviderBase>(),
                         c.Resolve<IConnectionProvider>(),
+                        c.Resolve<ICacheProvider>(),
                         SettingsContentId
-                        ));                    
+                        ));
                 }
                 else
                 {
                     builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
                 }
-                builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
+                
                 builder.RegisterScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
                 builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
                 builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
-                builder.RegisterScoped<IContentProvider<HighloadApiMethod>, HighloadApiMethodProvider>();                
+                builder.RegisterScoped<IContentProvider<HighloadApiMethod>, HighloadApiMethodProvider>();
                 builder.RegisterScoped<ElasticConfiguration, QpElasticConfiguration>();
             }
             else

@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Interfaces;
-using QA.ProductCatalog.HighloadFront.Options;
-using System;
-using QA.Core.Cache;
 using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -12,10 +12,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private Func<string, IProductStore> _versionFactory;
         private ElasticConfiguration _configuration;
-        private VersionedCacheProviderBase _cacheProvider;
+        private ICacheProvider _cacheProvider;
         private TimeSpan _expiration;
 
-        public ProductStoreFactoryBase(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, VersionedCacheProviderBase cacheProvider, DataOptions options)
+        public ProductStoreFactoryBase(
+            Func<string, IProductStore> versionFactory,
+            ElasticConfiguration configuration,
+            ICacheProvider cacheProvider,
+            DataOptions options)
         {
             _versionFactory = versionFactory;
             _configuration = configuration;
@@ -23,40 +27,44 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _expiration = options.VersionCacheExpiration;
         }
 
-        public IProductStore GetProductStore(string language, string state)
+        public async Task<IProductStore> GetProductStore(string language, string state)
         {
-            return _versionFactory(GetProductStoreVersion(language, state));
+            var store = await GetProductStoreVersion(language, state);
+            return _versionFactory(store);
         }
-
-        public string GetProductStoreVersion(string language, string state)
+        
+        public async Task<string> GetProductStoreVersion(string language, string state)
         {
             var key = GetKey(language, state);
-            var engine = _cacheProvider.GetOrAdd(key, _expiration,  () =>
-            {
-                var client = _configuration.GetElasticClient(language, state);
-                var info = client.GetInfo().Result;
-                var searchEngine = new SearchEngine()
+            var serviceVersion = await _cacheProvider.GetOrAddAsync(
+                key,
+                Array.Empty<string>(),
+                _expiration,
+                async () =>
                 {
-                    Name = JObject.Parse(info).SelectToken("version.distribution")?.Value<string>() ?? "elasticsearch",
-                    Version = JObject.Parse(info).SelectToken("version.number")?.Value<string>()
-                };
-                return searchEngine;
-            });
+                    var client = _configuration.GetElasticClient(language, state);
+                    var info = await client.GetInfo();
+                    var searchEngine = new SearchEngine()
+                    {
+                        Name = JObject.Parse(info).SelectToken("version.distribution")?.Value<string>() ?? "elasticsearch",
+                        Version = JObject.Parse(info).SelectToken("version.number")?.Value<string>()
+                    };
+                    return searchEngine;
+                });
 
-            return MapVersion(engine);
-
+            return MapVersion(serviceVersion);
         }
-
-        private string GetKey(string language, string state)
-        {
-            return $"VersionNumber_{language}_{state}";
-        }
-
-        protected abstract string MapVersion(SearchEngine engine);
 
         public NotImplementedException ElasticVersionNotSupported(string serviceVersion)
         {
             return new NotImplementedException($"Search engine version {serviceVersion} is not supported");
+        }
+
+        protected abstract string MapVersion(SearchEngine engine);
+
+        private string GetKey(string language, string state)
+        {
+            return $"VersionNumber_{language}_{state}";
         }
     }
 }

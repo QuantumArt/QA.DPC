@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using QA.Core.DPC.QP.Exceptions;
-using Unity;
 using Microsoft.Extensions.DependencyInjection;
-using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.QP.Models;
-using System.Linq;
+using Newtonsoft.Json;
 using NLog;
 using NLog.Fluent;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.DPC.Core.Helpers
 {
@@ -99,17 +96,25 @@ namespace QA.DPC.Core.Helpers
         private bool IsConsolidationError(IApplicationBuilder options, HttpContext context, out CustomerState customerState)
         {
             var provider = options.ApplicationServices.GetService<IIdentityProvider>();
-            var customerCode = provider?.Identity?.CustomerCode;
-            
-            if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key || provider is CoreIdentityFixedProvider)
+            if (provider is CoreIdentityFixedProvider)
             {
                 Logger.Debug()
-                    .Message("Customer code is fixed or not defined")
+                    .Message("Customer code is fixed")
                     .Property("httpRequest", context.Request)
                     .Write();
                 customerState = CustomerState.NotDefined;
                 return false;
+            }
 
+            var customerCode = provider?.Identity?.CustomerCode;
+            if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key)
+            {
+                Logger.Debug()
+                    .Message("Customer code is not defined")
+                    .Property("httpRequest", context.Request)
+                    .Write();
+                customerState = CustomerState.NotDefined;
+                return false;
             }
 
             var factory = options.ApplicationServices.GetService<IFactory>();
@@ -120,8 +125,10 @@ namespace QA.DPC.Core.Helpers
                     .Property("httpRequest", context.Request)
                     .Write();
                 customerState = CustomerState.NotRegistered;
+                return true;
             }
-            else if (factory.CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
+
+            if (factory.CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
             {
                 Logger.Debug()
                     .Message("Customer code {customerCode} is not active", customerCode)
@@ -130,17 +137,13 @@ namespace QA.DPC.Core.Helpers
                 customerState = customerContext.State;
                 return customerContext.State != CustomerState.Active;
             }
-            else
-            {
-                Logger.Debug()
-                    .Message("Customer code {customerCode} is not found", customerCode)
-                    .Property("httpRequest", context.Request)
-                    .Write();
-                customerState = CustomerState.NotFound;
-            }
 
+            Logger.Debug()
+                .Message("Customer code {customerCode} is not found", customerCode)
+                .Property("httpRequest", context.Request)
+                .Write();
+            customerState = CustomerState.NotFound;
             return true;
-
         }
     }
 }

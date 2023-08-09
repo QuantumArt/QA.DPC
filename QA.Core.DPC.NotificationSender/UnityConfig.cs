@@ -1,10 +1,10 @@
-﻿﻿using Microsoft.Practices.Unity.Configuration;
+﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Notification.Services;
- using QA.Core.DPC.QP.Autopublish.Configuration;
+using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
@@ -12,10 +12,10 @@ using QA.Core.ProductCatalog.Actions.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
- using System.Collections.Generic;
- using Microsoft.EntityFrameworkCore;
- using Microsoft.Extensions.Logging;
- using QA.Configuration;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using QA.Configuration;
 using QA.Core.DPC.Service;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
@@ -23,11 +23,12 @@ using QA.ProductCatalog.Infrastructure;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
- using ILogger = QA.Core.Logger.ILogger;
- using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
+using ILogger = QA.Core.Logger.ILogger;
+using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
 using IUserProvider = QA.ProductCatalog.ContentProviders.IUserProvider;
 using NotificationChannel = QA.ProductCatalog.ContentProviders.NotificationChannel;
 using INotificationChannelService = QA.ProductCatalog.ContentProviders.INotificationChannelService;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 
 namespace QA.Core.DPC
 {
@@ -69,10 +70,10 @@ namespace QA.Core.DPC
             switch (props.SettingsSource)
             {
 	            case SettingsSource.Content:
-		            unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+		            unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>();
 		            break;
 	            case SettingsSource.AppSettings:
-		            unityContainer.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+		            unityContainer.RegisterType<ISettingsService, SettingsFromQpCoreServiceDeprecated>();
 		            break;
             }
             

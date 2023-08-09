@@ -224,7 +224,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                         .Write();
                 }
 
-                var response = await GetHttpResponse(baseUri, eparams, json, cancellationToken);
+                using var response = await GetHttpResponse(baseUri, eparams, json, cancellationToken);
 
                 if (response == null)
                 {

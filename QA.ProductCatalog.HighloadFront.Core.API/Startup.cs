@@ -1,7 +1,6 @@
 ﻿using System;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +58,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddSingleton(taskRunnerDelayOptions);
 
             services.AddSingleton(new PolicyRegistry());
+            services.AddSingleton<HashProcessor>();
             services.AddScoped<IProductInfoProvider, ProductInfoProvider>();
 
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
@@ -75,9 +75,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
 
+            services.AddMemoryCache();
+
+            services.AddSingleton<ICacheKeyFactory, CacheKeyFactoryBase>();
+            services.AddSingleton<ILockFactory, MemoryLockFactory>();
             services.AddSingleton<ICacheProvider, VersionedCacheCoreProvider>();
 
-            services.AddMemoryCache();
             services.AddHttpClient();
 
             services.ResolveTmForumRegistrationForHighloadApi(Configuration);

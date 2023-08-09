@@ -10,6 +10,7 @@ using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
 using Unity.Lifetime;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 
 namespace QA.Core.ProductCatalog.Actions.Container
 {
@@ -27,7 +28,7 @@ namespace QA.Core.ProductCatalog.Actions.Container
 				.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager())
 				.RegisterType<VersionedCacheProviderBase>(new ContainerControlledLifetimeManager())
 				.RegisterType<IContentInvalidator, DpcContentInvalidator>()
-				.RegisterType<ISettingsService, SettingsFromContentCoreService>()
+				.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>()
 				.RegisterType<IUserProvider, AlwaysAdminUserProvider>()
                 .RegisterInstance<ICacheItemWatcher>(new CacheItemWatcherFake())
 				.RegisterType<IQPNotificationService, QPNotificationService>()

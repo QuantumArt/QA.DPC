@@ -5,26 +5,23 @@ using System.Data.SqlClient;
 using System.Linq;
 using Npgsql;
 using NpgsqlTypes;
+using QA.Core;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
-using QA.DotNetCore.Caching.Interfaces;
 using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.ContentProviders.Deprecated
 {
-    public abstract class SettingsServiceBase : ISettingsService
+    public abstract class SettingsServiceBaseDeprecated : ISettingsService
     {
         protected readonly Customer _customer;
+        protected readonly ICacheProvider _provider;
 
-        protected ICacheProvider CacheProvider { get; }
-
-        protected SettingsServiceBase(
-            IConnectionProvider connectionProvider,
-            ICacheProvider cacheProvider)
+        protected SettingsServiceBaseDeprecated(IConnectionProvider connectionProvider, ICacheProvider provider)
         {
             _customer = connectionProvider.GetCustomer();
-            CacheProvider = cacheProvider;
+            _provider = provider;
         }
 
         public string GetSetting(SettingsTitles title)
@@ -40,11 +37,11 @@ namespace QA.ProductCatalog.ContentProviders.Deprecated
                 return null;
 
             string key = $"Actions_[{name}]";
-            string result = CacheProvider.Get<string>(key);
+            string result = (string)_provider.Get(key);
             if (result == null)
             {
                 result = GetActionCodeInternal(name);
-                CacheProvider.Set(key, result, TimeSpan.FromMinutes(5));
+                _provider.Set(key, result, TimeSpan.FromMinutes(5));
             }
             return result;
         }
