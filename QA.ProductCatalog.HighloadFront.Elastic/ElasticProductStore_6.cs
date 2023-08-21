@@ -28,6 +28,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var client = Configuration.GetElasticClient(language, state);
             return await client.SearchAsync("_doc", q, cancellationToken);
         }
+        
+        public override async Task<string> FindByIdAsync(ProductsOptionsBase options, string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            return await client.FindSourceByIdAsync($"_source/{options.Id}", string.Empty, "_source_includes", options?.PropertiesFilter?.ToArray());
+        }
 
         protected override JObject GetMapping(string type, string[] fields)
         {

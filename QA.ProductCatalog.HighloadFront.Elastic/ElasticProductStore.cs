@@ -422,7 +422,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 from = options.ActualFrom,
                 size = options.ActualSize,
-                _source = new {include = GetFields(options)}
+                _source = GetFields(options)
             });
 
             SetQuery(q, options);
