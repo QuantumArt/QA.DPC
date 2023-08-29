@@ -879,17 +879,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         #region IDisposable Support
         private bool _disposed;
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing || _disposed) return;
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
         #endregion      
     }
 }

@@ -7,7 +7,7 @@ using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Interfaces
 {
-    public interface IProductStore : IDisposable
+    public interface IProductStore
     {
         
         Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default);

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json.Linq;
 using NLog;
+using NLog.Fluent;
 using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
@@ -81,6 +82,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return modelStateResult;
             }
+            
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message("GET GetByType query")
+                    .Property("query", Request.Query)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
+            }
 
             try
             {
@@ -114,6 +125,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 Type = type?.TrimStart('@'),
                 CacheForSeconds = 0
             }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
+
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message("POST GetByType query")
+                    .Property("json", json)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
+            }
 
             ValidateModel(options);
 
@@ -153,7 +174,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 Id = id,
                 CacheForSeconds = 0
-            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
+            }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions, id);
 
             ValidateModel(options);
 
@@ -161,6 +182,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             if (modelStateResult != null)
             {
                 return modelStateResult;
+            }
+            
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message("POST GetById query")
+                    .Property("json", json)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
             }
 
             try
@@ -192,6 +223,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return modelStateResult;
             }
+            
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message("GET GetById query")
+                    .Property("query", Request.Query)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
+            }
 
             try
             {
@@ -219,7 +260,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return modelStateResult;
             }
-
+            
             var options = new ProductsOptionsRoot
             {
                 CacheForSeconds = 0
@@ -232,6 +273,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return modelStateResult;
             }
+            
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message("POST Search query")
+                    .Property("json", json)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
+            }            
 
             try
             {
@@ -263,6 +314,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return modelStateResult;
             }
+            
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message("GET Search query")
+                    .Property("query", Request.Query)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
+            }  
 
             try
             {
@@ -305,6 +366,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return modelStateResult;
             }
+            
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message($"GET {alias} query")
+                    .Property("json", json)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
+            }  
 
             try
             {
@@ -324,7 +395,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[] { "alias" })]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("query/{alias}"), HttpPost]
-        public async Task<ActionResult> Query([FromBody] object json, string type, string language = null, string state = null,
+        public async Task<ActionResult> Query([FromBody] object json, string alias, string type, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
             var modelStateResult = HandleBadRequest();
@@ -345,6 +416,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return modelStateResult;
             }
+            
+            if (Logger.IsTraceEnabled)
+            {
+                Logger.Trace().Message($"POST {alias} query")
+                    .Property("json", json)
+                    .Property("language", language)
+                    .Property("state", state)                    
+                    .Property("searchOptions", options)
+                    .Write();
+            }  
 
             try
             {

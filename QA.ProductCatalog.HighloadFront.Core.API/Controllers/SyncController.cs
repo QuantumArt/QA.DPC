@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
 using NLog;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
@@ -16,15 +17,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     {
         private const int LockTimeoutInMs = 1000;
 
-        private readonly ITaskService _taskService;
-        
+        private readonly Func<ITaskService> _getTaskService;
+
+        private ITaskService _taskService;
+        private ITaskService TaskService => _taskService ??= _getTaskService();
+
         public SyncController(
             ProductManager manager, 
             ElasticConfiguration configuration, 
-            ITaskService taskService 
+            Func<ITaskService> getTaskService 
         ) : base(manager, configuration)
         {
-            _taskService = taskService;
+            _getTaskService = getTaskService;
         }
 
         [HttpPut]
@@ -76,7 +80,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var syncer = Configuration.GetSyncer(language, state);
             var product = message.Product;
 
-            var id = Manager.GetProductId(message.Product, language, state);
+            var id = await Manager.GetProductId(message.Product, language, state);
 
             if (!Configuration.DataOptions.CanUpdate)
             {
@@ -115,7 +119,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             if (!syncer.AnySlotsLeft)
                 return BadRequest("There is no available slots. Please, wait for previous operations completing.");
 
-            int taskId = _taskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
+            int taskId = TaskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
             
             return Json(new JObject(new JProperty("taskId", taskId)));
         }
@@ -123,14 +127,22 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("task"), HttpGet]
         public QA.Core.ProductCatalog.ActionsRunnerModel.Task Task(int id)
         {
-            return _taskService.GetTask(id);
+            if (!Configuration.DataOptions.CanUpdate)
+            {
+                return null;
+            }
+            return TaskService.GetTask(id);
         }
 
         [Route("settings"), HttpGet]
         public TaskItem[] Settings()
         {
-            int count;
-            var tasks = _taskService.GetTasks(0, int.MaxValue, null, null, null, null, null, null, out count);
+            if (!Configuration.DataOptions.CanUpdate)
+            {
+                return null;
+            }
+            
+            var tasks = TaskService.GetTasks(0, int.MaxValue, null, null, null, null, null, null, out _);
             var lastTasks = tasks.GroupBy(t => t.Data).Select(g => g.OrderByDescending(t => t.ID).First()).ToArray();
 
             var r =

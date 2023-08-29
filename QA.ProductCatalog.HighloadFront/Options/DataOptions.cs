@@ -11,6 +11,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             FailuresBeforeCircuitBreaking = 3;
             CircuitBreakingInterval = 60;
             VersionCacheExpiration = TimeSpan.FromMinutes(1);
+            CleanKeysOptions = new CleanKeysOptions();
         }
         
         public bool CanUpdate { get; set; }
@@ -31,5 +32,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public int CircuitBreakingInterval { get; set; }
         public TimeSpan VersionCacheExpiration { get; set; }
+        
+        public CleanKeysOptions CleanKeysOptions { get; set; }
     }
 }

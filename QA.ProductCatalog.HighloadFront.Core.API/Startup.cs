@@ -1,6 +1,4 @@
-﻿using System;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
+﻿using Autofac;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +31,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
 
@@ -79,17 +77,23 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
             services.AddSingleton<ICacheKeyFactory, CacheKeyFactoryBase>();
             services.AddSingleton<ILockFactory, MemoryLockFactory>();
+            services.AddSingleton(_ => new CleanCacheLockerServiceSettings()
+            {
+                RunInterval = dataOptions.CleanKeysOptions.RunInterval,
+                CleanInterval = dataOptions.CleanKeysOptions.CleanInterval
+            });
+            services.AddHostedService<CleanCacheLockerService>();
+            
             services.AddSingleton<ICacheProvider, VersionedCacheCoreProvider>();
 
             services.AddHttpClient();
 
             services.ResolveTmForumRegistrationForHighloadApi(Configuration);
+        }
 
-            var containerBuilder = new ContainerBuilder();
-            containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration });
-            containerBuilder.Populate(services);
-            var container = containerBuilder.Build();
-            return new AutofacServiceProvider(container);
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule(new DefaultModule { Configuration = Configuration });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -36,21 +36,29 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             builder.RegisterScoped<ProductManager>();
-            builder.RegisterType<ProductManager>().Named<ProductManager>("ForTask").ExternallyOwned();
+            builder.RegisterType<ProductManager>().Named<ProductManager>("ForTask");
 
             builder.RegisterScoped<SonicErrorDescriber>();
 
             builder.RegisterScoped<Func<string, IProductStore>>(c =>
             {
                 var context = c.Resolve<IComponentContext>();
-                return version => context.ResolveNamed<IProductStore>(version);
+                return version => context.Resolve<Dictionary<string, IProductStore>>()[version];
             });
             builder.RegisterScoped<IProductStoreFactory, ProductStoreFactory>();
-            builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask").ExternallyOwned();
-            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*").ExternallyOwned();
-            builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*").ExternallyOwned();
-            builder.RegisterType<ElasticProductStore_8>().Named<IProductStore>("8.*").ExternallyOwned();
-            builder.RegisterType<ProductImporter>().ExternallyOwned();
+
+            builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask");
+            builder.RegisterType<ProductImporter>();
+            
+            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*");
+            builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*");
+            builder.RegisterType<ElasticProductStore_8>().Named<IProductStore>("8.*");
+            builder.RegisterScoped(c => new Dictionary<string, IProductStore>()
+            {
+                {"5.*", c.ResolveNamed<IProductStore>("5.*")},
+                {"6.*", c.ResolveNamed<IProductStore>("6.*")},
+                {"8.*", c.ResolveNamed<IProductStore>("8.*")}
+            });
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
             builder.RegisterScoped<IIdentityProvider>(c => new CoreIdentityFixedProvider(
@@ -94,18 +102,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                                 new NamedParameter("customerCode", c.Resolve<IIdentityProvider>().Identity.CustomerCode)
                             );
 
-                            return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>(), new Dictionary<string, IProductStore>() {
-                                    { "5.*", c.ResolveNamed<IProductStore>("5.*")},
-                                    { "6.*", c.ResolveNamed<IProductStore>("6.*") },
-                                    { "8.*", c.ResolveNamed<IProductStore>("8.*") }
-                            });
-                        }
-                    );
+                            return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>(),
+                                c.Resolve<Dictionary<string, IProductStore>>());
+                        });
                 }
             );
 
             builder.RegisterScoped(c => c.Resolve<CustomerCodeInstance>().CacheProvider);
-            builder.RegisterScoped(c => c.Resolve<CustomerCodeTaskInstance>().TaskService);
+            builder.RegisterScoped<Func<ITaskService>>(c =>
+            {
+                var context = c.Resolve<IComponentContext>();
+                return () => context.Resolve<CustomerCodeTaskInstance>().TaskService;
+            });
 
             if (IsQpMode)
             {

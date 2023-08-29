@@ -3,8 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using NLog;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Options;
+using NLog.Fluent;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -45,7 +47,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
                 if (useCaching)
                 {
-                    Cache.Set(key, result, GetCacheOptions((int)options.CacheForSeconds));
+                    var seconds = (int) options.CacheForSeconds;
+                    Cache.Set(key, result, GetCacheOptions(seconds));
+                    if (Logger.IsTraceEnabled)
+                    {
+                        Logger.Trace().Message($"Call to ElasticSearch cached for {seconds} seconds")
+                            .Property("key", key)
+                            .Property("result", result)
+                            .Property("language", language)
+                            .Property("state", state)
+                            .Property("searchOptions", options)
+                            .Write();
+                    }
                 }
             }
 
