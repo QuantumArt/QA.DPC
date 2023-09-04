@@ -13,11 +13,11 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
         private const string SourceJsonPath = "hits.hits[*]._source";
         private const int DefaultDepthToSearch = 4;
 
-        public async Task<JArray> ReadSourceNodes(string input, ProductsOptionsBase options)
+        public async Task<string> ReadSourceNodes(string input, ProductsOptionsBase options)
         {
             if (options.DataFilters.Any())
             {
-                return PostProcess(input, options.DataFilters);
+                return PostProcess(input, options.DataFilters).ToString();
             }
             else
             {
@@ -25,11 +25,11 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             }
         }
 
-        private async Task<JArray> SimplePostProcess(string input, int depthToSearch = DefaultDepthToSearch)
+        private async Task<string> SimplePostProcess(string input, int depthToSearch = DefaultDepthToSearch)
         {
             var sb = new StringBuilder();
             await JsonFragmentExtractor.ExtractJsonFragment("_source", input, sb, depthToSearch);
-            return JArray.Parse(sb.ToString());
+            return sb.ToString();
         }
 
         private JArray PostProcess(string input, Dictionary<string, string> optionsDataFilters)

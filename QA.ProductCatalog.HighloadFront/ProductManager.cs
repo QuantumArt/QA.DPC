@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
@@ -16,15 +17,18 @@ namespace QA.ProductCatalog.HighloadFront
     {
         private readonly IProductStoreFactory _storeFactory;
         private readonly ICacheProvider _cacheProvider;
+        private readonly IConnectionProvider _connectionProvider;
         private readonly IProductReadPostProcessor _productReadPostProcessor;
         private readonly IProductWritePostProcessor _productWritePostProcessor;
         private readonly IProductReadExpandPostProcessor _productReadExpandPostProcessor;
         private readonly IProductWriteExpandPostProcessor _productWriteExpandPostProcessor;
         private readonly HashProcessor _hashProcessor;
+        private string _customerCode;
 
         public ProductManager(
             IProductStoreFactory storeFactory,
             ICacheProvider cacheProvider,
+            IConnectionProvider connectionProvider,
             IProductReadPostProcessor productReadPostProcessor,
             IProductWritePostProcessor productWritePostProcessor,
             IProductReadExpandPostProcessor productReadExpandPostProcessor,
@@ -33,6 +37,7 @@ namespace QA.ProductCatalog.HighloadFront
         {
             _storeFactory = storeFactory ?? throw new ArgumentNullException(nameof(storeFactory));
             _cacheProvider = cacheProvider;
+            _connectionProvider = connectionProvider;
             _productReadPostProcessor = productReadPostProcessor;
             _productWritePostProcessor = productWritePostProcessor;
             _productReadExpandPostProcessor = productReadExpandPostProcessor;
@@ -40,12 +45,18 @@ namespace QA.ProductCatalog.HighloadFront
             _hashProcessor = hashProcessor;
         }
 
-        public async Task<JToken> FindByIdAsync(ProductsOptionsBase options, string language, string state)
+        public void SetCustomerCode(string code)
         {
-            var store = await _storeFactory.GetProductStore(language, state);
-            var product = JObject.Parse(await store.FindByIdAsync(options, language, state));
-            await Expand(store, product, options, language, state);
-            return product;
+            _customerCode = code;
+        }
+
+        public string CustomerCode => _customerCode ?? _connectionProvider.GetCustomer().CustomerCode;
+
+        public async Task<string> FindByIdAsync(ProductsOptionsBase options, string language, string state)
+        {
+            var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
+            var product = await store.FindByIdAsync(options, language, state);
+            return await ExpandProduct(product, options, language, state, store);
         }
 
         public async Task<SonicResult> CreateAsync(JObject product, RegionTag[] regionTags, string language, string state)
@@ -57,7 +68,7 @@ namespace QA.ProductCatalog.HighloadFront
                 product = _productWritePostProcessor.Process(data);
             }
 
-            var store = await _storeFactory.GetProductStore(language, state);
+            var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             var tagsProduct = await GetRegionTagsProduct(product, regionTags, language, state);
 
             if (tagsProduct != null)
@@ -98,7 +109,7 @@ namespace QA.ProductCatalog.HighloadFront
                 }
             }
 
-            var version = await _storeFactory.GetProductStoreVersion(language, state);
+            var version = await _storeFactory.GetProductStoreVersion(CustomerCode, language, state);
             if (stores.TryGetValue(version, out var store))
             {
                 var regionTagProducts = filteredData.Select(d => GetRegionTagsProduct(int.Parse(store.GetId(d.Product)), d.RegionTags))
@@ -112,22 +123,16 @@ namespace QA.ProductCatalog.HighloadFront
 
         public async Task<string> GetProductId(JObject product,string language, string state)
         {
-            var store = await _storeFactory.GetProductStore(language, state);
+            var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             return store.GetId(product);
         }
         
-        public async Task<JArray> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
+        public async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
         {
-            var store = await _storeFactory.GetProductStore(language, state);
+            var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             var productsRawData = await store.SearchAsync(options, language, state, cancellationToken);
             var products = await _productReadPostProcessor.ReadSourceNodes(productsRawData, options);
-            
-            if (products.Any())
-            {
-                await Expand(store, products, options, language, state);
-            }
-
-            return products;
+            return await ExpandProducts(products, options, language, state, store);
         }
 
         public async Task<List<string>> GetIndexesToDeleteAsync(string language, string state, Dictionary<string, IProductStore> stores, string alias)
@@ -174,7 +179,7 @@ namespace QA.ProductCatalog.HighloadFront
         public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
         {
             var tagsProduct = await GetRegionTagsProduct(product, new[] { new RegionTag() }, language, state);
-            var store = await _storeFactory.GetProductStore(language, state);
+            var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             if (await store.Exists(tagsProduct, language, state))
             {
                 var deleteTagsResult = await store.DeleteAsync(tagsProduct, language, state);
@@ -190,7 +195,7 @@ namespace QA.ProductCatalog.HighloadFront
 
         private async Task<IProductStore> GetProductStore(string language, string state, Dictionary<string, IProductStore> stores)
         {
-            var version = await _storeFactory.GetProductStoreVersion(language, state);
+            var version = await _storeFactory.GetProductStoreVersion(CustomerCode, language, state);
 
             if (stores.TryGetValue(version, out var store))
             {
@@ -226,11 +231,6 @@ namespace QA.ProductCatalog.HighloadFront
 
         private async Task Expand(IProductStore store, JToken input, ProductsOptionsBase options, string language, string state)
         {
-            if (options.Expand == null)
-            {
-                return;
-            }
-
             foreach (var expandOptions in options.Expand)
             {
                 var expandIds = _productReadExpandPostProcessor.GetExpandIdsWithVerification(input, expandOptions);
@@ -246,8 +246,12 @@ namespace QA.ProductCatalog.HighloadFront
                 {
                     continue;
                 }
-
-                await Expand(store, extraNodes, expandOptions, language, state);
+                
+                if (expandOptions.Expand != null)
+                {
+                    await Expand(store, extraNodes, expandOptions, language, state);
+                }
+                
                 _productWriteExpandPostProcessor.WriteExtraNodes(input, extraNodes, expandOptions);
             }
         }
@@ -259,7 +263,7 @@ namespace QA.ProductCatalog.HighloadFront
             var extraNodesSearchFunc = async () =>
             {
                 var extraNodesRawData = await store.SearchAsync(expandOptions, language, state);
-                return await _productReadPostProcessor.ReadSourceNodes(extraNodesRawData, expandOptions);
+                return JArray.Parse(await _productReadPostProcessor.ReadSourceNodes(extraNodesRawData, expandOptions));
             };
 
             if (cachePeriod == TimeSpan.Zero)
@@ -274,6 +278,28 @@ namespace QA.ProductCatalog.HighloadFront
                 Array.Empty<string>(),
                 cachePeriod,
                 async () => await extraNodesSearchFunc());
+        }
+        
+        private async Task<string> ExpandProducts(string products, ProductsOptionsBase options, string language, string state, IProductStore store)
+        {
+            if (products.Any() && options.Expand != null)
+            {
+                var jProducts = JArray.Parse(products);
+                await Expand(store, jProducts, options, language, state);
+                products = jProducts.ToString(Formatting.None);
+            }
+            return products;
+        }
+        
+        private async Task<string> ExpandProduct(string product, ProductsOptionsBase options, string language, string state, IProductStore store)
+        {
+            if (product != null && options.Expand != null)
+            {
+                var jProduct = JObject.Parse(product);
+                await Expand(store, jProduct, options, language, state);
+                product = jProduct.ToString(Formatting.None);
+            }
+            return product;
         }
     }
 }

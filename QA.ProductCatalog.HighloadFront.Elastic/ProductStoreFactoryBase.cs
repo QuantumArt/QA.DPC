@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
@@ -27,15 +28,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _expiration = options.VersionCacheExpiration;
         }
 
-        public async Task<IProductStore> GetProductStore(string language, string state)
+        public async Task<IProductStore> GetProductStore(string customerCode, string language, string state)
         {
-            var store = await GetProductStoreVersion(language, state);
+            var store = await GetProductStoreVersion(customerCode, language, state);
             return _versionFactory(store);
         }
         
-        public async Task<string> GetProductStoreVersion(string language, string state)
+        public async Task<string> GetProductStoreVersion(string customerCode, string language, string state)
         {
-            var key = GetKey(language, state);
+            var key = GetKey(customerCode, language, state);
             var serviceVersion = await _cacheProvider.GetOrAddAsync(
                 key,
                 Array.Empty<string>(),
@@ -62,9 +63,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         protected abstract string MapVersion(SearchEngine engine);
 
-        private string GetKey(string language, string state)
+        private string GetKey(string customerCode, string language, string state)
         {
-            return $"VersionNumber_{language}_{state}";
+            return $"VersionNumber_{customerCode}_{language}_{state}";
         }
     }
 }

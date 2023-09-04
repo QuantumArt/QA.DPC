@@ -1,4 +1,5 @@
 ﻿using System;
+using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;

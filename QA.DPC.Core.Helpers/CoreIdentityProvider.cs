@@ -10,7 +10,7 @@ using QA.Core.DPC.QP.Services;
 
 namespace QA.DPC.Core.Helpers
 {
-    public class CoreIdentityProvider : IIdentityProvider
+    public class CoreIdentityProvider : CoreIdentityProviderBase
     {
         private readonly HttpContext _context;
 
@@ -18,12 +18,10 @@ namespace QA.DPC.Core.Helpers
 
         protected bool _useSession;
         
-        protected string _fixedCustomerCode;
-
         private static AsyncLocal<Identity> _threadStorage;
 
 
-        public CoreIdentityProvider(IHttpContextAccessor accessor)
+        public CoreIdentityProvider(IHttpContextAccessor accessor, string customerCode = null) : base(customerCode)
         {
             _context = accessor.HttpContext;
             
@@ -33,28 +31,8 @@ namespace QA.DPC.Core.Helpers
             }
         }
 
-        public Identity Identity
-        {
-            get
-            {
-                Identity identity = GetValue();
-                
-                if (identity == null)
-                {
-                    identity = new Identity(GetCode());
-                    SetValue(identity);
-                }
-                
-                return identity;
-            }
 
-            set
-            {
-                SetValue(value);
-            } 
-        }
-
-        private Identity GetValue()
+        protected override Identity GetValue()
         {
             Identity identity;
             
@@ -70,7 +48,7 @@ namespace QA.DPC.Core.Helpers
             return identity;
         }
 
-        private void SetValue(Identity identity)
+        protected override void SetValue(Identity identity)
         {
             if (_context != null)
             {
@@ -87,7 +65,7 @@ namespace QA.DPC.Core.Helpers
             }          
         }
 
-        private string GetCode()
+        protected override string GetCode()
         {
             var code = _fixedCustomerCode;
             if (!string.IsNullOrEmpty(code)) return code;
@@ -123,14 +101,6 @@ namespace QA.DPC.Core.Helpers
         public CoreIdentityWithSessionProvider(IHttpContextAccessor accessor) : base(accessor)
         {
             _useSession = true;
-        }
-    }
-    
-    public class CoreIdentityFixedProvider : CoreIdentityProvider
-    {
-        public CoreIdentityFixedProvider(IHttpContextAccessor accessor, string fixedCustomerCode) : base(accessor)
-        {
-            _fixedCustomerCode = fixedCustomerCode;
         }
     }
 }

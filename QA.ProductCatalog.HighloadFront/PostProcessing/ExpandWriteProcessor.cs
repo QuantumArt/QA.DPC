@@ -29,28 +29,28 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             {
                 foreach (var item in input.ToArray())
                 {
-                    Expand(item, extraNodesDict, options);
+                    WriteExpand(item, extraNodesDict, options);
                 }
             }
             else
             {
-                Expand(input, extraNodesDict, options);
+                WriteExpand(input, extraNodesDict, options);
             }
         }
 
-        private void Expand(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
+        private void WriteExpand(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
         {
             if (options.Name == null)
             {
-                ExpandInPlace(expandableNode, extraNodesDict, options);
+                WriteExpandInPlace(expandableNode, extraNodesDict, options);
             }
             else
             {
-                ExpandInField(expandableNode, extraNodesDict, options);
+                WriteExpandInField(expandableNode, extraNodesDict, options);
             }
         }
 
-        private void ExpandInPlace(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
+        private void WriteExpandInPlace(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
         {
             foreach (var token in expandableNode.SelectTokens(options.Path).ToArray())
             {
@@ -76,7 +76,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             }
         }
 
-        private void ExpandInField(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
+        private void WriteExpandInField(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
         {
             var ids = _productReadExpandPostProcessor.GetExpandIds(expandableNode, options);
 

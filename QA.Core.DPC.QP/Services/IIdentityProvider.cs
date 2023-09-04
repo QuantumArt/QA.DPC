@@ -5,5 +5,7 @@ namespace QA.Core.DPC.QP.Services
     public interface IIdentityProvider
     {
         Identity Identity { get; set; }
+        
+        bool IsFixed { get;  }
     }
 }

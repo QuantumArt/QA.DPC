@@ -6,6 +6,7 @@ using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using QA.Core.ProductCatalog.ActionsRunner;
 
@@ -17,18 +18,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     {
         private const int LockTimeoutInMs = 1000;
 
-        private readonly Func<ITaskService> _getTaskService;
-
-        private ITaskService _taskService;
-        private ITaskService TaskService => _taskService ??= _getTaskService();
+        private IServiceProvider _serviceProvider;
+        private ITaskService TaskService => _serviceProvider.GetRequiredService<ITaskService>();
 
         public SyncController(
             ProductManager manager, 
             ElasticConfiguration configuration, 
-            Func<ITaskService> getTaskService 
+            IServiceProvider serviceProvider 
         ) : base(manager, configuration)
         {
-            _getTaskService = getTaskService;
+            _serviceProvider = serviceProvider;
         }
 
         [HttpPut]

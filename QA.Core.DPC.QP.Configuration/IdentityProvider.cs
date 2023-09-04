@@ -47,5 +47,7 @@ namespace QA.Core.DPC.QP.Configuration
                 Thread.CurrentPrincipal = principal;
             }
         }
+
+        public bool IsFixed => false;
     }
 }

@@ -468,7 +468,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         private async Task<ActionResult> GetByIdActionResult(ProductsOptionsRoot options, string language, string state)
         {
             var result = await Manager.FindByIdAsync(options, language, state);
-            return Json(result);
+            return Content(result, "application/json");
         }
 
         private JObject GetQueryJson(string alias)

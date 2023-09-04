@@ -96,7 +96,7 @@ namespace QA.DPC.Core.Helpers
         private bool IsConsolidationError(IApplicationBuilder options, HttpContext context, out CustomerState customerState)
         {
             var provider = options.ApplicationServices.GetService<IIdentityProvider>();
-            if (provider is CoreIdentityFixedProvider)
+            if (provider.IsFixed)
             {
                 Logger.Debug()
                     .Message("Customer code is fixed")

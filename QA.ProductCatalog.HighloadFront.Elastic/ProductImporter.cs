@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
+using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.ContentProviders;
@@ -34,7 +36,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             ProductManager manager, 
             ILoggerFactory loggerFactory, 
             IHttpClientFactory httpClientFactory,
-            string customerCode)
+            IIdentityProvider identityProvider)
 
         {
             _logger = loggerFactory.CreateLogger(GetType());
@@ -42,7 +44,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _configuration = configuration;
             _options = options;
             _dataOptions = dataOptions;
-            _customerCode = customerCode;
+            _customerCode = identityProvider.Identity.CustomerCode;
             _factory = httpClientFactory;
         }
 

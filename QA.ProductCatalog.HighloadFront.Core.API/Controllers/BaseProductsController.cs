@@ -29,31 +29,26 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         protected async Task<ActionResult> GetSearchActionResult(
             ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken)
         {
-            bool readData = true;
-            ActionResult result = null;
+            string searchResult = null;
             var key = options.GetKey();
             var useCaching = options.CacheForSeconds > 0 && key != null;
-            if (useCaching && Cache.TryGetValue(key, out var value))
+            if (useCaching && Cache.TryGetValue(key, out var cacheResult))
             {
-                result = (ActionResult)value;
-                readData = false;
+                searchResult = (string) cacheResult;
             }
-
-            if (readData)
+            else
             {
-                var searchResult = await Manager.SearchAsync(options, language, state, cancellationToken);
-
-                result = Json(searchResult);
+                searchResult = await Manager.SearchAsync(options, language, state, cancellationToken);
 
                 if (useCaching)
                 {
                     var seconds = (int) options.CacheForSeconds;
-                    Cache.Set(key, result, GetCacheOptions(seconds));
+                    Cache.Set(key, searchResult, GetCacheOptions(seconds));
                     if (Logger.IsTraceEnabled)
                     {
                         Logger.Trace().Message($"Call to ElasticSearch cached for {seconds} seconds")
                             .Property("key", key)
-                            .Property("result", result)
+                            .Property("result", searchResult)
                             .Property("language", language)
                             .Property("state", state)
                             .Property("searchOptions", options)
@@ -62,7 +57,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 }
             }
 
-            return result;
+            return Content(searchResult, "application/json");
         }
 
         protected BadRequestObjectResult ElasticBadRequest(ElasticClientException ex, int id = 0)

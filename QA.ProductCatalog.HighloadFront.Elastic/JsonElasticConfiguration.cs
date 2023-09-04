@@ -28,6 +28,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return new[] {"GetById", "GetByType", "Search"}.Select(n => new HighloadApiMethod() { Title = n}).ToArray();
         }
 
+        public override void SetCachePrefix(string prefix)
+        {
+        }
+
         protected override IEnumerable<HighloadApiUser> GetHighloadApiUsers()
         {
             return _config.GetSection("Users").GetChildren().Select(n => new HighloadApiUser {Name = n.Key, Token = n.Value});

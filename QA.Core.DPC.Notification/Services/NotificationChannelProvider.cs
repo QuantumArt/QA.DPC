@@ -1,5 +1,7 @@
-﻿using QA.Core.Cache;
+﻿using System;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Notification.Services
@@ -55,17 +57,42 @@ namespace QA.Core.DPC.Notification.Services
 	            l.VISIBLE = 1";
         #endregion
 
-        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider, VersionedCacheProviderBase cacheProvider)
-			: base(settingsService, connectionProvider, cacheProvider)
+        public NotificationChannelProvider(
+	        ISettingsService settingsService, 
+	        IConnectionProvider connectionProvider, 
+	        VersionedCacheProviderBase cacheProvider,
+	        IQpContentCacheTagNamingProvider namingProvider)
+			: base(settingsService, connectionProvider, cacheProvider, namingProvider)
 		{
 		}
 
 		#region Overrides
+
+		protected override string GetSetting()
+		{
+			return SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_CHANNELS_CONTENT_ID);
+		}
+		
+		protected string GetLanguageSetting()
+		{
+			return SettingsService.GetSetting(SettingsTitles.LANGUAGES_CONTENT_ID);
+		}
+
+		protected override string GetQueryTemplate()
+		{
+			return string.IsNullOrEmpty(GetLanguageSetting()) ? QueryTemplate : QueryLangTemplate;
+		}
+
+		public override string[] GetTags()
+		{
+			return new[] { GetSetting() };
+		}
+		
 		protected override string GetQuery()
 		{
-			var channelsContentId = SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_CHANNELS_CONTENT_ID);
-			var formattersContentId = SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_FORMATTERS_CONTENT_ID);
-            var languagesContentId = SettingsService.GetSetting(SettingsTitles.LANGUAGES_CONTENT_ID);
+			var channelsContentId = GetSetting();
+            var languagesContentId = GetLanguageSetting();
+            var formattersContentId = SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_FORMATTERS_CONTENT_ID);
             var autopublish = GetBoolValue(SettingsTitles.NOTIFICATION_SENDER_AUTOPUBLISH, false);
             var autopublishField = autopublish ? AutopublishField : NoAutopublishField;
 
@@ -73,23 +100,11 @@ namespace QA.Core.DPC.Notification.Services
 			{
 				return null;
 			}
-			else
-			{
-                if (string.IsNullOrEmpty(languagesContentId))
-                {
-                    return string.Format(QueryTemplate, autopublishField, channelsContentId, formattersContentId);
-                }
-                else
-                {
-                    return string.Format(QueryLangTemplate, autopublishField, channelsContentId, formattersContentId, languagesContentId);
-                }
-			}
-		}
 
-	    public override string[] GetTags()
-	    {
-	        return new[] { SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_CHANNELS_CONTENT_ID) };
-	    }
+            return string.Format(
+	            GetQueryTemplate(), autopublishField, channelsContentId, formattersContentId, languagesContentId
+	        );
+		}
 
         #endregion
 

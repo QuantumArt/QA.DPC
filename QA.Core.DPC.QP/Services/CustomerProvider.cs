@@ -3,10 +3,10 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.Extensions.Options;
+using NLog;
 using Npgsql;
 using QA.Core.DPC.QP.Exceptions;
 using QA.Core.DPC.QP.Models;
-using QA.Core.Logger;
 using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
@@ -15,12 +15,11 @@ namespace QA.Core.DPC.QP.Services
     public class CustomerProvider : ICustomerProvider
     {
         private const int Timeout = 2;
-        private readonly ILogger _logger;
+        private readonly NLog.Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IntegrationProperties _integrationProps;
 
-        public CustomerProvider(ILogger logger, IOptions<IntegrationProperties> integrationProps)
+        public CustomerProvider(IOptions<IntegrationProperties> integrationProps)
         {
-            _logger = logger;
             _integrationProps = integrationProps.Value;
         }
 
@@ -65,10 +64,10 @@ namespace QA.Core.DPC.QP.Services
             var result = new Customer[] { };
             DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
             DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
-            _logger.LogInfo(() => $"Config service url :{DBConnector.ConfigServiceUrl}");
+            _logger.Info(() => $"Config service url :{DBConnector.ConfigServiceUrl}");
             var configuration = DBConnector.GetQpConfiguration().Result;
             var customers = configuration.Customers;
-            _logger.LogInfo(() => $"Received customers: {customers.Length}");
+            _logger.Info(() => $"Received customers: {customers.Length}");
             if (customers != null)
             {
                 result =
@@ -83,7 +82,7 @@ namespace QA.Core.DPC.QP.Services
                         .ToArray();
             }
             
-            _logger.LogInfo(() => $"Customers after filtering: {result.Length}");
+            _logger.Info(() => $"Customers after filtering: {result.Length}");
             return result;
         }
 
@@ -102,7 +101,7 @@ namespace QA.Core.DPC.QP.Services
             catch(Exception)
             {
                 customer.IsConsolidated = false;
-                _logger.LogError(() => $"Customer code {customer.CustomerCode} is not accessible");
+                _logger.Error(() => $"Customer code {customer.CustomerCode} is not accessible");
             }
 
             return customer;

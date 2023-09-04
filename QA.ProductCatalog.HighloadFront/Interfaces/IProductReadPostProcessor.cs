@@ -6,6 +6,6 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
 {
     public interface IProductReadPostProcessor
     {
-        Task<JArray> ReadSourceNodes(string input, ProductsOptionsBase options);
+        Task<string> ReadSourceNodes(string input, ProductsOptionsBase options);
     }
 }

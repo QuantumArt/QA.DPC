@@ -23,7 +23,7 @@
     <ProjectReference Include="..\QA.Core.DPC.Resources\QA.Core.DPC.Resources.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="QA.DotNetCore.Caching" Version="3.2.9" />
+    <PackageReference Include="QA.DotNetCore.Caching" Version="3.2.11" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />    
   </ItemGroup>
  

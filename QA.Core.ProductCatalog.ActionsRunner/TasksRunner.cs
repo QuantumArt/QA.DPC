@@ -144,7 +144,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                 }
                                 catch(Exception)
                                 {
-                                    var consolidationMessage = _consolidationFactory.Validate(customerCode as string);
+                                    var consolidationMessage = _consolidationFactory?.Validate(customerCode as string);
 
                                     if (consolidationMessage == null)
                                     {
