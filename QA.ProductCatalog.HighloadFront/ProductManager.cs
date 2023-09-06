@@ -259,28 +259,28 @@ namespace QA.ProductCatalog.HighloadFront
             }
         }
 
-        private Task<JsonArray> GetExtraNodesTask(IProductStore store, ProductsOptionsExpand expandOptions, string language, string state)
+        private async Task<JsonArray> GetExtraNodesTask(IProductStore store, ProductsOptionsExpand expandOptions, string language, string state)
         {
             var cachePeriod = TimeSpan.FromSeconds(decimal.ToDouble(expandOptions.CacheForSeconds));
 
             var extraNodesSearchFunc = async () =>
             {
                 var extraNodesRawData = await store.SearchAsync(expandOptions, language, state);
-                return JsonNode.Parse(await _productReadPostProcessor.ReadSourceNodes(extraNodesRawData, expandOptions)).AsArray();
+                return await _productReadPostProcessor.ReadSourceNodes(extraNodesRawData, expandOptions);
             };
 
             if (cachePeriod == TimeSpan.Zero)
             {
-                return extraNodesSearchFunc();
+                return JsonNode.Parse(await extraNodesSearchFunc()).AsArray();
             }
 
             var expandKeyMainPart = _hashProcessor.ComputeHash(JsonSerializer.Serialize(expandOptions));
             var expandCacheKey = $"expand:{language}-{state}:{expandKeyMainPart}";
-            return _cacheProvider.GetOrAddAsync(
+            return JsonNode.Parse(await _cacheProvider.GetOrAddAsync(
                 expandCacheKey,
                 Array.Empty<string>(),
                 cachePeriod,
-                async () => await extraNodesSearchFunc());
+                async () => await extraNodesSearchFunc())).AsArray();
         }
         
         private async Task<string> ExpandProducts(string products, ProductsOptionsBase options, string language, string state, IProductStore store)
