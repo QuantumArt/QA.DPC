@@ -107,7 +107,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public decimal CacheForSeconds { get; set; }
 
         [BindNever]    
-        private IList<SimpleFilter> SimpleFilters => Filters.OfType<SimpleFilter>().ToList();
+        public IList<SimpleFilter> SimpleFilters => Filters.OfType<SimpleFilter>().ToList();
 
         [BindNever]    
         public bool DirectOrder => OrderDirection == "asc";

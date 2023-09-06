@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Nodes;
+using Json.Path;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Exceptions;
@@ -10,53 +12,53 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 {
     public class ExpandReadProcessor : IProductReadExpandPostProcessor
     {
-        public int[] GetExpandIdsWithVerification(JToken input, ProductsOptionsExpand options)
+        public int[] GetExpandIdsWithVerification(JsonNode input, ProductsOptionsExpand options)
         {
             var ids = new HashSet<int>();
 
-            if (input is JArray)
+            if (input is JsonArray)
             {
-                foreach (var item in input)
+                foreach (var item in input.AsArray())
                 {
-                    VerifyAndCollectIds(ids, item, options);
+                    VerifyAndCollectIds(ids, item.AsObject(), options);
                 }
             }
             else
             {
-                VerifyAndCollectIds(ids, input, options);
+                VerifyAndCollectIds(ids, input.AsObject(), options);
             }
 
             return ids.ToArray();
         }
 
-        public int[] GetExpandIds(JToken expandableNode, ProductsOptionsExpand options)
+        public int[] GetExpandIds(JsonObject expandableNode, ProductsOptionsExpand options)
         {
             var ids = new HashSet<int>();
 
-            foreach (var token in expandableNode.SelectTokens(options.Path))
+            var nodeList = PostProcessHelper.Select(expandableNode, options.Path);
+            foreach (var node in nodeList)
             {
-                if (token is JArray)
+                if (node is JsonArray)
                 {
-                    foreach (var item in token)
+                    foreach (var item in node.AsArray())
                     {
-                        ids.Add(GetId(item));
+                        ids.Add(GetId(item.AsObject()));
                     }
                 }
-                else if (token is JObject)
+                else if (node is JsonObject)
                 {
-                    ids.Add(GetId(token));
+                    ids.Add(GetId(node.AsObject()));
                 }
             }
-
             return ids.ToArray();
         }
 
-        public int GetId(JToken token)
+        public int GetId(JsonObject token)
         {
-            return GetIdToken(token).Value<int>();
+            return GetIdToken(token).GetValue<int>();
         }
 
-        private void VerifyAndCollectIds(HashSet<int> ids, JToken expandableNode, ProductsOptionsExpand options)
+        private void VerifyAndCollectIds(HashSet<int> ids, JsonObject expandableNode, ProductsOptionsExpand options)
         {
             if (options.Name != null)
             {
@@ -66,31 +68,36 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             CollectIdsSafe(ids, expandableNode, options);
         }
 
-        private void CollectIdsSafe(HashSet<int> ids, JToken expandableNode, ProductsOptionsExpand options)
+        private void CollectIdsSafe(HashSet<int> ids, JsonNode expandableNode, ProductsOptionsExpand options)
         {
-            foreach (var token in expandableNode.SelectTokens(options.Path))
+            var nodeList = PostProcessHelper.Select(expandableNode, options.Path);
+            foreach (var node in nodeList)
             {
-                if (token is JArray)
+                if (node is JsonArray)
                 {
-                    foreach (var item in token)
+                    foreach (var item in node.AsArray())
                     {
-                        TryAddId(ids, item);
+                        TryAddId(ids, item.AsObject());
                     }
                 }
-                else if (token is JObject)
+                else if (node is JsonObject)
                 {
-                    TryAddId(ids, token);
+                    TryAddId(ids, node.AsObject());
                 }
             }
         }
 
-        private JToken GetIdToken(JToken token) => token[HighloadFields.Id];
-
-        private void EnsureUnusedProperty(JToken expandableNode, string propertyName)
+        private JsonNode GetIdToken(JsonObject token)
         {
-            var usedProperties = expandableNode.Children()
-                .Select(x => ((JProperty)x).Name)
+            return token[HighloadFields.Id].AsValue();
+        }
+
+        private void EnsureUnusedProperty(JsonObject expandableNode, string propertyName)
+        {
+            var usedProperties = expandableNode
+                .Select(x => x.Key)
                 .ToArray();
+            
             if (usedProperties.Contains(propertyName))
             {
                 throw new NamedPropertyBusyExpandException(
@@ -99,17 +106,17 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             }
         }
 
-        private void TryAddId(HashSet<int> ids, JToken token)
+        private void TryAddId(HashSet<int> ids, JsonObject token)
         {
             var idToken = GetIdToken(token);
             if (idToken == null)
             {
                 throw new MissingIdExpandException(
-                    $"Unable to expand data because expandable object {token.Path} doesn't contain '{HighloadFields.Id}' field required for this operation",
-                    $"Не удалось дозагрузить данные, т.к. объект источника {token.Path} не содержит свойство '{HighloadFields.Id}', необходимое для данной операции");
+                    $"Unable to expand data because expandable object {token} doesn't contain '{HighloadFields.Id}' field required for this operation",
+                    $"Не удалось дозагрузить данные, т.к. объект источника {token} не содержит свойство '{HighloadFields.Id}', необходимое для данной операции");
             }
 
-            ids.Add(idToken.Value<int>());
+            ids.Add(idToken.GetValue<int>());
         }
     }
 }

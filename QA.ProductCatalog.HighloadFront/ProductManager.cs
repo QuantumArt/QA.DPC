@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
+using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
+using QA.ProductCatalog.HighloadFront.PostProcessing;
+using N = Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.HighloadFront
 {
@@ -59,7 +62,7 @@ namespace QA.ProductCatalog.HighloadFront
             return await ExpandProduct(product, options, language, state, store);
         }
 
-        public async Task<SonicResult> CreateAsync(JObject product, RegionTag[] regionTags, string language, string state)
+        public async Task<SonicResult> CreateAsync(N.JObject product, RegionTag[] regionTags, string language, string state)
         {
             var data = new ProductPostProcessorData(product);
 
@@ -121,7 +124,7 @@ namespace QA.ProductCatalog.HighloadFront
             throw _storeFactory.ElasticVersionNotSupported(version);
         }
 
-        public async Task<string> GetProductId(JObject product,string language, string state)
+        public async Task<string> GetProductId(N.JObject product,string language, string state)
         {
             var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             return store.GetId(product);
@@ -176,7 +179,7 @@ namespace QA.ProductCatalog.HighloadFront
             return await store.GetIndexInAliasAsync(language, state);
         }
 
-        public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
+        public async Task<SonicResult> DeleteAsync(N.JObject product, string language, string state)
         {
             var tagsProduct = await GetRegionTagsProduct(product, new[] { new RegionTag() }, language, state);
             var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
@@ -205,20 +208,20 @@ namespace QA.ProductCatalog.HighloadFront
             throw _storeFactory.ElasticVersionNotSupported(version);
         }
 
-        private async Task<JObject> GetRegionTagsProduct(JObject product, RegionTag[] regionTags, string language, string state)
+        private async Task<N.JObject> GetRegionTagsProduct(N.JObject product, RegionTag[] regionTags, string language, string state)
         {
             var productId = int.Parse(await GetProductId(product, language, state));
             return GetRegionTagsProduct(productId, regionTags);
         }
 
-        private JObject GetRegionTagsProduct(int productId, RegionTag[] regionTags)
+        private N.JObject GetRegionTagsProduct(int productId, RegionTag[] regionTags)
         {
             if (regionTags == null || !regionTags.Any())
             {
                 return null;
             }
 
-            var tags = JObject.FromObject(new
+            var tags = N.JObject.FromObject(new
             {
                 Id = -productId,
                 ProductId = productId,
@@ -229,7 +232,7 @@ namespace QA.ProductCatalog.HighloadFront
             return tags;
         }
 
-        private async Task Expand(IProductStore store, JToken input, ProductsOptionsBase options, string language, string state)
+        private async Task Expand(IProductStore store, JsonNode input, ProductsOptionsBase options, string language, string state)
         {
             foreach (var expandOptions in options.Expand)
             {
@@ -256,14 +259,14 @@ namespace QA.ProductCatalog.HighloadFront
             }
         }
 
-        private Task<JArray> GetExtraNodesTask(IProductStore store, ProductsOptionsExpand expandOptions, string language, string state)
+        private Task<JsonArray> GetExtraNodesTask(IProductStore store, ProductsOptionsExpand expandOptions, string language, string state)
         {
             var cachePeriod = TimeSpan.FromSeconds(decimal.ToDouble(expandOptions.CacheForSeconds));
 
             var extraNodesSearchFunc = async () =>
             {
                 var extraNodesRawData = await store.SearchAsync(expandOptions, language, state);
-                return JArray.Parse(await _productReadPostProcessor.ReadSourceNodes(extraNodesRawData, expandOptions));
+                return JsonNode.Parse(await _productReadPostProcessor.ReadSourceNodes(extraNodesRawData, expandOptions)).AsArray();
             };
 
             if (cachePeriod == TimeSpan.Zero)
@@ -271,7 +274,7 @@ namespace QA.ProductCatalog.HighloadFront
                 return extraNodesSearchFunc();
             }
 
-            var expandKeyMainPart = _hashProcessor.ComputeHash(JsonConvert.SerializeObject(expandOptions));
+            var expandKeyMainPart = _hashProcessor.ComputeHash(JsonSerializer.Serialize(expandOptions));
             var expandCacheKey = $"expand:{language}-{state}:{expandKeyMainPart}";
             return _cacheProvider.GetOrAddAsync(
                 expandCacheKey,
@@ -282,24 +285,25 @@ namespace QA.ProductCatalog.HighloadFront
         
         private async Task<string> ExpandProducts(string products, ProductsOptionsBase options, string language, string state, IProductStore store)
         {
-            if (products.Any() && options.Expand != null)
+            if (!string.IsNullOrEmpty(products) && products != HighloadCommonConstants.EmptyArray && options.Expand != null)
             {
-                var jProducts = JArray.Parse(products);
+                var jProducts = JsonNode.Parse(products).AsArray();
                 await Expand(store, jProducts, options, language, state);
-                products = jProducts.ToString(Formatting.None);
+                products = jProducts.ToJsonString(PostProcessHelper.GetSerializerOptions());
             }
             return products;
         }
         
         private async Task<string> ExpandProduct(string product, ProductsOptionsBase options, string language, string state, IProductStore store)
         {
-            if (product != null && options.Expand != null)
+            if (!string.IsNullOrEmpty(product) && options.Expand != null)
             {
-                var jProduct = JObject.Parse(product);
+                var jProduct = JsonNode.Parse(product);
                 await Expand(store, jProduct, options, language, state);
-                product = jProduct.ToString(Formatting.None);
+                product = jProduct.ToJsonString(PostProcessHelper.GetSerializerOptions());
             }
             return product;
         }
+
     }
 }

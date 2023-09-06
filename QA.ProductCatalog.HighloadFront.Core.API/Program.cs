@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
@@ -11,33 +10,24 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args)
-                .Build()
-                .Run();
+            BuildWebHost(args).Run();
         }
 
-        private static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHost(builder =>
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging((hostingContext, logging) =>
                 {
-                    builder
-                        .ConfigureLogging((hostingContext, logging) =>
-                        {
-                            logging.ClearProviders();
-                            logging.SetMinimumLevel(LogLevel.Trace);
-                            logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                            if (hostingContext.HostingEnvironment.IsDevelopment())
-                            {
-                                logging.AddConsole();
-                                logging.AddDebug();
-                            }
-                        })
-                        .UseKestrel((builderContext, options) =>
-                        {
-                            options.Configure(builderContext.Configuration.GetSection("Kestrel"), reloadOnChange: true);
-                        })
-                        .UseStartup<Startup>()
-                        .UseNLog();
-                });
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    if (hostingContext.HostingEnvironment.IsDevelopment())
+                    {
+                        logging.AddConsole();
+                        logging.AddDebug();
+                    }
+                })
+                .UseStartup<Startup>()
+                .UseNLog()
+                .Build();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 
@@ -16,29 +17,36 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             _productReadExpandPostProcessor = productReadExpandPostProcessor;
         }
 
-        public void WriteExtraNodes(JToken input, JArray extraNodes, ProductsOptionsExpand options)
+        public void WriteExtraNodes(JsonNode input, JsonArray extraNodes, ProductsOptionsExpand options)
         {
             if (!extraNodes.Any())
             {
                 return;
             }
 
-            var extraNodesDict = extraNodes.ToDictionary(_productReadExpandPostProcessor.GetId);
+            var extraNodesDict = extraNodes
+                .Select(n => n.AsObject())
+                .ToDictionary(_productReadExpandPostProcessor.GetId);
 
-            if (input is JArray)
+            foreach (var extraNode in extraNodesDict.Values)
             {
-                foreach (var item in input.ToArray())
+                extraNodes.Remove(extraNode);
+            }
+
+            if (input is JsonArray)
+            {
+                foreach (var item in input.AsArray())
                 {
-                    WriteExpand(item, extraNodesDict, options);
+                    WriteExpand(item.AsObject(), extraNodesDict, options);
                 }
             }
             else
             {
-                WriteExpand(input, extraNodesDict, options);
+                WriteExpand(input.AsObject(), extraNodesDict, options);
             }
         }
 
-        private void WriteExpand(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
+        private void WriteExpand(JsonObject expandableNode, Dictionary<int, JsonObject> extraNodesDict, ProductsOptionsExpand options)
         {
             if (options.Name == null)
             {
@@ -50,33 +58,58 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             }
         }
 
-        private void WriteExpandInPlace(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
+        private void WriteExpandInPlace(JsonObject expandableNode, Dictionary<int, JsonObject> extraNodesDict,
+            ProductsOptionsExpand options)
         {
-            foreach (var token in expandableNode.SelectTokens(options.Path).ToArray())
+            var nodeList = PostProcessHelper.Select(expandableNode, options.Path);
+            foreach (var node in nodeList)
             {
-                if (token is JArray)
+                if (node is JsonArray)
                 {
-                    foreach (var item in token.ToArray())
+                    foreach (var item in node.AsArray())
                     {
-                        TryReplaceNode(item, extraNodesDict);
+                        TryReplaceNode(item.AsObject(), extraNodesDict);
                     }
                 }
-                else if (token is JObject)
+                else if (node is JsonObject)
                 {
-                    TryReplaceNode(token, extraNodesDict);
+                    TryReplaceNode(node.AsObject(), extraNodesDict);
                 }
             }
         }
 
-        private void TryReplaceNode(JToken node, Dictionary<int, JToken> extraNodesDict)
+        private string GetPropertyName(JsonNode node)
+        {
+            var path = node.GetPath().Replace(node.Parent.GetPath(), "");
+            var result = Regex.Replace(path, "[$\"\\['\\]\\.]", "");
+            return result;
+        }
+        
+        private int GetIndex(JsonNode node)
+        {
+            return int.Parse(GetPropertyName(node));
+        }
+
+        private void TryReplaceNode(JsonObject node, Dictionary<int, JsonObject> extraNodesDict)
         {
             if (extraNodesDict.TryGetValue(_productReadExpandPostProcessor.GetId(node), out var value))
             {
-                node.Replace(value);
+                var parent = node.Parent;
+                if (parent != null)
+                {
+                    if (parent is JsonObject)
+                    {
+                        parent[GetPropertyName(node)] = value;
+                    }
+                    else if (parent is JsonArray)
+                    {
+                        parent[GetIndex(node)] = value;
+                    }
+                }
             }
         }
 
-        private void WriteExpandInField(JToken expandableNode, Dictionary<int, JToken> extraNodesDict, ProductsOptionsExpand options)
+        private void WriteExpandInField(JsonObject expandableNode, Dictionary<int, JsonObject> extraNodesDict, ProductsOptionsExpand options)
         {
             var ids = _productReadExpandPostProcessor.GetExpandIds(expandableNode, options);
 
@@ -85,7 +118,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
                 .Select(id => extraNodesDict[id])
                 .ToArray();
 
-            expandableNode[options.Name] = new JArray(values);
+            expandableNode[options.Name] = new JsonArray(values);
         }
     }
 }

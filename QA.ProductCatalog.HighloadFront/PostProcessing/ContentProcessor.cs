@@ -2,9 +2,9 @@
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
+using System.Text.Json.Nodes;
 
 namespace QA.ProductCatalog.HighloadFront.PostProcessing
 {
@@ -15,14 +15,14 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 
         public async Task<string> ReadSourceNodes(string input, ProductsOptionsBase options)
         {
+            var result = await SimplePostProcess(input);
+            
             if (options.DataFilters.Any())
             {
-                return PostProcess(input, options.DataFilters).ToString();
+                return PostProcess(result, options.DataFilters).ToJsonString(PostProcessHelper.GetSerializerOptions());
             }
-            else
-            {
-                return await SimplePostProcess(input);
-            }
+            
+            return result;
         }
 
         private async Task<string> SimplePostProcess(string input, int depthToSearch = DefaultDepthToSearch)
@@ -32,28 +32,26 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             return sb.ToString();
         }
 
-        private JArray PostProcess(string input, Dictionary<string, string> optionsDataFilters)
+        private JsonArray PostProcess(string input, Dictionary<string, string> optionsDataFilters)
         {
-            var hits = JObject.Parse(input).SelectTokens(SourceJsonPath).ToArray();
-
+            var elements = JsonNode.Parse(input).AsArray();
             foreach (var dataFilter in optionsDataFilters)
             {
-                foreach (var hit in hits)
+                foreach (var element in elements)
                 {
-                    var jArrays = hit.SelectTokens(dataFilter.Key).OfType<JArray>().ToArray();
+                    var jArrays = PostProcessHelper.Select(element, dataFilter.Key);
                     foreach (var jArray in jArrays)
                     {
-                        var relevantTokens = jArray.SelectTokens(dataFilter.Value).ToArray();
-                        jArray.Clear();
+                        var relevantTokens = PostProcessHelper.Select(jArray, dataFilter.Value);
+                        jArray.AsArray().Clear();
                         foreach (var rToken in relevantTokens)
                         {
-                            jArray.Add(rToken);
+                            jArray.AsArray().Add(rToken);
                         }
                     }
                 }
             }
-
-            return new JArray(hits);
+            return elements;
         }
     }
 }
