@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using Json.More;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 
@@ -22,30 +23,35 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return $"{{\"index\":{{\"_index\":\"{name}\",\"_id\":\"{id}\"}}}}";
         }
 
-        protected override JObject GetDefaultIndexSettings()
+        
+        public override JsonObject GetDefaultIndexSettings()
         {
-            var indexSettings = new JObject(
-                new JProperty("settings", new JObject(
-                    new JProperty("max_result_window", Options.MaxResultWindow),
-                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit),
-                    GetIndexAnalyzers().First
-                )),
-                new JProperty("mappings", GetMapping(string.Empty, Options.NotAnalyzedFields))
-            );
+            var indexSettings = new JsonObject()
+            {
+                ["settings"] = new JsonObject()
+                {
+                    ["max_result_window"] = Options.MaxResultWindow,
+                    ["mapping.total_fields.limit"] = Options.TotalFieldsLimit,
+                    ["analysis"] = GetAnalysis()
+                },
+                ["mappings"] = GetMapping(string.Empty, Options.NotAnalyzedFields)
+            };
+
             return indexSettings;
         }
 
-        protected override JObject GetMapping(string type, string[] fields)
+        protected override JsonObject GetMapping(string type, string[] fields)
         {
-            var formats = new JArray(GetDynamicDateFormatsFromConfig("Elastic8"));
-            var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+            var formats = new JsonArray(GetDynamicDateFormatsFromConfig("Elastic8").Select(n => JsonValue.Create(n)).ToArray());
+            var templates = new JsonArray(fields.Select(n => GetKeywordTemplate(type, n)).ToArray());
             templates = AddEdgeNgramTemplates(templates, type);
             templates.Add(GetTextTemplate());
 
-            return new JObject(
-                new JProperty("dynamic_date_formats", formats),
-                new JProperty("dynamic_templates", templates)
-            );
+            return new JsonObject()
+            {
+                ["dynamic_date_formats"] = formats,
+                ["dynamic_templates"] = templates
+            };
         }
 
         public override async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
@@ -61,7 +67,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.FindSourceByIdAsync($"_source/{options.Id}", string.Empty, "_source_includes", options?.PropertiesFilter?.ToArray());
         }
 
-        public override async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
+        public override async Task<SonicResult> UpdateAsync(JsonElement product, string language, string state)
         {
             var id = GetId(product);
             if (id == null)
@@ -70,12 +76,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     .StoreFailure("Product has no id"));
             }
 
-            var json = JsonConvert.SerializeObject(product);
             var client = Configuration.GetElasticClient(language, state);
-
             try
             {
-                await client.UpdateAsync($"{id}/_update", string.Empty, json);
+                await client.UpdateAsync($"{id}/_update", string.Empty, product.ToString());
                 return SonicResult.Success;
             }
             catch (Exception e)

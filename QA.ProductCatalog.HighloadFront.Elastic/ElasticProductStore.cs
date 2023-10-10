@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using Json.More;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
+using QA.ProductCatalog.HighloadFront.PostProcessing;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -27,13 +28,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private ILogger Logger { get; }
 
-        private IsoDateTimeConverter DateTimeConverter { get; }
-
-        static ElasticProductStore()
-        {
-
-        }
-        
         public ElasticProductStore(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory,
             IProductInfoProvider productInfoProvider)
         {
@@ -41,15 +35,24 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             Options = options;
             _productInfoProvider = productInfoProvider;
             Logger = loggerFactory.CreateLogger(GetType());
-            DateTimeConverter = new IsoDateTimeConverter() { DateTimeFormat = Options.DateFormat };
         }
 
-        public string GetId(JObject product)
+        public string GetId(JsonElement product)
         {
             return _productInfoProvider.GetId(product, Options.IdPath);
         }
 
-        public virtual string GetType(JObject product)
+        public virtual string GetType(JsonElement product)
+        {
+            return _productInfoProvider.GetType(product, Options.TypePath, Options.DefaultType);
+        }
+        
+        public string GetId(JsonObject product)
+        {
+            return _productInfoProvider.GetId(product, Options.IdPath);
+        }
+
+        public virtual string GetType(JsonObject product)
         {
             return _productInfoProvider.GetType(product, Options.TypePath, Options.DefaultType);
         }
@@ -59,7 +62,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return $"{{\"index\":{{\"_index\":\"{name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}";
         }
 
-        public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products, string language, string state, string newIndex)
+        public async Task<SonicResult> BulkCreateAsync(IEnumerable<JsonElement> products, string language, string state, string newIndex)
         {
             if (products == null) throw new ArgumentNullException(nameof(products));
 
@@ -82,9 +85,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     return string.Empty;
                 }
 
-                var json = JsonConvert.SerializeObject(p, DateTimeConverter);
                 var metadata = BuildRowMetadata(newIndex, type, id);
-                return $"{metadata}\n{json}\n";
+                return $"{metadata}\n{p.ToString()}\n";
             });
 
             if (failedResult.Any()) return SonicResult.Failed(failedResult.ToArray());
@@ -92,18 +94,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
 
                 var responseText = await client.BulkAsync(string.Join(string.Empty, commands), newIndex);
-
-                var responseJson = JObject.Parse(responseText);
-
-                if (responseJson.Value<bool>("errors"))
+                using var doc = JsonDocument.Parse(responseText);
+                var responseJson = doc.RootElement.Clone();
+                if (responseJson.TryGetProperty("errors", out JsonElement errValue) && errValue.GetBoolean())
                 {
-                    var errors = responseJson["items"]
+                    var errors = responseJson.GetProperty("items").AsNode().AsArray()
                         .Select(i => i["index"]?["error"])
                         .Where(i => i != null)
                         .Select(i => new
                         {
-                            Code = i.Value<string>("type"),
-                            Description = i.Value<string>("reason")
+                            Code = i["type"].ToString(),
+                            Description = i["reason"].ToString()
                         })
                         .Distinct()
                         .Select(i => new SonicError
@@ -131,13 +132,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.FindSourceByIdAsync($"{options.Id}/_source", "_all", "_source_include", options?.PropertiesFilter?.ToArray());
         }
 
-        public async Task<string> FindSourceByIdsAsync(int[] ids, string language, string state)
-        {
-            var client = Configuration.GetElasticClient(language, state);
-            return await client.FindSourceByIdsAsync(ids);
-        }
-
-        public async Task<SonicResult> CreateAsync(JObject product, string language, string state)
+        public async Task<SonicResult> CreateAsync(JsonElement product, string language, string state)
         {
             var id = GetId(product);
             if (id == null)
@@ -152,11 +147,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
 
             var client = Configuration.GetElasticClient(language, state);
-            var json = JsonConvert.SerializeObject(product, DateTimeConverter);
 
             try
             {
-                await client.PutAsync(id, type, json);
+                await client.PutAsync(id, type, product.ToString());
                 return SonicResult.Success;
             }
             catch (Exception e)
@@ -182,8 +176,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             try
             {
-                var indexData = JArray.Parse(indices);
-                var indexes = indexData.Select(p => p.Value<string>("index")).ToList();
+                using var doc = JsonDocument.Parse(indices);
+                var indexData = doc.RootElement.AsNode().AsArray();
+                var indexes = indexData.Select(p => p["index"].ToString()).ToList();
                 return indexes.Where(x => x == index || x.StartsWith($"{index}.")).ToList();
             }
             catch (Exception ex)
@@ -192,7 +187,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public virtual async Task<SonicResult> UpdateAsync(JObject product, string language, string state)
+        public virtual async Task<SonicResult> UpdateAsync(JsonElement product, string language, string state)
         {
             var id = GetId(product);
             if (id == null)
@@ -208,12 +203,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     .StoreFailure($"Product {id} has no type"));
             }
             
-            var json = JsonConvert.SerializeObject(product);
             var client = Configuration.GetElasticClient(language, state);
 
             try
             {
-                await client.UpdateAsync($"{id}/_update", type, json);
+                await client.UpdateAsync($"{id}/_update", type, product.ToString());
                 return SonicResult.Success;
             }
             catch (Exception e)
@@ -222,7 +216,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
+        public async Task<SonicResult> DeleteAsync(JsonElement product, string language, string state)
         {
 
             var id = GetId(product);
@@ -245,10 +239,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<bool> Exists(JObject product, string language, string state)
+        public async Task<bool> Exists(JsonElement product, string language, string state)
         {
             string id = GetId(product);
             string type = GetType(product);
+            if (id == null || type == null)
+            {
+                return false;
+            }
             var client = Configuration.GetElasticClient(language, state);
             return await client.DocumentExistsAsync(id, type);
         }
@@ -284,18 +282,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var client = Configuration.GetElasticClient(language, state);
             var result = await client.GetAliasByNameAsync();
 
-            if (result == "Not Found")
+            if (result == ElasticClient.NotFoundResult)
             {
                 return Array.Empty<string>();
             }
 
-            var json = JObject.Parse(result);
-            return json.Root.Select(x => (x as JProperty).Name).ToArray();
+            using var doc = JsonDocument.Parse(result);
+            var json = doc.RootElement.AsNode().AsObject();
+            return json.Select(n => n.Key).ToArray();
         }
 
-        protected virtual JObject GetReplaceIndexesRequest(string newIndex, string[] oldIndexes, string alias)
+        protected virtual JsonObject GetReplaceIndexesRequest(string newIndex, string[] oldIndexes, string alias)
         {
-            var actions = new JArray
+            var actions = new JsonArray
             {
                 GetAliasAction(newIndex, alias, "add")
             };
@@ -305,17 +304,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 actions.Add(GetAliasAction(oldIndex, alias, "remove"));
             }
 
-            return new JObject(new JProperty("actions", actions));
+            return new JsonObject()
+            {
+                ["actions"] = actions
+            };
         }
 
-        protected virtual JObject GetAliasAction(string index, string alias, string action)
+        protected virtual JsonObject GetAliasAction(string index, string alias, string action)
         {
-            return new JObject(
-                new JProperty(action, new JObject(
-                    new JProperty("index", index),
-                    new JProperty("alias", alias)
-                ))
-            );
+            return new JsonObject()
+            {
+                [action] = new JsonObject()
+                    {
+                        ["index"] = index,
+                        ["alias"] = alias
+                    } 
+            };
         }
 
         public async Task<string> CreateVersionedIndexAsync(string language, string state)
@@ -331,79 +335,86 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        protected virtual JObject GetDefaultIndexSettings()
+        public virtual JsonObject GetDefaultIndexSettings()
         {
-            var indexSettings = new JObject(
-                new JProperty("settings", new JObject(
-                    new JProperty("max_result_window", Options.MaxResultWindow),
-                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit),
-                    new JProperty("index", GetIndexAnalyzers())
-                )),
-                new JProperty("mappings", GetMappings(Options.Types, Options.NotAnalyzedFields))
-            );
+            var indexSettings = new JsonObject()
+            {
+                ["settings"] = new JsonObject()
+                {
+                    ["max_result_window"] = Options.MaxResultWindow,
+                    ["mapping.total_fields.limit"] = Options.TotalFieldsLimit,
+                    ["index"] = GetIndexAnalyzers()
+                },
+                ["mappings"] = GetMappings(Options.Types, Options.NotAnalyzedFields)
+            };
             return indexSettings;
         }
 
-        protected virtual JObject GetIndexAnalyzers()
+        protected virtual JsonObject GetIndexAnalyzers()
         {
-            JObject analysis = new()
+            return new JsonObject()
             {
-                GetAnalyzers(),
-                GetTokenizers()
+                ["analysis"] = GetAnalysis()
             };
-
-            return new JObject(new JProperty("analysis", analysis));
+        }
+        
+        protected virtual JsonObject GetAnalysis()
+        {
+            return new JsonObject()
+            {
+                ["analyzer"] = GetAnalyzers(),
+                ["tokenizer"] = GetTokenizers()
+            };
         }
 
-        protected virtual JProperty GetTokenizers()
+        protected virtual JsonObject GetTokenizers()
         {
-            JObject tokenizers = new()
+            return new JsonObject()
             {
-                GetEdgeNgramTokenizer()
+                ["edge_ngram_tokenizer"] = GetEdgeNgramTokenizer()
             };
-
-            return new JProperty("tokenizer",
-                tokenizers);
         }
 
-        protected virtual JProperty GetEdgeNgramTokenizer()
+        protected virtual JsonObject GetEdgeNgramTokenizer()
         {
-            return new JProperty("edge_ngram_tokenizer",
-                new JObject (new JProperty("type", "edge_ngram"),
-                new JProperty("min_gram", Options.EdgeNgramOptions.MinNgram < 1 
+            return new JsonObject()
+            {
+                ["type"] = "edge_ngram",
+                ["min_gram"] = Options.EdgeNgramOptions.MinNgram < 1 
                     ? throw new InvalidOperationException("Minimum length of ngram can't be less than 1.") 
-                    : Options.EdgeNgramOptions.MinNgram),
-                new JProperty("max_gram", Options.EdgeNgramOptions.MaxNgram < Options.EdgeNgramOptions.MinNgram
+                    : Options.EdgeNgramOptions.MinNgram,
+                ["max_gram"] = Options.EdgeNgramOptions.MaxNgram < Options.EdgeNgramOptions.MinNgram
                     ? throw new InvalidOperationException("Maximum length of ngram can't be less then minimum length of ngram.")
-                    : Options.EdgeNgramOptions.MaxNgram),
-                new JProperty("token_chars", new JArray("letter", "digit"))));
-        }
-
-        protected virtual JProperty GetAnalyzers()
-        {
-            JObject analyzers = new()
-            {
-                GetEdgeNgramAnalyzer(),
-                GetEdgeNgramSearchAnalyzer()
+                    : Options.EdgeNgramOptions.MaxNgram,
+                ["token_chars"] = new JsonArray("letter", "digit")
             };
-
-            return new JProperty("analyzer", analyzers);
         }
 
-        protected virtual JProperty GetEdgeNgramAnalyzer()
+        protected virtual JsonObject GetAnalyzers()
         {
-            return new JProperty("edge_ngram_analyzer", 
-                new JObject(
-                    new JProperty("filter", new JArray("lowercase")),
-                    new JProperty("type", "custom"),
-                    new JProperty("tokenizer", "edge_ngram_tokenizer")));
+            return new JsonObject ()
+            {
+                ["edge_ngram_analyzer"] = GetEdgeNgramAnalyzer(),
+                ["edge_ngram_search_analyzer"] = GetEdgeNgramSearchAnalyzer()
+            };
         }
 
-        protected virtual JProperty GetEdgeNgramSearchAnalyzer()
+        protected virtual JsonObject GetEdgeNgramAnalyzer()
         {
-            return new JProperty("edge_ngram_search_analyzer",
-                new JObject(
-                    new JProperty("tokenizer", "lowercase")));
+            return new JsonObject()
+            {
+                ["filter"] = new JsonArray("lowercase"),
+                ["type"] = "custom",
+                ["tokenizer"] = "edge_ngram_tokenizer"
+            };
+        }
+
+        protected virtual JsonObject GetEdgeNgramSearchAnalyzer()
+        {
+            return new JsonObject()
+            {
+                ["tokenizer"] = "lowercase"
+            };
         }
 
         public virtual async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
@@ -413,17 +424,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.SearchAsync(options.ActualType, q, cancellationToken);
         }
 
-        protected JObject GetQuery(ProductsOptionsBase options)
+        protected JsonObject GetQuery(ProductsOptionsBase options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            var q = JObject.FromObject(new
+            var q = new JsonObject()
             {
-                from = options.ActualFrom,
-                size = options.ActualSize,
-                _source = GetFields(options)
-            });
+                ["from"] = options.ActualFrom,
+                ["size"] = options.ActualSize,
+                ["_source"] = new JsonArray(GetFields(options).Select(n => JsonValue.Create(n)).ToArray())
+            };
 
             SetQuery(q, options);
             SetSorting(q, options);
@@ -432,64 +443,87 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public async Task<string[]> GetTypesAsync(string language, string state)
         {
-            var q = new JObject(
-                new JProperty("aggs", new JObject(
-                    new JProperty("typesAgg", new JObject(
-                        new JProperty("terms", new JObject(
-                            new JProperty("field", "_type"),
-                            new JProperty("size", "200")
-                        ))
-                    ))
-                )),
-                new JProperty("size", 0)
-            );
+            var q = new JsonObject() 
+            {
+                ["aggs"] = new JsonObject()
+                {
+                    ["typesAgg"] = new JsonObject()
+                    {
+                        ["terms"] = new JsonObject()
+                        {
+                            ["field"] = "_type",
+                            ["size"] = "200"
+                        }
+                    }
+                },
+                ["size"] = 0
+            };
             var client = Configuration.GetElasticClient(language, state);
             var response = await client.SearchAsync(null, q.ToString());
-            return JObject.Parse(response).SelectTokens("aggregations.typesAgg.buckets.[?(@.key)].key").Select(n => n.ToString())
+            var result = JsonNode.Parse(response);
+            return PostProcessHelper.Select(result, "aggregations.typesAgg.buckets.[?(@.key)].key")
+                .Select(n => n.ToString())
                 .ToArray();
         }   
 
-        protected virtual JObject GetKeywordTemplate(string type, string field)
+        protected virtual JsonObject GetKeywordTemplate(string type, string field)
         {
-            return new JObject(
-                new JProperty($"not_analyzed_{type}_{field}", new JObject(
-                    new JProperty("match_mapping_type", "string"),
-                    new JProperty("match", field),
-                    new JProperty("mapping", new JObject(
-                        new JProperty("type", "keyword")
-                    ))
-                ))
-            );
+            return new JsonObject()
+            {
+                [$"not_analyzed_{type}_{field}"] = new JsonObject()
+                {
+                   ["match_mapping_type"] = "string",
+                   ["match"] = field,
+                   ["mapping"] = new JsonObject()
+                   {
+                       ["type"] = "keyword"
+                   }
+                }
+            };
         }
 
-        protected JObject GetEdgeNgramTemplate(string type, string field)
+        protected JsonObject GetEdgeNgramTemplate(string type, string field)
         {
-            return new JObject(
-                new JProperty($"edge_ngram_{type}_{field}", new JObject(
-                    new JProperty("match_mapping_type", "string"),
-                    new JProperty("match", field),
-                    new JProperty("mapping", new JObject(
-                        new JProperty("type", "text"),
-                        new JProperty("analyzer", "edge_ngram_analyzer"),
-                        new JProperty("search_analyzer", "edge_ngram_search_analyzer")
-                        ))
-                    ))
-                );
+            return new JsonObject()
+            {
+                [$"edge_ngram_{type}_{field}"] = new JsonObject()
+                {
+                    ["match_mapping_type"] = "string",
+                    ["match"] = field,
+                    ["mapping"] = new JsonObject()
+                    {
+                        ["type"] = "text",
+                        ["fields"] = new JsonObject()
+                        {
+                            ["keyword"] = new JsonObject()
+                            {
+                                ["type"] = "keyword",
+                                ["ignore_above"] = 256
+                            },
+                            ["ngram"] = new JsonObject()
+                            {
+                                ["type"] = "text",
+                                ["analyzer"] = "edge_ngram_analyzer",
+                                ["search_analyzer"] = "edge_ngram_search_analyzer"
+                            }
+                        }
+                    }
+                }
+            };
         }
 
-        protected virtual JObject GetMapping(string type, string[] fields)
+        protected virtual JsonObject GetMapping(string type, string[] fields)
         {
-            var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+            var templates = new JsonArray(fields.Select(n => GetKeywordTemplate(type, n)).ToArray());
             templates = AddEdgeNgramTemplates(templates, type);
 
-            return new JObject(
-                new JProperty(type, new JObject(
-                    new JProperty("dynamic_templates", templates)
-                ))
-            );
+            return new JsonObject()
+            {
+                ["dynamic_templates"] = templates
+            };
         }
 
-        protected virtual JArray AddEdgeNgramTemplates(JArray templates, string type)
+        protected virtual JsonArray AddEdgeNgramTemplates(JsonArray templates, string type)
         {
             if (Options.EdgeNgramOptions.NgramFields?.Length > 0)
             {
@@ -502,41 +536,41 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return templates;
         }
 
-        public JObject GetMappings(string[] types, string[] fields)
+        public JsonObject GetMappings(string[] types, string[] fields)
         {
-            var result = new JObject();
+            var result = new JsonObject();
             foreach (var type in types)
             {
-                result.Add(new JProperty(type, GetMapping(type, fields)));
+                result.Add(new (type, GetMapping(type, fields)));
             }
             return result;
         }
 
-        protected virtual void SetQuery(JObject json, ProductsOptionsBase productsOptions)
+        protected virtual void SetQuery(JsonObject json, ProductsOptionsBase productsOptions)
         {
-            JProperty query = null;
+            KeyValuePair<string, JsonNode>? query = null;
             var filters = productsOptions.Filters;
             if (filters != null)
             {
                 var conditions = filters.Select(n => CreateQueryElem(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
-                var shouldGroups = new List<List<JProperty>>();
-                var currentGroup = new List<JProperty>();
+                var shouldGroups = new List<List<KeyValuePair<string, JsonNode>?>>();
+                var currentGroup = new List<KeyValuePair<string, JsonNode>?>();
                 foreach (var condition in conditions)
                 {
                     if (condition == null)
                         continue;
 
-                    if (condition.Value["or"] != null)
+                    if (condition.Value.Value["or"] != null)
                     {
                         if (currentGroup.Any())
                         {
                             shouldGroups.Add(currentGroup);
                         }
-                        condition.Value["or"].Parent.Remove();
-                        currentGroup = new List<JProperty>();
+                        condition.Value.Value["or"].Parent.AsObject().Remove("or");
+                        currentGroup = new List<KeyValuePair<string, JsonNode>?>();
                     }
 
-                    currentGroup.Add(condition);
+                    currentGroup.Add(condition.Value);
                 }
                 shouldGroups.Add(currentGroup);
 
@@ -545,18 +579,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             if (query != null)
             {
-                json.Add(new JProperty("query", new JObject(query)));
+                json.Add(new KeyValuePair<string, JsonNode>("query", new JsonObject() { query.Value }));
             }
         }
 
-        protected JProperty CreateQueryElem(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
+        protected KeyValuePair<string, JsonNode>? CreateQueryElem(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
         {
             var simpleFilter = filter as SimpleFilter;
             var rangeFilter = filter as RangeFilter;
             var queryFilter = filter as QueryFilter;
             var groupFilter = filter as GroupFilter;
             
-            JProperty result = null;
+            KeyValuePair<string, JsonNode>? result = null;
 
             if (groupFilter != null)
             {
@@ -575,50 +609,56 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             if (rangeFilter != null)
             {
-                result = new JProperty("range", 
-                    new JObject(GetSingleRangeQuery(rangeFilter))
+                result = new KeyValuePair<string, JsonNode>("range", 
+                    new JsonObject() { GetSingleRangeQuery(rangeFilter) }
                 );
             }
 
             if (queryFilter != null)
             {
-                result = new JProperty("query_string",
-                    JObject.FromObject(new {query = queryFilter.Query, lenient = true})
-                );
+                result = new KeyValuePair<string, JsonNode>("query_string",
+                    new JsonObject()
+                    {
+                        ["query"] = queryFilter.Query,
+                        ["lenient"] = true
+                    });
             }
 
             if (filter.IsDisjunction && result != null)
             {
-                result.Value["or"] = true;
+                result.Value.Value["or"] = true;
             }
 
             return result;
         }
 
-        protected static JProperty Must(IEnumerable<JProperty> props)
+        protected static KeyValuePair<string, JsonNode>? Must(IEnumerable<KeyValuePair<string, JsonNode>?> props)
         {
             return Bool(props, false);
         }
 
-        protected static JProperty Should(IEnumerable<JProperty> props)
+        protected static KeyValuePair<string, JsonNode>? Should(IEnumerable<KeyValuePair<string, JsonNode>?> props)
         {
             return Bool(props, true);
         }
 
-        protected static JProperty Bool(IEnumerable<JProperty> props, bool isDisjunction)
+        protected static KeyValuePair<string, JsonNode>? Bool(IEnumerable<KeyValuePair<string, JsonNode>?> props, bool isDisjunction)
         {
             if (props == null) return null;
-            var obj = props.Where(n => n != null).Select(n => new JObject(n)).ToArray();
-            if (!obj.Any()) return null;
+            var arr = props.Where(n => n != null)
+                .Select(n => new JsonObject(){n.Value})
+                .ToArray();
+            if (!arr.Any()) return null;
 
-            return new JProperty("bool", new JObject(
-                new JProperty(isDisjunction ? "should" : "must", obj.Length > 1 ? JArray.FromObject(obj) : (JToken)obj[0])
-            ));
+            return new KeyValuePair<string, JsonNode>("bool", new JsonObject()
+            {
+                [isDisjunction ? "should" : "must"] = arr.Length > 1 ? new JsonArray(arr) : arr[0]
+            });
         }
 
-        private JProperty GetSingleRangeQuery(RangeFilter elem)
+        private KeyValuePair<string, JsonNode> GetSingleRangeQuery(RangeFilter elem)
         {
-            var content = new JObject();
+            var content = new JsonObject();
             if (elem.Floor != "")
             {
                 content.Add("gte", elem.Floor);
@@ -627,18 +667,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 content.Add("lte", elem.Ceiling);
             }
-            return new JProperty(elem.Name, content);
+            return new KeyValuePair<string, JsonNode>(elem.Name, content);
         }
 
-        private void SetSorting(JObject json, ProductsOptionsBase options)
+        private void SetSorting(JsonObject json, ProductsOptionsBase options)
         {
             if (!String.IsNullOrEmpty(options.Sort))
             {
-                json.Add(new JProperty("sort", new JArray(new JObject(new JProperty(options.Sort, options.DirectOrder ? "asc" : "desc")))));
+                json.Add("sort", new JsonArray(
+                    new JsonObject()
+                    {
+                        [options.Sort] = options.DirectOrder ? "asc" : "desc" 
+                    }));
             }
         }
 
-        private JProperty GetSingleFilterWithNot(string field, StringValues values, bool fromJson, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
+        private KeyValuePair<string, JsonNode>? GetSingleFilterWithNot(string field, StringValues values, bool fromJson, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
         {
             var conditions = StringValues.IsNullOrEmpty(values)
                 ? null
@@ -649,16 +693,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             
             var op = (fromJson) ? "should" : "must";
 
-            var result = conditions.Length == 1 ? 
-                conditions.First() : 
-                new JProperty("bool", new JObject(new JProperty(op, JArray.FromObject(conditions.Select(n => new JObject(n))))));
+            var result = conditions.Length == 1
+                ? conditions.First()
+                : new KeyValuePair<string, JsonNode>("bool", new JsonObject()
+                {
+                    [op] = new JsonArray(conditions.Select(n => (JsonNode) new JsonObject {n.Value}).ToArray())
+                });
 
             return result;
         }
 
-        private JProperty GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
+        private KeyValuePair<string, JsonNode>? GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
         {
-            JProperty result;
+            KeyValuePair<string, JsonNode> result;
             var actualSeparator = GetActualSeparator(field, disabledOrFields);
             var disableLike = disableLikeFields != null && disableLikeFields.Contains(field);
             var actualValue = GetActualValue(field, value, disabledNotFields, out var hasNegation);
@@ -670,14 +717,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             else
             {
-                result = GetSingleFilter(field, actualValue, actualSeparator, disableLike);  
+                result = GetSingleFilter(field, actualValue, actualSeparator, disableLike).Value;  
             }
 
             if (hasNegation)
             {
-                result = new JProperty("bool", new JObject(
-                    new JProperty("must_not", new JObject(result))
-                ));
+                result = new KeyValuePair<string, JsonNode>("bool", new JsonObject()
+                {
+                    ["must_not"] = new JsonObject { result }
+                });
             }
 
 
@@ -704,7 +752,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return actualSeparator;
         }
 
-        protected JProperty GetSingleFilter(string field, string value, string separator, bool  disableLike)
+        protected KeyValuePair<string, JsonNode>? GetSingleFilter(string field, string value, string separator, bool  disableLike)
         {
             var isBaseField = field == Options.IdPath || field.EndsWith("." + Options.IdPath) || field == ProductIdField;
             var separators = (isBaseField) ? new[] {separator, BaseSeparator} : new[] {separator};
@@ -761,12 +809,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 || !string.IsNullOrEmpty(Options.WildcardQuestionMark) && value.Contains(Options.WildcardQuestionMark);
         }
 
-        private static JProperty Exists(string field)
+        private static KeyValuePair<string, JsonNode> Exists(string field)
         {
-            return new JProperty("exists", new JObject(new JProperty("field", field)));
+            return new KeyValuePair<string, JsonNode>("exists", new JsonObject {["field"] = field});
         }
 
-        private JProperty Wildcard(string field, string value)
+        private KeyValuePair<string, JsonNode>? Wildcard(string field, string value)
         {
             var actualValue = value;
 
@@ -780,38 +828,52 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 actualValue = actualValue.Replace(Options.WildcardQuestionMark, "?");
             }
 
-            return new JProperty("wildcard", new JObject(new JProperty(field, actualValue)));
+            return new KeyValuePair<string, JsonNode>("wildcard", new JsonObject()
+            {
+                [field] = actualValue
+            });
         }
 
-        private JProperty Wildcards(string field, string[] values)
+        private KeyValuePair<string, JsonNode>? Wildcards(string field, string[] values)
         {
             return Should(values.Select(v => Wildcard(field, v)));
         }
 
-        private static JProperty Term(string field, string value)
+        private static KeyValuePair<string, JsonNode> Term(string field, string value)
         {
-            return new JProperty("term", new JObject(new JProperty(field, value)));
+            return new KeyValuePair<string, JsonNode>("term", new JsonObject()
+            {
+                [field] = value
+            });
         }
 
-        private static JProperty Terms(string field, string[] values)
+        private static KeyValuePair<string, JsonNode> Terms(string field, string[] values)
         {
-            return new JProperty("terms", new JObject(new JProperty(field, JArray.FromObject(values))));
+            return new KeyValuePair<string, JsonNode>("terms", new JsonObject()
+            {
+                [field] = new JsonArray(values.Select(n => JsonValue.Create(n)).ToArray())
+            });
         }
 
-        private static JProperty MatchPhrase(string field, string value)
+        private static KeyValuePair<string, JsonNode> MatchPhrase(string field, string value)
         {
-            return new JProperty("match_phrase", new JObject(new JProperty(field,
-                new JObject(
-                    new JProperty("query", value)
-                )
-            )));
+            return new KeyValuePair<string, JsonNode>("match_phrase", new JsonObject()
+                {
+                    [field] = new JsonObject()
+                    {
+                        ["query"] = value
+                    }   
+                }
+            );
         }
-        private static JProperty MatchPhrases(string field, string[] values)
+        private static KeyValuePair<string, JsonNode> MatchPhrases(string field, string[] values)
         {
-            var arr = values.Select(v => MatchPhrase(field, v)).Select(m => new JObject(m)).ToArray();
-            return new JProperty("bool", new JObject(
-                new JProperty("should", arr.Length > 1 ? (JArray.FromObject(arr)) : (JToken)arr[0])
-            ));
+            var arr = values.Select(v => MatchPhrase(field, v))
+                .Select(m => (JsonNode)new JsonObject {m}).ToArray();
+            return new KeyValuePair<string, JsonNode>("bool", new JsonObject()
+            {
+                ["should"] = arr.Length > 1 ? new JsonArray(arr) : arr[0]
+            });
         }
 
         private string[] GetFields(ProductsOptionsBase options)
@@ -861,19 +923,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     return field.Equals(analyzedField);
                 }
             });
-        }
-
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
-        }
-
-        public string GetJsonByAlias(string alias)
-        {
-            return Configuration.GetJsonByAlias(alias);
         }
 
         #region IDisposable Support

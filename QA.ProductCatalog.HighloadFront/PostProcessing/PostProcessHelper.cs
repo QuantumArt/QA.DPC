@@ -45,6 +45,12 @@ public class PostProcessHelper
             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
     } 
+    
+    
+    public static JsonNode CloneJsonNode(JsonNode node)
+    {
+        return JsonNode.Parse(node.ToJsonString(PostProcessHelper.GetSerializerOptions()));
+    }
         
         
 }

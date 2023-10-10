@@ -3,6 +3,7 @@ using Microsoft.Extensions.Caching.Memory;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 
 namespace QA.ProductCatalog.ContentProviders
 {
@@ -16,7 +17,8 @@ namespace QA.ProductCatalog.ContentProviders
             ISettingsService settingsService, 
             IConnectionProvider connectionProvider, 
             VersionedCacheProviderBase cacheProvider,
-            IQpContentCacheTagNamingProvider namingProvider) : base(settingsService, connectionProvider, namingProvider)
+            IQpContentCacheTagNamingProvider namingProvider,
+            IUnitOfWork unitOfWork) : base(settingsService, connectionProvider, namingProvider, unitOfWork)
         {
             _cacheProvider = cacheProvider;
         }

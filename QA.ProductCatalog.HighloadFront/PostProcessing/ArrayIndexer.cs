@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
@@ -18,33 +18,36 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             _arrayIndexingSettings = elasticOptions.IndexingOptions;
         }
 
-        public JObject Process(ProductPostProcessorData data)
+        public void Process(ProductPostProcessorData data)
         {
             var product = data.Product;
 
             if (_arrayIndexingSettings == null)
-                return product;
+                return;
 
             foreach (var setting in _arrayIndexingSettings)
             {
-                JToken array = product.SelectToken(setting.Path);
-
+                var array = product[setting.Path];
                 if (array == null)
+                {
                     continue;
-
-                if (array.Type != JTokenType.Array)
-                    throw new Exception($"Тип элемента по пути {setting.Path} должен быть массивом");
-
-                var topKeyTokens = array.SelectTokens("[*]." + setting.Keys[0]).ToArray();
+                }
+                
+                if (array is not JsonArray)
+                {
+                    throw new Exception($"Тип элемента по пути {setting.Path} должен быть массивом");                
+                }
+                var jArray = array.AsArray();
+                
+                var topKeyTokens = PostProcessHelper.Select(jArray, "[*]." + setting.Keys[0]);
 
                 if (!topKeyTokens.Any())
                     continue;
 
-                JObject objectFromArray = new JObject();
-
-                foreach (var topKeyTokensWithArrayItem in topKeyTokens.GroupBy(x => x.Ancestors().First(y => y.Parent == array)))
+                var objectFromArray = new JsonObject();
+                foreach (var topKeyTokensWithArrayItem in topKeyTokens.GroupBy(x => NearestAncestorArrayElem(x)))
                 {
-                    JToken arrayItem = topKeyTokensWithArrayItem.Key;
+                    var arrayItem = topKeyTokensWithArrayItem.Key;
 
                     string keyValue = GetKeyValue(topKeyTokensWithArrayItem, setting.KeyPartsSeparator);
 
@@ -53,7 +56,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 
                     foreach (string keyPart in setting.Keys.Skip(1))
                     {
-                        var keyTokens = arrayItem.SelectTokens(keyPart).ToArray();
+                        var keyTokens = PostProcessHelper.Select(arrayItem, keyPart);
 
                         if (keyTokens.Any())
                         {
@@ -62,28 +65,37 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
                     }
 
                     var indexValue = objectFromArray[keyValue];
+                    var value = PostProcessHelper.CloneJsonNode(arrayItem);
 
                     if (indexValue == null)
                     {
-                        objectFromArray[keyValue] = arrayItem.DeepClone();
+                        objectFromArray[keyValue] = value;
                     }
-                    else if (indexValue.Type == JTokenType.Array)
+                    else if (indexValue is JsonArray)
                     {
-                        ((JArray)indexValue).Add(arrayItem);
+                        indexValue.AsArray().Add(value);
                     }
                     else
                     {
-                        objectFromArray[keyValue] = new JArray(indexValue, arrayItem);
+                        objectFromArray.Remove(keyValue);
+                        objectFromArray[keyValue] = new JsonArray(indexValue, value);
                     }
                 }
-
-                array.Parent.Parent.Add(new JProperty(setting.Name, objectFromArray));
+                product.Add(setting.Name, objectFromArray);
             }
-
-            return product;
         }
 
-        private static string GetKeyValue(IEnumerable<JToken> keyToken, string separator)
+        private static JsonNode NearestAncestorArrayElem(JsonNode node)
+        {
+            while (node.Parent != null && node.Parent is not JsonArray)
+            {
+                node = node.Parent;
+            }
+
+            return node;
+        }
+
+        private static string GetKeyValue(IEnumerable<JsonNode> keyToken, string separator)
         {
             return string.Join(separator, keyToken.Select(x => x.ToString()).OrderBy(x => x));
         }

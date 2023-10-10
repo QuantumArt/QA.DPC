@@ -1,28 +1,30 @@
-﻿using System;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic;
 
 public class ProductInfoProvider : IProductInfoProvider
 {
-    public string GetId(JObject product, string path)
+    public string GetId(JsonElement product, string path)
     {
-        if (product == null)
-            throw new ArgumentNullException(nameof(product));
-
-        return product[path]?.ToString();
+        var found = product.TryGetProperty(path, out var idResult);
+        return found ? idResult.ToString() : null;
     }
     
-    public string GetType(JObject product, string path, string defaultType)
+    public string GetType(JsonElement product, string path, string defaultType)
     {
-        if (product == null)
-            throw new ArgumentNullException(nameof(product));
+        var found = product.TryGetProperty(path, out var typeResult);
+        return found ? typeResult.ToString() : defaultType;
+    }
 
-        string type = product[path]?.ToString();
-        if (type == null)
-            return defaultType;
-        
-        return type;
+    public string GetId(JsonObject product, string path)
+    {
+        return product[path].ToString();
+    }
+
+    public string GetType(JsonObject product, string path, string defaultType)
+    {
+        return product[path]?.ToString() ?? defaultType;
     }
 }

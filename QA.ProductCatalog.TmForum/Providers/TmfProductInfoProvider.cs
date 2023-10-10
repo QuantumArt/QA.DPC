@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.TmForum.Models;
 
@@ -6,23 +7,25 @@ namespace QA.ProductCatalog.TmForum.Providers;
 
 public class TmfProductInfoProvider : IProductInfoProvider
 {
-    public string GetId(JObject product, string path)
+    public string GetId(JsonElement product, string path)
     {
-        if (product == null)
-            throw new ArgumentNullException(nameof(product));
-
-        return product[InternalTmfSettings.InternalIdFieldName]?.ToString();
+        var found = product.TryGetProperty(InternalTmfSettings.InternalIdFieldName, out var idResult);
+        return found ? idResult.ToString() : null;
     }
 
-    public string GetType(JObject product, string path, string defaultType)
+    public string GetType(JsonElement product, string path, string defaultType)
     {
-        if (product == null)
-            throw new ArgumentNullException(nameof(product));
+        var found = product.TryGetProperty(InternalTmfSettings.InternalTypeFieldName, out var idResult);
+        return found ? idResult.ToString() : defaultType;
+    }
 
-        string type = product[InternalTmfSettings.InternalTypeFieldName]?.ToString();
-        if (type == null)
-            return defaultType;
-        
-        return type;
+    public string GetId(JsonObject product, string path)
+    {
+        return product[InternalTmfSettings.InternalIdFieldName].ToString();
+    }
+
+    public string GetType(JsonObject product, string path, string defaultType)
+    {
+        return product[InternalTmfSettings.InternalTypeFieldName].ToString();
     }
 }

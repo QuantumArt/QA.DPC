@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 
@@ -17,7 +18,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         }
 
-        public override string GetType(JObject product)
+        public override string GetType(JsonElement product)
         {
             return "_doc";
         }
@@ -35,40 +36,46 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await client.FindSourceByIdAsync($"{options.Id}/_source", "_all", "_source_includes", options?.PropertiesFilter?.ToArray());
         }
 
-        protected override JObject GetMapping(string type, string[] fields)
+        protected override JsonObject GetMapping(string type, string[] fields)
         {
-            var formats = new JArray(GetDynamicDateFormatsFromConfig("Default"));
-            var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+            var formats = new JsonArray(
+                GetDynamicDateFormatsFromConfig("Default").Select(n => JsonValue.Create(n)).ToArray()
+                );
+            var templates = new JsonArray(
+                fields.Select(n => GetKeywordTemplate(type, n)).ToArray()
+                );
             templates = AddEdgeNgramTemplates(templates, type);
             templates.Add(GetTextTemplate());
 
-            return new JObject(
-                new JProperty(type, new JObject(
-                    new JProperty("dynamic_date_formats", formats),
-                    new JProperty("dynamic_templates", templates)
-                ))
-            );
+            return new JsonObject()
+            {
+                ["dynamic_date_formats"] = formats,
+                ["dynamic_templates"] = templates
+            };
         }
 
-        protected override JObject GetDefaultIndexSettings()
+        public override JsonObject GetDefaultIndexSettings()
         {
-            var indexSettings = new JObject(
-                new JProperty("settings", new JObject(
-                    new JProperty("max_result_window", Options.MaxResultWindow),
-                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit),
-                    new JProperty("index", GetIndexAnalyzers())
-                )),
-                new JProperty("mappings", GetMappings(new[] { "_doc" }, Options.NotAnalyzedFields))
-            );
+            var indexSettings = new JsonObject()
+            {
+                ["settings"] = new JsonObject()
+                {
+                    ["max_result_window"] = Options.MaxResultWindow,
+                    ["mapping.total_fields.limit"] = Options.TotalFieldsLimit,
+                    ["index"] = GetIndexAnalyzers()
+                },
+                ["mappings"] = GetMappings(new[] {"_doc"}, Options.NotAnalyzedFields)
+            };
+
             return indexSettings;
         }
 
-        protected override void SetQuery(JObject json, ProductsOptionsBase productsOptions)
+        protected override void SetQuery(JsonObject json, ProductsOptionsBase productsOptions)
         {
-            JProperty query = null;
-            var shouldGroups = new List<List<JProperty>>();
-            var currentGroup = new List<JProperty>();
-            JProperty typeFilter = null;
+            KeyValuePair<string, JsonNode>? query;
+            var shouldGroups = new List<List<KeyValuePair<string, JsonNode>?>>();
+            var currentGroup = new List<KeyValuePair<string, JsonNode>?>();
+            KeyValuePair<string, JsonNode>? typeFilter;
 
             var filters = productsOptions.Filters;
 
@@ -85,17 +92,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 foreach (var condition in conditions)
                 {
-                    if (condition == null)
-                        continue;
-
-                    if (condition.Value["or"] != null)
+                    
+                    if (condition.Value.Value["or"] != null)
                     {
                         if (currentGroup.Any())
                         {
                             shouldGroups.Add(currentGroup);
                         }
-                        condition.Value["or"].Parent.Remove();
-                        currentGroup = new List<JProperty>();
+                        condition.Value.Value["or"].Parent.AsObject().Remove("or");
+                        currentGroup = new List<KeyValuePair<string, JsonNode>?>();
                     }
 
                     currentGroup.Add(condition);
@@ -106,20 +111,23 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (currentGroup.Any() || shouldGroups.Any())
             {
                 query = shouldGroups.Count <= 1 ? Must(currentGroup) : Should(shouldGroups.Select(Must));
-                json.Add(new JProperty("query", new JObject(query)));
+                json.Add("query", new JsonObject() { query.Value });
             }
         }
 
-        protected JObject GetTextTemplate()
+        protected JsonObject GetTextTemplate()
         {
-            return new JObject(
-                new JProperty($"text", new JObject(
-                    new JProperty("match_mapping_type", "string"),
-                    new JProperty("mapping", new JObject(
-                        new JProperty("type", "text")
-                    ))
-                ))
-            );
+            return new JsonObject()
+            {
+                ["text"] = new JsonObject()
+                {
+                    ["match_mapping_type"] = "string",
+                    ["mapping"] = new JsonObject()
+                    {
+                        ["type"] = "text"
+                    }
+                }
+            };
         }
     }
 }

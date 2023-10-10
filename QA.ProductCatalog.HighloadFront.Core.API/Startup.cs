@@ -9,14 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Serialization;
 using Polly.Registry;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DotNetCore.Caching;
-using QA.DotNetCore.Caching.Configuration;
 using QA.DotNetCore.Caching.Interfaces;
 using QA.DotNetCore.Engine.Abstractions;
 using QA.DotNetCore.Engine.CacheTags;
@@ -87,15 +84,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
             // Add framework services.
             services.AddMvc(options =>
-            {
-                options.EnableEndpointRouting = false;
-                options.Filters.Add(typeof(ProcessCustomerCodeAttribute));
-            })
-            .AddCustomModules(Configuration, services)
-            .AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-            });
+                {
+                    options.EnableEndpointRouting = false;
+                    options.Filters.Add(typeof(ProcessCustomerCodeAttribute));
+                })
+                .AddCustomModules(Configuration, services);
 
             services.AddMemoryCache();
             services.AddHttpContextAccessor();
@@ -112,12 +105,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddScoped<ElasticProductStore>();
             services.AddScoped<ElasticProductStore_6>();
             services.AddScoped<ElasticProductStore_8>();
-            
+            services.AddScoped<OpenSearchProductStore_2>();
+
             services.AddScoped(c => new Dictionary<string, IProductStore>()
             {
                 {"5.*", c.GetRequiredService<ElasticProductStore>()},
                 {"6.*", c.GetRequiredService<ElasticProductStore_6>()},
-                {"8.*", c.GetRequiredService<ElasticProductStore_8>()}
+                {"8.*", c.GetRequiredService<ElasticProductStore_8>()},
+                {"os2.*", c.GetRequiredService<OpenSearchProductStore_2>()}
             });
 
             if (!String.IsNullOrEmpty(dataOptions.FixedConnectionString))
@@ -244,7 +239,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddScoped<IUnitOfWork>(c =>
                 {
                     var customer = c.GetRequiredService<IConnectionProvider>().GetCustomer();
-                    return new UnitOfWork(customer.ConnectionString, customer.DatabaseType.ToString());
+                    var isSingle = c.GetRequiredService<ICustomerProvider>() is SingleCustomerCoreProvider;
+                    var code = isSingle ? SingleCustomerCoreProvider.Key : customer.CustomerCode;
+                    return new UnitOfWork(customer.ConnectionString, customer.DatabaseType.ToString(), code);
                 });
 
             services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();

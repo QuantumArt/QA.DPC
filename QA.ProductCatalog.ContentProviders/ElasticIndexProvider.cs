@@ -1,5 +1,6 @@
 ﻿using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 
 namespace QA.ProductCatalog.ContentProviders
 {
@@ -8,9 +9,10 @@ namespace QA.ProductCatalog.ContentProviders
         public ElasticIndexProvider(
 	        ISettingsService settingsService, 
 	        IConnectionProvider connectionProvider,
-	        IQpContentCacheTagNamingProvider namingProvider	        
+	        IQpContentCacheTagNamingProvider namingProvider,
+	        IUnitOfWork unitOfWork
 	    )
-			: base(settingsService, connectionProvider, namingProvider)
+			: base(settingsService, connectionProvider, namingProvider, unitOfWork)
         {
         }
 

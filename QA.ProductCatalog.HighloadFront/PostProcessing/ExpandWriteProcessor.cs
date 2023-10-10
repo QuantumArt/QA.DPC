@@ -99,15 +99,16 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
                 {
                     if (parent is JsonObject)
                     {
-                        parent[GetPropertyName(node)] = value;
+                        parent[GetPropertyName(node)] = PostProcessHelper.CloneJsonNode(value);
                     }
                     else if (parent is JsonArray)
                     {
-                        parent[GetIndex(node)] = value;
+                        parent[GetIndex(node)] = PostProcessHelper.CloneJsonNode(value);
                     }
                 }
             }
         }
+        
 
         private void WriteExpandInField(JsonObject expandableNode, Dictionary<int, JsonObject> extraNodesDict, ProductsOptionsExpand options)
         {
@@ -115,10 +116,11 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
 
             var values = ids
                 .Where(id => extraNodesDict.ContainsKey(id))
-                .Select(id => extraNodesDict[id])
+                .Select(id => PostProcessHelper.CloneJsonNode(extraNodesDict[id]))
                 .ToArray();
 
             expandableNode[options.Name] = new JsonArray(values);
         }
+
     }
 }

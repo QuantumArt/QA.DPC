@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Constants;
 
 namespace QA.ProductCatalog.HighloadFront.Options
@@ -35,11 +36,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private static readonly Regex RangeFilterRegex = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
         private static readonly Regex GetRequestExpandParamRegex = new Regex(@$"^{HighloadParams.Expand}\[\d+\]\.");
 
-        private object _json;
-        private JObject _jObj;
+        protected JsonElement _json;
 
-        protected JObject Jobj => _jObj;
-        
         protected ProductsOptionsBase()
         {
             ElasticOptions = new SonicElasticStoreOptions();
@@ -137,7 +135,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         #endregion
 
-        public T BuildFromJson<T>(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+        public T BuildFromJson<T>(JsonElement json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
             where T : ProductsOptionsBase
         {
             return (T)BuildFromJson(json, options, id, skip, take);
@@ -153,81 +151,70 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public virtual string GetKey()
         {
-            return _json == null
-                ? null
-                : $"Id: {Id}, Skip: {Skip}, Take: {Take} {_json}";
+            return $"Id: {Id}, Skip: {Skip}, Take: {Take} {_json.ToString()}";
         }
 
-        protected virtual ProductsOptionsBase BuildFromJson(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+
+
+        protected virtual ProductsOptionsBase BuildFromJson(JsonElement json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
         {
-            _json = json;
             ElasticOptions = options ?? new SonicElasticStoreOptions();
-
-            if (json is not JObject jObj)
-            {
-                return this;
-            }
-
-            _jObj = jObj;
-
             Id = id ?? 0;
-            Page = (decimal?)_jObj.SelectToken(HighloadParams.Page);
-            PerPage = (decimal?)_jObj.SelectToken(HighloadParams.PerPage);
-            Skip = skip ?? (decimal?)_jObj.SelectToken(HighloadParams.Skip);
-            Take = take ?? (decimal?)_jObj.SelectToken(HighloadParams.Take);
-            CacheForSeconds = GetCacheForSeconds();
 
-            PropertiesFilter = JTokenToStringArray(_jObj.SelectToken(HighloadParams.Fields));
-            DisableOr = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableOr));
-            DisableNot = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableNot));
-            DisableLike = JTokenToStringArray(_jObj.SelectToken(HighloadParams.DisableLike));
+            if (json.ValueKind == JsonValueKind.Object)
+            {
+                _json = json;
+                Page = GetJsonNullableDecimal(HighloadParams.Page);
+                PerPage = GetJsonNullableDecimal(HighloadParams.PerPage);
+                Skip = skip ?? GetJsonNullableDecimal(HighloadParams.Skip);
+                Take = take ?? GetJsonNullableDecimal(HighloadParams.Take);
+                CacheForSeconds = GetJsonNullableDecimal(HighloadParams.CacheForSeconds) ?? 0;
 
-            Sort = (string)_jObj.SelectToken(HighloadParams.Sort);
-            OrderDirection = (string)_jObj.SelectToken(HighloadParams.Order);
-            Filters = GetFilters(_jObj, Id);
-            DataFilters = GetDataFilters(_jObj);
-            Expand = GetExpand(_jObj.SelectToken(HighloadParams.Expand));
+                PropertiesFilter = GetJsonStringArray(HighloadParams.Fields);
+                DisableOr = GetJsonStringArray(HighloadParams.DisableOr);
+                DisableNot = GetJsonStringArray(HighloadParams.DisableNot);
+                DisableLike = GetJsonStringArray(HighloadParams.DisableLike);
 
+                Sort = GetJsonString(HighloadParams.Sort);
+                OrderDirection = GetJsonString(HighloadParams.Order);
+
+                Filters = GetFilters(HighloadParams.Query);
+                DataFilters = GetDataFilters(HighloadParams.DataFilters);
+                Expand = GetExpand(HighloadParams.Expand);
+            }
+            
             return this;
         }
 
-        protected virtual decimal GetCacheForSeconds()
+        private Dictionary<string, string> GetDataFilters(string name)
         {
-            return (decimal?)_jObj.SelectToken(HighloadParams.CacheForSeconds) ?? 0;
-        }
-
-        private Dictionary<string, string> GetDataFilters(JObject jobj)
-        {
-            var result = new Dictionary<string, string>();
-            var dfToken = jobj.SelectToken(HighloadParams.DataFilters);
-            if (dfToken != null)
+            if (_json.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.Object)
             {
-                return dfToken.Children().OfType<JProperty>()
-                    .ToDictionary(n => n.Name, n => n.Value.ToString());
+                return value.EnumerateObject().ToDictionary(k => k.Name, v => v.Value.ToString());
             }
-            return result;
+            return new Dictionary<string, string>();
         }
 
-        private IList<IElasticFilter> GetFilters(JObject jobj, int id)
+        private IList<IElasticFilter> GetFilters(string name)
         {
             var result = new List<IElasticFilter>();
-            if (id != 0)
+            List<JsonProperty> filterProperties;
+
+            if (_json.TryGetProperty(name, out var filters) && filters.ValueKind == JsonValueKind.Object)
             {
-                result.Add(CreateFilter("Id", id));
-            }            
-            
-            var queryToken = jobj.SelectToken(HighloadParams.Query);
-            JProperty[] filterProperties;
-            if (queryToken != null)
-            {
-                filterProperties = queryToken.Children().OfType<JProperty>().ToArray();
+                filterProperties = filters.EnumerateObject().ToList();
             }
             else
             {
-                var props = jobj.Children().OfType<JProperty>();
-                filterProperties = props
+                filterProperties = _json.EnumerateObject()
                     .Where(n => !FirstLevelReservedKeywords.Contains(n.Name))
-                    .ToArray();
+                    .ToList();
+            }
+            
+            if (Id != 0)
+            {
+                using var doc = JsonDocument.Parse($@"{{""Id"": {Id}}}");
+                filterProperties.Add(doc.RootElement.Clone().EnumerateObject().Single());
             }
 
             result.AddRange(filterProperties
@@ -236,53 +223,71 @@ namespace QA.ProductCatalog.HighloadFront.Options
             return result;
         }
 
-        private ProductsOptionsExpand[] GetExpand(JToken valuesToken)
+        private ProductsOptionsExpand[] GetExpand(string name)
         {
-            if (valuesToken is JArray array)
+            if (_json.TryGetProperty(name, out var expand) && expand.ValueKind == JsonValueKind.Array)
             {
-                return array
-                    .Select(jobj =>
+                return expand.EnumerateArray()
+                    .Select(elem =>
                     {
-                        var expandOptions = new ProductsOptionsExpand().BuildFromJson<ProductsOptionsExpand>(jobj, ElasticOptions);
+                        var expandOptions = new ProductsOptionsExpand().BuildFromJson<ProductsOptionsExpand>(elem, ElasticOptions);
                         expandOptions.Take = HighloadCommonConstants.ExpandTakeAsAll;
                         return expandOptions;
                     })
                     .ToArray();
             }
+    
 
             return null;
         }
 
-        private string[] JTokenToStringArray(JToken valuesToken, bool skipSplit = false)
+        protected string[] GetJsonStringArray(JsonElement value, bool skipSplit = false)
         {
-            if (valuesToken == null)
+            if (value.ValueKind == JsonValueKind.Array)
             {
-                return Array.Empty<string>();
+                return value.EnumerateArray()
+                    .Select(n => n.GetString())
+                    .ToArray();
+            }
+
+            if (value.ValueKind == JsonValueKind.String)
+            {
+                return skipSplit
+                    ? new[] { value.GetString() }
+                    : value.GetString().Split(',')
+                        .Select(x => x.Trim())
+                        .ToArray();   
             }
             
-            if (valuesToken is JArray array)
+            return new[] { value.ToString() };
+        }
+
+        protected string[] GetJsonStringArray(string name, bool skipSplit = false)
+        {
+            if (_json.TryGetProperty(name, out var value))
             {
-                return array
-                    .Select(x => x.Value<string>())
-                    .ToArray();
+                return GetJsonStringArray(value, skipSplit);
             }
-
-            var values = (string) valuesToken;
-
-            return skipSplit
-                ? new[] { values }
-                : values.Split(',')
-                    .Select(x => x.Trim())
-                    .ToArray();
+            return Array.Empty<string>();
         }
         
-        private IElasticFilter CreateFilter(string key, JToken token)
+        protected decimal? GetJsonNullableDecimal(string name)
+        {
+            return _json.TryGetProperty(name, out var value) && value.TryGetDecimal(out decimal result) ? result : null;
+        }
+        
+        protected string GetJsonString(string name)
+        {
+            return _json.TryGetProperty(name, out var value) ? value.ToString() : null;
+        }
+        
+        private IElasticFilter CreateFilter(string key, JsonElement token)
         {
             var name = GetParameterName(key, out var isDisjunction);
 
             if (name == HighloadOperators.Or || name == HighloadOperators.And)
             {
-                var childProperties = token.Children().OfType<JProperty>().ToArray();
+                var childProperties = token.EnumerateObject().ToArray();
                 return new GroupFilter()
                 {
                     IsDisjunction = name == HighloadOperators.Or,
@@ -290,7 +295,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 };
             }
 
-            var values = JTokenToStringArray(token, true);
+            var values = GetJsonStringArray(token, true);
             var value = values.First();
             
             if (name == HighloadParams.FreeQuery)

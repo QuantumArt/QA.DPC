@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using MassTransit.Futures.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json.Linq;
-using NLog;
 using NLog.Fluent;
 using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
@@ -111,7 +112,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetByType" })]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("{type}"), HttpPost]
-        public async Task<ActionResult> GetByType([FromBody] object json, string type, string language = null, string state = null,
+        public async Task<ActionResult> GetByType([FromBody] JsonElement json, string type, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
             var modelStateResult = HandleBadRequest();
@@ -162,7 +163,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
         [Route("{id:int}"), HttpPost]
-        public async Task<ActionResult> GetById([FromBody] object json, int id, string language = null, string state = null)
+        public async Task<ActionResult> GetById([FromBody] JsonElement json, int id, string language = null, string state = null)
         {
             var modelStateResult = HandleBadRequest();
             if (modelStateResult != null)
@@ -252,7 +253,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
         [Route("search"), HttpPost]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        public async Task<ActionResult> Search([FromBody] object json, string language = null, string state = null,
+        public async Task<ActionResult> Search([FromBody] JsonElement json, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
             var modelStateResult = HandleBadRequest();
@@ -346,18 +347,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public async Task<ActionResult> Query(string alias, int? id, int? skip, int? take, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
-            JObject json = null;
+            var options = new ProductsOptionsRoot();
+            string json;
             try
             {
                 json = GetQueryJson(alias);
+                using var jsonDoc = JsonDocument.Parse(json);
+                options.BuildFromJson<ProductsOptionsRoot>(jsonDoc.RootElement, ElasticOptions, id, skip, take);
             }
             catch (Exception ex)
             {
                 return ParseBadRequest(ex);
             }
-
-            var options = new ProductsOptionsRoot()
-                .BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions, id, skip, take);
 
             ValidateModel(options);
 
@@ -395,7 +396,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitRouteAttribute), Arguments = new object[] { "alias" })]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("query/{alias}"), HttpPost]
-        public async Task<ActionResult> Query([FromBody] object json, string alias, string type, string language = null, string state = null,
+        public async Task<ActionResult> Query([FromBody] JsonElement json, string alias, string type, string language = null, string state = null,
             CancellationToken cancellationToken = default)
         {
             var modelStateResult = HandleBadRequest();
@@ -471,7 +472,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return Content(result, "application/json");
         }
 
-        private JObject GetQueryJson(string alias)
+        private string GetQueryJson(string alias)
         {
             var json = Configuration.GetJsonByAlias(alias);
             var dict = GetParametersToReplace(json, HttpContext.Request.Query);
@@ -480,7 +481,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 json = json.Replace(kv.Key, kv.Value);
             }
 
-            return JObject.Parse(json);
+            return json;
         }
 
         private Dictionary<string, string> GetParametersToReplace(string json, IQueryCollection requestQuery)

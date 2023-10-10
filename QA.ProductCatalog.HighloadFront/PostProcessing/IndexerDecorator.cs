@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 
@@ -12,14 +13,12 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             _processors = processors;
         }
 
-        public JObject Process(ProductPostProcessorData data)
+        public void Process(ProductPostProcessorData data)
         {
             foreach (var processor in _processors)
             {
-                data.Product = processor.Process(data);
+                processor.Process(data);
             }
-
-            return data.Product;
         }
     }
 }

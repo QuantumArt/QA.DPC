@@ -24,7 +24,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using QA.Core.DPC.Workflow.Extensions;
+using QA.DotNetCore.Engine.CacheTags.Configuration;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
+using QA.DotNetCore.Engine.QpData.Persistent.Dapper;
 using Quantumart.QP8.Configuration;
 using Unity;
 
@@ -82,6 +86,8 @@ namespace QA.ProductCatalog.WebApi
                 .AddControllersAsServices()
                 .AddNewtonsoftJson();
 
+            services.AddCacheTagServices().WithInvalidationByTimer();
+            services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
             services.ResolveTmForumRegistration(Configuration);
 
             services.AddSwaggerGen(c =>

@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using QA.Core.DPC.QP.Services;
+using Json.More;
 using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
+using QA.ProductCatalog.HighloadFront.PostProcessing;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -44,11 +47,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 async () =>
                 {
                     var client = _configuration.GetElasticClient(language, state);
-                    var info = await client.GetInfo();
+                    var info = JsonNode.Parse(await client.GetInfo());
                     var searchEngine = new SearchEngine()
                     {
-                        Name = JObject.Parse(info).SelectToken("version.distribution")?.Value<string>() ?? "elasticsearch",
-                        Version = JObject.Parse(info).SelectToken("version.number")?.Value<string>()
+                        Name = PostProcessHelper.Select(info, "version.distribution").SingleOrDefault()?.ToString() ?? "elasticsearch",
+                        Version = PostProcessHelper.Select(info, "version.number").SingleOrDefault()?.ToString()
                     };
                     return searchEngine;
                 });

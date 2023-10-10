@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Security.Principal;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using Json.More;
 using Microsoft.Extensions.Logging;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.HighloadFront.Interfaces;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -54,7 +55,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _logger.LogInformation($"Checking instance ({language}, {state}) ...");
             var url = $"{reindexUrl}/ValidateInstance";
             var result = GetContent(url).Result;
-            var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
+            var validation = JsonNode.Parse(result.Item1).Deserialize<bool>();
             _logger.LogInformation($"Validation result for instance ({language}, {state}): {validation}");
             return validation;
         }
@@ -150,8 +151,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private async Task<int[]> GetIds(string reindexUrl)
         {
             var result = await GetContent(reindexUrl);
-            var arr = JsonConvert.DeserializeObject(result.Item1) as JArray;
-            return arr?.Select(n => (int) n).ToArray();
+            var arr = JsonNode.Parse(result.Item1);
+            return arr.Deserialize<int[]>();
         }
 
         private async Task<ProductPostProcessorData> GetProductById(string reindexUrl, int id)
@@ -168,14 +169,23 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return null;
             }
 
-            var obj = !string.IsNullOrEmpty(result.Item1) ? JsonConvert.DeserializeObject(result.Item1) as JObject : null;
-            if (obj == null)
+            using var doc = JsonDocument.Parse(result.Item1);
+            JsonElement obj = !string.IsNullOrEmpty(result.Item1) ? doc.RootElement.Clone() : new JsonElement();
+            if (obj.ValueKind == JsonValueKind.Undefined)
             {
                 _logger.LogError($"Cannot parse JSON for product {id} with url {relUri}");
                 return null;
             }
-            var product = (JObject)obj["product"];
-            var regionTags = obj["regionTags"]?.ToObject<List<RegionTag>>()?.ToArray() ?? new RegionTag[] {};
+            var product = obj.GetProperty("product");
+            var regionTags = Array.Empty<RegionTag>();
+            if (obj.TryGetProperty("regionTags", out var tags) && tags.ValueKind == JsonValueKind.Array)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                regionTags = JsonSerializer.Deserialize<RegionTag[]>(tags, options) ?? regionTags;
+            }
             return new ProductPostProcessorData(product, regionTags, result.Item2);
         }
 

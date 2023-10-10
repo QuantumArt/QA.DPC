@@ -5,14 +5,15 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using Json.More;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Extensions;
 using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.HighloadFront.PostProcessing;
-using N = Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.HighloadFront
 {
@@ -62,19 +63,16 @@ namespace QA.ProductCatalog.HighloadFront
             return await ExpandProduct(product, options, language, state, store);
         }
 
-        public async Task<SonicResult> CreateAsync(N.JObject product, RegionTag[] regionTags, string language, string state)
+        public async Task<SonicResult> CreateAsync(JsonElement product, RegionTag[] regionTags, string language, string state)
         {
             var data = new ProductPostProcessorData(product);
 
-            if (_productWritePostProcessor != null)
-            {
-                product = _productWritePostProcessor.Process(data);
-            }
+            _productWritePostProcessor.Process(data);
 
             var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             var tagsProduct = await GetRegionTagsProduct(product, regionTags, language, state);
 
-            if (tagsProduct != null)
+            if (tagsProduct.ValueKind != JsonValueKind.Undefined)
             {
                 var tagsResult = await store.CreateAsync(tagsProduct, language, state);
 
@@ -98,33 +96,39 @@ namespace QA.ProductCatalog.HighloadFront
                 }
             }
 
-            return await store.CreateAsync(product, language, state);
+            using var doc = data.Product.ToJsonDocument(PostProcessHelper.GetSerializerOptions());
+            return await store.CreateAsync(doc.RootElement.Clone(), language, state);
         }
 
         public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state, Dictionary<string, IProductStore> stores, string index)
         {
             var filteredData = data.Where(n => n != null).ToArray();
-            if (_productWritePostProcessor != null)
+            filteredData.ForEach(d =>
             {
-                foreach (var d in filteredData)
-                {
-                    d.Product = _productWritePostProcessor.Process(d);
-                }
-            }
+                _productWritePostProcessor.Process(d);
+            });
 
             var version = await _storeFactory.GetProductStoreVersion(CustomerCode, language, state);
             if (stores.TryGetValue(version, out var store))
             {
-                var regionTagProducts = filteredData.Select(d => GetRegionTagsProduct(int.Parse(store.GetId(d.Product)), d.RegionTags))
-                    .Where(d => d != null);
-                var products = filteredData.Select(d => d.Product).Concat(regionTagProducts);
+                var regionTagProducts = filteredData.Select(
+                        d => GetRegionTagsProduct(
+                            store.GetId(d.Product), d.RegionTags))
+                    .Where(d => d.ValueKind != JsonValueKind.Undefined);
+                var products = filteredData
+                    .Select(d =>
+                    {
+                        using var doc = d.Product.ToJsonDocument(PostProcessHelper.GetSerializerOptions());
+                        return doc.RootElement.Clone();
+                    })
+                    .Concat(regionTagProducts);
 
                 return await store.BulkCreateAsync(products, language, state, index);              
             }
             throw _storeFactory.ElasticVersionNotSupported(version);
         }
 
-        public async Task<string> GetProductId(N.JObject product,string language, string state)
+        public async Task<string> GetProductId(JsonElement product,string language, string state)
         {
             var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             return store.GetId(product);
@@ -150,6 +154,13 @@ namespace QA.ProductCatalog.HighloadFront
             var store = await GetProductStore(language, state, stores);
             return await store.CreateVersionedIndexAsync(language, state);
         }
+
+        public async Task<string> GetDefaultIndexSettings(string language, string state)
+        {
+            var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
+            return store.GetDefaultIndexSettings().ToString();     
+        }
+        
 
         public async Task ReplaceIndexesInAliasAsync(string language, string state, Dictionary<string, IProductStore> stores, string newIndex, string alias, string[] oldIndexes)
         {
@@ -179,7 +190,7 @@ namespace QA.ProductCatalog.HighloadFront
             return await store.GetIndexInAliasAsync(language, state);
         }
 
-        public async Task<SonicResult> DeleteAsync(N.JObject product, string language, string state)
+        public async Task<SonicResult> DeleteAsync(JsonElement product, string language, string state)
         {
             var tagsProduct = await GetRegionTagsProduct(product, new[] { new RegionTag() }, language, state);
             var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
@@ -208,27 +219,30 @@ namespace QA.ProductCatalog.HighloadFront
             throw _storeFactory.ElasticVersionNotSupported(version);
         }
 
-        private async Task<N.JObject> GetRegionTagsProduct(N.JObject product, RegionTag[] regionTags, string language, string state)
+        private async Task<JsonElement> GetRegionTagsProduct(JsonElement product, RegionTag[] regionTags, string language, string state)
         {
-            var productId = int.Parse(await GetProductId(product, language, state));
+            var productId = await GetProductId(product, language, state);
+            if (productId == null)
+            {
+                return new JsonElement();
+            }
             return GetRegionTagsProduct(productId, regionTags);
         }
 
-        private N.JObject GetRegionTagsProduct(int productId, RegionTag[] regionTags)
+        private JsonElement GetRegionTagsProduct(string productId, RegionTag[] regionTags)
         {
-            if (regionTags == null || !regionTags.Any())
+            if (regionTags == null || !regionTags.Any() || !int.TryParse(productId, out var id))
             {
-                return null;
+                return new JsonElement();
             }
 
-            var tags = N.JObject.FromObject(new
+            var tags = JsonSerializer.SerializeToElement(new
             {
-                Id = -productId,
-                ProductId = productId,
+                Id = -id,
+                ProductId = id,
                 Type = "RegionTags",
                 RegionTags = regionTags
             });
-
             return tags;
         }
 

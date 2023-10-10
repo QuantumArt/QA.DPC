@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using QA.ProductCatalog.HighloadFront.Constants;
 
@@ -28,24 +29,16 @@ namespace QA.ProductCatalog.HighloadFront.Options
             Filters.Add(idsFilter);
         }
 
-        protected override ProductsOptionsBase BuildFromJson(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
+        protected override ProductsOptionsBase BuildFromJson(JsonElement json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
         {
             base.BuildFromJson(json, options, id, skip, take);
 
-            if (Jobj == null)
-            {
-                return this;
-            }
-
-            Name = (string)Jobj.SelectToken(HighloadParams.Name);
-            Path = (string)Jobj.SelectToken(HighloadParams.Path);
+            Name = GetJsonString(HighloadParams.Name);
+            Path = GetJsonString(HighloadParams.Path);
+            CacheForSeconds = GetJsonNullableDecimal(HighloadParams.CacheForSeconds) ?? DefaultExpandCacheTimeInSeconds;
 
             return this;
         }
 
-        protected override decimal GetCacheForSeconds()
-        {
-            return (decimal?)Jobj.SelectToken(HighloadParams.CacheForSeconds) ?? DefaultExpandCacheTimeInSeconds;
-        }
     }
 }

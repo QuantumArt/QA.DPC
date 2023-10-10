@@ -1,13 +1,12 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
-using NLog;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Models;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json.Linq;
 using QA.Core.ProductCatalog.ActionsRunner;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
@@ -32,7 +31,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpPut]
         [Route("{language}/{state}")]
-        public async Task<IActionResult> Put([FromBody]PushMessage message, string language, string state, string instanceId = null)
+        public async Task<IActionResult> Put([FromBody] JsonElement message, string language, string state, string instanceId = null)
         {
             if (!ValidateInstance(instanceId, Configuration.DataOptions.InstanceId))
             {
@@ -40,8 +39,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
             var syncer = Configuration.GetSyncer(language, state);
-            var product = message.Product;
-            var id = await Manager.GetProductId(message.Product, language, state);
+            var product = message.GetProperty("product");
+            var tags = message.GetProperty("regionTags");
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+            var regionTags = JsonSerializer.Deserialize<RegionTag[]>(tags, options);
+            var id = await Manager.GetProductId(product, language, state);
+            if (id == null)
+            {
+                return BadRequest($"Product has no id.");
+            }
 
             if (!Configuration.DataOptions.CanUpdate)
             {
@@ -54,8 +63,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 try
                 {
-                    var result = await Manager.CreateAsync(product, message.RegionTags, language, state);
-
+                    var result = await Manager.CreateAsync(product, regionTags, language, state);
                     return CreateResult(result);
                 }
                 finally
@@ -69,7 +77,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpDelete]
         [Route("{language}/{state}")]
-        public async Task<object> Delete([FromBody]PushMessage message, string language, string state, string instanceId = null)
+        public async Task<object> Delete([FromBody] JsonElement message, string language, string state, string instanceId = null)
         {
             if (!ValidateInstance(instanceId, Configuration.DataOptions.InstanceId))
             {
@@ -77,10 +85,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
             var syncer = Configuration.GetSyncer(language, state);
-            var product = message.Product;
+            var product = message.GetProperty("product");
 
-            var id = await Manager.GetProductId(message.Product, language, state);
-
+            var id = await Manager.GetProductId(product, language, state);
+            if (id == null)
+            {
+                return BadRequest($"Product has no id");
+            }
+            
             if (!Configuration.DataOptions.CanUpdate)
             {
                 return BadRequest($"Unable to remove product {id}. This is read-only instance.");
@@ -120,25 +132,38 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             int taskId = TaskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
             
-            return Json(new JObject(new JProperty("taskId", taskId)));
+            return Json(new { taskId });
+        }
+
+        [Route("{language}/{state}/default"), HttpGet]
+        public async Task<ActionResult> Default(string language, string state)
+        {
+            if (!Configuration.DataOptions.CanUpdate)
+            {
+                return BadRequest("Unable to get default index settings info. This is read-only instance.");
+            }
+            
+            var result = await Manager.GetDefaultIndexSettings(language, state);
+            return Content(result, "application/json");
+            
         }
 
         [Route("task"), HttpGet]
-        public QA.Core.ProductCatalog.ActionsRunnerModel.Task Task(int id)
+        public ActionResult Task(int id)
         {
             if (!Configuration.DataOptions.CanUpdate)
             {
-                return null;
+                return BadRequest("Unable to get task info. This is read-only instance.");
             }
-            return TaskService.GetTask(id);
+            return Json(TaskService.GetTask(id));
         }
 
         [Route("settings"), HttpGet]
-        public TaskItem[] Settings()
+        public ActionResult Settings()
         {
             if (!Configuration.DataOptions.CanUpdate)
             {
-                return null;
+                return BadRequest("Unable to get channel info. This is read-only instance.");
             }
             
             var tasks = TaskService.GetTasks(0, int.MaxValue, null, null, null, null, null, null, out _);
@@ -162,7 +187,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     TaskMessage = t?.Message
                 };
 
-            return r.ToArray();
+            var result = JsonSerializer.Serialize(r.ToArray());
+            return Content(result, "application/json");
         }
 
         private IActionResult CreateResult(SonicResult results)

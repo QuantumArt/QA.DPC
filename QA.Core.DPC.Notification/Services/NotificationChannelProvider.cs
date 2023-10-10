@@ -1,7 +1,7 @@
-﻿using System;
-using QA.Core.Cache;
+﻿using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Notification.Services
@@ -61,8 +61,9 @@ namespace QA.Core.DPC.Notification.Services
 	        ISettingsService settingsService, 
 	        IConnectionProvider connectionProvider, 
 	        VersionedCacheProviderBase cacheProvider,
-	        IQpContentCacheTagNamingProvider namingProvider)
-			: base(settingsService, connectionProvider, cacheProvider, namingProvider)
+	        IQpContentCacheTagNamingProvider namingProvider, 
+	        IUnitOfWork unitOfWork)
+			: base(settingsService, connectionProvider, cacheProvider, namingProvider, unitOfWork)
 		{
 		}
 

@@ -1,7 +1,8 @@
 ﻿using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
-using QP.ConfigurationService.Models;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 using Quantumart.QPublishing.Database;
+using DatabaseType = QP.ConfigurationService.Models.DatabaseType;
 
 namespace QA.ProductCatalog.ContentProviders
 {
@@ -12,8 +13,9 @@ namespace QA.ProductCatalog.ContentProviders
         public HighloadApiLimitProvider(
 	        ISettingsService settingsService, 
 	        IConnectionProvider connectionProvider,
-	        IQpContentCacheTagNamingProvider namingProvider	        
-	    ): base(settingsService, connectionProvider, namingProvider)
+	        IQpContentCacheTagNamingProvider namingProvider,
+	        IUnitOfWork unitOfWork
+	    ): base(settingsService, connectionProvider, namingProvider, unitOfWork)
         {
 	        _dbType = connectionProvider.GetCustomer().DatabaseType;
         }

@@ -1,10 +1,15 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace QA.ProductCatalog.HighloadFront.Interfaces;
 
 public interface IProductInfoProvider
 {
-    string GetId(JObject product, string path);
+    string GetId(JsonElement product, string path);
 
-    string GetType(JObject product, string path, string defaultType);
+    string GetType(JsonElement product, string path, string defaultType);
+    
+    string GetId(JsonObject product, string path);
+
+    string GetType(JsonObject product, string path, string defaultType);
 }

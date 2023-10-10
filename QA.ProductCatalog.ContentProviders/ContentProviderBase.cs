@@ -4,6 +4,7 @@ using System.Linq;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.ContentProviders
@@ -20,11 +21,13 @@ namespace QA.ProductCatalog.ContentProviders
 		protected ContentProviderBase(
 			ISettingsService settingsService, 
 			IConnectionProvider connectionProvider,
-			IQpContentCacheTagNamingProvider namingProvider)
+			IQpContentCacheTagNamingProvider namingProvider,
+			IUnitOfWork unitOfWork)
 		{
 			SettingsService = settingsService;
 			Customer = connectionProvider.GetCustomer();
 			NamingProvider = namingProvider;
+			NamingProvider.SetUnitOfWork(unitOfWork);
 		}
 
 		protected abstract string GetSetting();

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-using NLog;
+﻿using NLog;
 using NLog.Fluent;
 using Polly;
 using Polly.CircuitBreaker;
@@ -13,6 +12,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +31,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly PolicyRegistry _registry;
         private readonly List<Exception> _exceptions;
         private readonly ILogger _logger;
+        public const string NotFoundResult = "Not Found";
 
         public ElasticClient(
             IHttpClientFactory factory,
@@ -131,15 +132,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public async Task<bool> DocumentExistsAsync(string id, string type, CancellationToken cancellationToken = default)
         {
             var searchParams = CreateElasticRequestParams(HttpMethod.Head, id, type);
-            try
-            {
-                await QueryAsync(searchParams, null, cancellationToken);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            searchParams.ThrowNotFound = false;
+            var result = await QueryAsync(searchParams, null, cancellationToken);
+            return result != NotFoundResult;  
         }
 
         public async Task<string> FindSourceByIdAsync(string operation, string type, string parameterName, string[] filters, CancellationToken cancellationToken = default)
@@ -151,21 +146,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
 
             return await QueryAsync(esparams, null, cancellationToken);
-        }
-
-        public async Task<string> FindSourceByIdsAsync(int[] ids, CancellationToken cancellationToken = default)
-        {
-            var eparams = CreateElasticRequestParams(HttpMethod.Get, "_mget", "_all");
-
-            var filter = JObject.FromObject(new
-            {
-                docs = ids.Select(id => new
-                {
-                    _id = id
-                })
-            });
-
-            return await QueryAsync(eparams, filter.ToString(), cancellationToken);
         }
 
         public async Task<string> GetInfo(CancellationToken cancellationToken = default)
@@ -252,7 +232,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                         break;
                     }
 
-                    return "Not Found";
+                    return NotFoundResult;
                 }
             }
 

@@ -18,6 +18,8 @@
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.15.0" />
     <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5" />
+    <PackageReference Include="QA.DotNetCore.Engine.CacheTags.Configuration" Version="3.2.11" />
+    <PackageReference Include="QA.DotNetCore.Engine.Persistent.Dapper" Version="3.2.11" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />

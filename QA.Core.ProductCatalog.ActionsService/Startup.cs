@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QA.Core.DPC.Loader;
@@ -14,6 +15,9 @@ using QA.Core.ProductCatalog.Actions;
 using Unity;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
+using QA.DotNetCore.Engine.CacheTags.Configuration;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
+using QA.DotNetCore.Engine.QpData.Persistent.Dapper;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.TmForum.Extensions;
@@ -73,6 +77,8 @@ namespace QA.Core.ProductCatalog.ActionsService
                 options.EnableEndpointRouting = false;
             });;
 
+            services.AddCacheTagServices().WithInvalidationByTimer();
+            services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
             services.ResolveTmForumRegistration(Configuration);
         }
 

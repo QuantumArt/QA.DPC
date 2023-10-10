@@ -117,7 +117,14 @@ namespace QA.DPC.Core.Helpers
                 return false;
             }
 
-            var factory = options.ApplicationServices.GetService<IFactory>();
+            var factory = options.ApplicationServices.GetRequiredService<IFactory>();
+            
+            if (factory == null)
+            {
+                customerState = CustomerState.NotDefined;
+                return false;
+            }
+            
             if (factory.NotConsolidatedCodes.Contains(customerCode))
             {
                 Logger.Debug()

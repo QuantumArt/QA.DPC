@@ -24,10 +24,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             if (engine.Name.Equals("opensearch", StringComparison.OrdinalIgnoreCase))
             {
                 if (engine.Version.StartsWith("2."))
-                    return "8.*";
+                    return "os2.*";
             }
 
-            if (engine.Name.Equals("ElasticSearch", StringComparison.OrdinalIgnoreCase))
+            if (engine.Name.Equals("elasticsearch", StringComparison.OrdinalIgnoreCase))
             {
                 if (engine.Version.StartsWith("5."))
                     return "5.*";

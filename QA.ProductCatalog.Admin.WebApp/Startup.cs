@@ -15,6 +15,10 @@ using QA.ProductCatalog.Admin.WebApp.Binders;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using QA.DotNetCore.Engine.CacheTags.Configuration;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
+using QA.DotNetCore.Engine.QpData.Persistent.Dapper;
 using Unity;
 using QA.ProductCatalog.TmForum.Extensions;
 
@@ -76,6 +80,9 @@ namespace QA.ProductCatalog.Admin.WebApp
                 options.KnownProxies.Clear();
             });
 
+            services.AddCacheTagServices().WithInvalidationByTimer();
+            services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
+            
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
 
