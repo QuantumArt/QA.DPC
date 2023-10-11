@@ -133,6 +133,20 @@ namespace QA.ProductCatalog.HighloadFront
             var store = await _storeFactory.GetProductStore(CustomerCode, language, state);
             return store.GetId(product);
         }
+
+        public RegionTag[] GetRegionTags(JsonElement root)
+        {
+            var regionTags = Array.Empty<RegionTag>();
+            if (root.TryGetProperty("regionTags", out var tags) && tags.ValueKind == JsonValueKind.Array)
+            {
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+                regionTags = JsonSerializer.Deserialize<RegionTag[]>(tags, options) ?? regionTags;
+            }
+            return regionTags;
+        }
         
         public async Task<string> SearchAsync(ProductsOptionsBase options, string language, string state, CancellationToken cancellationToken = default)
         {

@@ -177,16 +177,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return null;
             }
             var product = obj.GetProperty("product");
-            var regionTags = Array.Empty<RegionTag>();
-            if (obj.TryGetProperty("regionTags", out var tags) && tags.ValueKind == JsonValueKind.Array)
-            {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-                regionTags = JsonSerializer.Deserialize<RegionTag[]>(tags, options) ?? regionTags;
-            }
-            return new ProductPostProcessorData(product, regionTags, result.Item2);
+            return new ProductPostProcessorData(product, _manager.GetRegionTags(obj), result.Item2);
         }
 
     }

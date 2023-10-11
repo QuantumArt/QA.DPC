@@ -40,12 +40,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             var syncer = Configuration.GetSyncer(language, state);
             var product = message.GetProperty("product");
-            var tags = message.GetProperty("regionTags");
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            var regionTags = JsonSerializer.Deserialize<RegionTag[]>(tags, options);
+            var regionTags = Manager.GetRegionTags(message);
             var id = await Manager.GetProductId(product, language, state);
             if (id == null)
             {
