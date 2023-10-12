@@ -66,10 +66,7 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
             {
                 if (node is JsonArray)
                 {
-                    foreach (var item in node.AsArray())
-                    {
-                        TryReplaceNode(item.AsObject(), extraNodesDict);
-                    }
+                    TryReplaceArray(node.AsArray(), extraNodesDict);
                 }
                 else if (node is JsonObject)
                 {
@@ -94,19 +91,39 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
         {
             if (extraNodesDict.TryGetValue(_productReadExpandPostProcessor.GetId(node), out var value))
             {
-                var parent = node.Parent;
-                if (parent != null)
-                {
-                    if (parent is JsonObject)
-                    {
-                        parent[GetPropertyName(node)] = PostProcessHelper.CloneJsonNode(value);
-                    }
-                    else if (parent is JsonArray)
-                    {
-                        parent[GetIndex(node)] = PostProcessHelper.CloneJsonNode(value);
-                    }
-                }
+                ReplaceNode(node, PostProcessHelper.CloneJsonNode(value));
             }
+        }
+        
+        private void TryReplaceArray(JsonArray array, Dictionary<int, JsonObject> extraNodesDict)
+        {
+            var resultArr = new JsonArray();
+            foreach (var item in array)
+            {
+                var result = item;
+                if (extraNodesDict.TryGetValue(_productReadExpandPostProcessor.GetId(item.AsObject()), out var value))
+                {
+                    result = value;
+                }
+                resultArr.Add(PostProcessHelper.CloneJsonNode(result));
+            }
+            ReplaceNode(array, resultArr);
+        }
+
+        private void ReplaceNode(JsonNode oldNode, JsonNode newNode)
+        {
+            var parent = oldNode.Parent;
+            if (parent != null)
+            {
+                if (parent is JsonObject)
+                {
+                    parent[GetPropertyName(oldNode)] = newNode;
+                }
+                else if (parent is JsonArray)
+                {
+                    parent[GetIndex(oldNode)] = newNode;
+                }
+            }   
         }
         
 
