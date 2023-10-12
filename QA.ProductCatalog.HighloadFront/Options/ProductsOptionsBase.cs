@@ -246,7 +246,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             if (value.ValueKind == JsonValueKind.Array)
             {
                 return value.EnumerateArray()
-                    .Select(n => n.GetString())
+                    .Select(n => n.ToString())
                     .ToArray();
             }
 
