@@ -97,17 +97,14 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
         
         private void TryReplaceArray(JsonArray array, Dictionary<int, JsonObject> extraNodesDict)
         {
-            var resultArr = new JsonArray();
-            foreach (var item in array)
+            for (var i = 0; i < array.Count; i++)
             {
-                var result = item;
+                var item = array[i];
                 if (extraNodesDict.TryGetValue(_productReadExpandPostProcessor.GetId(item.AsObject()), out var value))
                 {
-                    result = value;
+                    array[i] = PostProcessHelper.CloneJsonNode(value);
                 }
-                resultArr.Add(PostProcessHelper.CloneJsonNode(result));
             }
-            ReplaceNode(array, resultArr);
         }
 
         private void ReplaceNode(JsonNode oldNode, JsonNode newNode)
