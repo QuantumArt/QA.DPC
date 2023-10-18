@@ -88,6 +88,8 @@ namespace QA.ProductCatalog.WebApi
 
             services.AddCacheTagServices().WithInvalidationByTimer();
             services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
+            services.AddScoped(QPHelper.CreateUnitOfWork);
+            
             services.ResolveTmForumRegistration(Configuration);
 
             services.AddSwaggerGen(c =>

@@ -79,6 +79,8 @@ namespace QA.Core.ProductCatalog.ActionsService
 
             services.AddCacheTagServices().WithInvalidationByTimer();
             services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
+            services.AddScoped(QPHelper.CreateUnitOfWork);
+            
             services.ResolveTmForumRegistration(Configuration);
         }
 

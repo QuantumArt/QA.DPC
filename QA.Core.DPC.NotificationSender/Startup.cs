@@ -75,11 +75,7 @@ namespace QA.Core.DPC
             
             services.AddCacheTagServices().WithInvalidationByTimer();
 
-            services.AddScoped<IUnitOfWork>(c =>
-            {
-                var customer = c.GetRequiredService<IConnectionProvider>().GetCustomer();
-                return new UnitOfWork(customer.ConnectionString, customer.DatabaseType.ToString());
-            });
+            services.AddScoped(QPHelper.CreateUnitOfWork);
 
             services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
             services.TryAddScoped(c => new QpSiteStructureCacheSettings()

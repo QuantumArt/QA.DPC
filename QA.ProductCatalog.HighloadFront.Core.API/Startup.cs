@@ -236,13 +236,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             
             services.AddCacheTagServices().WithInvalidationByTimer();
 
-            services.AddScoped<IUnitOfWork>(c =>
-                {
-                    var customer = c.GetRequiredService<IConnectionProvider>().GetCustomer();
-                    var isSingle = c.GetRequiredService<ICustomerProvider>() is SingleCustomerCoreProvider;
-                    var code = isSingle ? SingleCustomerCoreProvider.Key : customer.CustomerCode;
-                    return new UnitOfWork(customer.ConnectionString, customer.DatabaseType.ToString(), code);
-                });
+            services.AddScoped(QPHelper.CreateUnitOfWork);
 
             services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
             services.TryAddScoped(c => new QpSiteStructureCacheSettings()

@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Engine.CacheTags.Configuration;
 using QA.DotNetCore.Engine.Persistent.Interfaces;
 using QA.DotNetCore.Engine.QpData.Persistent.Dapper;
@@ -82,6 +83,7 @@ namespace QA.ProductCatalog.Admin.WebApp
 
             services.AddCacheTagServices().WithInvalidationByTimer();
             services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
+            services.AddScoped(QPHelper.CreateUnitOfWork);
             
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
