@@ -223,7 +223,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                         .Select(n => new QpContentCacheTracker(
                             c.GetRequiredService<IContentModificationRepository>(),
                             c.GetRequiredService<IQpContentCacheTagNamingProvider>(),
-                            () => new UnitOfWork(n.ConnectionString, n.DatabaseType.ToString(), n.CustomerCode)));
+                            _ => new UnitOfWork(n.ConnectionString, n.DatabaseType.ToString(), n.CustomerCode),
+                            c.GetRequiredService<IServiceScopeFactory>())
+                            );
 
                     foreach (var tracker in trackers)
                     {

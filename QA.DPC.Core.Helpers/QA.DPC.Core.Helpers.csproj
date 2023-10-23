@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="6.0.12" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
-    <PackageReference Include="QA.DotNetCore.Engine.Persistent.Dapper" Version="3.2.11" />
+    <PackageReference Include="QA.DotNetCore.Engine.Persistent.Dapper" Version="3.2.17" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
