@@ -124,7 +124,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     ["match_mapping_type"] = "string",
                     ["mapping"] = new JsonObject()
                     {
-                        ["type"] = "text"
+                        ["type"] = "text",
+                        ["fields"] = new JsonObject()
+                        {
+                            ["keyword"] = new JsonObject()
+                            {
+                                ["type"] = "keyword",
+                                ["ignore_above"] = 256
+                            }
+                        }
                     }
                 }
             };
