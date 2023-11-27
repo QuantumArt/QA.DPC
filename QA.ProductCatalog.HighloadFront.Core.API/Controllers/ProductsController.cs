@@ -349,14 +349,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
             var options = new ProductsOptionsRoot();
             string json;
+            JsonDocument jsonDoc = null;
             try
             {
                 json = GetQueryJson(alias);
-                using var jsonDoc = JsonDocument.Parse(json);
+                jsonDoc = JsonDocument.Parse(json);
                 options.BuildFromJson<ProductsOptionsRoot>(jsonDoc.RootElement, ElasticOptions, id, skip, take);
             }
             catch (Exception ex)
             {
+                jsonDoc.Dispose();
                 return ParseBadRequest(ex);
             }
 
@@ -376,7 +378,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Write();
-            }  
+            }
 
             try
             {
@@ -390,6 +392,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 AddModelError(ex.Message);
                 return HandleBadRequest();
+            }
+            finally
+            {
+                jsonDoc.Dispose();
             }
         }
 
