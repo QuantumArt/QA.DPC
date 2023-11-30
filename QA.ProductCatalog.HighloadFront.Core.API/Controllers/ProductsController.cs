@@ -395,7 +395,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
             finally
             {
-                jsonDoc.Dispose();
+                jsonDoc?.Dispose();
             }
         }
 
