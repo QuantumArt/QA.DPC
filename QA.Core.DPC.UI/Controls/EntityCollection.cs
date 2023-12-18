@@ -6,19 +6,19 @@ namespace QA.Core.DPC.UI
     {
         public QPBehavior Behavior { get; set; }
 
-		public bool InheritStackPanel { get; set; }
+        public bool InheritStackPanel { get; set; }
 
-		static EntityCollection()
-	    {
-			SeparatorTemplateProperty = DependencyProperty.Register("SeparatorTemplate", typeof(object), typeof(EntityCollection));
-	    }
+        static EntityCollection()
+        {
+            SeparatorTemplateProperty = DependencyProperty.Register("SeparatorTemplate", typeof(object), typeof(EntityCollection));
+        }
 
-		public object SeparatorTemplate
-		{
-			get { return GetValue(SeparatorTemplateProperty); }
-			set { SetValue(SeparatorTemplateProperty, CorrectValue(value)); }
-		}
+        public object SeparatorTemplate
+        {
+            get { return GetValue(SeparatorTemplateProperty); }
+            set { SetValue(SeparatorTemplateProperty, CorrectValue(value)); }
+        }
 
-		public static readonly DependencyProperty SeparatorTemplateProperty;
+        public static readonly DependencyProperty SeparatorTemplateProperty;
     }
 }
