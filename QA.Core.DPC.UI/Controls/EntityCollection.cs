@@ -6,7 +6,9 @@ namespace QA.Core.DPC.UI
     {
         public QPBehavior Behavior { get; set; }
 
-	    static EntityCollection()
+		public bool InheritStackPanel { get; set; }
+
+		static EntityCollection()
 	    {
 			SeparatorTemplateProperty = DependencyProperty.Register("SeparatorTemplate", typeof(object), typeof(EntityCollection));
 	    }
