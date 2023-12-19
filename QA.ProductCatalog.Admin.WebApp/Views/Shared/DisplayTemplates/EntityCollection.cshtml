@@ -26,6 +26,15 @@
 		
 		isFirst = false;
 		
-		@Html.DisplayForUIElement(item)
+		if (Model.InheritStackPanel && Model.Parent is QA.Core.DPC.UI.StackPanel)
+		{
+			<div class="stack-panel-item">
+				@Html.DisplayForUIElement(item)
+			</div>
+		}
+		else
+		{
+			@Html.DisplayForUIElement(item)
+		}
 	}
 }

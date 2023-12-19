@@ -153,6 +153,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
             {
                 case ActionLink actionLink:
                     return helper.DisplayFor(x => actionLink);
+                case Image image:
+                    return helper.DisplayFor(x => image);
                 case FileLink fileLink:
                     return helper.DisplayFor(x => fileLink);
                 case Label label:

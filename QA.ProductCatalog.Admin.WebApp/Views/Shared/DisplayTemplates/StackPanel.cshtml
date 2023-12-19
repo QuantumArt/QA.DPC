@@ -12,8 +12,15 @@
     var item = Model.Items[i];
     var style = Model.UseInlineForChildBlocks ? "display: inline" : "";
 
-    <div class="stack-panel-item" style="@style">
-      @Html.DisplayForUIElement(item)
-    </div>
+        if (item is QA.Core.DPC.UI.EntityCollection collection && collection.InheritStackPanel)
+        {
+                @Html.DisplayForUIElement(item)
+        }
+        else
+        {
+            <div class="stack-panel-item" style="@style">
+                @Html.DisplayForUIElement(item)
+            </div>
+        }
   }
 </div>
