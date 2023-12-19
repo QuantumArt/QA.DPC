@@ -39,17 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.9" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
-    <PackageReference Include="NLog" Version="4.7.15" />
-    <PackageReference Include="QA.Core" Version="3.5.5" />
-    <PackageReference Include="QP.ConfigurationService.Client" Version="0.2.0" />
-    <PackageReference Include="Quantumart.AspNetCore" Version="5.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.3.0" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-    <PackageReference Include="Unity.Abstractions" Version="5.11.7" />
   </ItemGroup>
 </Project>

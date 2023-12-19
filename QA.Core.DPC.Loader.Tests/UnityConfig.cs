@@ -12,6 +12,7 @@ using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using Unity;
@@ -44,7 +45,7 @@ namespace QA.Core.DPC.Loader.Tests
             container.AddNewExtension<LoaderConfigurationExtension>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
 
-            container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+            container.RegisterType<ISettingsService, SettingsFromQpCoreServiceDeprecated>();
 
             // устанавливаем фальшивый сервис для загрузки модели
             container.RegisterType<IProductService, ProductLoader>().RegisterType<IXmlProductService, XmlProductService>();
@@ -52,7 +53,7 @@ namespace QA.Core.DPC.Loader.Tests
             container.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager());
             container.RegisterType<VersionedCacheProviderBase>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
-            container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+            container.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>();
             container.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
             container.RegisterInstance<ICacheItemWatcher>(new CacheItemWatcherFake());
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();

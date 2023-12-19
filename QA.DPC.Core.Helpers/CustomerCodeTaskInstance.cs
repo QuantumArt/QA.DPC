@@ -25,11 +25,8 @@ namespace QA.DPC.Core.Helpers
             ReindexAllTaskAccessor = (s, i) => s == "ReindexAllTask" ? ReindexAllTask : null;
             TaskService = new InmemoryTaskService();
             TaskServiceAccessor = () => TaskService;
-
             TasksRunner = new TasksRunner(ReindexAllTaskAccessor, TaskServiceAccessor, provider, delays, consolidationFactory);
-
-            var actionRunnerThread = new Thread(TasksRunner.Run);
-            actionRunnerThread.Start(provider.Identity.CustomerCode);
+            ThreadPool.QueueUserWorkItem(TasksRunner.Run, provider.Identity.CustomerCode);
         }
 
     }

@@ -468,4 +468,7 @@
   <data name="Prompt" xml:space="preserve">
     <value>Вы уверены?</value>
   </data>
+  <data name="AllowConcurrentTasks" xml:space="preserve">
+    <value>Разрешать конкурентное выполнение задач</value>
+  </data>
 </root>

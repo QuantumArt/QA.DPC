@@ -1,43 +1,47 @@
 ﻿using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 
 namespace QA.ProductCatalog.ContentProviders
 {
 	public class HighloadApiUserProvider : ContentProviderBase<HighloadApiUser>
 	{
-		#region Constants
-		private const string QueryTemplate = @"
-			SELECT
-				c.Name,
-				c.AccessToken as Token
-			FROM
-				CONTENT_{0}_UNITED c
-			WHERE
-				c.ARCHIVE = 0 AND c.VISIBLE = 1";
-
-        #endregion
-
-        public HighloadApiUserProvider(ISettingsService settingsService, IConnectionProvider connectionProvider)
-			: base(settingsService, connectionProvider)
+		public HighloadApiUserProvider(
+			ISettingsService settingsService,
+			IConnectionProvider connectionProvider,
+			IQpContentCacheTagNamingProvider namingProvider,
+			IUnitOfWork unitOfWork
+		)
+			: base(settingsService, connectionProvider, namingProvider, unitOfWork)
 		{
 		}
 
 		#region Overrides
-		protected override string GetQuery()
+
+		protected override string GetSetting()
 		{
-		    var usersContentId = SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
-
-            if (string.IsNullOrEmpty(usersContentId))
-			{
-				return null;
-			}
-
-            return string.Format(QueryTemplate, usersContentId);
+			return SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
 		}
 
-	    public override string[] GetTags()
-	    {
-	        return new[] { SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID) };
-	    }
-        #endregion
+		public override string[] GetTags()
+		{
+			return new[] {GetSetting()};
+		}
+
+		protected override string GetQueryTemplate()
+		{
+			return @"
+				SELECT
+					c.Name,
+					c.AccessToken as Token
+				FROM
+					CONTENT_{0}_UNITED c
+				WHERE
+					c.ARCHIVE = 0 AND c.VISIBLE = 1
+			";
+		}
+		
+		#endregion
+	
     }
 }

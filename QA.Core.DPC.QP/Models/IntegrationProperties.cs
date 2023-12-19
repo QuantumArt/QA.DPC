@@ -7,7 +7,9 @@ namespace QA.Core.DPC.QP.Models
         public string RestNotificationUrl { get; set; }
         
         public string HighloadFrontSyncUrl { get; set; }
-        
+
+        public string HighloadFrontSearchUrl { get; set; }
+
         public string TarantoolSyncUrl { get; set; }
         
         public string DpcWebApiUrl { get; set; }

@@ -33,6 +33,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             return DataOptions.Elastic;
         }
+
+        public abstract void SetCachePrefix(string prefix);
         
         protected  abstract IEnumerable<HighloadApiUser> GetHighloadApiUsers();
 

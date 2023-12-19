@@ -68,16 +68,19 @@ class ApiService extends BaseApiService {
    * @param cronExpression выражение для
    * @param repeatType 'on'
    * @param isEnabled boolean
+   * @param allowConcurrentTasks boolean
    *
    */
   fetchSchedule = async (
     taskId: number,
     isEnabled: boolean,
+    allowConcurrentTasks: boolean,
     cronExpression: string,
     repeatType = "on"
   ): Promise<void> => {
     const formData = new FormData();
     formData.append("Enabled", isEnabled ? "true" : "false");
+    formData.append("AllowConcurrentTasks", allowConcurrentTasks ? "true" : "false");
     formData.append("CronExpression", cronExpression);
     formData.append("repeatType", repeatType);
     formData.append("TaskId", String(taskId));

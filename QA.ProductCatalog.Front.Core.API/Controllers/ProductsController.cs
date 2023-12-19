@@ -10,26 +10,22 @@ using QA.ProductCatalog.Front.Core.API.ActionResults;
 using Quantumart.QPublishing.Database;
 using NLog;
 using NLog.Fluent;
-    
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
     [Route("api")]
     public class ProductsController : Controller
     {
-        protected readonly IDpcProductService ProductService;
+        private readonly IDpcProductService _productService;
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IDpcService _dpcService;
+        private readonly DataOptions _options;
 
-        protected static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-
-        protected readonly IDpcService DpcService;
-
-        protected readonly DataOptions Options;
-        
         public ProductsController(IDpcProductService productService, IDpcService dpcService, DataOptions options)
         {
-            ProductService = productService;
-            DpcService = dpcService;
-            Options = options;
+            _productService = productService;
+            _dpcService = dpcService;
+            _options = options;
         }
 
         [HttpGet("products", Name = "List")]
@@ -48,8 +44,8 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             ApplyOptions(locator);
             
             var ints = (filterDate == null)
-                ? DpcService.GetAllProductId(locator, page, pageSize)
-                : DpcService.GetLastProductId(locator, page, pageSize, filterDate.Value);
+                ? _dpcService.GetAllProductId(locator, page, pageSize)
+                : _dpcService.GetLastProductId(locator, page, pageSize, filterDate.Value);
 
             if (locator.Format == "json")
             {
@@ -70,7 +66,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var locator = new ProductLocator(){ QueryFormat = format, InstanceId = instanceId };         
             ApplyOptions(locator);
             
-            var data = DpcService.GetProductData(locator, id);
+            var data = _dpcService.GetProductData(locator, id);
 
             if (data == null)
             {
@@ -100,7 +96,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var locator = new ProductLocator(){QueryFormat = format, InstanceId = instanceId };         
             ApplyOptions(locator);
             
-            var ints = DpcService.GetAllProductVersionId(locator, page, pageSize, filterDate);
+            var ints = _dpcService.GetAllProductVersionId(locator, page, pageSize, filterDate);
 
             if (locator.Format == "json")
             {
@@ -122,7 +118,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         {
             var locator = new ProductLocator(){QueryFormat = format, InstanceId = instanceId };         
             ApplyOptions(locator);            
-            var data = DpcService.GetProductVersionData(locator, id, filterDate);
+            var data = _dpcService.GetProductVersionData(locator, id, filterDate);
 
             if (data == null)
             {
@@ -153,13 +149,13 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var locator = new ProductLocator(){QueryFormat = format, InstanceId = instanceId };         
             ApplyOptions(locator);  
             
-            if (!ValidateInstanceInternal(locator.InstanceId, Options.InstanceId))
+            if (!ValidateInstanceInternal(locator.InstanceId, _options.InstanceId))
             {
-                return InstanceError(locator.InstanceId, Options.InstanceId);
+                return InstanceError(locator.InstanceId, _options.InstanceId);
             }
 
             // ReSharper disable once InconsistentlySynchronizedField
-            var res1 = ProductService.Parse(locator, data);
+            var res1 = _productService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
             {
                 _logger.Info("Message parsed, deleting products... ");
@@ -173,7 +169,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                             .Property("locator", locator)
                             .Write();
 
-                        var res2 = ProductService.DeleteProduct(locator, p.Id, data);
+                        var res2 = _productService.DeleteProduct(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
                             throw new ProductException(
@@ -215,15 +211,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         {
             var locator = new ProductLocator {QueryFormat = format, InstanceId = instanceId };         
             
-            if (!ValidateInstanceInternal(locator.InstanceId, Options.InstanceId))
+            if (!ValidateInstanceInternal(locator.InstanceId, _options.InstanceId))
             {
-                return InstanceError(locator.InstanceId, Options.InstanceId);
+                return InstanceError(locator.InstanceId, _options.InstanceId);
             }
 
             ApplyOptions(locator);
             
             // ReSharper disable once InconsistentlySynchronizedField
-            var res1 = ProductService.Parse(locator, data);
+            var res1 = _productService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
             {
                 _logger.Info("Message parsed, creating or updating products...  ");
@@ -239,7 +235,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                             
 
                         // ReSharper disable once InconsistentlySynchronizedField
-                        var res2 = ProductService.HasProductChanged(locator, p.Id, data);
+                        var res2 = _productService.HasProductChanged(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
                             throw new ProductException(
@@ -261,7 +257,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                                 .Property("locator", locator)
                                 .Write();
 
-                            var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
+                            var res3 = _productService.UpdateProduct(locator, p, data, userName, userId);
                             if (!res3.IsSucceeded)
                             {
                                 throw new ProductException(
@@ -315,7 +311,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         {
             var locator = new ProductLocator(){QueryFormat = format, InstanceId = instanceId };         
             ApplyOptions(locator); 
-            return ValidateInstanceInternal(locator.InstanceId, Options.InstanceId);
+            return ValidateInstanceInternal(locator.InstanceId, _options.InstanceId);
         }
 
         private bool ValidateInstanceInternal(string instanceId, string actualInstanceId)
@@ -354,7 +350,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         private void ApplyOptions(ProductLocator locator)
         {
-            locator.UseProductVersions = Options.UseProductVersions;
+            locator.UseProductVersions = _options.UseProductVersions;
             
             var language = ControllerContext.RouteData.Values["language"];
             var state = ControllerContext.RouteData.Values["state"];
@@ -374,7 +370,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 locator.Language = language.ToString();
             }
 
-            var fixedConnectionString = Options.FixedConnectionString;
+            var fixedConnectionString = _options.FixedConnectionString;
             
             if (String.IsNullOrEmpty(fixedConnectionString))
             {

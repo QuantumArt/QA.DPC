@@ -26,7 +26,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                         logging.AddDebug();
                     }
                 })
-
                 .UseStartup<Startup>()
                 .UseNLog()
                 .Build();

@@ -1,11 +1,12 @@
+using System;
 using Microsoft.AspNetCore.Mvc;
-using NLog;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Models;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.DependencyInjection;
 using QA.Core.ProductCatalog.ActionsRunner;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
@@ -16,20 +17,21 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     {
         private const int LockTimeoutInMs = 1000;
 
-        private readonly ITaskService _taskService;
-        
+        private IServiceProvider _serviceProvider;
+        private ITaskService TaskService => _serviceProvider.GetRequiredService<ITaskService>();
+
         public SyncController(
             ProductManager manager, 
             ElasticConfiguration configuration, 
-            ITaskService taskService 
+            IServiceProvider serviceProvider 
         ) : base(manager, configuration)
         {
-            _taskService = taskService;
+            _serviceProvider = serviceProvider;
         }
 
         [HttpPut]
         [Route("{language}/{state}")]
-        public async Task<IActionResult> Put([FromBody]PushMessage message, string language, string state, string instanceId = null)
+        public async Task<IActionResult> Put([FromBody] JsonElement message, string language, string state, string instanceId = null)
         {
             if (!ValidateInstance(instanceId, Configuration.DataOptions.InstanceId))
             {
@@ -37,8 +39,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
             var syncer = Configuration.GetSyncer(language, state);
-            var product = message.Product;
-            string id = Manager.GetProductId(message.Product, language, state);
+            var product = message.GetProperty("product");
+            var regionTags = Manager.GetRegionTags(message);
+            var id = await Manager.GetProductId(product, language, state);
+            if (id == null)
+            {
+                return BadRequest($"Product has no id.");
+            }
 
             if (!Configuration.DataOptions.CanUpdate)
             {
@@ -51,8 +58,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 try
                 {
-                    var result = await Manager.CreateAsync(product, message.RegionTags, language, state);
-
+                    var result = await Manager.CreateAsync(product, regionTags, language, state);
                     return CreateResult(result);
                 }
                 finally
@@ -66,7 +72,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpDelete]
         [Route("{language}/{state}")]
-        public async Task<object> Delete([FromBody]PushMessage message, string language, string state, string instanceId = null)
+        public async Task<object> Delete([FromBody] JsonElement message, string language, string state, string instanceId = null)
         {
             if (!ValidateInstance(instanceId, Configuration.DataOptions.InstanceId))
             {
@@ -74,10 +80,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
             var syncer = Configuration.GetSyncer(language, state);
-            var product = message.Product;
+            var product = message.GetProperty("product");
 
-            var id = Manager.GetProductId(message.Product, language, state);
-
+            var id = await Manager.GetProductId(product, language, state);
+            if (id == null)
+            {
+                return BadRequest($"Product has no id");
+            }
+            
             if (!Configuration.DataOptions.CanUpdate)
             {
                 return BadRequest($"Unable to remove product {id}. This is read-only instance.");
@@ -115,22 +125,43 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             if (!syncer.AnySlotsLeft)
                 return BadRequest("There is no available slots. Please, wait for previous operations completing.");
 
-            int taskId = _taskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
+            int taskId = TaskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
             
-            return Json(new JObject(new JProperty("taskId", taskId)));
+            return Json(new { taskId });
+        }
+
+        [Route("{language}/{state}/default"), HttpGet]
+        public async Task<ActionResult> Default(string language, string state)
+        {
+            if (!Configuration.DataOptions.CanUpdate)
+            {
+                return BadRequest("Unable to get default index settings info. This is read-only instance.");
+            }
+            
+            var result = await Manager.GetDefaultIndexSettings(language, state);
+            return Content(result, "application/json");
+            
         }
 
         [Route("task"), HttpGet]
-        public QA.Core.ProductCatalog.ActionsRunnerModel.Task Task(int id)
+        public ActionResult Task(int id)
         {
-            return _taskService.GetTask(id);
+            if (!Configuration.DataOptions.CanUpdate)
+            {
+                return BadRequest("Unable to get task info. This is read-only instance.");
+            }
+            return Json(TaskService.GetTask(id));
         }
 
         [Route("settings"), HttpGet]
-        public TaskItem[] Settings()
+        public ActionResult Settings()
         {
-            int count;
-            var tasks = _taskService.GetTasks(0, int.MaxValue, null, null, null, null, null, null, out count);
+            if (!Configuration.DataOptions.CanUpdate)
+            {
+                return BadRequest("Unable to get channel info. This is read-only instance.");
+            }
+            
+            var tasks = TaskService.GetTasks(0, int.MaxValue, null, null, null, null, null, null, out _);
             var lastTasks = tasks.GroupBy(t => t.Data).Select(g => g.OrderByDescending(t => t.ID).First()).ToArray();
 
             var r =
@@ -151,7 +182,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     TaskMessage = t?.Message
                 };
 
-            return r.ToArray();
+            var result = JsonSerializer.Serialize(r.ToArray());
+            return Content(result, "application/json");
         }
 
         private IActionResult CreateResult(SonicResult results)

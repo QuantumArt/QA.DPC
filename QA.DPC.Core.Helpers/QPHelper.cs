@@ -1,6 +1,10 @@
 using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
+using QA.DotNetCore.Engine.QpData.Persistent.Dapper;
 
 namespace QA.DPC.Core.Helpers
 {
@@ -46,5 +50,14 @@ namespace QA.DPC.Core.Helpers
         /// Признак запуска через Custom Action Qp
         /// </summary>
         public bool IsQpMode => !string.IsNullOrEmpty(HostId);
+        
+        
+        public static IUnitOfWork CreateUnitOfWork(IServiceProvider c)
+        {
+            var customer = c.GetRequiredService<IConnectionProvider>().GetCustomer();
+            var isSingle = c.GetRequiredService<ICustomerProvider>() is SingleCustomerCoreProvider;
+            var code = isSingle ? SingleCustomerCoreProvider.Key : customer.CustomerCode;
+            return new UnitOfWork(customer.ConnectionString, customer.DatabaseType.ToString(), code);
+        }
     }
 }

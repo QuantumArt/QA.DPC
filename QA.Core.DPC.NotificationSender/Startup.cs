@@ -1,24 +1,21 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using QA.Core.DPC.DAL;
-using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
-using QA.Core.DPC.QP.Services;
-using QA.Core.ProductCatalog.Actions;
 using Unity;
-using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
 using IWebHostEnvironment = Microsoft.AspNetCore.Hosting.IWebHostEnvironment;
-using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.OpenApi.Models;
+using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Engine.CacheTags.Configuration;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
+using QA.DotNetCore.Engine.QpData.Persistent.Dapper;
+using QA.DotNetCore.Engine.QpData.Settings;
 
 namespace QA.Core.DPC
 {
@@ -76,7 +73,15 @@ namespace QA.Core.DPC
                     opts.EnableEndpointRouting = false;
                 }).AddControllersAsServices();
             
-            
+            services.AddCacheTagServices().WithInvalidationByTimer();
+
+            services.AddScoped(QPHelper.CreateUnitOfWork);
+
+            services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
+            services.TryAddScoped(c => new QpSiteStructureCacheSettings()
+            {
+                QpSchemeCachePeriod = TimeSpan.FromMinutes(10)
+            });
             
 
         }

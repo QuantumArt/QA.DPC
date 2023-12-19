@@ -3,6 +3,8 @@ using System.Data;
 using System.Linq;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.ContentProviders
@@ -12,19 +14,34 @@ namespace QA.ProductCatalog.ContentProviders
 	{
 		protected ISettingsService SettingsService { get; }
 		private DBConnector Connector { get; set; }
-		private Customer _customer { get; }
+		private Customer Customer { get; }
+		
+		private IQpContentCacheTagNamingProvider NamingProvider;
 
-		protected ContentProviderBase(ISettingsService settingsService, IConnectionProvider connectionProvider)
+		protected ContentProviderBase(
+			ISettingsService settingsService, 
+			IConnectionProvider connectionProvider,
+			IQpContentCacheTagNamingProvider namingProvider,
+			IUnitOfWork unitOfWork)
 		{
 			SettingsService = settingsService;
-			_customer = connectionProvider.GetCustomer();
+			Customer = connectionProvider.GetCustomer();
+			NamingProvider = namingProvider;
+			NamingProvider.SetUnitOfWork(unitOfWork);
 		}
 
-		protected abstract string GetQuery();
+		protected abstract string GetSetting();
+		protected abstract string GetQueryTemplate();
+
+		protected virtual string GetQuery()
+		{
+			var setting = GetSetting();
+			return string.IsNullOrEmpty(setting) ? null : string.Format(GetQueryTemplate(), setting);			
+		}
 
 		public virtual TModel[] GetArticles()
 		{
-			Connector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+			Connector = new DBConnector(Customer.ConnectionString, Customer.DatabaseType);
 			var query = GetQuery();
 
 			if (query == null)
@@ -72,7 +89,16 @@ namespace QA.ProductCatalog.ContentProviders
 			}
 		}
 
-	    public abstract string[] GetTags();
+		public virtual string[] GetTags()
+		{
+			int contentId = 0;
+			var setting = GetSetting();
+			if (!string.IsNullOrEmpty(setting) && int.TryParse(setting, out contentId))
+			{
+				return new []{ NamingProvider.GetByContentIds(new[] {contentId}, false)[contentId] };
+			}
+			return null;
+		}
 
 	}
 }

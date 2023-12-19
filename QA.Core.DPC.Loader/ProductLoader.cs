@@ -1296,7 +1296,8 @@ namespace QA.Core.DPC.Loader
                 {
                     Value = fieldValue.Value,
                     NativeValue = nativeValue,
-                    PlainFieldType = (PlainFieldType) fieldValue.Field.ExactType /*map to our types*/
+                    PlainFieldType = (PlainFieldType) fieldValue.Field.ExactType, /*map to our types*/
+                    DefaultValue = fieldValue.Field.DefaultValue
                 };
 
                 var result = new KeyValuePair<int, ArticleField>(fieldValue.Article.Id, res);

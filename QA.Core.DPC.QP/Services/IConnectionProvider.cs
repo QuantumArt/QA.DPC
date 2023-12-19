@@ -7,12 +7,12 @@ namespace QA.Core.DPC.QP.Services
     {
         string GetConnection();
         string GetEFConnection();
-        string GetConnection(Service service);
-        string GetEFConnection(Service service);
+        string GetConnection(Models.Service service);
+        string GetEFConnection(Models.Service service);
         Customer GetCustomer();
-        Customer GetCustomer(Service service);
+        Customer GetCustomer(Models.Service service);
         
-        bool HasConnection(Service service);
+        bool HasConnection(Models.Service service);
         bool QPMode { get; }
         bool UseQPMonitoring { get; }
         TimeSpan TransactionTimeout { get;  }

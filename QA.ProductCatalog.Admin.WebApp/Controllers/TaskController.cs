@@ -157,7 +157,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [HttpPost]
         public string SaveSchedule(TaskScheduleModel schedule)
         {
-            _taskService.SaveSchedule(schedule.TaskId, schedule.Enabled, schedule.CronExpression);
+            _taskService.SaveSchedule(schedule.TaskId, schedule.Enabled, schedule.AllowConcurrentTasks, schedule.CronExpression);
 
             return "Сохранено";
         }

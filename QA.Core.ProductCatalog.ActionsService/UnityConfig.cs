@@ -17,11 +17,13 @@ using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Configuration;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.TmForum.Extensions;
 using Unity;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml;
 using Unity.Injection;
 using Unity.Lifetime;
+using QA.ProductCatalog.ContentProviders.Deprecated;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -71,6 +73,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             container.RegisterSingleton<ActionsService>();
 			container.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			container.AddNewExtension<FormattersContainerConfiguration>();
+            container.RegisterTmForum();
 
             var autoRegister = false;
             var watcherInterval = TimeSpan.FromMinutes(1);
@@ -98,10 +101,10 @@ namespace QA.Core.ProductCatalog.ActionsService
             switch (loaderProps.SettingsSource)
             {
                 case SettingsSource.Content:
-                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+                    container.RegisterType<ISettingsService, SettingsFromContentCoreServiceDeprecated>();
                     break;
                 case SettingsSource.AppSettings:
-                    container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
+                    container.RegisterType<ISettingsService, SettingsFromQpCoreServiceDeprecated>();
                     break;
             }
             

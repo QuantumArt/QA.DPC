@@ -34,6 +34,7 @@ declare interface TaskWindowTypes {
     taskRecurrenceSchedule: string;
     taskId: string;
     scheduleEnabled: string;
+    allowConcurrentTasks: string;
     recurrenceMode: string;
     modeRepeat: string;
     modeOneTime: string;

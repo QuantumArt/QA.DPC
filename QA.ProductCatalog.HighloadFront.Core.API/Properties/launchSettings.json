@@ -3,9 +3,11 @@
     "QA.ProductCatalog.HighloadFront.Core.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/sber_mobile_catalog_cluster/healthcheck/",
+      "launchUrl": "api/qmobile_catalog/healthcheck/",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Dev"
+        "ASPNETCORE_ENVIRONMENT": "Stable",
+        "TRACE_API_CALLS": "1",
+        "TRACE_ELASTIC_CALLS": "1"
       },
       "applicationUrl": "http://localhost:7806"
     }

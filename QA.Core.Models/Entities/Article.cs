@@ -69,6 +69,11 @@ namespace QA.Core.Models.Entities
             return null;
         }
 
+        public void Add(object _)
+        {
+            throw new NotSupportedException("Add is not supported for object.");
+        }
+
         IEnumerator<ArticleField> IEnumerable<ArticleField>.GetEnumerator()
         {
             return Fields.Values.GetEnumerator();

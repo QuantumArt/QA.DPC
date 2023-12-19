@@ -1,10 +1,5 @@
-﻿﻿using System;
- using System.Collections.Generic;
- using System.IO;
-using System.Reflection;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,14 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QA.Core.DPC.Front;
 using QA.Core.DPC.Front.DAL;
- using QA.Core.DPC.QP.Models;
- using QA.Core.Logger;
+using QA.Core.DPC.QP.Models;
+using QA.Core.Logger;
 using QA.DPC.Core.Helpers;
- using QP.ConfigurationService.Models;
- using ILogger = QA.Core.Logger.ILogger;
-using Swashbuckle.AspNetCore.Swagger;
+using QP.ConfigurationService.Models;
+using ILogger = QA.Core.Logger.ILogger;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using QA.ProductCatalog.TmForum.Extensions;
 
 namespace QA.ProductCatalog.Front.Core.API
 {
@@ -68,9 +63,13 @@ namespace QA.ProductCatalog.Front.Core.API
             services.AddScoped<ILogger>(logger => new NLogLogger("NLog.config"));
             services.AddScoped(typeof(IDpcProductService), typeof(DpcProductService));
             services.AddScoped(typeof(IDpcService), typeof(DpcProductService));
+            services.AddSingleton<JsonProductSerializer>();
+            services.AddSingleton<XmlProductSerializer>();
+            services.AddScoped<IProductSerializerFactory, ProductSerializerFactory>();
 
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
 
+            services.ResolveTmForumRegistrationForDpcFront(Configuration);
             
             services.AddSwaggerGen(c =>
             {

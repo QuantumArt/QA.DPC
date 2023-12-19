@@ -1,5 +1,6 @@
 ﻿using QA.ProductCatalog.ContentProviders;
 using System;
+using QP.ConfigurationService.Models;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
@@ -11,6 +12,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             FailuresBeforeCircuitBreaking = 3;
             CircuitBreakingInterval = 60;
             VersionCacheExpiration = TimeSpan.FromMinutes(1);
+            CleanKeysOptions = new CleanKeysOptions();
         }
         
         public bool CanUpdate { get; set; }
@@ -19,9 +21,13 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public bool QpMode { get; set; }
         
+        public int SettingsContentId { get; set; }
+        
         public string FixedCustomerCode { get; set; }
 
         public string FixedConnectionString { get; set; }
+        
+        public bool UsePostgres { get; set; }
 
         public ElasticIndex[] Elastic { get; set; }
 
@@ -31,5 +37,12 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public int CircuitBreakingInterval { get; set; }
         public TimeSpan VersionCacheExpiration { get; set; }
+        
+        public CleanKeysOptions CleanKeysOptions { get; set; }
+        
+        public DatabaseType GetDatabaseType()
+        {
+            return UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer;
+        }
     }
 }

@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Caching.Memory;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 
 namespace QA.ProductCatalog.ContentProviders
 {
@@ -11,7 +13,12 @@ namespace QA.ProductCatalog.ContentProviders
         private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);	
         private readonly VersionedCacheProviderBase _cacheProvider;
 
-        protected ContentProviderBaseCached(ISettingsService settingsService, IConnectionProvider connectionProvider, VersionedCacheProviderBase cacheProvider) : base(settingsService, connectionProvider)
+        protected ContentProviderBaseCached(
+            ISettingsService settingsService, 
+            IConnectionProvider connectionProvider, 
+            VersionedCacheProviderBase cacheProvider,
+            IQpContentCacheTagNamingProvider namingProvider,
+            IUnitOfWork unitOfWork) : base(settingsService, connectionProvider, namingProvider, unitOfWork)
         {
             _cacheProvider = cacheProvider;
         }

@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using QA.Core.Cache;
-using QA.DPC.Core.Helpers;
+using QA.DotNetCore.Caching.Interfaces;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 
@@ -14,13 +13,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 {
     public class RateLimitAttribute : Attribute, IAsyncActionFilter
     {
-
         private readonly ElasticConfiguration _configuration;
-        private readonly VersionedCacheProviderBase _cacheProvider;
+        private readonly ICacheProvider _cacheProvider;
 
         public string Profile { get; set; }
 
-        public RateLimitAttribute(ElasticConfiguration configuration, VersionedCacheProviderBase cacheProvider,
+        public RateLimitAttribute(
+            ElasticConfiguration configuration,
+            ICacheProvider cacheProvider,
             string profile)
         {
             _configuration = configuration;
@@ -44,7 +44,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             var user = _configuration.GetUserName(token) ?? "Default";
             var key = GetKey(user, ip, context);
             var limit = _configuration.GetLimit(user, GetActualProfile(context));
-            var counter = _cacheProvider.GetOrAdd(key, TimeSpan.FromSeconds(limit.Seconds),
+            var counter = _cacheProvider.GetOrAdd(
+                key,
+                TimeSpan.FromSeconds(limit.Seconds),
                 () => new RateCounter(limit.Limit, limit.Seconds));
 
             if (counter.Remaining == 0)
@@ -65,7 +67,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
                 context.HttpContext.Response.Headers.Add("X-RateLimit-Limit", counter.Limit.ToString());
                 context.HttpContext.Response.Headers.Add("X-RateLimit-Remaining", counter.Remaining.ToString());
                 context.HttpContext.Response.Headers.Add("X-RateLimit-Reset", counter.ResetUnix.ToString());
-
             }
         }
 
@@ -95,7 +96,5 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
                 ResetUnix = Reset.ToUnixTimestamp();
             }
         }
-
     }
-
 }

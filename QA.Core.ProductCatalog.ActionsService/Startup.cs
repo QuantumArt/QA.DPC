@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using QA.Core.DPC.Loader;
@@ -14,8 +15,12 @@ using QA.Core.ProductCatalog.Actions;
 using Unity;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
+using QA.DotNetCore.Engine.CacheTags.Configuration;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
+using QA.DotNetCore.Engine.QpData.Persistent.Dapper;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Integration;
+using QA.ProductCatalog.TmForum.Extensions;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 
@@ -34,7 +39,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             var loaderProps = new LoaderProperties();
             Configuration.Bind("Loader", loaderProps);
-            
+
             UnityConfig.Configure(container, loaderProps);
         }
 
@@ -44,23 +49,25 @@ namespace QA.Core.ProductCatalog.ActionsService
             services.AddOptions();
             services.AddHttpContextAccessor();
             services.AddHttpClient();
-            services.AddTransient<IActionContextAccessor, ActionContextAccessor>();            
-            
+            services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
+
             services.Configure<ActionsServiceProperties>(Configuration.GetSection("Properties"));
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
 
+            services.FillQpConfiguration(Configuration);
+
             services.AddSingleton<ActionsService>();
             services.AddSingleton<IHostedService>(x => x.GetRequiredService<ActionsService>());
-            
+
             var props = new ConnectionProperties();
             Configuration.Bind("Connection", props);
             if (!String.IsNullOrEmpty(props.DesignConnectionString))
             {
                 services.AddDbContext<NpgSqlTaskRunnerEntities>(options =>
                     options.UseNpgsql(props.DesignConnectionString));
-            
+
                 services.AddDbContext<SqlServerTaskRunnerEntities>(options =>
                     options.UseSqlServer(props.DesignConnectionString));
             }
@@ -69,8 +76,12 @@ namespace QA.Core.ProductCatalog.ActionsService
             {
                 options.EnableEndpointRouting = false;
             });;
-            
 
+            services.AddCacheTagServices().WithInvalidationByTimer();
+            services.TryAddScoped<IMetaInfoRepository, MetaInfoRepository>();
+            services.AddScoped(QPHelper.CreateUnitOfWork);
+            
+            services.ResolveTmForumRegistration(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

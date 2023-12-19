@@ -1,9 +1,4 @@
 using System;
-using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using QA.DPC.Core.Helpers;
-using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Front
 {
@@ -14,7 +9,7 @@ namespace QA.Core.DPC.Front
             IsLive = true;
             Language = "invariant";
             Version = 1;
-            Slug = String.Empty;
+            Slug = string.Empty;
             QueryFormat = "json";
         }
         
@@ -43,15 +38,5 @@ namespace QA.Core.DPC.Front
             get => (IsLive) ? "live" : "stage";
             set => IsLive = value.Equals("live", StringComparison.InvariantCulture);
         }
-
-        public IProductSerializer GetSerialiser()
-        {
-            if (Format == "json")
-            {
-                return new JsonProductSerializer();
-            }
-            return new XmlProductSerializer();
-        }
-
     }
 }

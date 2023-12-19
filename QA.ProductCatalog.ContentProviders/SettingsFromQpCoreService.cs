@@ -2,43 +2,38 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Microsoft.Extensions.Caching.Memory;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Caching.Interfaces;
 using Quantumart.QPublishing.Database;
-using QA.Core.Cache;
 
-namespace QA.ProductCatalog.ContentProviders
+namespace QA.ProductCatalog.ContentProviders.Deprecated
 {
-	public class SettingsFromQpCoreService : SettingsServiceBase
-	{
-		private readonly VersionedCacheProviderBase _cacheProvider;
+    public class SettingsFromQpCoreService : SettingsServiceBase
+    {
+        private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
-		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
-
-		public SettingsFromQpCoreService(VersionedCacheProviderBase cacheProvider, IConnectionProvider connectionProvider)
+        public SettingsFromQpCoreService(
+            IConnectionProvider connectionProvider,
+            ICacheProvider cacheProvider)
             : base(connectionProvider, cacheProvider)
-		{
+        {
 
-			_cacheProvider = cacheProvider;
-		}
+        }
 
-		public override string GetSetting(string title)
-		{
-			const string key = "AllQpSettings";
+        public override string GetSetting(string title)
+        {
+            const string key = "AllQpSettings";
+            var allSettings = CacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, GetAppSettings);
+            return allSettings.ContainsKey(title) ? allSettings[title] : null;
+        }
 
-			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, GetAppSettings, true, CacheItemPriority.NeverRemove);
-
-			return allSettings.ContainsKey(title) ? allSettings[title] : null;
-		}
-
-		private Dictionary<string, string> GetAppSettings()
-		{
-			var cnn = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
-			var query = "select * from app_settings";
-			return cnn.GetRealData(query).AsEnumerable()
-				.ToDictionary(n => n["key"].ToString(), m => m["value"].ToString()
-				);
-		}
-	}
+        private Dictionary<string, string> GetAppSettings()
+        {
+            var cnn = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+            var query = "select * from app_settings";
+            return cnn.GetRealData(query).AsEnumerable()
+                .ToDictionary(n => n["key"].ToString(), m => m["value"].ToString());
+        }
+    }
 }

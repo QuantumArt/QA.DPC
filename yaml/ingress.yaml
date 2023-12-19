@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-admin
@@ -8,11 +8,15 @@ spec:
   - host: '||admin_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-admin
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-admin
+            port:
+              number: 80              
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-api
@@ -24,11 +28,15 @@ spec:
   - host: '||api_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-api
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-api
+            port:
+              number: 80              
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-notification-sender
@@ -38,11 +46,15 @@ spec:
   - host: '||notify_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-notification-sender
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-notification-sender
+            port:
+              number: 80            
 ---
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: dpc-actions-service
@@ -52,6 +64,11 @@ spec:
   - host: '||actions_host||'
     http:
       paths:
-      - backend:
-          serviceName: dpc-actions-service
-          servicePort: 80
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-actions-service
+            port:
+              number: 80           
+

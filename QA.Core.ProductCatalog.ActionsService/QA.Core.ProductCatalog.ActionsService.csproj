@@ -10,13 +10,11 @@
     <Reference Include="netstandard, Version=2.1.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NLog" Version="4.7.15" />
     <PackageReference Include="NLog.Extensions.Hosting" Version="1.7.5" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.7.5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.15.0" />    
     <PackageReference Include="QA.Core.ServiceBaseLifeTime" Version="0.1.1" />    
-    <PackageReference Include="Quantumart.AspNetCore" Version="5.0.1" />    
     <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.11.5" />
+    <PackageReference Include="QA.DotNetCore.Engine.CacheTags.Configuration" Version="3.2.17" />    
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +25,7 @@
     <ProjectReference Include="..\QA.ProductCatalog.Integration\QA.ProductCatalog.Integration.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.TmForum\QA.ProductCatalog.TmForum.csproj" />
   </ItemGroup>
 
   <ItemGroup>

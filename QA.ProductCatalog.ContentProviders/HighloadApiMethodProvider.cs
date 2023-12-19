@@ -1,53 +1,42 @@
 using QA.Core.DPC.QP.Services;
+using QA.DotNetCore.Caching.Interfaces;
+using QA.DotNetCore.Engine.Persistent.Interfaces;
 
 namespace QA.ProductCatalog.ContentProviders
 {
     public class HighloadApiMethodProvider : ContentProviderBase<HighloadApiMethod>
     {
-        
-        #region Constants
-        private const string QueryTemplate = @"
-			SELECT
-                c.Title,
-                c.System,
-                c.Json
-			FROM
-				CONTENT_{0}_UNITED c
-
-			WHERE
-				c.ARCHIVE = 0 AND c.VISIBLE = 1 ";
-
-        #endregion
-	    
-	    public HighloadApiMethodProvider(ISettingsService settingsService, IConnectionProvider connectionProvider)
-		    : base(settingsService, connectionProvider)
+	    public HighloadApiMethodProvider(
+		    ISettingsService settingsService, 
+		    IConnectionProvider connectionProvider, 
+		    IQpContentCacheTagNamingProvider namingProvider,
+		    IUnitOfWork unitOfWork)
+		    : base(settingsService, connectionProvider, namingProvider, unitOfWork)
 	    {
-	
 	    }
-	    
+
 	    #region Overrides
-	    protected override string GetQuery()
+
+	    protected override string GetSetting()
 	    {
-		    var methodsContentId = SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_METHODS_CONTENT_ID);
-
-
-		    if (string.IsNullOrEmpty(methodsContentId))
-		    {
-			    return null;
-		    }
-
-		    return string.Format(QueryTemplate, methodsContentId);
+		    return SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_METHODS_CONTENT_ID);
 	    }
 
-	    public override string[] GetTags()
+	    protected override string GetQueryTemplate()
 	    {
-		    return new []{ SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_METHODS_CONTENT_ID) };
-	    }
+		    return @"
+				SELECT
+	                c.Title,
+	                c.System,
+	                c.Json
+				FROM
+					CONTENT_{0}_UNITED c
 
+				WHERE
+					c.ARCHIVE = 0 AND c.VISIBLE = 1 ";
+	    }
+	    
 	    #endregion
-        
+	    
     }
-	
-
-
 }

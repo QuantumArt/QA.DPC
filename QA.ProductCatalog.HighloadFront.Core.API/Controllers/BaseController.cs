@@ -6,16 +6,15 @@ using NLog.Fluent;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
-    public class BaseController : Controller
+    public abstract class BaseController : Controller
     {
-        
         protected ProductManager Manager { get; }
 
         protected Logger Logger { get; }
 
         protected ElasticConfiguration Configuration { get; }
 
-        public BaseController(ProductManager manager, ElasticConfiguration configuration)
+        protected BaseController(ProductManager manager, ElasticConfiguration configuration)
         {
             Manager = manager;
             Logger =  LogManager.GetLogger(GetType().FullName);

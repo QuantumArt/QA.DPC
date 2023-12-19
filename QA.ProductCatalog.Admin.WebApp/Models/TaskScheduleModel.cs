@@ -13,8 +13,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         [Display(Name="Enabled", ResourceType = typeof(ControlStrings))]
 		public bool Enabled { get; set; }
 
+        public bool AllowConcurrentTasks { get; set; }
 
-		public string CronExpression { get; set; }
+
+        public string CronExpression { get; set; }
 
 		public TaskScheduleModel()
 		{
@@ -28,7 +30,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			Enabled = efTaskSchedule.Enabled;
 
-			CronExpression = efTaskSchedule.CronExpression;
+			AllowConcurrentTasks = efTaskSchedule.AllowConcurrentTasks;
+
+            CronExpression = efTaskSchedule.CronExpression;
 		}
 
 		public int Id { get; set; }

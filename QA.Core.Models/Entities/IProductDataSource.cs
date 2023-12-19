@@ -15,6 +15,8 @@ namespace QA.Core.Models.Entities
 
         decimal? GetDecimal(string fieldName);
 
+        decimal? GetBoolAsDecimal(string fieldName);
+
         string GetString(string fieldName);
 
         IProductDataSource GetContainer(string fieldName);

@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  API_HOST: http://dpc-api
+  CONFIGURATION_SERVICE_HOST: conf-service
+  CONFIGURATION_SERVICE_TOKEN: config_token
+  INSTANCE_ID: cluster
+  NOTIFICATION_SENDER_HOST: http://dpc-notification-sender
+  SYNC_API_HOST: http://dpc-sync-api
+  TZ: Europe/Moscow
+kind: ConfigMap
+metadata:
+  name: dpc-config
+  namespace: dpc

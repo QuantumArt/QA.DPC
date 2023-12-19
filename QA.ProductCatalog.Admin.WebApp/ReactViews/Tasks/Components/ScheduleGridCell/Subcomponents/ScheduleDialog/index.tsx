@@ -36,6 +36,7 @@ interface IProps {
   isOpen: boolean;
   closeDialogCb: () => void;
   isScheduleEnabled: boolean;
+  allowConcurrentTasks: boolean;
 }
 
 const recurrenceOptions = [
@@ -57,12 +58,14 @@ export const ScheduleDialog = ({
   scheduleCronExpression,
   isOpen,
   closeDialogCb,
-  isScheduleEnabled
+  isScheduleEnabled,
+  allowConcurrentTasks
 }: IProps) => {
   const store = useStore();
 
   const [taskSetType, setTaskSetType] = useState<ScheduleType>(ScheduleType.Repeat);
   const [isEnable, setIsEnable] = useState<boolean>(isScheduleEnabled);
+  const [allowConcurrent, setAllowConcurrent] = useState<boolean>(allowConcurrentTasks);
   const [period, setPeriod] = useState<CronPeriodType>(CronPeriodType.Minute);
   const [isShouldClear, setIsShouldClear] = useState<boolean>(false);
   const [isCronsParseError, setIsCronsParseError] = useState<boolean>(false);
@@ -83,6 +86,7 @@ export const ScheduleDialog = ({
       try {
         setIsCronsParseError(false);
         setIsEnable(isScheduleEnabled);
+        setAllowConcurrent(allowConcurrentTasks);
         const cronParts = getValuesFromCronString(scheduleCronExpression);
         if (cronParts.cronParts.length === 5) {
           setPeriod(cronParts.period);
@@ -272,9 +276,21 @@ export const ScheduleDialog = ({
   const acceptSchedule = async () => {
     store.toggleLoading(true);
     if (taskSetType === ScheduleType.Repeat) {
-      await store.setSchedule(taskIdNumber, isEnable, parsedCronsMultiSelectsModel(), "on");
+      await store.setSchedule(
+        taskIdNumber,
+        isEnable,
+        allowConcurrent,
+        parsedCronsMultiSelectsModel(),
+        "on"
+      );
     } else {
-      await store.setSchedule(taskIdNumber, isEnable, parseCronsSingleModel(), "on");
+      await store.setSchedule(
+        taskIdNumber,
+        isEnable,
+        allowConcurrent,
+        parseCronsSingleModel(),
+        "on"
+      );
     }
     closeDialogCb();
     store.toggleLoading(false);
@@ -282,7 +298,7 @@ export const ScheduleDialog = ({
 
   const deleteSchedule = async () => {
     store.toggleLoading(true);
-    await store.setSchedule(taskIdNumber, false, "", "off");
+    await store.setSchedule(taskIdNumber, false, true, "", "off");
     setConfirmationDialog(false);
     closeDialogCb();
     store.toggleLoading(false);
@@ -308,6 +324,18 @@ export const ScheduleDialog = ({
             className="schedule-popup__switch"
             onChange={(): void => {
               setIsEnable(prevState => !prevState);
+            }}
+          />
+        </SelectRow>
+
+        <SelectRow>
+          <Switch
+            alignIndicator={"left"}
+            labelElement={l("allowConcurrentTasks")}
+            checked={allowConcurrent}
+            className="schedule-popup__switch"
+            onChange={(): void => {
+              setAllowConcurrent(prevState => !prevState);
             }}
           />
         </SelectRow>
