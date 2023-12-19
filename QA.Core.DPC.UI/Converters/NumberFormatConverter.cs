@@ -7,17 +7,17 @@ namespace QA.Core.DPC.UI.Converters
 {
     public class NumberFormatConverter : DependencyObject, IValueConverter
     {
-        private static readonly DependencyProperty _formatProperty;
+        private static readonly DependencyProperty _format;
 
         static NumberFormatConverter()
         {
-            _formatProperty = DependencyProperty.Register(nameof(Format), typeof(string), typeof(NumberFormatConverter));
+            _format = DependencyProperty.Register(nameof(Format), typeof(string), typeof(NumberFormatConverter));
         }
 
         public string Format
         {
-            get => GetValue<string>(_formatProperty);
-            set => SetValue(_formatProperty, value);
+            get => GetValue<string>(_format);
+            set => SetValue(_format, value);
         }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
