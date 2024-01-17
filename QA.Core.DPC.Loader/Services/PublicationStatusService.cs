@@ -44,7 +44,7 @@ namespace QA.Core.DPC.Loader.Services
                 DateTime? timestamp = await connection.QuerySingleAsync<DateTime?>($@"
                     SELECT {SqlQuerySyntaxHelper.Top(_customer.DatabaseType, "1")}
                         Updated
-                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.Products
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}Products
                     ORDER BY Updated DESC {SqlQuerySyntaxHelper.Limit(_customer.DatabaseType, "1")}");
 
                 return timestamp;
@@ -65,7 +65,7 @@ namespace QA.Core.DPC.Loader.Services
                         DpcId AS {nameof(ProductTimestamp.ProductId)},
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
                         Updated AS {nameof(ProductTimestamp.Updated)}
-                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.Products
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}Products
                     WHERE DpcId IN @{nameof(productIds)}",
                     new { productIds });
 
@@ -87,7 +87,7 @@ namespace QA.Core.DPC.Loader.Services
                         DpcId AS {nameof(ProductTimestamp.ProductId)},
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
                         Updated AS {nameof(ProductTimestamp.Updated)}
-                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.Products
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}Products
                     WHERE Updated > @{nameof(updatedSince)}",
                     new { updatedSince });
 

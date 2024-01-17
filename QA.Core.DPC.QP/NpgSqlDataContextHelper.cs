@@ -7,8 +7,6 @@ namespace QA.Core.DPC.QP
     {
         public static void NpgSqlDefaultOptions(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasDefaultSchema("public");
-
             foreach (var entity in modelBuilder.Model.GetEntityTypes())
             {
                 entity.SetTableName(ToSnakeCase(entity.GetTableName()));

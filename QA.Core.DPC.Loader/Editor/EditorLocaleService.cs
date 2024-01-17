@@ -37,8 +37,8 @@ namespace QA.Core.DPC.Loader.Editor
 
                 int? culture = connection.QueryFirstOrDefault<int?>($@"
                     SELECT {SqlQuerySyntaxHelper.Top(_customer.DatabaseType, "1")} l.LOCALE
-                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.LANGUAGES AS l
-                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.USERS AS u ON l.LANGUAGE_ID = u.LANGUAGE_ID
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}LANGUAGES AS l
+                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}USERS AS u ON l.LANGUAGE_ID = u.LANGUAGE_ID
                     WHERE u.USER_ID = @{nameof(userId)} {SqlQuerySyntaxHelper.Limit(_customer.DatabaseType, "1")}",
                     new { userId });
 
