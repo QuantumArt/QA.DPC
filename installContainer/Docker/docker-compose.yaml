@@ -2,7 +2,7 @@
 services:
   dpc-admin:
     container_name: dpc-admin
-    image: qpcms/dpc-admin:0.9.0.2
+    image: qpcms/dpc-admin:0.9.8.0
     restart: always
     ports:
       - "7000:80"
@@ -14,7 +14,7 @@ services:
       - TZ=Europe/Moscow
   dpc-api:
     container_name: dpc-api
-    image: qpcms/dpc-api:0.9.0.2
+    image: qpcms/dpc-api:0.9.8.0
     restart: always
     ports:
       - "7100:80"
@@ -25,7 +25,7 @@ services:
       - TZ=Europe/Moscow
   dpc-notification-sender:
     container_name: dpc-notification-sender
-    image: qpcms/dpc-notification-sender:0.9.0.2
+    image: qpcms/dpc-notification-sender:0.9.8.0
     restart: always
     ports:
       - "7200:80"
@@ -37,7 +37,7 @@ services:
       - TZ=Europe/Moscow
   dpc-actions-service:
     container_name: dpc-actions-service
-    image: qpcms/dpc-actions-service:0.9.0.2
+    image: qpcms/dpc-actions-service:0.9.8.0
     restart: always
     ports:
       - "7300:80"
@@ -48,7 +48,7 @@ services:
       - TZ=Europe/Moscow
   dpc-front:
     container_name: dpc-front
-    image: qpcms/dpc-front:0.9.0.2
+    image: qpcms/dpc-front:0.9.8.0
     restart: always
     ports:
       - "7400:80"
@@ -60,7 +60,7 @@ services:
       - TZ=Europe/Moscow
   dpc-search-api:
     container_name: dpc-search-api
-    image: qpcms/dpc-highload-front:0.9.0.2
+    image: qpcms/dpc-highload-front:0.9.8.0
     restart: always
     ports:
       - "7500:80"
@@ -71,7 +71,7 @@ services:
       - TZ=Europe/Moscow
   dpc-sync-api:
     container_name: dpc-sync-api
-    image: qpcms/dpc-highload-front:0.9.0.2
+    image: qpcms/dpc-highload-front:0.9.8.0
     restart: always
     ports:
       - "7600:80"
