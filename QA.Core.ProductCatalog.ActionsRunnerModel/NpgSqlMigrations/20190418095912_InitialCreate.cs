@@ -8,12 +8,8 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel.NpgSqlMigrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "public");
-
             migrationBuilder.CreateTable(
                 name: "schedules",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -28,7 +24,6 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel.NpgSqlMigrations
 
             migrationBuilder.CreateTable(
                 name: "task_states",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -42,7 +37,6 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel.NpgSqlMigrations
 
             migrationBuilder.CreateTable(
                 name: "tasks",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -71,28 +65,24 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel.NpgSqlMigrations
                     table.ForeignKey(
                         name: "fk_tasks_schedules_schedule_id",
                         column: x => x.schedule_id,
-                        principalSchema: "public",
                         principalTable: "schedules",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "fk_tasks_tasks_scheduled_from_task_id",
                         column: x => x.scheduled_from_task_id,
-                        principalSchema: "public",
                         principalTable: "tasks",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "fk_tasks_task_states_state_id",
                         column: x => x.state_id,
-                        principalSchema: "public",
                         principalTable: "task_states",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                schema: "public",
                 table: "task_states",
                 columns: new[] { "id", "name" },
                 values: new object[,]
@@ -106,36 +96,25 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel.NpgSqlMigrations
 
             migrationBuilder.CreateIndex(
                 name: "ix_tasks_schedule_id",
-                schema: "public",
                 table: "tasks",
                 column: "schedule_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_tasks_scheduled_from_task_id",
-                schema: "public",
                 table: "tasks",
                 column: "scheduled_from_task_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_tasks_state_id",
-                schema: "public",
                 table: "tasks",
                 column: "state_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "tasks",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "schedules",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "task_states",
-                schema: "public");
+            migrationBuilder.DropTable(name: "tasks");
+            migrationBuilder.DropTable(name: "schedules");
+            migrationBuilder.DropTable(name: "task_states");
         }
     }
 }

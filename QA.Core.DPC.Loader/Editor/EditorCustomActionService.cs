@@ -39,7 +39,7 @@ namespace QA.Core.DPC.Loader.Editor
             }
 
             DbConnection connection = _customer.DatabaseType == DatabaseType.Postgres
-                ? (DbConnection)new NpgsqlConnection(_customer.ConnectionString)
+                ? new NpgsqlConnection(_customer.ConnectionString)
                 : new SqlConnection(_customer.ConnectionString); 
             
             using (connection)
@@ -50,9 +50,9 @@ namespace QA.Core.DPC.Loader.Editor
                     SELECT {SqlQuerySyntaxHelper.Top(_customer.DatabaseType, "1")}
                         ba.CODE AS {nameof(CustomActionInfo.ActionCode)},
 	                    et.CODE AS {nameof(CustomActionInfo.EntityTypeCode)}
-                    FROM dbo.CUSTOM_ACTION AS ca
-                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.BACKEND_ACTION AS ba ON ca.ACTION_ID = ba.ID
-                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.ENTITY_TYPE AS et ON ba.ENTITY_TYPE_ID = et.ID
+                    FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}CUSTOM_ACTION AS ca
+                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}BACKEND_ACTION AS ba ON ca.ACTION_ID = ba.ID
+                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}ENTITY_TYPE AS et ON ba.ENTITY_TYPE_ID = et.ID
                     WHERE ca.ALIAS = @{nameof(alias)} {SqlQuerySyntaxHelper.Limit(_customer.DatabaseType, "1")}",
                     new { alias });
                 

@@ -8,12 +8,8 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "public");
-
             migrationBuilder.CreateTable(
                 name: "product_versions",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -44,7 +40,6 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
 
             migrationBuilder.CreateTable(
                 name: "products",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -73,7 +68,6 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
 
             migrationBuilder.CreateTable(
                 name: "region_updates",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -88,7 +82,6 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
 
             migrationBuilder.CreateTable(
                 name: "product_region_versions",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -102,7 +95,6 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
                     table.ForeignKey(
                         name: "fk_product_region_versions_product_versions_product_version_id",
                         column: x => x.product_version_id,
-                        principalSchema: "public",
                         principalTable: "product_versions",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -110,7 +102,6 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
 
             migrationBuilder.CreateTable(
                 name: "product_regions",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -124,7 +115,6 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
                     table.ForeignKey(
                         name: "fk_product_regions_products_product_id",
                         column: x => x.product_id,
-                        principalSchema: "public",
                         principalTable: "products",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -132,38 +122,22 @@ namespace QA.Core.DPC.Front.Migrations.NpgSqlMigrations
 
             migrationBuilder.CreateIndex(
                 name: "ix_product_region_versions_product_version_id",
-                schema: "public",
                 table: "product_region_versions",
                 column: "product_version_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_product_regions_product_id",
-                schema: "public",
                 table: "product_regions",
                 column: "product_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "product_region_versions",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "product_regions",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "region_updates",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "product_versions",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "products",
-                schema: "public");
+            migrationBuilder.DropTable(name: "product_region_versions");
+            migrationBuilder.DropTable(name: "product_regions");
+            migrationBuilder.DropTable(name: "region_updates");
+            migrationBuilder.DropTable(name: "product_versions");
+            migrationBuilder.DropTable(name: "products");
         }
     }
 }

@@ -8,12 +8,8 @@ namespace QA.Core.DPC.DAL.NpgSqlMigrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.EnsureSchema(
-                name: "public");
-
             migrationBuilder.CreateTable(
                 name: "messages",
-                schema: "public",
                 columns: table => new
                 {
                     id = table.Column<int>(nullable: false)
@@ -34,9 +30,7 @@ namespace QA.Core.DPC.DAL.NpgSqlMigrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "messages",
-                schema: "public");
+            migrationBuilder.DropTable(name: "messages");
         }
     }
 }
