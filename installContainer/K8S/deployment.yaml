@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: dpc-admin
-          image: qpcms/dpc-admin:0.9.0.2
+          image: qpcms/dpc-admin:0.9.8.0
           envFrom:
             - configMapRef:
                 name: dpc-config
@@ -83,7 +83,7 @@ spec:
     spec:
       containers:
         - name: dpc-api
-          image: qpcms/dpc-api:0.9.0.2
+          image: qpcms/dpc-api:0.9.8.0
           envFrom:
             - configMapRef:
                 name: dpc-config
@@ -143,7 +143,7 @@ spec:
     spec:
       containers:
         - name: dpc-notification-sender
-          image: qpcms/dpc-notification-sender:0.9.0.2
+          image: qpcms/dpc-notification-sender:0.9.8.0
           envFrom:
             - configMapRef:
                 name: dpc-config
@@ -208,7 +208,7 @@ spec:
     spec:
       containers:
         - name: dpc-actions-service
-          image: qpcms/dpc-actions-service:0.9.0.2
+          image: qpcms/dpc-actions-service:0.9.8.0
           envFrom:
             - configMapRef:
                 name: dpc-config
