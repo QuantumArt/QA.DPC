@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: dpc-front
-          image: qpcms/dpc-front:0.9.8.0
+          image: "qpcms/dpc-front:||version||"
           envFrom:
             - configMapRef:
                 name: dpc-config
@@ -80,7 +80,7 @@ spec:
     spec:
       containers:
         - name: dpc-search-api
-          image: qpcms/dpc-highload-front:0.9.8.0
+          image: "qpcms/dpc-highload-front:||version||"
           envFrom:
             - configMapRef:
                 name: dpc-config
@@ -137,7 +137,7 @@ spec:
     spec:
       containers:
         - name: dpc-sync-api
-          image: qpcms/dpc-highload-front:0.9.8.0
+          image: "qpcms/dpc-highload-front:||version||"
           envFrom:
             - configMapRef:
                 name: dpc-config

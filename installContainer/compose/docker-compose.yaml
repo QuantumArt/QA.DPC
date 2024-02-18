@@ -1,0 +1,59 @@
+﻿version: "3.7"
+services:
+  dpc-admin:
+    container_name: dpc-admin
+    image: "qpcms/dpc-admin:||version||"
+    restart: always
+    ports:
+      - "7000:80"
+    environment:
+      - Integration__RestNotificationUrl=http://dpc-notification-sender
+      - Integration__HighloadFrontSyncUrl=http://dpc-sync-api
+  dpc-api:
+    container_name: dpc-api
+    image: "qpcms/dpc-api:||version||"
+    restart: always
+    ports:
+      - "7100:80"
+    environment:
+      - Integration__RestNotificationUrl=http://dpc-notification-sender
+  dpc-notification-sender:
+    container_name: dpc-notification-sender
+    image: "qpcms/dpc-notification-sender:||version||"
+    restart: always
+    ports:
+      - "7200:80"
+    environment:
+      - Integration__DpcWebApiUrl=http://dpc-api"
+  dpc-actions-service:
+    container_name: dpc-actions-service
+    image: "qpcms/dpc-actions-service:||version||"
+    restart: always
+    ports:
+      - "7300:80"
+    environment:
+      - Integration__RestNotificationUrl=http://dpc-notification-sender
+  dpc-front:
+    container_name: dpc-front
+    image: "qpcms/dpc-front:||version||"
+    restart: always
+    ports:
+      - "7400:80"
+    environment:
+      - Data__UseProductVersions="true"
+  dpc-search-api:
+    container_name: dpc-search-api
+    image: "qpcms/dpc-highload-front:||version||"
+    restart: always
+    ports:
+      - "7500:80"
+    environment:
+      - Data__CanUpdate="false"
+  dpc-sync-api:
+    container_name: dpc-sync-api
+    image: "qpcms/dpc-highload-front:||version||"
+    restart: always
+    ports:
+      - "7600:80"
+    environment:
+      - Data__CanUpdate="true"

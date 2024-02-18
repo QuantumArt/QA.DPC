@@ -1,0 +1,18 @@
+services:
+  impact:
+    container_name: impact
+    image: "qpcms/dpc-impact:||version||"
+    restart: always
+    ports:
+     - '8100:80'
+    environment:
+     - ElasticBaseAddress=http://elastic:9200
+     - ElasticIndexes__0__Name=qmobile_catalog_products_pg
+     - ElasticIndexes__1__Name=qmobile_catalog_products_stage_pg
+     - TZ=Europe/Moscow
+    deploy:
+      resources:
+        limits:
+          memory: 512MB
+        reservations:
+          memory: 256MB
