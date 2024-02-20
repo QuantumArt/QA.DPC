@@ -40,7 +40,7 @@ services:
     ports:
       - "7400:80"
     environment:
-      - Data__UseProductVersions="true"
+      - Data__UseProductVersions=true
   dpc-search-api:
     container_name: dpc-search-api
     image: "qpcms/dpc-highload-front:||version||"
@@ -48,7 +48,7 @@ services:
     ports:
       - "7500:80"
     environment:
-      - Data__CanUpdate="false"
+      - Data__CanUpdate=false
   dpc-sync-api:
     container_name: dpc-sync-api
     image: "qpcms/dpc-highload-front:||version||"
@@ -56,4 +56,4 @@ services:
     ports:
       - "7600:80"
     environment:
-      - Data__CanUpdate="true"
+      - Data__CanUpdate=true
