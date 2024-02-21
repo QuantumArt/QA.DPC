@@ -2,40 +2,53 @@
 services:
   dpc-admin:
     container_name: dpc-admin
-    image: "qpcms/dpc-admin:||version||"
+    image: "qpcms/dpc-admin:${TAG}"
     restart: always
     ports:
       - "7000:80"
     environment:
       - Integration__RestNotificationUrl=http://dpc-notification-sender
       - Integration__HighloadFrontSyncUrl=http://dpc-sync-api
+      - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
+      - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - TZ=${TZ}
   dpc-api:
     container_name: dpc-api
-    image: "qpcms/dpc-api:||version||"
+    image: "qpcms/dpc-api:${TAG}"
     restart: always
     ports:
       - "7100:80"
     environment:
       - Integration__RestNotificationUrl=http://dpc-notification-sender
+      - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
+      - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - TZ=${TZ}
   dpc-notification-sender:
     container_name: dpc-notification-sender
-    image: "qpcms/dpc-notification-sender:||version||"
+    image: "qpcms/dpc-notification-sender:${TAG}"
     restart: always
     ports:
       - "7200:80"
     environment:
       - Integration__DpcWebApiUrl=http://dpc-api"
+      - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
+      - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - Properties__InstanceId=${INSTANCE_ID}
+      - TZ=${TZ}
   dpc-actions-service:
     container_name: dpc-actions-service
-    image: "qpcms/dpc-actions-service:||version||"
+    image: "qpcms/dpc-actions-service:${TAG}"
     restart: always
     ports:
       - "7300:80"
     environment:
       - Integration__RestNotificationUrl=http://dpc-notification-sender
+      - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
+      - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - TZ=${TZ}
   dpc-front:
     container_name: dpc-front
-    image: "qpcms/dpc-front:||version||"
+    image: "qpcms/dpc-front:${TAG}"
     restart: always
     ports:
       - "7400:80"
@@ -43,17 +56,26 @@ services:
       - Data__UseProductVersions=true
   dpc-search-api:
     container_name: dpc-search-api
-    image: "qpcms/dpc-highload-front:||version||"
+    image: "qpcms/dpc-highload-front:${TAG}"
     restart: always
     ports:
       - "7500:80"
     environment:
       - Data__CanUpdate=false
+      - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
+      - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - Data__InstanceId=${INSTANCE_ID}
+      - TZ=${TZ}
   dpc-sync-api:
     container_name: dpc-sync-api
-    image: "qpcms/dpc-highload-front:||version||"
+    image: "qpcms/dpc-highload-front:${TAG}"
     restart: always
     ports:
       - "7600:80"
     environment:
       - Data__CanUpdate=true
+      - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
+      - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - Data__InstanceId=${INSTANCE_ID}
+      - TZ=${TZ}
+
