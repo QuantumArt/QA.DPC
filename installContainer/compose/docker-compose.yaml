@@ -68,6 +68,7 @@ services:
       - Data__CanUpdate=false
       - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
       - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - CorsDomains__0=*
       - TZ=${TZ}
   dpc-sync-api:
     container_name: dpc-sync-api
