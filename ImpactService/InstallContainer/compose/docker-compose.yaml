@@ -6,9 +6,10 @@ services:
     ports:
      - '8100:80'
     environment:
-     - ElasticBaseAddress=http://elastic:9200
+     - ElasticBaseAddress=${ELASTIC_HOST}
      - ElasticIndexes__0__Name=qmobile_catalog_products_pg
      - ElasticIndexes__1__Name=qmobile_catalog_products_stage_pg
+     - TZ=Europe/Moscow
     deploy:
       resources:
         limits:
