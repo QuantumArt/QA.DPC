@@ -54,6 +54,9 @@ services:
       - "7400:80"
     environment:
       - Data__UseProductVersions=true
+      - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
+      - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - TZ=${TZ}
   dpc-search-api:
     container_name: dpc-search-api
     image: "qpcms/dpc-highload-front:${TAG}"
