@@ -56,6 +56,7 @@ services:
       - Data__UseProductVersions=true
       - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
       - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
+      - Data__InstanceId=${INSTANCE_ID}
       - TZ=${TZ}
   dpc-search-api:
     container_name: dpc-search-api
@@ -67,7 +68,6 @@ services:
       - Data__CanUpdate=false
       - Integration__ConfigurationServiceUrl=${CONFIGURATION_SERVICE_HOST}
       - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
-      - Data__InstanceId=${INSTANCE_ID}
       - TZ=${TZ}
   dpc-sync-api:
     container_name: dpc-sync-api
