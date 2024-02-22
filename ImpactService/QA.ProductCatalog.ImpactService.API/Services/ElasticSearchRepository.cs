@@ -339,7 +339,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             var info = await client.SearchAsync(null, null);
             JObject serverInfo = JObject.Parse(info);
 
-            if (serverInfo.SelectToken("version.distribution").Value<string>() == "opensearch")
+            if (serverInfo.SelectToken("version.distribution").Value<string>().Equals("opensearch", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
