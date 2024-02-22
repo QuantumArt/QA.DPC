@@ -338,8 +338,9 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             var client = GetElasticClient(options);
             var info = await client.SearchAsync(null, null);
             JObject serverInfo = JObject.Parse(info);
+            var distro = serverInfo.SelectToken("version.distribution");
 
-            if (serverInfo.SelectToken("version.distribution").Value<string>().Equals("opensearch", StringComparison.OrdinalIgnoreCase))
+            if (distro != null && distro.Value<string>().Equals("opensearch", StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
