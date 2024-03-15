@@ -92,7 +92,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
             services.AddMemoryCache();
             services.AddHttpContextAccessor();
-            
+
             services.AddScoped<ProductManager>();
             services.AddScoped<SonicErrorDescriber>();
             services.AddScoped<Func<string, IProductStore>>(c =>
@@ -101,7 +101,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             });
             services.AddScoped<IProductStoreFactory, ProductStoreFactory>();
             services.AddScoped<ProductImporter>();
-            
+
             services.AddScoped<ElasticProductStore>();
             services.AddScoped<ElasticProductStore_6>();
             services.AddScoped<ElasticProductStore_8>();
@@ -109,10 +109,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
             services.AddScoped(c => new Dictionary<string, IProductStore>()
             {
-                {"5.*", c.GetRequiredService<ElasticProductStore>()},
-                {"6.*", c.GetRequiredService<ElasticProductStore_6>()},
-                {"8.*", c.GetRequiredService<ElasticProductStore_8>()},
-                {"os2.*", c.GetRequiredService<OpenSearchProductStore_2>()}
+                { "5.*", c.GetRequiredService<ElasticProductStore>() },
+                { "6.*", c.GetRequiredService<ElasticProductStore_6>() },
+                { "8.*", c.GetRequiredService<ElasticProductStore_8>() },
+                { "os2.*", c.GetRequiredService<OpenSearchProductStore_2>() }
             });
 
             if (!String.IsNullOrEmpty(dataOptions.FixedConnectionString))
@@ -123,12 +123,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             {
                 services.AddScoped<ICustomerProvider, CustomerProvider>();
             }
-            
+
             services.AddScoped<IIdentityProvider>(c => new CoreIdentityProvider(
                 c.GetRequiredService<IHttpContextAccessor>(),
                 dataOptions.FixedCustomerCode
             ));
-            
+
             services.AddScoped<IConnectionProvider>(c =>
             {
                 if (!string.IsNullOrEmpty(dataOptions.FixedConnectionString) || !dataOptions.QpMode)
@@ -159,7 +159,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                     configuration.SetCachePrefix(customerCode);
                     var manager = c.GetRequiredService<ProductManager>();
                     manager.SetCustomerCode(customerCode);
-                        
+
                     return c.GetRequiredService<ICustomerCodeTaskInstanceCollection>().Get(
                         c.GetRequiredService<IIdentityProvider>(),
                         new ReindexAllTask(
@@ -178,13 +178,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                         c.GetRequiredService<IConnectionProvider>(),
                         c.GetRequiredService<ICacheProvider>(),
                         dataOptions.SettingsContentId
-                        ));
+                    ));
                 }
                 else
                 {
                     services.AddScoped<ISettingsService, SettingsFromQpCoreService>();
                 }
-                
+
                 services.AddScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
                 services.AddScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
                 services.AddScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
@@ -209,7 +209,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             }));
 
             services.AddScoped<ProductsOptionsCommonValidationHelper>();
-            
+
             services.AddSingleton(_ => new CleanCacheLockerServiceSettings()
             {
                 RunInterval = dataOptions.CleanKeysOptions.RunInterval,
@@ -225,7 +225,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                             c.GetRequiredService<IQpContentCacheTagNamingProvider>(),
                             _ => new UnitOfWork(n.ConnectionString, n.DatabaseType.ToString(), n.CustomerCode),
                             c.GetRequiredService<IServiceScopeFactory>())
-                            );
+                        );
 
                     foreach (var tracker in trackers)
                     {
@@ -235,7 +235,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                     return set;
                 }
             );
-            
+
             services.AddCacheTagServices().WithInvalidationByTimer();
 
             services.AddScoped(QPHelper.CreateUnitOfWork);
@@ -247,7 +247,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             });
 
             services.AddHttpClient();
-
+            var domains = Configuration.GetSection("CorsDomains").Get<string[]>() ?? Array.Empty<string>();
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder => builder.WithOrigins(domains).AllowAnyMethod().AllowAnyHeader()
+                );
+            });
             services.ResolveTmForumRegistrationForHighloadApi(Configuration);
         }
 
@@ -263,11 +269,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                 app.UseExceptionHandler(new GlobalExceptionHandler().Action);
             }
 
+            app.UseCors();
             app.UseMvc();
-            
+
             LogStart(app, factory);
         }
-        
+
         private void LogStart(IApplicationBuilder app, ILoggerFactory loggerFactory)
         {
             var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
@@ -275,8 +282,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             var searchName = config["Data:SearchName"];
             var canUpdate = bool.TryParse(config["Data:CanUpdate"], out var parsed) && parsed;
             var logger = loggerFactory.CreateLogger(GetType());
-            logger.LogInformation("{appName} started", canUpdate ? syncName : searchName);         
+            logger.LogInformation("{appName} started", canUpdate ? syncName : searchName);
         }
     }
 }
-

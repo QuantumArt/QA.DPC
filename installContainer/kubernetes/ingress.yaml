@@ -1,55 +1,73 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dpc-front
+  name: dpc-admin
   namespace: dpc
 spec:
   rules:
-  - host: '||front_host||'
+  - host: 'dpc-admin.test'
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: dpc-front
+            name: dpc-admin
             port:
               number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dpc-search-api
+  name: dpc-api
   namespace: dpc
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
 spec:
   rules:
-  - host: '||search_host||'
+  - host: 'dpc-api.test'
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: dpc-search-api
+            name: dpc-api
             port:
               number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: dpc-sync-api
+  name: dpc-notification-sender
   namespace: dpc
 spec:
   rules:
-  - host: '||sync_host||'
+  - host: 'dpc-notification-sender.test'
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: dpc-sync-api
+            name: dpc-notification-sender
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dpc-actions-service
+  namespace: dpc
+spec:
+  rules:
+  - host: 'dpc-actions-service.test'
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: dpc-actions-service
             port:
               number: 80

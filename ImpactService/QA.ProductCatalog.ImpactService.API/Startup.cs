@@ -55,7 +55,13 @@ namespace QA.ProductCatalog.ImpactService.API
             services.AddMemoryCache();
 
             services.AddHttpClient();
-
+            var domains = Configuration.GetSection("CorsDomains").Get<string[]>() ?? Array.Empty<string>();
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder => builder.WithOrigins(domains).AllowAnyMethod().AllowAnyHeader()
+                );
+            });
             services.AddScoped(typeof(ISearchRepository), typeof(ElasticSearchRepository));
         }
 
@@ -72,6 +78,7 @@ namespace QA.ProductCatalog.ImpactService.API
             }
 
             app.UseRouting();
+            app.UseCors();
             app.UseEndpoints(routes =>
             {
                 routes.MapControllers();
