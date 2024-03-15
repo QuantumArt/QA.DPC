@@ -337,7 +337,15 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
             var client = GetElasticClient(options);
             var info = await client.SearchAsync(null, null);
-            var version = JObject.Parse(info).SelectToken("version.number").Value<string>();
+            JObject serverInfo = JObject.Parse(info);
+            var distro = serverInfo.SelectToken("version.distribution");
+
+            if (distro != null && distro.Value<string>().Equals("opensearch", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            var version = serverInfo.SelectToken("version.number").Value<string>();
             return version[0] <= '5';
         }
     }
