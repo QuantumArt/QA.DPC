@@ -17,6 +17,8 @@ using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
 using Article = QA.Core.Models.Entities.Article;
 using QA.Core.DPC.QP.Models;
+using QA.DPC.Core.Helpers;
+using Quantumart.QPublishing.FileSystem;
 using IHttpClientFactory = System.Net.Http.IHttpClientFactory;
 
 namespace QA.Core.DPC.Loader
@@ -33,6 +35,7 @@ namespace QA.Core.DPC.Loader
 
         private readonly ILogger _logger;
         private readonly ISettingsService _settingsService;
+        private readonly DBConnector _dbConnector;        
         private readonly Customer _customer;
 		private readonly IRegionTagReplaceService _regionTagReplaceService;
 		private readonly LoaderProperties _loaderProperties;
@@ -44,6 +47,7 @@ namespace QA.Core.DPC.Loader
 	        IConnectionProvider connectionProvider, 
 	        IRegionTagReplaceService regionTagReplaceService, 
 	        IOptions<LoaderProperties> loaderProperties,
+	        IOptions<S3Options> s3options,
 	        IHttpClientFactory factory	        
 	        )
         {
@@ -52,6 +56,14 @@ namespace QA.Core.DPC.Loader
 	        _regionTagReplaceService = regionTagReplaceService;	        
             _customer = connectionProvider.GetCustomer();
             _loaderProperties = loaderProperties.Value;
+            var customer = connectionProvider.GetCustomer();
+            _dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+            var s3 = s3options.Value;
+            if (!String.IsNullOrWhiteSpace(s3.Endpoint) &&
+                !String.IsNullOrWhiteSpace(s3.Bucket))
+            {
+	            _dbConnector.FileSystem = new S3FileSystem(s3.Endpoint, s3.AccessKey, s3.SecretKey, s3.Bucket);
+            }        
             _factory = factory;
         }
 
@@ -400,17 +412,16 @@ namespace QA.Core.DPC.Loader
 	                || article.PlainFieldType == PlainFieldType.File
                 ))
             {
-	            var cnn = ctx.Cnn;
-	            var fieldUrl = cnn.GetUrlForFileAttribute(fieldId, false, false);
-	            var shortFieldUrl = cnn.GetUrlForFileAttribute(fieldId, true, true);
+	            var fieldUrl = _dbConnector.GetUrlForFileAttribute(fieldId, false, false);
+	            var shortFieldUrl = _dbConnector.GetUrlForFileAttribute(fieldId, true, true);
 	            var valueUrl = $@"{shortFieldUrl}/{value}";
 	            
 	            if (article.PlainFieldType == PlainFieldType.File && !renderFileAsImage)
 	            {
-		            var size = Common.GetFileSize(_factory, _loaderProperties, cnn, fieldId, value, $@"{fieldUrl}/{value}");
+		            var size = Common.GetFileSize(_factory, _loaderProperties, _dbConnector, fieldId, value, $@"{fieldUrl}/{value}");
 		            return new[]
 		            {
-			            new XElement("Name", Common.GetFileNameByUrl(cnn, fieldId, valueUrl)),
+			            new XElement("Name", Common.GetFileNameByUrl(_dbConnector, fieldId, valueUrl)),
 			            new XElement("FileSizeBytes", size),
 			            new XElement("AbsoluteUrl", valueUrl)
 		            };

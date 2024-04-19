@@ -63,6 +63,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.Configure<Properties>(Configuration.GetSection("Properties"));
             services.Configure<QPOptions>(Configuration.GetSection("QP"));
+            services.Configure<S3Options>(Configuration.GetSection("S3"));
 
             services.FillQpConfiguration(Configuration);
 

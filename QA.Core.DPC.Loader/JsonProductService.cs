@@ -16,6 +16,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using QA.DPC.Core.Helpers;
+using Quantumart.QPublishing.FileSystem;
 using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
 using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
@@ -49,6 +51,7 @@ namespace QA.Core.DPC.Loader
             VirtualFieldContextService virtualFieldContextService,
             IRegionTagReplaceService regionTagReplaceService,
             IOptions<LoaderProperties> loaderProperties,
+            IOptions<S3Options> s3Options,
             IHttpClientFactory factory,
             JsonProductServiceSettings settings)
         {
@@ -58,6 +61,12 @@ namespace QA.Core.DPC.Loader
 
             var customer = connectionProvider.GetCustomer();
             _dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+            var s3 = s3Options.Value;
+            if (!String.IsNullOrWhiteSpace(s3.Endpoint) &&
+                !String.IsNullOrWhiteSpace(s3.Bucket))
+            {
+                _dbConnector.FileSystem = new S3FileSystem(s3.Endpoint, s3.AccessKey, s3.SecretKey, s3.Bucket);
+            }
 
             _virtualFieldContextService = virtualFieldContextService;
             _regionTagReplaceService = regionTagReplaceService;
@@ -847,7 +856,7 @@ namespace QA.Core.DPC.Loader
         {
             public string Name { get; set; }
 
-            public int FileSizeBytes { get; set; }
+            public long FileSizeBytes { get; set; }
 
             public string AbsoluteUrl { get; set; }
         }

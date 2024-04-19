@@ -55,6 +55,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
+            services.Configure<S3Options>(Configuration.GetSection("S3"));
 
             services.FillQpConfiguration(Configuration);
 
