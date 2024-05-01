@@ -95,12 +95,16 @@ namespace QA.Core.DPC.QP.Services
                         {ConnectTimeout = Timeout}
                     : new NpgsqlConnectionStringBuilder(customer.ConnectionString) {CommandTimeout = Timeout};
                 var connector = new DBConnector(builder.ConnectionString, customer.DatabaseType);
-                var command =  connector.CreateDbCommand("SELECT USE_DPC FROM DB");
-                customer.IsConsolidated = (bool)connector.GetRealScalarData(command);
+                var command =  connector.CreateDbCommand("SELECT USE_DPC, USE_S3 FROM DB");
+                var data = connector.GetRealData(command);
+                
+                customer.IsConsolidated = (bool)data.Rows[0]["USE_DPC"];
+                customer.UseS3 = (bool)data.Rows[0]["USE_S3"];
             }
             catch(Exception)
             {
                 customer.IsConsolidated = false;
+                customer.UseS3 = false;
                 _logger.Error(() => $"Customer code {customer.CustomerCode} is not accessible");
             }
 

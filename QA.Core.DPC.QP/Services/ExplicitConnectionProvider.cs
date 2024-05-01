@@ -13,7 +13,8 @@ namespace QA.Core.DPC.QP.Services
             _customer = new Customer
             {
                 ConnectionString = connection,
-                DatabaseType = dbType
+                DatabaseType = dbType,
+                UseS3 = true // skip db check
             };
         }
         

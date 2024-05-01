@@ -38,7 +38,8 @@ namespace QA.Core.DPC.QP.Services
                 {
                     ConnectionString = _cnnProps.DpcConnectionString,
                     DatabaseType = _cnnProps.GetDatabaseType(),
-                    CustomerCode = customerCode
+                    CustomerCode = customerCode, 
+                    UseS3 = true // skip db check
                 };
             }
             else

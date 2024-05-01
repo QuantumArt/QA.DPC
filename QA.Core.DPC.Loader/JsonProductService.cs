@@ -62,7 +62,7 @@ namespace QA.Core.DPC.Loader
             var customer = connectionProvider.GetCustomer();
             _dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
             var s3 = s3Options.Value;
-            if (!String.IsNullOrWhiteSpace(s3.Endpoint) &&
+            if (customer.UseS3 && !String.IsNullOrWhiteSpace(s3.Endpoint) &&
                 !String.IsNullOrWhiteSpace(s3.Bucket))
             {
                 _dbConnector.FileSystem = new S3FileSystem(s3.Endpoint, s3.AccessKey, s3.SecretKey, s3.Bucket);
