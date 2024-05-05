@@ -46,12 +46,12 @@ namespace QA.Core.DPC.QP.Services
                     }
                     throw new ConsolidationException($"Customer code '{customerCode}' not found");
                 }
-                return new Customer
+                return UpdateIsConsolidated(new Customer
                 {
                     ConnectionString = customerConfiguration.ConnectionString.Replace("Provider=SQLOLEDB;", ""),
                     CustomerCode = customerConfiguration.Name,
                     DatabaseType = customerConfiguration.DbType
-                };
+                });
             }
             catch (Exception ex)
             {
