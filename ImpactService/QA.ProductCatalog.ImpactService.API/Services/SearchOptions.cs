@@ -16,7 +16,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         public bool IndexIsTyped { get; set; } = true;
 
-        public string UrlType => IndexIsTyped && TypeName != null ? TypeName : null;
+        public string UrlType => IndexIsTyped ? TypeName : null;
 
         public string QueryType => IndexIsTyped ? null : TypeName;
 
