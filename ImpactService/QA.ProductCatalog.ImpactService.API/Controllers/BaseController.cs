@@ -319,15 +319,15 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return result;
         }
 
-        protected void ConfigureOptions(SearchOptions options)
+        protected async Task ConfigureOptions(SearchOptions options)
         {
             var key = $"productstore_{options.IndexName}";
             
-            options.IndexIsTyped = Cache.GetOrCreate(key, c =>
+            options.IndexIsTyped = await Cache.GetOrCreateAsync(key, c =>
             {
                 var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ConfigurationOptions.CachingInterval));
                 c.SetOptions(cacheOptions);
-                return SearchRepo.GetIndexIsTyped(options).Result;
+                return SearchRepo.GetIndexIsTyped(options);
             });
         }
 

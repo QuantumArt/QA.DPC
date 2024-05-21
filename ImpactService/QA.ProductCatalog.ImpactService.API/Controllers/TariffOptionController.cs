@@ -13,7 +13,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
     [Route("api/base")]
     public class TariffOptionController : BaseController
     {
-
         private readonly TariffOptionCalculator _calc;
 
         protected override Logger Logger { get; } = LogManager.GetCurrentClassLogger();
@@ -35,7 +34,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 HomeRegion = homeRegion
             };
 
-            ConfigureOptions(searchOptions);
+            await ConfigureOptions(searchOptions);
 
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, homeRegion, homeRegion, state, language);
             var result = await GetCachedResult(cacheKey, searchOptions, html);
