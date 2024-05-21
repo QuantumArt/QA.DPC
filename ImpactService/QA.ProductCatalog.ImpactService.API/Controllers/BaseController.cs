@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using NLog;
 using NLog.Fluent;
-using QA.ProductCatalog.ImpactService.API.Helpers;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -46,7 +45,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected async Task<DateTimeOffset> GetLastUpdated(int[] ids, SearchOptions searchOptions, DateTimeOffset defaultValue)
         {
-            var addrString = GetAddressString(searchOptions);
             var productIds = string.Join(", ", ids);
             Log(LogLevel.Trace, "Check last updated for: {productIds}", searchOptions, productIds);
             try
@@ -65,7 +63,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected async Task<bool> IsOneMacroRegion(string region, string homeRegion, SearchOptions options)
         {
             if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(homeRegion)) return false;
-            var addrString = GetAddressString(options);
+
             Log(LogLevel.Trace, "Check for common macroregion for region {region} and home region {homeRegion}", options, region, homeRegion);
             try
             {
@@ -128,11 +126,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 result = BadRequest(message);
             }
             return result;
-        }
-
-        private static string GetAddressString(SearchOptions searchOptions)
-        {
-            return "Address: {address}, Index: {index}";
         }
 
         protected virtual ActionResult CalculateImpact(JObject homeRegionData)
