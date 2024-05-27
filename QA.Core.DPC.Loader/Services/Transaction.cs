@@ -16,7 +16,8 @@ namespace QA.Core.ProductCatalog.Actions.Services
         public Transaction(IConnectionProvider connectionProvider, ILogger logger)
         {
             _transactionScope = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { Timeout = connectionProvider.TransactionTimeout, IsolationLevel = IsolationLevel.ReadCommitted });
+                new TransactionOptions { Timeout = connectionProvider.TransactionTimeout, IsolationLevel = IsolationLevel.ReadCommitted }, 
+                TransactionScopeAsyncFlowOption.Enabled);
             var current = QPConnectionScope.Current;
 
             if (current != null && current.DbConnection != null)
