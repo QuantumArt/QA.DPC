@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
 using Quantumart.QPublishing.FileSystem;
 using Article = QA.Core.Models.Entities.Article;
@@ -58,11 +59,9 @@ namespace QA.Core.DPC.Loader
             _logger = logger;
             _contentService = contentService;
             _fieldService = fieldService;
-
-            var customer = connectionProvider.GetCustomer();
-            _dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+            _dbConnector = new DBConnector(connectionProvider.GetConnection());
             var s3 = s3Options.Value;
-            if (customer.UseS3 && !String.IsNullOrWhiteSpace(s3.Endpoint) &&
+            if (connectionProvider.GetCustomer().UseS3 && !String.IsNullOrWhiteSpace(s3.Endpoint) &&
                 !String.IsNullOrWhiteSpace(s3.Bucket))
             {
                 _dbConnector.FileSystem = new S3FileSystem(s3.Endpoint, s3.AccessKey, s3.SecretKey, s3.Bucket);
