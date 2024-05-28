@@ -72,11 +72,11 @@ namespace QA.Core.DPC.QP.Services
 
             if (connection != null)
             {
-                _defaultConnections[service] = new Customer
-                {
-                    ConnectionString = connection.ConnectionString,
-                    DatabaseType = UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
-                };
+                _defaultConnections[service] = new Customer(
+                    connection.ConnectionString, 
+                    string.Empty,
+                    UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
+                );
             }
         }
 

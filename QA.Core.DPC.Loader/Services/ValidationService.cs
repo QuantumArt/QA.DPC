@@ -283,10 +283,7 @@ namespace QA.Core.DPC.Loader.Services
             {
                 return new DBConnector(scope.DbConnection);
             }
-            else
-            {
-                return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
-            }
+            return _customer.DbConnector;
         }
         #endregion
 

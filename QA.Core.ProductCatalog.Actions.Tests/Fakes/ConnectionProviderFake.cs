@@ -1,6 +1,7 @@
 ﻿using System;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
@@ -42,7 +43,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 
         public Customer GetCustomer()
         {
-            return new Customer() { CustomerCode = "test", ConnectionString = _connection};
+            return new Customer( _connection, "test", DatabaseType.SqlServer);
         }
 
         public Customer GetCustomer(DPC.QP.Models.Service service)

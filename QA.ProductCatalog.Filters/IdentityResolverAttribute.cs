@@ -147,7 +147,7 @@ namespace QA.ProductCatalog.Filters
             private int? GetUserId(string slug, string version, string token, string method)
             {
                 var customer = _connectionProvider.GetCustomer();
-                var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+                var dbConnector = customer.DbConnector;
 
                 var dbCommand = dbConnector.CreateDbCommand();
 
@@ -183,7 +183,7 @@ namespace QA.ProductCatalog.Filters
             private string GetUserName(int userId)
             {
                 var customer = _connectionProvider.GetCustomer();
-                var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+                var dbConnector = customer.DbConnector;
 
                 var dbCommand = dbConnector.CreateDbCommand();
 

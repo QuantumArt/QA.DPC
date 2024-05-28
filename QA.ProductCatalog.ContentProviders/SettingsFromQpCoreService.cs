@@ -30,7 +30,7 @@ namespace QA.ProductCatalog.ContentProviders.Deprecated
 
         private Dictionary<string, string> GetAppSettings()
         {
-            var cnn = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+            var cnn = _customer.DbConnector;
             var query = "select * from app_settings";
             return cnn.GetRealData(query).AsEnumerable()
                 .ToDictionary(n => n["key"].ToString(), m => m["value"].ToString());

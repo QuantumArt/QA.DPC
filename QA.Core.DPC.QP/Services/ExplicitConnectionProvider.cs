@@ -10,19 +10,13 @@ namespace QA.Core.DPC.QP.Services
      
         public ExplicitConnectionProvider(string connection, DatabaseType dbType = DatabaseType.SqlServer)
         {
-            _customer = new Customer
-            {
-                ConnectionString = connection,
-                DatabaseType = dbType,
-                UseS3 = true // skip db check
-            };
+            _customer = new Customer(connection, String.Empty, dbType);
         }
         
         public ExplicitConnectionProvider(Customer customer)
         {
             _customer = customer;
         }
-        
 
         public string GetConnection()
         {

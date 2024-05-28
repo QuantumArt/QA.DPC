@@ -56,7 +56,7 @@ namespace QA.Core.DPC.Loader
 	        _regionTagReplaceService = regionTagReplaceService;	        
             _customer = connectionProvider.GetCustomer();
             _loaderProperties = loaderProperties.Value;
-            _dbConnector = new DBConnector(connectionProvider.GetConnection());
+            _dbConnector = _customer.DbConnector;
             var s3 = s3options.Value;
             if (!String.IsNullOrWhiteSpace(s3.Endpoint) &&
                 !String.IsNullOrWhiteSpace(s3.Bucket))

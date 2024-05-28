@@ -37,15 +37,15 @@ namespace QA.Core.DPC.QP.Services
             if (!QPMode)
             {
                 var dbType = _cnnProps.GetDatabaseType();
-                _defaultConnections.Add(Models.Service.Admin, new Customer{ 
-                    ConnectionString = _cnnProps.DpcConnectionString,
-                    DatabaseType = dbType});
-                _defaultConnections.Add(Models.Service.Actions, new Customer{ 
-                    ConnectionString = _cnnProps.TasksConnectionString,
-                    DatabaseType = dbType});
-                _defaultConnections.Add(Models.Service.Notification, new Customer{ 
-                    ConnectionString = _cnnProps.NotificationsConnectionString,
-                    DatabaseType = dbType});
+                _defaultConnections.Add(Models.Service.Admin, new Customer(
+                    _cnnProps.DpcConnectionString, String.Empty, dbType)
+                );
+                _defaultConnections.Add(Models.Service.Actions, new Customer(
+                    _cnnProps.TasksConnectionString, String.Empty, dbType)
+                );
+                _defaultConnections.Add(Models.Service.Notification, new Customer(
+                    _cnnProps.NotificationsConnectionString, String.Empty, dbType)
+                );
             }
         }
 

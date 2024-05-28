@@ -59,9 +59,9 @@ namespace QA.Core.DPC.Loader
             _logger = logger;
             _contentService = contentService;
             _fieldService = fieldService;
-            _dbConnector = new DBConnector(connectionProvider.GetConnection());
+            _dbConnector = connectionProvider.GetCustomer().DbConnector;
             var s3 = s3Options.Value;
-            if (connectionProvider.GetCustomer().UseS3 && !String.IsNullOrWhiteSpace(s3.Endpoint) &&
+            if (connectionProvider.GetCustomer().EnableS3ForTenant && !String.IsNullOrWhiteSpace(s3.Endpoint) &&
                 !String.IsNullOrWhiteSpace(s3.Bucket))
             {
                 _dbConnector.FileSystem = new S3FileSystem(s3.Endpoint, s3.AccessKey, s3.SecretKey, s3.Bucket);

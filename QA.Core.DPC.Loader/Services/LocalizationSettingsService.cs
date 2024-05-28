@@ -52,7 +52,7 @@ namespace QA.Core.DPC.Loader.Services
         private SettingItem[] GetSettingItems(int contentId)
         {
             var cnn = QPConnectionScope.Current == null 
-                ? new DBConnector(_customer.ConnectionString, _customer.DatabaseType) 
+                ? _customer.DbConnector 
                 : new DBConnector(QPConnectionScope.Current.DbConnection);
 
             var localizationContentId = _settingsService.GetSetting(SettingsTitles.LOCALIZATION_CONTENT_ID);

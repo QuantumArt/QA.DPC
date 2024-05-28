@@ -133,12 +133,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             {
                 if (!string.IsNullOrEmpty(dataOptions.FixedConnectionString) || !dataOptions.QpMode)
                     return new ExplicitConnectionProvider(
-                        new Customer()
-                        {
-                            ConnectionString = dataOptions.FixedConnectionString,
-                            DatabaseType = dataOptions.GetDatabaseType(),
-                            CustomerCode = dataOptions.FixedCustomerCode
-                        }
+                        new Customer(
+                            dataOptions.FixedConnectionString, 
+                            dataOptions.FixedCustomerCode, 
+                            dataOptions.GetDatabaseType()
+                        )
                     );
 
                 return new ConnectionProvider(
