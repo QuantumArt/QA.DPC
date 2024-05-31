@@ -75,24 +75,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             KeyValuePair<string, JsonNode>? query;
             var shouldGroups = new List<List<KeyValuePair<string, JsonNode>?>>();
             var currentGroup = new List<KeyValuePair<string, JsonNode>?>();
-            KeyValuePair<string, JsonNode>? typeFilter;
 
             var filters = productsOptions.Filters;
-
-            if (productsOptions.ActualType != null)
-            {
-                typeFilter = GetSingleFilter(Options.TypePath, productsOptions.ActualType, ",", true);
-                currentGroup.Add(typeFilter);
-            }
 
             if (filters != null)
             {
                 var conditions = filters.Select(n => CreateQueryElem(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
 
-
                 foreach (var condition in conditions)
                 {
-                    
                     if (condition.Value.Value["or"] != null)
                     {
                         if (currentGroup.Any())
@@ -111,6 +102,23 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (currentGroup.Any() || shouldGroups.Any())
             {
                 query = shouldGroups.Count <= 1 ? Must(currentGroup) : Should(shouldGroups.Select(Must));
+
+                if (productsOptions.ActualType != null)
+                {
+                    currentGroup = new List<KeyValuePair<string, JsonNode>?>
+                    {
+                        GetSingleFilter(Options.TypePath, productsOptions.ActualType, ",", true),
+                        query
+                    };
+                    query = Must(currentGroup);
+                }
+
+                json.Add("query", new JsonObject() { query.Value });
+            }
+            else if (productsOptions.ActualType != null)
+            {
+                currentGroup.Add(GetSingleFilter(Options.TypePath, productsOptions.ActualType, ",", true));
+                query = Must(currentGroup);
                 json.Add("query", new JsonObject() { query.Value });
             }
         }
