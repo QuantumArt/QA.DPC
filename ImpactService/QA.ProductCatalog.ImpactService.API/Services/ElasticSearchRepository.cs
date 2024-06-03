@@ -58,11 +58,6 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return query;
         }
 
-        private string GetRegionFromRoamingQuery(string regionAlias, string type)
-        {
-            return $@"{{ ""_source"": [""Region.Id""], ""query"" : {{ {GetTypeQuery(type, $@" ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }} ")} }} }}";
-        }
-
         private string GetRegionQuery(string regionAlias, string type)
         {
             return $@"{{ ""query"" : {{ {GetTypeQuery(type, $@" ""term"" : {{ ""Alias"" : ""{regionAlias}"" }} ")} }} }}";
@@ -153,18 +148,26 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             }}";
         }
 
-        private string GetTypeQuery(string type, string subquery)
+        private string GetTypeQuery(string type, string subQuery)
         {
-            if (type == null)
-                return subquery;
-            else
-                return
-                    $@"""bool"" : {{
-                        ""must"" : [
-                            {{ ""term"" : {{ ""Type"" : ""{type}"" }} }},
-                            {{ {subquery} }}
-                        ]
-                    }}";
+            if (string.IsNullOrEmpty(type))
+            {
+                return subQuery;
+            }
+
+            return
+                $@"""bool"": {{
+                    ""must"": [
+                        {{
+                            ""match_phrase"": {{
+                                ""Type"": {{
+                                    ""query"": ""{type}""
+                                }}
+                            }}
+                        }},
+                        {{ {subQuery} }}
+                    ]
+                }}";
         }
 
 
@@ -184,7 +187,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var newOptions = options.Clone();
             newOptions.TypeName = "RoamingRegion";
-            var query = GetMrQuery(regions, options.QueryType);
+            var query = GetMrQuery(regions, newOptions.QueryType);
             var regionResult = await GetContent(query, newOptions, "Check for one macroregion");
             var aliases = JObject.Parse(regionResult)
                 .SelectTokens($"{_sourceQuery}.Region.Parent.Alias").Select(n => n.ToString()).ToArray();
@@ -278,7 +281,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             var newOptions = options.Clone();
             newOptions.TypeName = "Region";
 
-            var query = GetRegionQuery(newOptions.HomeRegion, options.QueryType);
+            var query = GetRegionQuery(newOptions.HomeRegion, newOptions.QueryType);
             var regionResult = await GetContent(query, newOptions, "Receiving home region");
             var homeRegionIdToken = JObject.Parse(regionResult)
                 .SelectTokens(_sourceQuery)?.FirstOrDefault();
@@ -289,7 +292,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var newOptions = options.Clone();
             newOptions.TypeName = "Region";
-            var query = GetDefaultRegionForMnrQuery(options.QueryType);
+            var query = GetDefaultRegionForMnrQuery(newOptions.QueryType);
             var regionResult = await GetContent(query, newOptions, "Receiving default region alias");
             return JObject.Parse(regionResult)
                 .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Alias")?.ToString();
