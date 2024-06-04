@@ -13,7 +13,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
     {
         #region Constants
         private const int UserId = 1;
-        private const string ConnectionString = "Connection";
+        private const string ConnectionString = "server=test;database=testdb";
         #endregion
 
         #region Private properties
