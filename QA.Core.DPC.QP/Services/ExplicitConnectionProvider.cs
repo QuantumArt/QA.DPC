@@ -10,7 +10,7 @@ namespace QA.Core.DPC.QP.Services
      
         public ExplicitConnectionProvider(string connection, DatabaseType dbType = DatabaseType.SqlServer)
         {
-            _customer = new Customer(connection, String.Empty, dbType);
+            _customer = new Customer(connection, string.Empty, dbType);
         }
         
         public ExplicitConnectionProvider(Customer customer)
