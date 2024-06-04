@@ -84,6 +84,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 foreach (var condition in conditions)
                 {
+                    if (condition == null)
+                        continue;
+
                     if (condition.Value.Value["or"] != null)
                     {
                         if (currentGroup.Any())
