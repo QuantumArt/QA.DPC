@@ -1,9 +1,7 @@
 
 using QA.Core.DPC.QP.Models;
 using System;
-using System.Configuration;
 using Microsoft.Extensions.Options;
-using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -20,43 +18,29 @@ namespace QA.Core.DPC.QP.Services
 
         public string GetConnectionString(string customerCode)
         {
-            if (customerCode == Key)
-            {
-                return _cnnProps.DpcConnectionString;
-            }
-            else
+            if (customerCode != Key)
             {
                 throw new InvalidOperationException();
             }
+            return _cnnProps.DpcConnectionString;
         }
 
         public Customer GetCustomer(string customerCode)
         {
-            if (customerCode == Key)
-            {
-                return new Customer
-                {
-                    ConnectionString = _cnnProps.DpcConnectionString,
-                    DatabaseType = _cnnProps.GetDatabaseType(),
-                    CustomerCode = customerCode
-                };
-            }
-            else
+            if (customerCode != Key)
             {
                 throw new InvalidOperationException();
             }
+            return new Customer(_cnnProps.DpcConnectionString, Key, _cnnProps.GetDatabaseType());
         }
 
         public Customer[] GetCustomers(bool onlyConsolidated = true)
         {
             return new[]
             {
-                new Customer
+                new Customer(_cnnProps.DpcConnectionString, Key, _cnnProps.GetDatabaseType())
                 {
-                    ConnectionString = _cnnProps.DpcConnectionString,
-                    DatabaseType = _cnnProps.GetDatabaseType(),
-                    IsConsolidated = true,
-                    CustomerCode = Key
+                    IsConsolidated = true
                 }
             };
         }

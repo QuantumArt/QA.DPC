@@ -92,12 +92,9 @@ namespace QA.Core.DPC.Loader
 
                 fieldNames.Add("CONTENT_ITEM_ID");
 
-                var dbConnector = new DBConnector(_customer.ConnectionString, (ConfigurationService.Models.DatabaseType)_customer.DatabaseType);
-
-                var dtdefinitionArticles =
-                    dbConnector.GetContentData(
-                    new ContentDataQueryObject(
-                        dbConnector,
+                var definitionArticles =
+                    _customer.DbConnector.GetContentData(
+                    new ContentDataQueryObject(_customer.DbConnector,
                         definition.Content.ContentId,
                         string.Join(",", fieldNames),
                         definition.Filter,
@@ -107,7 +104,7 @@ namespace QA.Core.DPC.Loader
                     { ShowSplittedArticle = (byte)(isLive ? 0 : 1) });
 
                 return
-                    dtdefinitionArticles
+                    definitionArticles
                         .AsEnumerable()
                         .Select(x => fieldNames
                                     .Where(y => x[y] != DBNull.Value)
@@ -320,7 +317,7 @@ namespace QA.Core.DPC.Loader
         
         public virtual Article[] GetProductsByIds(int[] ids, bool isLive = false)
         {
-            var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+            var dbConnector = _customer.DbConnector;
             var idList = SqlQuerySyntaxHelper.IdList(_customer.DatabaseType, "@ids", "ids");
 
             var dbCommand = dbConnector.CreateDbCommand(

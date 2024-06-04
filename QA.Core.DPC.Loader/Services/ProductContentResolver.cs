@@ -41,7 +41,7 @@ namespace QA.Core.DPC.Loader.Services
             {
                 var productDefinitionsContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
 
-                var connector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+                var connector = _customer.DbConnector;
                 var dbCommand = connector.CreateDbCommand(string.Format(QueryTemplate, productDefinitionsContentId));
                 dbCommand.Parameters.AddWithValue("@type", type);
                 var contentId = connector.GetRealScalarData(dbCommand);
@@ -70,10 +70,7 @@ namespace QA.Core.DPC.Loader.Services
             {
                 return new DBConnector(scope.DbConnection);
             }
-            else
-            {
-                return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
-            }
+            return _customer.DbConnector;
         }
     }
 }

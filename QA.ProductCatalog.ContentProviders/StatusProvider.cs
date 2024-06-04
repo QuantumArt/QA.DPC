@@ -49,10 +49,8 @@ namespace QA.ProductCatalog.ContentProviders
 
         private Dictionary<int, string> GetDictionary()
         {
-            var connection = _connectionProvider.GetConnection();
-            var dbContext = new DBConnector(connection);
-
-            return dbContext.GetRealData(Query)
+            var cnn = _connectionProvider.GetCustomer().DbConnector;
+            return cnn.GetRealData(Query)
                     .AsEnumerable()
                     .Select(row => Converter.ToModelFromDataRow<StatusModel>(row))
                     .ToDictionary(s => s.StatusId, s => s.StatusName);

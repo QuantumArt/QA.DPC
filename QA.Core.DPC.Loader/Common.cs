@@ -63,7 +63,7 @@ namespace QA.Core.DPC.Loader
             return fileName;
         }
 
-        public static int GetFileSize(IHttpClientFactory httpClientFactory, LoaderProperties loaderProperties, DBConnector cnn, int fieldId, string shortFieldUrl, string longFieldUrl)
+        public static long GetFileSize(IHttpClientFactory httpClientFactory, LoaderProperties loaderProperties, DBConnector cnn, int fieldId, string shortFieldUrl, string longFieldUrl)
         {
             if (loaderProperties.UseFileSizeService)
             {
@@ -86,7 +86,11 @@ namespace QA.Core.DPC.Loader
             }
 
             var path= GetFileFromQpFieldPath(cnn, fieldId, shortFieldUrl);
-            if (File.Exists(path)) return (int) new FileInfo(path).Length;
+            if (cnn.FileSystem.FileExists(path))
+            {
+                using var file = cnn.FileSystem.LoadStream(path);
+                return file.Length;
+            }
             
             Logger.Warn()
                 .Message("Cannot find file with path: {path}", path)

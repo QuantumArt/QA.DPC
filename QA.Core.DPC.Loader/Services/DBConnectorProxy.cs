@@ -31,7 +31,7 @@ namespace QA.Core.DPC.Loader.Services
 
         private DBConnector GetConnector()
         {
-            return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+            return _customer.DbConnector;
         }
     }
 }

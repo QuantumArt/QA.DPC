@@ -114,7 +114,7 @@ namespace QA.Core.DPC.Loader
 			{
 				using (_articleService.CreateQpConnectionScope())
 				{
-					var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+					var dbConnector = _customer.DbConnector;
 
 					string wherePart =
 						$@"(lower({FIELD_NAME_SLUG})='{slug.Replace("'", "").ToLower()}'

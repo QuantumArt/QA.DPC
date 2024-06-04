@@ -6,6 +6,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;
 using System;
 using System.Data.SqlClient;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.Resources;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
@@ -60,13 +61,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         private static bool IsProcessing = false;
         
         private readonly ISettingsService _settingsService;
-        private readonly string _connectionString;
+        private readonly IConnectionProvider _connectionProvider;
         #endregion
 
         public CleanProductVersionAction(ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _settingsService = settingsService;
-            _connectionString = connectionProvider.GetConnection();
+            _connectionProvider = connectionProvider;
         }
 
         public override ActionTaskResult Process(ActionContext context)
@@ -177,10 +178,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 return new DBConnector(scope.DbConnection);
             }
-            else
-            {
-                return new DBConnector(_connectionString);
-            }
+            return _connectionProvider.GetCustomer().DbConnector;
         }
         #endregion
     }

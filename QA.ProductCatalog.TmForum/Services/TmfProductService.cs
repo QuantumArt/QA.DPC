@@ -4,6 +4,7 @@ using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.TmForum.Interfaces;
@@ -27,6 +28,7 @@ namespace QA.ProductCatalog.TmForum.Services
             VirtualFieldContextService virtualFieldContextService,
             IRegionTagReplaceService regionTagReplaceService,
             IOptions<LoaderProperties> loaderProperties,
+            IOptions<S3Options> s3options,
             IHttpClientFactory factory,
             JsonProductServiceSettings settings,
             ISettingsService settingsService,
@@ -39,6 +41,7 @@ namespace QA.ProductCatalog.TmForum.Services
                   virtualFieldContextService,
                   regionTagReplaceService,
                   loaderProperties,
+                  s3options,
                   factory,
                   settings)
         {

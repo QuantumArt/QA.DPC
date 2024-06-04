@@ -1,6 +1,7 @@
 ﻿using System;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.Models.Tests
 {
@@ -42,12 +43,12 @@ namespace QA.Core.Models.Tests
 
         public Customer GetCustomer()
         {
-            return new Customer() {ConnectionString = _connection, CustomerCode = "test"};
+            return new Customer(_connection, "test", DatabaseType.SqlServer);
         }
 
         public Customer GetCustomer(DPC.QP.Models.Service service)
         {
-            return new Customer() {ConnectionString = _connection, CustomerCode = "test"};
+            return new Customer(_connection, "test", DatabaseType.SqlServer);
         }
 
         public bool HasConnection(DPC.QP.Models.Service service)

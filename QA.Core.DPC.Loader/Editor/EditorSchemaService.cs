@@ -33,7 +33,7 @@ namespace QA.Core.DPC.Loader.Editor
             EditorPreloadingService editorPreloadingService)
         {
             var customer = connectionProvider.GetCustomer();
-            _dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+            _dbConnector = customer.DbConnector;
             _articleService = articleService;
             _contentService = contentService;
             _fieldService = fieldService;

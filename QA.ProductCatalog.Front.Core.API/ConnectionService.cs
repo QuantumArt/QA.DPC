@@ -42,26 +42,16 @@ namespace QA.ProductCatalog.Front.Core.API
             
             if (!string.IsNullOrEmpty(connectionString))
             {
-                return new Customer
-                {
-                    ConnectionString = connectionString,
-                    CustomerCode = _options.FixedCustomerCode,
-                    DatabaseType = _options.UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
-                };
+                return new Customer(
+                    connectionString,
+                    _options.FixedCustomerCode,
+                    _options.UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
+                );
             }
 
             DBConnector.ConfigServiceUrl = _intOptions.ConfigurationServiceUrl;
             DBConnector.ConfigServiceToken = _intOptions.ConfigurationServiceToken;
-
-            var customer = await DBConnector.GetCustomerConfiguration(customerCode);
-            return new Customer
-            {
-                ConnectionString = customer.ConnectionString,
-                CustomerCode = customer.Name,
-                DatabaseType = customer.DbType
-            };
+            return new Customer(await DBConnector.GetCustomerConfiguration(customerCode));
         }
-        
-        
     }
 }

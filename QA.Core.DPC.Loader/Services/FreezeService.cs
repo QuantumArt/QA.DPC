@@ -318,8 +318,8 @@ namespace QA.Core.DPC.Loader.Services
             {
                 return new DBConnector(scope.DbConnection){WithTransaction = false};
             }
-            
-            return new DBConnector(_customer.ConnectionString, _customer.DatabaseType){WithTransaction = false};
+
+            return _customer.DbConnector;
         }
 
 

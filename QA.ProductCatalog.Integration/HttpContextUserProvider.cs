@@ -55,7 +55,7 @@ namespace QA.ProductCatalog.Integration
 	            if (!string.IsNullOrEmpty(newSid) && newSid != sid || userid == 0)
 	            {
 		            var backendSid = newSid?.Replace("'", "''");	     
-		            userid = new QScreen(new DBConnector(_customer.ConnectionString, _customer.DatabaseType))
+		            userid = new QScreen(_customer.DbConnector)
 			            .AuthenticateForCustomTab(backendSid);
 		            HttpContext.Session.SetInt32(QpUserIdKey, userid);
 	            }      
@@ -80,8 +80,7 @@ namespace QA.ProductCatalog.Integration
         public string GetUserName()
         {
             var userId = GetUserId();
-			var dBConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
-			
+			var dBConnector = _customer.DbConnector;
             
             var cachedData = dBConnector.GetCachedData(
 	            "select FIRST_NAME, LAST_NAME from users where user_id = " + userId
@@ -97,7 +96,7 @@ namespace QA.ProductCatalog.Integration
         {
 	        var userId = GetUserId();
 
-	        var dBConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+	        var dBConnector = _customer.DbConnector;
 	        
 	        var cachedData = dBConnector.GetCachedData(
 		        "select LANGUAGE_ID from users where user_id = " + userId

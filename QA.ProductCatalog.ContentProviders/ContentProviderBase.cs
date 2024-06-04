@@ -41,7 +41,7 @@ namespace QA.ProductCatalog.ContentProviders
 
 		public virtual TModel[] GetArticles()
 		{
-			Connector = new DBConnector(Customer.ConnectionString, Customer.DatabaseType);
+			Connector = Customer.DbConnector;
 			var query = GetQuery();
 
 			if (query == null)

@@ -54,7 +54,7 @@ namespace QA.Core.ProductCatalog.Actions
         
         public static int[] GetAllProductIds(int siteId, int productsContentId, Customer customer)
 		{
-			var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+			var dbConnector = customer.DbConnector;
 
 			string siteName = dbConnector.GetSiteName(siteId);
 
@@ -84,7 +84,7 @@ namespace QA.Core.ProductCatalog.Actions
 
         public static Dictionary<int, int[]> GetContentIds(IEnumerable<int> ids, Customer customer)
         {
-            var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
+            var dbConnector = customer.DbConnector;
             var idList = SqlQuerySyntaxHelper.IdList(customer.DatabaseType, "@Ids", "Ids");
             var dbCommand = dbConnector.CreateDbCommand($@"SELECT CONTENT_ID, CONTENT_ITEM_ID 
 					FROM CONTENT_ITEM 

@@ -58,9 +58,7 @@ namespace QA.Core.DPC.Loader
                 _cacheItemWatcher.TrackChanges();
 
                 _contentService.LoadStructureCache(_contextStorage);
-
                 var connector = new DBConnector(cs.DbConnection);
-
                 var context = new Context();
                 var article = DeserializeArticle(productDataSource, definition, connector, context);
                 context.UpdateExtensionArticles();

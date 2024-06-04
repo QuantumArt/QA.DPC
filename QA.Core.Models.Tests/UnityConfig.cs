@@ -42,7 +42,7 @@ namespace QA.Core.Models.Tests
             container.RegisterType<ISettingsService, SettingsService>();
             container.RegisterType<IArticleService, ArticleServiceFake>();
             container.RegisterType<IProductService, FakeProductLoader>();
-            container.RegisterType<IConnectionProvider, ConnectionProviderFake>(new InjectionConstructor("test"));
+            container.RegisterType<IConnectionProvider, ConnectionProviderFake>(new InjectionConstructor("server=test;database=testdb"));
             
             container.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager());
             container.RegisterType<VersionedCacheProviderBase>(new ContainerControlledLifetimeManager());
