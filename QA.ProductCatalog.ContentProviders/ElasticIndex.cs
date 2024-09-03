@@ -35,6 +35,8 @@ namespace QA.ProductCatalog.ContentProviders
 
         public bool DoTrace { get; set; }
 
+        public string Token { get; set; }
+        
         public string ReindexUrl { get; set; }
 
         public DateTime? Date { get; set; }

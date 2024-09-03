@@ -13,8 +13,8 @@ namespace QA.ProductCatalog.ContentProviders
 		where TModel : class
 	{
 		protected ISettingsService SettingsService { get; }
-		private DBConnector Connector { get; set; }
-		private Customer Customer { get; }
+		protected DBConnector Connector { get; set; }
+		protected Customer Customer { get; }
 		
 		private IQpContentCacheTagNamingProvider NamingProvider;
 
