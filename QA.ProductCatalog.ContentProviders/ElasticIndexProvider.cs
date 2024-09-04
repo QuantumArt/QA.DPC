@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Linq;
 using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
@@ -39,12 +40,11 @@ namespace QA.ProductCatalog.ContentProviders
 		public override ElasticIndex[] GetArticles()
 		{
 			Connector = Customer.DbConnector;
-			
-			var contentId = GetSetting();
+			var contentName = "content_" + GetSetting();		
 			var testQuery =
-				$"select count(*) From information_schema.columns where column_name = 'token' and table_name = 'content_{contentId}'";
+				$"select count(*) From information_schema.columns where column_name = 'token' and table_name = '{contentName}'";
 			var testCmd = Connector.CreateDbCommand(testQuery);
-			var colCount = (int)Connector.GetRealScalarData(testCmd);
+			var colCount = Convert.ToInt32(Connector.GetRealScalarData(testCmd));
 			var query = GetQuery(colCount > 0);
 
 			if (query == null)
