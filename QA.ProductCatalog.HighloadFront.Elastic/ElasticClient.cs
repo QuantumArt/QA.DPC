@@ -287,7 +287,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var client = CreateClient(baseUri);
             try
             {
-                response = await SendAsync(client, eparams.Verb, policy, eparams.GetUri(), json, eparams.Token, cancellationToken);
+                response = await SendAsync(client, eparams.Verb, policy, eparams.GetUri(), json, eparams.GetToken(), cancellationToken);
             }
             catch (HttpRequestException ex)
             {
