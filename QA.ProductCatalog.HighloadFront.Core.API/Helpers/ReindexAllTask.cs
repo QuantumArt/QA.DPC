@@ -37,29 +37,37 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 {
                     if (_importer.ValidateInstance(language, state))
                     {
-                        string alias = _configuration.GetElasticIndex(language, state).Name;
-                        var indexesToDelete = _manager.GetIndexesToDeleteAsync(language, state, _stores, alias).Result;
-                        var newIndex = _manager.CreateVersionedIndexAsync(language, state, _stores).Result;
-
-                        if (string.IsNullOrWhiteSpace(newIndex))
+                        var name = _configuration.GetElasticIndex(language, state).Name;
+                        if (!_configuration.DataOptions.UseAliases)
                         {
-                            executionContext.Result = ActionTaskResult.Error("Unable to create new index.");
-                            return;
+                            _manager.DeleteIndexAsync(language, state, _stores).Wait();
+                            _manager.CreateIndexAsync(language, state, _stores).Wait();
+                            _importer.ImportAsync(executionContext, language, state, _stores, name).Wait();                            
                         }
-
-                        _importer.ImportAsync(executionContext, language, state, _stores, newIndex).Wait();
-
-
-                        if (indexesToDelete.Contains(alias))
+                        else 
                         {
-                            _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
-                            _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, alias, Array.Empty<string>()).Wait();
-                        }
-                        else
-                        {
-                            var indexesInAlias = _manager.GetIndexesInAliasAsync(language, state, _stores).Result;
-                            _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, alias, indexesInAlias).Wait();
-                            _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
+                            var indexesToDelete = _manager.GetIndexesToDeleteAsync(language, state, _stores, name).Result;
+                            var newIndex = _manager.CreateVersionedIndexAsync(language, state, _stores).Result;
+
+                            if (string.IsNullOrWhiteSpace(newIndex))
+                            {
+                                executionContext.Result = ActionTaskResult.Error("Unable to create new index.");
+                                return;
+                            }
+
+                            _importer.ImportAsync(executionContext, language, state, _stores, newIndex).Wait();
+
+                            if (indexesToDelete.Contains(name))
+                            {
+                                _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
+                                _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, name, Array.Empty<string>()).Wait();
+                            }
+                            else
+                            {
+                                var indexesInAlias = _manager.GetIndexesInAliasAsync(language, state, _stores).Result;
+                                _manager.ReplaceIndexesInAliasAsync(language, state, _stores, newIndex, name, indexesInAlias).Wait();
+                                _manager.DeleteIndexesByNamesAsync(language, state, _stores, indexesToDelete).Wait();
+                            }     
                         }
                     }
                     else

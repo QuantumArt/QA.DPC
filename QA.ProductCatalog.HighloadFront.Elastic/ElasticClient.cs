@@ -84,18 +84,21 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<string> DeleteIndexAsync(CancellationToken cancellationToken = default)
-        {
-            var eparams = CreateElasticRequestParams(HttpMethod.Delete);
-            return await QueryAsync(eparams, null, cancellationToken);
-        }
-
         public async Task<string> DeleteIndexByNameAsync(string indexName, CancellationToken cancellationToken = default)
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Delete);
-            esparams.IndexName = indexName;
+            if (indexName != null)
+            {
+                esparams.IndexName = indexName;
+            }
             return await QueryAsync(esparams, null, cancellationToken);
         }
+        
+        public Task<string> DeleteIndexAsync(CancellationToken cancellationToken = default)
+        {
+            return DeleteIndexByNameAsync(null, cancellationToken);
+        }
+        
 
         public async Task<string> CreateIndexAsync(string json, CancellationToken cancellationToken = default)
         {

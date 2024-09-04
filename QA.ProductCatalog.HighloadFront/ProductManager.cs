@@ -168,6 +168,12 @@ namespace QA.ProductCatalog.HighloadFront
             var store = await GetProductStore(language, state, stores);
             return await store.CreateVersionedIndexAsync(language, state);
         }
+        
+        public async Task<string> CreateIndexAsync(string language, string state, Dictionary<string, IProductStore> stores)
+        {
+            var store = await GetProductStore(language, state, stores);
+            return await store.CreateIndexAsync(language, state);
+        }
 
         public async Task<string> GetDefaultIndexSettings(string language, string state)
         {
@@ -180,6 +186,12 @@ namespace QA.ProductCatalog.HighloadFront
         {
             var store = await GetProductStore(language, state, stores);
             await store.ReplaceIndexesInAliasAsync(language, state, newIndex, oldIndexes, alias);
+        }
+        
+        public async Task DeleteIndexAsync(string language, string state, Dictionary<string, IProductStore> stores)
+        {
+            var store = await GetProductStore(language, state, stores);
+            await store.DeleteIndexAsync(language, state);
         }
 
         public async Task DeleteIndexByNameAsync(string language, string state, Dictionary<string, IProductStore> stores, string index)
