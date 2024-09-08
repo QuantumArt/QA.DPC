@@ -6,9 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QA.ProductCatalog.HighloadFront.Elastic;
-using Microsoft.Extensions.Options;
-using QA.ProductCatalog.HighloadFront.Options;
-
+using NLog;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -20,6 +18,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     {
         private readonly ElasticConfiguration _elasticConfiguration;
         private readonly IHttpClientFactory _factory;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
 
         public HealthCheckController(ElasticConfiguration elasticConfiguration, IHttpClientFactory factory)
         {
@@ -36,6 +35,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             foreach (var option in _elasticConfiguration.GetElasticIndices())
             {
                 var uris = option.Url.Split(';').Select(n => n.Trim()).ToArray();
+                var token = option.Token;
                 foreach (var baseUri in uris)
                 {
                     var uri = $"{baseUri}/{option.Name}";
@@ -43,12 +43,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     try
                     {
                         var request = new HttpRequestMessage(HttpMethod.Head, new Uri(uri));
+                        if (!string.IsNullOrWhiteSpace(token))
+                        {
+                            request.Headers.Add("Authorization", $"Basic {token}");
+                        }
                         var response = await httpClient.SendAsync(request);
                         isOk = response.StatusCode == HttpStatusCode.OK;
 
                     }
-                    catch (HttpRequestException)
+                    catch (HttpRequestException ex)
                     {
+                        Logger.Error(ex, "Error while proceeding healthcheck for url {url}", uri);
                         isOk = false;
                     }
 
