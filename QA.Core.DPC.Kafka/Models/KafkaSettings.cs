@@ -4,7 +4,6 @@ namespace QA.Core.DPC.Kafka.Models
 {
     public class KafkaSettings
     {
-        public bool IsEnabled { get; set; }
         /// <summary>
         /// -1 - all
         /// 0 - None
@@ -16,6 +15,11 @@ namespace QA.Core.DPC.Kafka.Models
         /// </summary>
         public string? BootstrapServers { get; set; }
         public int MessageSendMaxRetries { get; set; } = int.MaxValue;
+        
+        public int RequestTimeoutMs { get; set; } = 30_000;
+        
+        public int MessageTimeoutMs { get; set; } = 120_000;
+
         public int RetryBackoffMs { get; set; } = 10_000;
         /// <summary>
         /// 0 - Plaintext
@@ -26,5 +30,9 @@ namespace QA.Core.DPC.Kafka.Models
         public SecurityProtocol SecurityProtocol { get; set; } = SecurityProtocol.Plaintext;
         public string SaslUsername { get; set; } = string.Empty;
         public string SaslPassword { get; set; } = string.Empty;
+        
+        public string TopicName { get; set; } = string.Empty;
+        
+        public bool CheckTopicExists { get; set; }
     }
 }

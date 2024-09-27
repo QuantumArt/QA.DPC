@@ -13,6 +13,9 @@ namespace QA.Core.DPC.Kafka.Services
     {
         private readonly IProducer<TKey, string> _producer;
         private readonly ILogger<ProducerService<TKey>> _logger;
+        private readonly IAdminClient _adminClient;
+        private readonly TimeSpan _timeout;
+        private readonly bool _checkTopicExists;
 
         public ProducerService(IOptions<KafkaSettings> settings, ILogger<ProducerService<TKey>> logger)
         {
@@ -22,7 +25,9 @@ namespace QA.Core.DPC.Kafka.Services
                 BootstrapServers = settings.Value.BootstrapServers,
                 MessageSendMaxRetries = settings.Value.MessageSendMaxRetries,
                 RetryBackoffMs = settings.Value.RetryBackoffMs,
-                SecurityProtocol = settings.Value.SecurityProtocol
+                RequestTimeoutMs = settings.Value.RequestTimeoutMs,
+                MessageTimeoutMs = settings.Value.MessageTimeoutMs,
+                SecurityProtocol = settings.Value.SecurityProtocol,
             };
 
             if (config.SecurityProtocol is SecurityProtocol.SaslPlaintext or SecurityProtocol.SaslSsl)
@@ -31,8 +36,48 @@ namespace QA.Core.DPC.Kafka.Services
                 config.SaslPassword = settings.Value.SaslPassword;
             }
 
-            _producer = new ProducerBuilder<TKey, string>(config).Build();
+            _producer = new ProducerBuilder<TKey, string>(config)
+                .SetLogHandler((_, message) =>
+                {
+                    LogSysLogMessage(logger, message);
+                }).Build();
+            
+            _adminClient = new AdminClientBuilder(new AdminClientConfig
+            {
+                BootstrapServers = settings.Value.BootstrapServers
+            }).Build();
+            
+
+            _timeout = TimeSpan.FromMilliseconds(settings.Value.RequestTimeoutMs);
+            _checkTopicExists = settings.Value.CheckTopicExists;
             _logger = logger;
+        }
+
+        private static void LogSysLogMessage(ILogger<ProducerService<TKey>> logger, LogMessage message)
+        {
+            switch (message.Level)
+            {
+                case SyslogLevel.Alert:
+                case SyslogLevel.Emergency:
+                case SyslogLevel.Critical:
+                    logger.LogCritical(message.Message);
+                    break;
+                case SyslogLevel.Error:
+                    logger.LogError(message.Message);
+                    break;
+                case SyslogLevel.Warning:
+                    logger.LogWarning(message.Message);
+                    break;
+                case SyslogLevel.Info:
+                case SyslogLevel.Notice:
+                    logger.LogInformation(message.Message);
+                    break;
+                case SyslogLevel.Debug:
+                    logger.LogDebug(message.Message);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public async Task<PersistenceStatus> SendString(TKey key,
@@ -42,14 +87,26 @@ namespace QA.Core.DPC.Kafka.Services
         {
             if (string.IsNullOrWhiteSpace(topic))
             {
-                _logger.LogError("Kafka topic is empty. Check application configuration.");
+                _logger.LogError("Topic name is empty. Check application configuration.");
 
                 return PersistenceStatus.NotPersisted;
             }
 
-            DeliveryResult<TKey, string>? result = await _producer.ProduceAsync(topic,
-                new Message<TKey, string>() { Key = key, Value = value },
-                cancellationToken);
+            if (_checkTopicExists)
+            {
+                var data = _adminClient.GetMetadata(_timeout);
+                var exists = data.Topics.Any(n => n.Topic == topic);
+                if (!exists)
+                {
+                    _logger.LogError("Topic {topic} does not exist. Check application configuration.", topic);
+                    return PersistenceStatus.NotPersisted;                    
+                }
+            }
+
+            var result = await _producer.ProduceAsync(topic, 
+                new Message<TKey, string> { Key = key, Value = value },
+                cancellationToken
+            );
 
             return result.Status;
         }
