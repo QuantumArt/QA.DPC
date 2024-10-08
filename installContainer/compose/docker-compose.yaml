@@ -68,6 +68,17 @@ services:
       - Integration__ConfigurationServiceToken=${CONFIGURATION_SERVICE_TOKEN}
       - Data__InstanceId=${INSTANCE_ID}
       - TZ=${TZ}
+  dpc-kafka-api:
+    container_name: dpc-kafka-api
+    image: "qpcms/dpc-kafka-api:${TAG}"
+    restart: always
+    extra_hosts:
+     - "host.docker.internal:host-gateway"       
+    ports:
+      - "7450:80"
+    environment:
+      - Kafka__BootstrapServers=${KAFKA_HOST}
+      - TZ=${TZ}      
   dpc-search-api:
     container_name: dpc-search-api
     image: "qpcms/dpc-highload-front:${TAG}"

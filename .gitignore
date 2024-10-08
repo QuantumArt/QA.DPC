@@ -251,3 +251,4 @@ HighloadAPI/src
 **/appsettings.*.json
 **/docker-compose.*.yml
 projectfiles.tar
+**/dev.env
