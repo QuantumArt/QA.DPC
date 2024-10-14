@@ -28,6 +28,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly TimeSpan _circuitBreakingInterval;
         private readonly string[] _uris;
         private readonly string _indexName;
+        private readonly string _token;
+        private readonly bool _doTrace;
         private readonly PolicyRegistry _registry;
         private readonly List<Exception> _exceptions;
         private readonly ILogger _logger;
@@ -38,11 +40,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             PolicyRegistry registry,
             string indexName,
             string[] uris,
+            string token,
+            bool doTrace,
             DataOptions options)
         {
             _factory = factory;
             _registry = registry;
             _indexName = indexName;
+            _token = token;
+            _doTrace = doTrace;
             _uris = uris;
             _logger = LogManager.GetCurrentClassLogger();
             _timeout = TimeSpan.FromSeconds(options.ElasticTimeout);
@@ -78,18 +84,21 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<string> DeleteIndexAsync(CancellationToken cancellationToken = default)
-        {
-            var eparams = CreateElasticRequestParams(HttpMethod.Delete);
-            return await QueryAsync(eparams, null, cancellationToken);
-        }
-
         public async Task<string> DeleteIndexByNameAsync(string indexName, CancellationToken cancellationToken = default)
         {
             var esparams = CreateElasticRequestParams(HttpMethod.Delete);
-            esparams.IndexName = indexName;
+            if (indexName != null)
+            {
+                esparams.IndexName = indexName;
+            }
             return await QueryAsync(esparams, null, cancellationToken);
         }
+        
+        public Task<string> DeleteIndexAsync(CancellationToken cancellationToken = default)
+        {
+            return DeleteIndexByNameAsync(null, cancellationToken);
+        }
+        
 
         public async Task<string> CreateIndexAsync(string json, CancellationToken cancellationToken = default)
         {
@@ -183,7 +192,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private ElasticRequestParams CreateElasticRequestParams(HttpMethod verb, string operation = "", string type = "", bool systemRequest = false)
         {
-            return new ElasticRequestParams(verb, _indexName, operation, type, systemRequest);
+            return new ElasticRequestParams(verb, _indexName, operation, _token, type, systemRequest);
         }
 
         private async Task<string> QueryAsync(ElasticRequestParams eparams, string json, CancellationToken cancellationToken)
@@ -195,7 +204,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 var baseUri = _uris[index];
 
-                if (_logger.IsTraceEnabled)
+                if (_doTrace && _logger.IsTraceEnabled)
                 {
                     _logger.Trace().Message("Processing request to Elastic")
                         .Property("baseUri", baseUri)
@@ -208,7 +217,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 if (response == null)
                 {
-                    _logger.Trace("Response is null");
+                    if (_doTrace)
+                    {
+                        _logger.Trace("Response is null");
+                    }
                     continue;
                 }
 
@@ -225,7 +237,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    _logger.Trace("Not found received");
+                    if (_doTrace)
+                    {
+                        _logger.Trace("Not found received");
+                    }
 
                     if (eparams.ThrowNotFound)
                     {
@@ -272,7 +287,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var client = CreateClient(baseUri);
             try
             {
-                response = await SendAsync(client, eparams.Verb, policy, eparams.GetUri(), json, cancellationToken);
+                response = await SendAsync(client, eparams.Verb, policy, eparams.GetUri(), json, eparams.GetToken(), cancellationToken);
             }
             catch (HttpRequestException ex)
             {
@@ -304,12 +319,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             IAsyncPolicy<HttpResponseMessage> policy,
             string uri,
             string json,
+            string token,
             CancellationToken cancellationToken)
         {
             HttpRequestMessage request = new HttpRequestMessage(method, uri);
             if (!string.IsNullOrWhiteSpace(json))
             {
                 request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+            }
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                request.Headers.Add("Authorization", $"Basic {token}");
             }
             return policy.ExecuteAsync(async () => await client.SendAsync(request, cancellationToken));
         }

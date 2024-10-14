@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -8,12 +7,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ElasticRequestParams
     {
-        public ElasticRequestParams(HttpMethod verb, string indexName, string operation, string type, bool isRequestSystemMethod)
+        private string _token;
+        public ElasticRequestParams(HttpMethod verb, string indexName, string operation, string token, string type, bool isRequestSystemMethod)
         {
             ThrowNotFound = true;
             Verb = verb;
             Operation = operation;
             Type = type;
+            _token = token;
             IndexName = indexName;
             UrlParams = new Dictionary<string, string>();
             IsRequestSystemMethod = isRequestSystemMethod;
@@ -33,6 +34,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
 
         public Dictionary<string, string> UrlParams;
+
+        public string GetToken()
+        {
+            return _token;
+        }
 
         public string GetUri()
         {

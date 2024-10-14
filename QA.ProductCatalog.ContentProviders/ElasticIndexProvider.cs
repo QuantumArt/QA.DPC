@@ -1,4 +1,7 @@
-﻿using QA.Core.DPC.QP.Services;
+﻿using System;
+using System.Data;
+using System.Linq;
+using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
 using QA.DotNetCore.Engine.Persistent.Interfaces;
 
@@ -16,8 +19,8 @@ namespace QA.ProductCatalog.ContentProviders
         {
         }
 
-        
-        protected string GetLanguageSetting()
+
+        private string GetLanguageSetting()
         {
 	        return SettingsService.GetSetting(SettingsTitles.LANGUAGES_CONTENT_ID);	        
         }
@@ -28,8 +31,34 @@ namespace QA.ProductCatalog.ContentProviders
 		{
 			return SettingsService.GetSetting(SettingsTitles.ELASTIC_INDEXES_CONTENT_ID);	        
 		}
-		
-		protected override string GetQuery()
+
+		protected override string GetQueryTemplate()
+		{
+			return GetQueryTemplate(false);
+		}
+
+		public override ElasticIndex[] GetArticles()
+		{
+			Connector = Customer.DbConnector;
+			var contentName = "content_" + GetSetting();		
+			var testQuery =
+				$"select count(*) From information_schema.columns where column_name = 'token' and table_name = '{contentName}'";
+			var testCmd = Connector.CreateDbCommand(testQuery);
+			var colCount = Convert.ToInt32(Connector.GetRealScalarData(testCmd));
+			var query = GetQuery(colCount > 0);
+
+			if (query == null)
+			{
+				return null;
+			}
+
+			return Connector.GetRealData(query)
+				.AsEnumerable()
+				.Select(ToModelFromDataRow<ElasticIndex>)
+				.ToArray();
+		}
+
+		private string GetQuery(bool useToken)
 		{
 			var channelsContentId = SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_CHANNELS_CONTENT_ID);
             var languagesContentId = GetLanguageSetting();
@@ -41,16 +70,17 @@ namespace QA.ProductCatalog.ContentProviders
 			}
 
             return string.Format(
-	            GetQueryTemplate(),
+	            GetQueryTemplate(useToken),
 	            new object[] {indexesContentId, channelsContentId, languagesContentId}
 	        );
 		}
 
-		protected override string GetQueryTemplate()
+		private string GetQueryTemplate(bool useToken)
 		{
 			var languagesContentId = GetLanguageSetting();
 			var useLang = !string.IsNullOrEmpty(languagesContentId);
 			var language = useLang ? "COALESCE(l.Code, 'invariant')" : "'invariant'";
+			var token = useToken ? "e.Token" : "''";
 			var languageJoin = useLang ? "join CONTENT_{2}_UNITED l on e.Language = l.CONTENT_ITEM_ID" : "";
 			var languageWhere = useLang ? " AND l.ARCHIVE = 0 AND l.VISIBLE = 1" : "";
 		return @$"
@@ -62,7 +92,8 @@ namespace QA.ProductCatalog.ContentProviders
 	                e.DoTrace,
 	                e.Date,
 	                c.Url as ReindexUrl,
-	                {language} as Language
+	                {language} as Language,
+					{token} as Token
 	            FROM CONTENT_{{0}}_UNITED e
 	                join CONTENT_{{1}}_UNITED c ON e.ReindexChannel = c.CONTENT_ITEM_ID
 	                {languageJoin}                                                    	

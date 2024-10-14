@@ -16,10 +16,11 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
         Task<string> GetIndicesByName(string language, string state);
         List<string> RetrieveIndexNamesFromIndicesResponse(string indices, string alias);
         Task<string> CreateVersionedIndexAsync(string language, string state);
+        Task<string> CreateIndexAsync(string language, string state);
         Task<string[]> GetIndexInAliasAsync(string language, string state);
         Task ReplaceIndexesInAliasAsync(string language, string state, string newIndexName, string[] oldIndexNames, string alias);
         Task DeleteIndexByNameAsync(string language, string state, string indexName);
-
+        Task DeleteIndexAsync(string language, string state);
         Task<SonicResult> CreateAsync(JsonElement product, string language, string state);
         Task<SonicResult> UpdateAsync(JsonElement product, string language, string state);
         Task<SonicResult> DeleteAsync(JsonElement product, string language, string state);

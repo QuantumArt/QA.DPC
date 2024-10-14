@@ -13,9 +13,12 @@ namespace QA.ProductCatalog.HighloadFront.Options
             CircuitBreakingInterval = 60;
             VersionCacheExpiration = TimeSpan.FromMinutes(1);
             CleanKeysOptions = new CleanKeysOptions();
+            UseAliases = true;
         }
         
         public bool CanUpdate { get; set; }
+        
+        public bool UseAliases { get; set; }
 
         public string InstanceId { get; set; }
 

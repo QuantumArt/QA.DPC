@@ -263,6 +263,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 throw new ElasticClientException("Unable to add index to alias.", ex);
             }
         }
+        
+        public async Task DeleteIndexAsync(string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            try
+            {
+                await client.DeleteIndexAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new ElasticClientException("Unable to delete index.", ex);
+            }
+        }
 
         public async Task DeleteIndexByNameAsync(string language, string state, string indexName)
         {
@@ -328,6 +341,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             try
             {
                 return await client.CreateVersionedIndexAsync(GetDefaultIndexSettings().ToString());
+            }
+            catch (Exception ex)
+            {
+                throw new ElasticClientException("Unable to create index.", ex);
+            }
+        }
+        
+        public async Task<string> CreateIndexAsync(string language, string state)
+        {
+            var client = Configuration.GetElasticClient(language, state);
+            try
+            {
+                return await client.CreateIndexAsync(GetDefaultIndexSettings().ToString());
             }
             catch (Exception ex)
             {

@@ -58,7 +58,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return GetElasticKey(index.Language, index.State);
         }
 
-        public virtual Dictionary<string, ElasticIndex> GetIndicesMap()
+        protected virtual Dictionary<string, ElasticIndex> GetIndicesMap()
         {
             var elasticIndices = GetElasticIndices().ToArray();
             var a = elasticIndices.ToDictionary(
@@ -68,18 +68,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var defaultIndex = elasticIndices.FirstOrDefault(n => n.IsDefault);
             if (defaultIndex != null)
             {
-                var defaultKey = GetElasticKey(null, null);
+                var defaultKey = GetElasticKey();
                 var actualKey = GetElasticKey(defaultIndex.Language, defaultIndex.State);
                 a[defaultKey] = a[actualKey];
             }
             return a;
         }
 
-        public Dictionary<string, IndexOperationSyncer> GetSyncerMap()
+        protected Dictionary<string, IndexOperationSyncer> GetSyncerMap()
         {
             return GetElasticIndices().ToDictionary(
                 index => GetElasticKey(index.Language, index.State),
-                index => new IndexOperationSyncer()
+                _ => new IndexOperationSyncer()
             );
         }
 
@@ -88,9 +88,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return GetSyncerMap()[GetElasticKey(language, state)];
         }
 
-        public ElasticClient GetElasticClient(ElasticIndex index)
+        private ElasticClient GetElasticClient(ElasticIndex index)
         {
-            return new ElasticClient(_factory, _registry, index.Name, index.Urls, DataOptions);
+            return new ElasticClient(_factory, _registry, index.Name, index.Urls, index.Token, index.DoTrace, DataOptions);
         }
 
         public virtual string GetUserName(string token)
