@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Logging.Configuration;
 using NLog.Web;
 using QA.Core.DPC.Kafka.API.Factories;
 using QA.Core.DPC.Kafka.API.Interfaces;
@@ -15,7 +16,6 @@ namespace QA.Core.DPC.Kafka.API
         public static void Main(string[] args)
         {
             WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-
             builder.Services.AddControllers(options =>
             {
                 options.InputFormatters.RemoveType<SystemTextJsonInputFormatter>();
@@ -23,13 +23,12 @@ namespace QA.Core.DPC.Kafka.API
             });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Logging.AddNLog("NLog.config");
+            builder.Logging
+                .ClearProviders()
+                .SetMinimumLevel(LogLevel.Trace)
+                .AddConfiguration(builder.Configuration.GetSection("Logging"))
+                .AddNLog("NLog.config");
 
-            if (!builder.Configuration.GetSection("Kafka")
-               .GetValue<bool>("IsEnabled"))
-            {
-                throw new ApplicationException("Kafka disabled in config.");
-            }
             builder.Services.RegisterKafka(builder.Configuration);
             builder.Services.AddSingleton<IProducerService<string>, ProducerService<string>>();
             builder.Services.AddScoped<IKafkaService, KafkaService>();
@@ -39,11 +38,8 @@ namespace QA.Core.DPC.Kafka.API
 
             WebApplication app = builder.Build();
             
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
             app.UseAuthorization();
             app.MapControllers();

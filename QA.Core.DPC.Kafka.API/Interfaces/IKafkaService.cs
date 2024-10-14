@@ -5,6 +5,7 @@ namespace QA.Core.DPC.Kafka.API.Interfaces;
 public interface IKafkaService
 {
     Task<SendResult> SendMessageToKafka(string productId,
+        string topic,
         string data,
         string customerCode,
         string method,

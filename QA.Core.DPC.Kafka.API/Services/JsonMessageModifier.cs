@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
 using QA.Core.DPC.Kafka.API.Interfaces;
 using QA.Core.DPC.Kafka.API.Models;
 
@@ -8,9 +8,9 @@ public class JsonMessageModifier : IMessageModifier
 {
     public string AddMethodToMessage(string message, string method)
     {
-        JObject jsonMessage = JObject.Parse(message);
-        jsonMessage.Add(new JProperty(InternalSettings.ActionParameterName, method));
-
-        return jsonMessage.ToString();
-    }
+        var jsonNode = JsonNode.Parse(message);
+        if (jsonNode == null) throw new ArgumentException(null, nameof(message));
+        jsonNode[InternalSettings.ActionParameterName] = method;
+        return jsonNode.ToJsonString();
+   }
 }

@@ -247,3 +247,47 @@ spec:
             items:
             - key: TZ
               path: TZ
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dpc-kafka-api
+  namespace: dpc
+  labels:
+    app: dpc-kafka-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dpc-kafka-api
+  template:
+    metadata:
+      labels:
+        app: dpc-kafka-api
+        logging: enabled
+    spec:
+      containers:
+        - name: dpc-kafka-api
+          image: "qpcms/dpc-kafka-api:||version||"
+          envFrom:
+            - configMapRef:
+                name: dpc-config
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /etc/localtime
+              name: time-config
+              subPathExpr: $(TZ)
+            - mountPath: /etc/timezone
+              name: timezone-config
+              subPath: TZ
+      volumes:
+        - name: time-config
+          hostPath:
+            path: /usr/share/zoneinfo
+        - name: timezone-config
+          configMap:
+            name: dpc-config
+            items:
+            - key: TZ
+              path: TZ

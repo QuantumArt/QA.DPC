@@ -17,6 +17,7 @@ public class KafkaService : IKafkaService
     }
 
     public async Task<SendResult> SendMessageToKafka(string productId,
+        string topic,
         string data,
         string customerCode,
         string method,
@@ -51,9 +52,10 @@ public class KafkaService : IKafkaService
             {
                 throw new InvalidOperationException("Unable to build topic name without language");
             }
-        
-            string topic = string.Format(InternalSettings.TopicNameFormat, customerCode, language, state)
-               .ToLowerInvariant();
+
+            topic = topic.Replace("{customerCode}", customerCode);
+            topic = topic.Replace("{language}", language);
+            topic = topic.Replace("{state}", state);
 
             IMessageModifier messageModifier = _messageModifierFactory.Build(format);
             string modifiedMessage = messageModifier.AddMethodToMessage(data, method);
