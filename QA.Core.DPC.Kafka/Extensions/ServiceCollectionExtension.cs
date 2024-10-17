@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Confluent.Kafka;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using QA.Core.DPC.Kafka.Models;
 
@@ -13,8 +14,8 @@ namespace QA.Core.DPC.Kafka.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterKafka(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<ProducerConfig>(configuration.GetSection("Kafka"));
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
-
             return services;
         }
     }

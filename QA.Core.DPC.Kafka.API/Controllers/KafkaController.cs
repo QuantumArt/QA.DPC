@@ -12,7 +12,10 @@ namespace QA.Core.DPC.Kafka.API.Controllers
         private readonly IKafkaService _kafkaService;
         private readonly KafkaSettings _settings;
 
-        public KafkaController(ILogger<KafkaController> logger, IKafkaService kafkaService, IOptions<KafkaSettings> settings)
+        public KafkaController(
+            ILogger<KafkaController> logger, 
+            IKafkaService kafkaService, 
+            IOptions<KafkaSettings> settings)
         {
             _logger = logger;
             _kafkaService = kafkaService;

@@ -17,26 +17,13 @@ namespace QA.Core.DPC.Kafka.Services
         private readonly TimeSpan _timeout;
         private readonly bool _checkTopicExists;
 
-        public ProducerService(IOptions<KafkaSettings> settings, ILogger<ProducerService<TKey>> logger)
+        public ProducerService(
+            IOptions<ProducerConfig> config, 
+            IOptions<KafkaSettings> settings, 
+            ILogger<ProducerService<TKey>> logger
+        )
         {
-            ProducerConfig config = new()
-            {
-                Acks = settings.Value.Acks,
-                BootstrapServers = settings.Value.BootstrapServers,
-                MessageSendMaxRetries = settings.Value.MessageSendMaxRetries,
-                RetryBackoffMs = settings.Value.RetryBackoffMs,
-                RequestTimeoutMs = settings.Value.RequestTimeoutMs,
-                MessageTimeoutMs = settings.Value.MessageTimeoutMs,
-                SecurityProtocol = settings.Value.SecurityProtocol,
-            };
-
-            if (config.SecurityProtocol is SecurityProtocol.SaslPlaintext or SecurityProtocol.SaslSsl)
-            {
-                config.SaslUsername = settings.Value.SaslUsername;
-                config.SaslPassword = settings.Value.SaslPassword;
-            }
-
-            _producer = new ProducerBuilder<TKey, string>(config)
+            _producer = new ProducerBuilder<TKey, string>(config.Value)
                 .SetLogHandler((_, message) =>
                 {
                     LogSysLogMessage(logger, message);
@@ -44,11 +31,11 @@ namespace QA.Core.DPC.Kafka.Services
             
             _adminClient = new AdminClientBuilder(new AdminClientConfig
             {
-                BootstrapServers = settings.Value.BootstrapServers
+                BootstrapServers = config.Value.BootstrapServers
             }).Build();
             
 
-            _timeout = TimeSpan.FromMilliseconds(settings.Value.RequestTimeoutMs);
+            _timeout = TimeSpan.FromMilliseconds(config.Value.RequestTimeoutMs ?? 30_000);
             _checkTopicExists = settings.Value.CheckTopicExists;
             _logger = logger;
         }
