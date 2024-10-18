@@ -35,6 +35,7 @@ namespace QA.Core.DPC.Kafka.API
             builder.Services.AddSingleton<IMessageModifierFactory, MessageModifierFactory>();
             builder.Services.AddSingleton<JsonMessageModifier>();
             builder.Services.AddSingleton<XmlMessageModifier>();
+            var name = builder.Configuration["Properties:Name"];
 
             WebApplication app = builder.Build();
             
@@ -43,7 +44,7 @@ namespace QA.Core.DPC.Kafka.API
 
             app.UseAuthorization();
             app.MapControllers();
-
+            app.Logger.LogInformation("{appName} started", name);
             app.Run();
         }
     }
