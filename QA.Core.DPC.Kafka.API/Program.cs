@@ -44,10 +44,8 @@ namespace QA.Core.DPC.Kafka.API
 
             app.UseAuthorization();
             app.MapControllers();
-
-            app.Run();
-            
             app.Logger.LogInformation("{appName} started", name);
+            app.Run();
         }
     }
 }
