@@ -14,7 +14,6 @@ namespace QA.Core.DPC.Kafka.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterKafka(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<ProducerConfig>(configuration.GetSection("Kafka"));
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
             return services;
         }

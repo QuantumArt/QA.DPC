@@ -1,23 +1,23 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using NLog;
 using QA.Core.DPC.Kafka.API.Interfaces;
 using QA.Core.DPC.Kafka.Models;
+using ILogger = NLog.ILogger;
 
 namespace QA.Core.DPC.Kafka.API.Controllers
 {
     [Route("api/[controller]")]
     public class KafkaController : ControllerBase
     {
-        private readonly ILogger<KafkaController> _logger;
+        private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
         private readonly IKafkaService _kafkaService;
         private readonly KafkaSettings _settings;
 
         public KafkaController(
-            ILogger<KafkaController> logger, 
             IKafkaService kafkaService, 
             IOptions<KafkaSettings> settings)
         {
-            _logger = logger;
             _kafkaService = kafkaService;
             _settings = settings.Value;
         }
@@ -32,15 +32,18 @@ namespace QA.Core.DPC.Kafka.API.Controllers
             CancellationToken cancellationToken,
             [FromQuery(Name = "format")] string format = "json")
         {
-            _logger.LogInformation("Receive message with customer_code: {code}, product_id: {pid}, state: {state}, language: {lang}, format: {format}, method: {method}",
-                customerCode,
-                productId,
-                state,
-                language,
-                format,
-                Request.Method.ToLowerInvariant());
+            Logger.ForInfoEvent().Message("Message has been received for sending to Kafka")
+                .Property("customerCode", customerCode)
+                .Property("productId",productId)
+                .Property("state", state)
+                .Property("language", language)
+                .Property("format", format)
+                .Property("method", Request.Method.ToLowerInvariant())
+                .Log();
             
-            _logger.LogDebug("Message body: {data}", data);
+            Logger.ForDebugEvent().Message("Message body")
+                .Property("data", data)
+                .Log();
             
             var result = await _kafkaService.SendMessageToKafka(productId,
                 _settings.TopicName,
@@ -54,11 +57,17 @@ namespace QA.Core.DPC.Kafka.API.Controllers
 
             if (!result.IsSuccess)
             {
-                _logger.LogWarning("Send was not successful with message: {message}", result.Message);
+                Logger.ForWarnEvent().Message("Message has not been sent to Kafka")
+                    .Property("result", result.Message)
+                    .Log();
+                
                 return BadRequest(result.Message);
             }
-
-            _logger.LogInformation("Send was successful with message: {message}", result.Message);
+            
+            Logger.ForInfoEvent().Message("Message has been successfully sent to Kafka")
+                .Property("result", result.Message)
+                .Log();
+            
             return Ok();
         }
     }

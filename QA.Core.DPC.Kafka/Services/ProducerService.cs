@@ -1,70 +1,47 @@
 ﻿using Confluent.Kafka;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using NLog;
+using QA.Core.DPC.Kafka.Helpers;
 using QA.Core.DPC.Kafka.Interfaces;
 using QA.Core.DPC.Kafka.Models;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
+using ILogger = NLog.ILogger;
 
 namespace QA.Core.DPC.Kafka.Services
 {
     public class ProducerService<TKey> : IProducerService<TKey>
     {
         private readonly IProducer<TKey, string> _producer;
-        private readonly ILogger<ProducerService<TKey>> _logger;
         private readonly IAdminClient _adminClient;
         private readonly TimeSpan _timeout;
         private readonly bool _checkTopicExists;
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         public ProducerService(
-            IOptions<ProducerConfig> config, 
-            IOptions<KafkaSettings> settings, 
-            ILogger<ProducerService<TKey>> logger
+            IOptions<KafkaSettings> settings
         )
         {
-            _producer = new ProducerBuilder<TKey, string>(config.Value)
+            var config = settings.Value.Producer;
+            _producer = new ProducerBuilder<TKey, string>(config)
                 .SetLogHandler((_, message) =>
                 {
-                    LogSysLogMessage(logger, message);
+                    KafkaHelper.LogSysLogMessage(_logger, message);
                 }).Build();
             
-            _adminClient = new AdminClientBuilder(new AdminClientConfig
-            {
-                BootstrapServers = config.Value.BootstrapServers
-            }).Build();
+            _adminClient = new AdminClientBuilder(
+                new AdminClientConfig
+                {
+                    BootstrapServers = config.BootstrapServers
+                }).SetLogHandler((_, message) =>
+                {
+                    KafkaHelper.LogSysLogMessage(_logger, message);
+                }).Build();
             
 
-            _timeout = TimeSpan.FromMilliseconds(config.Value.RequestTimeoutMs ?? 30_000);
+            _timeout = TimeSpan.FromMilliseconds(settings.Value.RequestTimeoutInMs);
             _checkTopicExists = settings.Value.CheckTopicExists;
-            _logger = logger;
-        }
-
-        private static void LogSysLogMessage(ILogger<ProducerService<TKey>> logger, LogMessage message)
-        {
-            switch (message.Level)
-            {
-                case SyslogLevel.Alert:
-                case SyslogLevel.Emergency:
-                case SyslogLevel.Critical:
-                    logger.LogCritical(message.Message);
-                    break;
-                case SyslogLevel.Error:
-                    logger.LogError(message.Message);
-                    break;
-                case SyslogLevel.Warning:
-                    logger.LogWarning(message.Message);
-                    break;
-                case SyslogLevel.Info:
-                case SyslogLevel.Notice:
-                    logger.LogInformation(message.Message);
-                    break;
-                case SyslogLevel.Debug:
-                    logger.LogDebug(message.Message);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
         public async Task<PersistenceStatus> SendString(TKey key,
@@ -74,8 +51,7 @@ namespace QA.Core.DPC.Kafka.Services
         {
             if (string.IsNullOrWhiteSpace(topic))
             {
-                _logger.LogError("Topic name is empty. Check application configuration.");
-
+                _logger.Error("Topic name is empty. Check application configuration.");
                 return PersistenceStatus.NotPersisted;
             }
 
@@ -85,7 +61,7 @@ namespace QA.Core.DPC.Kafka.Services
                 var exists = data.Topics.Any(n => n.Topic == topic);
                 if (!exists)
                 {
-                    _logger.LogError("Topic {topic} does not exist. Check application configuration.", topic);
+                    _logger.Error("Topic {topic} does not exist. Check application configuration.", topic);
                     return PersistenceStatus.NotPersisted;                    
                 }
             }
