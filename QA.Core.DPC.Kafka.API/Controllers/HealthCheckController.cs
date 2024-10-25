@@ -14,9 +14,9 @@ namespace QA.Core.DPC.Kafka.API.Controllers
     {
         private readonly KafkaSettings _settings;
         private static readonly ILogger Logger = LogManager.GetCurrentClassLogger(); 
-        public HealthCheckController(IOptions<KafkaSettings> settings)
+        public HealthCheckController(KafkaSettings settings)
         {
-            _settings = settings.Value;
+            _settings = settings;
         }
         
         [HttpGet]
