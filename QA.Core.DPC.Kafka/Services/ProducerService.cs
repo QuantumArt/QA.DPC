@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using NLog;
 using QA.Core.DPC.Kafka.Helpers;
@@ -19,12 +18,9 @@ namespace QA.Core.DPC.Kafka.Services
         private readonly bool _checkTopicExists;
         private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        public ProducerService(
-            IOptions<KafkaSettings> settings
-        )
+        public ProducerService(KafkaSettings settings)
         {
-            var config = settings.Value.Producer;
-            _producer = new ProducerBuilder<TKey, string>(config)
+            _producer = new ProducerBuilder<TKey, string>(settings.GetProducerConfig())
                 .SetLogHandler((_, message) =>
                 {
                     KafkaHelper.LogSysLogMessage(_logger, message);
@@ -33,15 +29,15 @@ namespace QA.Core.DPC.Kafka.Services
             _adminClient = new AdminClientBuilder(
                 new AdminClientConfig
                 {
-                    BootstrapServers = config.BootstrapServers
+                    BootstrapServers = settings.Producer.BootstrapServers
                 }).SetLogHandler((_, message) =>
                 {
                     KafkaHelper.LogSysLogMessage(_logger, message);
                 }).Build();
             
 
-            _timeout = TimeSpan.FromMilliseconds(settings.Value.RequestTimeoutInMs);
-            _checkTopicExists = settings.Value.CheckTopicExists;
+            _timeout = TimeSpan.FromMilliseconds(settings.RequestTimeoutInMs);
+            _checkTopicExists = settings.CheckTopicExists;
         }
 
         public async Task<PersistenceStatus> SendString(TKey key,

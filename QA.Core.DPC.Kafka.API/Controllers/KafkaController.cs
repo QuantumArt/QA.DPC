@@ -16,10 +16,10 @@ namespace QA.Core.DPC.Kafka.API.Controllers
 
         public KafkaController(
             IKafkaService kafkaService, 
-            IOptions<KafkaSettings> settings)
+            KafkaSettings settings)
         {
             _kafkaService = kafkaService;
-            _settings = settings.Value;
+            _settings = settings;
         }
 
         [HttpPut("{language}/{state}")]

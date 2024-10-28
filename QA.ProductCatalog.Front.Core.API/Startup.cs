@@ -57,7 +57,7 @@ namespace QA.ProductCatalog.Front.Core.API
                     {
                         return GetNpgSqlDpcModelDataContext(customer.ConnectionString);
                     }
-                    return GetSqlServerDpcModelDataContext(customer.ConnectionString);
+                    return GetSqlServerDpcModelDataContext(customer.ConnectionString, dataOptions.CommandTimeout);
                 });
 
             services.AddScoped<ILogger>(logger => new NLogLogger("NLog.config"));
@@ -90,10 +90,11 @@ namespace QA.ProductCatalog.Front.Core.API
             return new NpgSqlDpcModelDataContext(builder.Options);
         }
 
-        private static DpcModelDataContext GetSqlServerDpcModelDataContext(string connectionString)
+        private static DpcModelDataContext GetSqlServerDpcModelDataContext(string connectionString, int commandTimeout)
         {
             var builder = new DbContextOptionsBuilder<SqlServerDpcModelDataContext>();
-            builder.UseSqlServer(connectionString);
+            builder.UseSqlServer(connectionString, options => options.CommandTimeout(commandTimeout));
+            
             return new SqlServerDpcModelDataContext(builder.Options);
         }
 

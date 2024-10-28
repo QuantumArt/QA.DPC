@@ -14,7 +14,9 @@ namespace QA.Core.DPC.Kafka.Extensions
         /// <returns></returns>
         public static IServiceCollection RegisterKafka(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
+            KafkaSettings settings = new();
+            configuration.GetSection("Kafka").Bind(settings);
+            services.AddSingleton(settings);
             return services;
         }
     }
