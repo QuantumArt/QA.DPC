@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using NLog;
 using QA.Core.DPC.Kafka.Helpers;
 using QA.Core.DPC.Kafka.Models;
@@ -26,7 +25,27 @@ namespace QA.Core.DPC.Kafka.API.Controllers
             sb.AppendLine("Application: OK");
             var brokerOkStr = IsKafkaConnected() ? "OK" : "Error";
             sb.AppendLine("Broker: " + brokerOkStr);
+            var producerOkStr = IsProducerBuilt() ? "OK" : "Error";
+            sb.AppendLine("Producer: " + producerOkStr);
             return Content(sb.ToString(), "text/plain");
+        }
+
+        private bool IsProducerBuilt()
+        {
+            try
+            {
+                _ = new ProducerBuilder<string, string>(_settings.GetProducerConfig())
+                    .SetLogHandler((_, message) =>
+                    {
+                        KafkaHelper.LogSysLogMessage(Logger, message);
+                    }).Build();
+            }
+            catch (Exception ex)
+            {
+                Logger.ForErrorEvent().Exception(ex).Message("Cannot build producer").Log();
+                return false;
+            }
+            return true;
         }
 
         private bool IsKafkaConnected()

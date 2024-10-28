@@ -20,8 +20,7 @@ namespace QA.Core.DPC.Kafka.Services
 
         public ProducerService(KafkaSettings settings)
         {
-            var config = settings.Producer;
-            _producer = new ProducerBuilder<TKey, string>(config)
+            _producer = new ProducerBuilder<TKey, string>(settings.GetProducerConfig())
                 .SetLogHandler((_, message) =>
                 {
                     KafkaHelper.LogSysLogMessage(_logger, message);
@@ -30,7 +29,7 @@ namespace QA.Core.DPC.Kafka.Services
             _adminClient = new AdminClientBuilder(
                 new AdminClientConfig
                 {
-                    BootstrapServers = config.BootstrapServers
+                    BootstrapServers = settings.Producer.BootstrapServers
                 }).SetLogHandler((_, message) =>
                 {
                     KafkaHelper.LogSysLogMessage(_logger, message);
