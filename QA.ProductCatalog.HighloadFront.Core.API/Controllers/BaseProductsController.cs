@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using NLog;
+using NLog.Fluent;
+using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Options;
-using NLog.Fluent;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -52,6 +53,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                             .Property("language", language)
                             .Property("state", state)
                             .Property("searchOptions", options)
+                            .Property("user", HttpContext.GetAuthTokenUser())
                             .Write();
                     }
                 }

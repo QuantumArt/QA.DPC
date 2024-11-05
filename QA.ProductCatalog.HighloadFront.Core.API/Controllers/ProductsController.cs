@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using MassTransit.Futures.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -91,6 +89,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }
 
@@ -134,6 +133,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }
 
@@ -192,6 +192,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }
 
@@ -230,8 +231,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 Logger.Trace().Message("GET GetById query")
                     .Property("query", Request.Query)
                     .Property("language", language)
-                    .Property("state", state)                    
+                    .Property("state", state)
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }
 
@@ -282,6 +284,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }            
 
@@ -323,6 +326,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }  
 
@@ -377,6 +381,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }
 
@@ -431,6 +436,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
+                    .Property("user", HttpContext.GetAuthTokenUser())
                     .Write();
             }  
 

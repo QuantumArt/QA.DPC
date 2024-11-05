@@ -42,6 +42,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
                 .Value.FirstOrDefault();
 
             var user = _configuration.GetUserName(token) ?? "Default";
+
             var key = GetKey(user, ip, context);
             var limit = _configuration.GetLimit(user, GetActualProfile(context));
             var counter = _cacheProvider.GetOrAdd(
@@ -60,6 +61,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             }
             else
             {
+                context.HttpContext.SetAuthTokenUser(user);
+
                 await next();
 
                 counter.Hit();
