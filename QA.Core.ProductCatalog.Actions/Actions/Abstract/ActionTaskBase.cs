@@ -47,11 +47,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 			try
 			{
-				Logger.Info()
+				Logger.ForInfoEvent()
 					.Message("{action} has been started", GetType().Name)
 					.Property("taskId",TaskContext.TaskId)
 					.Property("context", context)
-					.Write();
+					.Log();
 
 				HttpContextUserProvider.ForcedUserId = context.UserId;
 				processResult = Process(context) ?? new ActionTaskResult();
@@ -132,22 +132,22 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		        timer.Start();
 		        result = func();
 		        timer.Stop();
-		        Logger.Info()
+		        Logger.ForInfoEvent()
 			        .Message(message, messageParams)
 			        .Property("taskId", TaskContext.TaskId)
 			        .Property("elapsed", timer.ElapsedMilliseconds)
-			        .Write();                
+			        .Log();                
 		        return result;
 	        }
 	        catch (Exception ex)
 	        {
 		        timer.Stop();
-		        Logger.Error()
+		        Logger.ForErrorEvent()
 			        .Exception(ex)
 			        .Message(message, messageParams)
 			        .Property("taskId", TaskContext.TaskId)
 			        .Property("elapsed", timer.ElapsedMilliseconds)
-			        .Write();
+			        .Log();
 
 		        throw;
 	        }
@@ -167,22 +167,22 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 	        catch (Exception ex)
 	        {
 		        timer.Stop();
-		        Logger.Error()
+		        Logger.ForErrorEvent()
 			        .Exception(ex)
 			        .Message(message, messageParams)
 			        .Property("taskId", TaskContext.TaskId)
 			        .Property("elapsed", timer.ElapsedMilliseconds)
-			        .Write();
+			        .Log();
 
 		        throw;
 	        }
 	        
 	        timer.Stop();
-	        Logger.Info()
+	        Logger.ForInfoEvent()
 		        .Message(message, messageParams)
 		        .Property("taskId", TaskContext.TaskId)
 		        .Property("elapsed", timer.ElapsedMilliseconds)
-		        .Write();        
+		        .Log();        
 
         }
 	}

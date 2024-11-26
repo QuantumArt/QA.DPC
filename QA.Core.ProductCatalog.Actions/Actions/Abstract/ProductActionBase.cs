@@ -102,7 +102,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				catch (ProductException pex)
 				{
 					var logLevel = pex.IsError ? LogLevel.Error : LogLevel.Info;
-					var builder = Logger.Log(logLevel).Message(LoggerMessage + id);
+					var builder = Logger.ForLogEvent(logLevel).Message(LoggerMessage + id);
 					var result = ActionTaskResult.FromString(pex.Message);
 					var msg = ResourceManager.GetString(pex.Message);
 					if (result != null)
@@ -117,7 +117,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 					{
 						builder.Exception(pex);
 					}
-					builder.Write();
+					builder.Log();
 					exceptions.Add(pex);
 				}
 				catch (AggregateException aex)
@@ -130,13 +130,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 						{
 							ipex = new ProductException(id, nameof(TaskStrings.ActionErrorMessage), iex);
 						}
-						Logger.Error().Message(LoggerMessage + id).Exception(ipex).Write();
+						Logger.ForErrorEvent().Message(LoggerMessage + id).Exception(ipex).Log();
 						exceptions.Add(ipex);
 					}
 				}
 				catch (Exception ex)
 				{
-					Logger.Error().Message(LoggerMessage + id).Exception(ex).Write();
+					Logger.ForErrorEvent().Message(LoggerMessage + id).Exception(ex).Log();
 					exceptions.Add(new ProductException(id, nameof(TaskStrings.ServerError), ex));
 				}
 			}

@@ -51,29 +51,29 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     result = action.Process(context);
                 }
-                Logger.Debug()
+                Logger.ForDebugEvent()
                     .Message($"Action '{command}' succeeded", command)
                     .Property("context", context)
                     .Property("adapter", adapter)
-                    .Write();
+                    .Log();
                 return Info(result?.ToString());
             }
             catch (ActionException ex)
             {
-                Logger.Debug()
+                Logger.ForDebugEvent()
                     .Message($"Action '{command}' failed", command)
                     .Property("context", context)
                     .Property("adapter", adapter)
                     .Exception(ex)
-                    .Write();
+                    .Log();
                 return Error(ex);
             }
             catch (ResolutionFailedException ex)
             {
-                Logger.Error()
+                Logger.ForErrorEvent()
                     .Message($"Action '{command}' not found", command)
                     .Exception(ex)
-                    .Write();
+                    .Log();
                 return Error("Handler is not found for command: " + command);
             }
         }

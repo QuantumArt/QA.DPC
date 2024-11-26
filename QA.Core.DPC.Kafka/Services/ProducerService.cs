@@ -21,7 +21,7 @@ namespace QA.Core.DPC.Kafka.Services
         public ProducerService(KafkaSettings settings)
         {
             var producerConfig = settings.GetProducerConfig();
-            if (_logger.IsTraceEnabled)
+            if (Environment.GetEnvironmentVariable("ENABLE_TRACE") == "1")
             {
                 _logger.ForTraceEvent().Message("Creating producer using settings").Property("config", producerConfig).Log();
             }

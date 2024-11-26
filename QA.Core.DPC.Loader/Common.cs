@@ -76,10 +76,10 @@ namespace QA.Core.DPC.Loader
                 }
                 catch (Exception ex)
                 {
-                    Logger.Warn()
+                    Logger.ForWarnEvent()
                         .Exception(ex)
                         .Message("Cannot receive file size with url: {url}", url)
-                        .Write();
+                        .Log();
                     
                     return 0;
                 }
@@ -92,9 +92,9 @@ namespace QA.Core.DPC.Loader
                 return file.Length;
             }
             
-            Logger.Warn()
+            Logger.ForWarnEvent()
                 .Message("Cannot find file with path: {path}", path)
-                .Write();
+                .Log();
                     
             return 0;
 

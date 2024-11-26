@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using NLog;
-using NLog.Fluent;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
@@ -62,10 +61,10 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public void Run(object customerCode)
         {
-            _logger.Info()
+            _logger.ForInfoEvent()
                 .Message("Run called for {customerCode}", customerCode)
                 .Property("taskRunnerId", GetHashCode())
-                .Write();
+                .Log();
 
             _identityProvider.Identity = new Identity(customerCode as string);                    
             
@@ -82,10 +81,10 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                     {
                         if (_logger.IsTraceEnabled)
                         {
-                            _logger.Trace()
+                            _logger.ForTraceEvent()
                                 .Message("Receiving new task for processing...")
                                 .Property("taskRunnerId", GetHashCode())
-                                .Write();                 
+                                .Log();                 
                         }
                         
                         int? taskIdToRun;
@@ -96,10 +95,10 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         }
                         catch (Exception ex)
                         {
-                            _logger.Error().Exception(ex)
+                            _logger.ForErrorEvent().Exception(ex)
                                 .Message("Error while receiving new task for processing")
                                 .Property("taskRunnerId", GetHashCode())                                
-                                .Write();
+                                .Log();
 
                             Thread.Sleep(_delays.MsToSleepIfNoDbAccess);
                             continue;
@@ -112,12 +111,12 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                             {
                                 if (_logger.IsTraceEnabled)
                                 {
-                                    _logger.Trace()
+                                    _logger.ForTraceEvent()
                                         .Message(
                                             "No tasks found. Sleeping for {delay} ms", _delays.MsToSleepIfNoTasks
                                         )
                                         .Property("taskRunnerId", GetHashCode())
-                                        .Write();                         
+                                        .Log();                         
                                 }
                                 Thread.Sleep(_delays.MsToSleepIfNoTasks);
                             }
@@ -125,18 +124,18 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         }
                         else
                         {
-                            _logger.Info()
+                            _logger.ForInfoEvent()
                                 .Message(
                                     "Task {taskId} has been started for customerCode {customerCode}", 
                                     taskIdToRun, customerCode
                                     )
                                 .Property("taskRunnerId", GetHashCode())
-                                .Write();
+                                .Log();
 
                             try
                             {
                                 var taskFromQueueInfo = taskService.GetTask(taskIdToRun.Value);
-                                ITask task = null;
+                                ITask task;
                                 
                                 try
                                 {
@@ -184,33 +183,33 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                     JsonConvert.SerializeObject(executionContext.Result)
                                 );
                                 
-                                _logger.Info()
+                                _logger.ForInfoEvent()
                                     .Message(
                                         "Task {taskId} state has been changed to {state}", 
                                         taskIdToRun.Value, state
                                     )
                                     .Property("taskRunnerId", GetHashCode())
-                                    .Write();    
+                                    .Log();    
 
                                 if (state == ActionsRunnerModel.State.Done)
                                 {
-                                    _logger.Info()
+                                    _logger.ForInfoEvent()
                                         .Message(
                                             "Task {taskId} for customer code {customerCode} successfully completed", 
                                             taskIdToRun, customerCode
                                         )
                                         .Property("taskRunnerId", GetHashCode())
                                         .Property("taskResult", executionContext.Result?.ToString())
-                                        .Write();                                
+                                        .Log();                                
                                 }
                                 else if (state == ActionsRunnerModel.State.Failed)
                                 {
-                                    _logger.Info()
+                                    _logger.ForInfoEvent()
                                         .Message("Task {taskId} for customer code {customerCode} failed",
                                             taskIdToRun, customerCode)
                                         .Property("taskRunnerId", GetHashCode())
                                         .Property("taskResult", executionContext.Result?.ToString())
-                                        .Write();                                 
+                                        .Log();                                 
                                 }
                             }
                             catch (Exception ex)
@@ -222,22 +221,22 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                                 taskService.ChangeTaskState(taskIdToRun.Value, ActionsRunnerModel.State.Failed, errMessage);
 
-                                _logger.Error()
+                                _logger.ForErrorEvent()
                                     .Exception(ex)
                                     .Message("Task {taskId} failed", taskIdToRun)
                                     .Property("taskRunnerId", GetHashCode())
-                                    .Write();
+                                    .Log();
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error()
+                    _logger.ForErrorEvent()
                         .Exception(ex)
                         .Message("General service error")
                         .Property("taskRunnerId", GetHashCode())
-                        .Write();
+                        .Log();
 
                     InitStop();
                 }
@@ -245,20 +244,20 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
             State = StateEnum.Stopped;
             
-            _logger.Info()
+            _logger.ForInfoEvent()
                 .Message("Run stopped for {customerCode}", customerCode)
                 .Property("taskRunnerId", GetHashCode())
-                .Write();
+                .Log();
         }
 
         public void InitStop()
         {
             if (State == StateEnum.Running)
             {
-                _logger.Info()
+                _logger.ForInfoEvent()
                     .Message("Run InitStop")
                     .Property("taskRunnerId", GetHashCode())
-                    .Write();
+                    .Log();
                 
                 State = StateEnum.WaitingToStop;
                 StopTask?.Invoke();

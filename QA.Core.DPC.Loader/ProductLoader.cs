@@ -130,10 +130,10 @@ namespace QA.Core.DPC.Loader
                 ArticleService.LoadStructureCache();
 
                 timer.Stop();
-                _logger.Trace()
+                _logger.ForTraceEvent()
                     .Message("LoadStructureCache for products {ids} took {elapsed} ms", 
                         articleIds, timer.Elapsed.Milliseconds)
-                    .Write();
+                    .Log();
                 
                 var articlesById = new Dictionary<int, Article>();
                 var missedArticleIds = new List<int>();
@@ -163,10 +163,10 @@ namespace QA.Core.DPC.Loader
                     var loadedArticles = InitDictionaries(productDefinition, isLive, GetDictionaryCounter());
 
                     timer.Stop();
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("InitDictionaries for products {ids} called with hits {hits} and misses {misses} took {elapsed} ms",
                             articleIds, _hits, _misses, timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
 
                     timer.Restart();
 
@@ -175,10 +175,10 @@ namespace QA.Core.DPC.Loader
                         .ToArray();
 
                     timer.Stop();
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("Root articles {ids} loading took {elapsed} ms",
                             missedArticleIds,  timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
 
                     _hits = _misses = 0;
                     var counter = GetArticleCounter(content.ContentId);
@@ -189,10 +189,10 @@ namespace QA.Core.DPC.Loader
                     counter.LogCounter();
                     timer.Stop();
                     
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("GetArticlesForQpArticles for articles {ids} called with hits {hits} and misses {misses} took {elapsed} ms",
                             missedArticleIds, _hits, _misses, timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
 
                     timer.Restart();
 
@@ -210,10 +210,10 @@ namespace QA.Core.DPC.Loader
 
                     timer.Stop();
                     
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("Virtual fields generating for products {ids} took {elapsed} ms",
                             missedArticleIds, timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
 
                 }
 
@@ -239,10 +239,10 @@ namespace QA.Core.DPC.Loader
                 ArticleService.LoadStructureCache();
                 
                 timer.Stop();
-                _logger.Trace()
+                _logger.ForTraceEvent()
                     .Message("LoadStructureCache for product {id} took {elapsed} ms", 
                         id, timer.Elapsed.Milliseconds)
-                    .Write();
+                    .Log();
 
                 Article article = null;
 
@@ -266,10 +266,10 @@ namespace QA.Core.DPC.Loader
                         return null;
 
                     timer.Stop();
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("Root article {id} loading took {elapsed} ms",
                             id,  timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
 
                     timer.Restart();
 
@@ -281,10 +281,10 @@ namespace QA.Core.DPC.Loader
                     }
 
                     timer.Stop();
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("Product {id} definition loading took {elapsed} ms",
                             id,  timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
 
                     timer.Restart();
 
@@ -292,10 +292,10 @@ namespace QA.Core.DPC.Loader
                     counter.LogCounter();
 
                     timer.Stop();
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("Product {id} loading took {elapsed} ms",
                             id,  timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
                 }
 
                 if (article.HasVirtualFields)
@@ -305,10 +305,10 @@ namespace QA.Core.DPC.Loader
                     article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
 
                     timer.Stop();
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("Virtual fields generating for product {id} took {elapsed} ms",
                             id,  timer.Elapsed.Milliseconds)
-                        .Write();
+                        .Log();
                 }
 
                 return article;
@@ -612,10 +612,10 @@ namespace QA.Core.DPC.Loader
 
             stopWatch.Stop();
 
-            _logger.Info()
+            _logger.ForInfoEvent()
                 .Message("InitDictionaries called with hits {hits} and misses {misses} took {elapsed} ms",
                     _hits, _misses, stopWatch.Elapsed.Milliseconds)
-                .Write();
+                .Log();
 
             _hits = _misses = 0;
             stopWatch.Restart();
@@ -623,10 +623,10 @@ namespace QA.Core.DPC.Loader
             var article = GetArticlesForQpArticles(new []{qpArticle}, productDefinition.StorageSchema, loadedArticles, isLive, counter).FirstOrDefault();
 
             stopWatch.Stop();
-            _logger.Info()
+            _logger.ForInfoEvent()
                 .Message("GetArticle called with hits {hits} and misses {misses} took {elapsed} ms",
                     _hits, _misses, stopWatch.Elapsed.Milliseconds)          
-                .Write();
+                .Log();
 
             return article;
         }
@@ -1408,13 +1408,13 @@ namespace QA.Core.DPC.Loader
                         }
                     }
                     
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message(
                             "Dictionary (id={id}, isLive={isLive}, hash={hash}) has been filled with {count} articles", 
                             contentToCache.ContentId, isLive, contentToCache.GetHashCode(), articles.Length
                         )
                         .Property("name", contentToCache.ContentName)
-                        .Write();
+                        .Log();
                     
 
                     return contentDic;
@@ -1530,12 +1530,12 @@ namespace QA.Core.DPC.Loader
         {
             if (IsActive())
             {
-                _logger.Info()
+                _logger.ForInfoEvent()
                     .Message("Article counting for product {id} completed", _productId)
                     .Property("totalCount", _totalCount)
                     .Property("cacheCount", _cacheCount)
                     .Property("hitCount", _hitCount)
-                    .Write();
+                    .Log();
             }
         }
 

@@ -406,10 +406,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                             {
 
                                 var ids = ex.InnerExceptions.OfType<ProductException>().Select(x => x.ProductId);
-                                Logger.Error()
+                                Logger.ForErrorEvent()
                                     .Exception(ex)
                                     .Message("Exception has been thrown while publishing products {ids}", prodsToPublishIds)
-                                    .Write();                                
+                                    .Log();                                
 
                                 foreach (var pID in ids)
                                 {
@@ -418,10 +418,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                             }
                             catch (Exception ex)
                             {
-                                Logger.Error()
+                                Logger.ForErrorEvent()
                                     .Exception(ex)
                                     .Message("Exception has been thrown while publishing products {ids}", prodsToPublishIds)
-                                    .Write();         
+                                    .Log();         
                             }
                         }
 
@@ -436,7 +436,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error().Message("SendProductAction exception").Exception(ex).Write();
+                        Logger.ForErrorEvent().Message("SendProductAction exception").Exception(ex).Log();
 
                         foreach (var item in idsToProcess)
                             failed.TryAdd(item, null);
@@ -580,7 +580,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 var ids = articles.Select(a => a.Id).ToArray();
 
-                Logger.Error().Message($"Exception while sending products: {string.Join(", ", ids)}").Exception(exception).Write();
+                Logger.ForErrorEvent().Message($"Exception while sending products: {string.Join(", ", ids)}").Exception(exception).Log();
                 errors.Add(exception.InnerException == null ? exception : exception.InnerException);
 
                 foreach (var id in ids)

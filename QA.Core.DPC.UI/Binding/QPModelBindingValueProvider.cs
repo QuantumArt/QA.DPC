@@ -41,10 +41,10 @@ namespace QA.Core.DPC.UI
             {
                 Debug.WriteLine(ex.Message);
 
-                _logger.Warn().Exception(ex)
+                _logger.ForWarnEvent().Exception(ex)
                     .Message("ModelBindingError for {owner}.{name} ({propertyType}) expression: '{expression}'", 
                         prop.OwnerType, prop.Name, prop.PropertyType, be.Expression)
-                    .Write();
+                    .Log();
 
                 if (ThrowOnErrors)
                 {

@@ -105,12 +105,12 @@ using QA.Core.DPC.QP.Services;
 						ctx.Messages.AddRange(messages);
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
-						_logger.Info()
+						_logger.ForInfoEvent()
 							.Message("Message {message} for products {productIds} is enqueueing",
 								method, string.Join(", ", productIds)
 							)
 							.Property("isStage", isStage)
-							.Write();
+							.Log();
 
 						ctx.SaveChanges();
 					}

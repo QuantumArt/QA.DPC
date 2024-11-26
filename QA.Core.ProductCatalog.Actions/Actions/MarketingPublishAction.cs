@@ -122,7 +122,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				throw;
 			}
 			catch (Exception ex) {
-				Logger.Error().Message(LoggerErrorMessage).Exception(ex).Write();
+				Logger.ForErrorEvent().Message(LoggerErrorMessage).Exception(ex).Log();
 				throw new ActionException(
 					TaskStrings.ActionErrorMessage, 
 					context.ContentItemIds.Select(
