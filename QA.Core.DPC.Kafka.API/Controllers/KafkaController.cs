@@ -41,7 +41,7 @@ namespace QA.Core.DPC.Kafka.API.Controllers
                 .Property("method", Request.Method.ToLowerInvariant())
                 .Log();
             
-            Logger.ForDebugEvent().Message("Message body")
+            Logger.ForTraceEvent().Message("Message body")
                 .Property("data", data)
                 .Log();
             
