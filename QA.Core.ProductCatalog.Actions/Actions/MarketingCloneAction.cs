@@ -133,13 +133,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			catch (ProductException pex)
 			{
 				var logLevel = pex.IsError ? LogLevel.Error : LogLevel.Info;
-				Logger.Log(logLevel).Message(LoggerMarketingErrorMessage + marketingProduct.Id).Exception(pex).Write();
+				Logger.ForLogEvent(logLevel).Message(LoggerMarketingErrorMessage + marketingProduct.Id).Exception(pex).Log();
 				exceptions.Add(pex);
 				return 0;
 			}
 			catch (Exception ex)
 			{
-				Logger.Error().Message(LoggerMarketingErrorMessage + marketingProduct.Id).Exception(ex).Write();
+				Logger.ForErrorEvent().Message(LoggerMarketingErrorMessage + marketingProduct.Id).Exception(ex).Log();
 				exceptions.Add(new ProductException(marketingProduct.Id, nameof(TaskStrings.ServerError), ex) { IsError = true });
 				return 0;
 			}
@@ -156,12 +156,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			catch (ProductException pex)
 			{
 				var logLevel = pex.IsError ? LogLevel.Error : LogLevel.Info;
-				Logger.Log(logLevel).Message(LoggerErrorMessage + productId).Exception(pex).Write();
+				Logger.ForLogEvent(logLevel).Message(LoggerErrorMessage + productId).Exception(pex).Log();
 				exceptions.Add(pex);
 			}
 			catch (Exception ex)
 			{
-				Logger.Error().Message(LoggerErrorMessage + productId).Exception(ex).Write();
+				Logger.ForErrorEvent().Message(LoggerErrorMessage + productId).Exception(ex).Log();
 				exceptions.Add(new ProductException(productId, nameof(TaskStrings.ServerError), ex) { IsError = true });
 			}
 		}

@@ -130,10 +130,10 @@ namespace QA.Core.DPC.API.Update
 
             using (var transaction = _createTransaction())
             {
-                _logger.Info()
+                _logger.ForInfoEvent()
                     .Message("Batch update for product {id} started", product.Id)
                     .Property("updateData", updateData.ToDictionary(n => n.ToString(), m => m.Fields))
-                    .Write();
+                    .Log();
 
                 InsertData[] idMapping = _articleService.BatchUpdate(updateData, createVersions);
 
@@ -141,10 +141,10 @@ namespace QA.Core.DPC.API.Update
 
                 if (_articlesToDelete.Any())
                 {
-                    _logger.Info()
+                    _logger.ForInfoEvent()
                         .Message("Deleting articles for product {id} started", product.Id)
                         .Property("articlesToDelete", _articlesToDelete.Keys)
-                        .Write();
+                        .Log();
 
                     foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                     {
@@ -158,10 +158,10 @@ namespace QA.Core.DPC.API.Update
                         }
                         catch (MessageResultException ex)
                         {
-                            _logger.Error()
+                            _logger.ForErrorEvent()
                                 .Exception(ex)
                                 .Message("Cannot remove article {id}", articleToDeleteKv.Key)
-                                .Write();
+                                .Log();
                         }
                     }
 
@@ -188,9 +188,9 @@ namespace QA.Core.DPC.API.Update
         {
             using var transaction = _createTransaction();
 
-            _logger.Info()
+            _logger.ForInfoEvent()
                 .Message("Deleting articles for product {id} started", productId)
-                .Write();
+                .Log();
 
             try
             {
@@ -201,10 +201,10 @@ namespace QA.Core.DPC.API.Update
             }
             catch (MessageResultException ex)
             {
-                _logger.Error()
+                _logger.ForErrorEvent()
                     .Exception(ex)
                     .Message("Cannot remove article {id}", productId)
-                    .Write();
+                    .Log();
             }
 
             _logger.Info("Deleting articles for product {id} completed", productId);

@@ -20,10 +20,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             Logger =  LogManager.GetLogger(GetType().FullName);
             Configuration = configuration;
         }
+        
+        protected bool TraceApiCalls => Environment.GetEnvironmentVariable("TRACE_API_CALLS") == "1";
 
         protected void LogException(Exception ex, string message, params object[] args)
         {
-            var builder = Logger.Log(LogLevel.Error).Message(message, args);
+            var builder = Logger.ForErrorEvent().Message(message, args);
             
             if (ex is ElasticClientException elex)
             {
@@ -39,7 +41,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     builder.Property("uri", eparams.GetUri());
                 }
             }
-            builder.Write();
+            builder.Log();
         }
     }
 }

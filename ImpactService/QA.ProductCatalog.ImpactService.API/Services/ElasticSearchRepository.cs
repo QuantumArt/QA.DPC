@@ -322,10 +322,10 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             if (_logger.IsTraceEnabled)
             {
-                _logger.Trace().Message(message ?? "Query to Elastic search")
+                _logger.ForTraceEvent().Message(message ?? "Query to Elastic search")
                     .Property("json", json)
                     .Property("searchOptions", options)
-                    .Write();
+                    .Log();
             }
             
             return await GetElasticClient(options).SearchAsync(options.UrlType, json);

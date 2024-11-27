@@ -332,9 +332,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
 
-        private LogBuilder GetLogBuilder(LogLevel level, string message, SearchOptions searchOptions, object[] args)
+        private LogEventBuilder GetLogBuilder(LogLevel level, string message, SearchOptions searchOptions, object[] args)
         {
-            var builder = Logger.Log(level).Message(message, args);
+            var builder = Logger.ForLogEvent(level).Message(message, args);
             if (searchOptions != null)
             {
                 builder.Property("searchOptions", searchOptions);
@@ -347,14 +347,14 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             if (Logger.IsEnabled(level))
             {
                 var builder = GetLogBuilder(level, message, searchOptions, args);
-                builder.Write();            
+                builder.Log();            
             }
         }
         
         protected void LogException(Exception ex, string message, SearchOptions searchOptions, params object[] args)
         {
             var builder = GetLogBuilder(LogLevel.Error, message, searchOptions, args).Exception(ex);
-            builder.Write();
+            builder.Log();
         }
 
         protected bool IsCacheDisabled(bool html = false)

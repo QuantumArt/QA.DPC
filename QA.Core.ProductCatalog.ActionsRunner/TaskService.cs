@@ -51,18 +51,18 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             var task = GetTaskObject(key, data, userId, userName, taskDisplayName, sourceTaskId, exclusiveCategory, config, binData);
             
-            Logger.Info()
+            Logger.ForInfoEvent()
                 .Message("Adding task...")
                 .Property("task", task)
-                .Write();
+                .Log();
             
             using (var context = TaskRunnerEntities.Get(_customer))
             {
                 var result = AddTask(context, task);
                 
-                Logger.Info()
+                Logger.ForInfoEvent()
                     .Message("Task {taskId} added", result)
-                    .Write();
+                    .Log();
                 
                 return result;
             }
@@ -205,25 +205,25 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             using (var tr = context.Database.BeginTransaction())
             {
                 
-                Logger.Trace()
+                Logger.ForTraceEvent()
                     .Message("Receiving task {taskId} for updating...", id)
-                    .Write();
+                    .Log();
                 
                 var task = GetTaskWithUpdateLock(context, id);
                 if (task == null)
                 {
-                    Logger.Warn()
+                    Logger.ForWarnEvent()
                         .Message("Task {taskId} is not found", id)
-                        .Write();
+                        .Log();
                     
                     return false;
                 }
 
                 if (allowedInitialStates != null && !allowedInitialStates.Select(x => (int) x).Contains(task.StateID))
                 {
-                    Logger.Warn()
+                    Logger.ForWarnEvent()
                         .Message("Task {taskId} has been excluded by state {state}", id, task.TaskState)
-                        .Write();
+                        .Log();
                     
                     return false;
                 }
@@ -237,10 +237,10 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 context.SaveChanges();
                 tr.Commit();
                 
-                Logger.Trace()
+                Logger.ForTraceEvent()
                     .Message("Task {taskId} has been updated", id)
                     .Property("task", task)
-                    .Write();
+                    .Log();
                 
                 return true;
                 

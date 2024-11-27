@@ -45,16 +45,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 {
                     var seconds = (int) options.CacheForSeconds;
                     Cache.Set(key, searchResult, GetCacheOptions(seconds));
-                    if (Logger.IsTraceEnabled)
+                    if (TraceApiCalls)
                     {
-                        Logger.Trace().Message($"Call to ElasticSearch cached for {seconds} seconds")
+                        Logger.ForTraceEvent().Message($"Call to ElasticSearch cached for {seconds} seconds")
                             .Property("key", key)
                             .Property("result", searchResult)
                             .Property("language", language)
                             .Property("state", state)
                             .Property("searchOptions", options)
                             .Property("user", HttpContext.GetAuthTokenUser())
-                            .Write();
+                            .Log();
                     }
                 }
             }

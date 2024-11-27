@@ -122,9 +122,9 @@ namespace QA.Core.DPC
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error().Exception(ex)
+                    _logger.ForErrorEvent().Exception(ex)
                         .Message("can not StopConfiguration for {customerCode}", customerCode)
-                        .Write();
+                        .Log();
                 }
                 finally
                 {
@@ -141,10 +141,10 @@ namespace QA.Core.DPC
             try
             {
                 string instanceId = _props.InstanceId;
-                _logger.Info()
+                _logger.ForInfoEvent()
                     .Message("start UpdateConfiguration for {customerCode}", customerCode)
                     .Property("instanceId", instanceId)
-                    .Write();
+                    .Log();
 
                 int delay = 0;
                 var items = _senders.Zip(_lockers.Keys, (s, k) => new {Sender = s, Key = k});
@@ -249,9 +249,9 @@ namespace QA.Core.DPC
             }
             catch (Exception ex)
             {
-                _logger.Error().Exception(ex)
+                _logger.ForErrorEvent().Exception(ex)
                     .Message("can not UpdateConfiguration for {customerCode}", customerCode)
-                    .Write();
+                    .Log();
             }
             finally
             {
@@ -290,9 +290,9 @@ namespace QA.Core.DPC
 
                 if (Monitor.TryEnter(state))
                 {
-                    _logger.Debug().Message("Monitor Enter")
+                    _logger.ForDebugEvent().Message("Monitor Enter")
                         .Property("key", key)
-                        .Write();
+                        .Log();
 
                     try
                     {
@@ -321,11 +321,11 @@ namespace QA.Core.DPC
                                     .ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
 
 
-                                _logger.Debug().Message("SendOneMessage Prepare tasks")
+                                _logger.ForDebugEvent().Message("SendOneMessage Prepare tasks")
                                     .Property("key", key)
                                     .Property("degreeOfParallelism", channel.DegreeOfParallelism)
                                     .Property("count", res.Result.Count)
-                                    .Write();
+                                    .Log();
 
                                 var tasks = res.Result
                                     .Select(m => SendOneMessage(descriptor.CustomerCode, descriptor.InstanceId, config,
@@ -334,9 +334,9 @@ namespace QA.Core.DPC
 
                                 Task.WaitAll(tasks);
 
-                                _logger.Debug().Message("SendOneMessage End wait tasks")
+                                _logger.ForDebugEvent().Message("SendOneMessage End wait tasks")
                                     .Property("key", key)
-                                    .Write();
+                                    .Log();
 
                                 if (localState.ErrorsCount >= config.ErrorCountBeforeWait)
                                 {
@@ -360,9 +360,9 @@ namespace QA.Core.DPC
                     finally
                     {
                         Monitor.Exit(state);
-                            _logger.Debug().Message("Monitor Exit")
+                            _logger.ForDebugEvent().Message("Monitor Exit")
                             .Property("key", key)
-                            .Write();
+                            .Log();
                     }
                 }
                 else
@@ -375,12 +375,12 @@ namespace QA.Core.DPC
             }
             catch (Exception ex)
             {
-                _logger.Error().Exception(ex)
+                _logger.ForErrorEvent().Exception(ex)
                     .Message(
                         "An error occured while processing messages from the queue for channel {channel}, customer code {customerCode}",
                         descriptor.ChannelName, descriptor.CustomerCode
                     )
-                    .Write();
+                    .Log();
             }
         }
 
@@ -405,12 +405,12 @@ namespace QA.Core.DPC
                 catch (Exception ex)
                 {
                     state.BlockState = DateTime.Now;
-                    _logger.Error().Exception(ex)
+                    _logger.ForErrorEvent().Exception(ex)
                         .Message(
                             "Autopublishing for {customerCode} is unavailable, temporary lock will be acquired.",
                             customerCode
                         )
-                        .Write();
+                        .Log();
                 }
                 finally
                 {
@@ -449,12 +449,12 @@ namespace QA.Core.DPC
 
             try
             {
-                _logger.Debug().Message("Semaphore before Wait")
+                _logger.ForDebugEvent().Message("Semaphore before Wait")
                     .Property("customerCode", customerCode)
                     .Property("channel", channel.Name)
                     .Property("currentCount", semaphore.CurrentCount)
                     .Property("productId", message.Key)
-                    .Write();
+                    .Log();
 
                 semaphore.Wait();
                 _logger.Debug("Start processing message {messageId} ", message.Id);
@@ -472,7 +472,7 @@ namespace QA.Core.DPC
                 resp.EnsureSuccessStatusCode();
                     
                 timer.Stop();
-                _logger.Info()
+                _logger.ForInfoEvent()
                     .Message(
                         "Message {message} for channel {channel} has been sent on url {url}",
                         message.Method, channel.Name, Uri.UnescapeDataString(url)
@@ -482,7 +482,7 @@ namespace QA.Core.DPC
                     .Property("timeTaken", timer.ElapsedMilliseconds)
                     .Property("messageId", message.Id)
                     .Property("customerCode", customerCode)
-                    .Write();
+                    .Log();
 
                 channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
                     message.Created, resp.StatusCode.ToString());
@@ -498,7 +498,7 @@ namespace QA.Core.DPC
                     state.ErrorsCount++;
                 }
                 
-                _logger.Error()
+                _logger.ForErrorEvent()
                     .Exception(ex)
                     .Message(
                     "Message {message} for channel {channel} has not been sent on url {url}",
@@ -509,7 +509,7 @@ namespace QA.Core.DPC
                     .Property("timeTaken", timer.ElapsedMilliseconds)
                     .Property("messageId", message.Id)
                     .Property("customerCode", customerCode)
-                    .Write();
+                    .Log();
 
                     channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
                         message.Created, ex.StatusCode.ToString());
@@ -518,12 +518,12 @@ namespace QA.Core.DPC
             {
                 semaphore.Release();
 
-                _logger.Debug().Message("Semaphore after Release")
+                _logger.ForDebugEvent().Message("Semaphore after Release")
                     .Property("customerCode", customerCode)
                     .Property("channel", channel.Name)
                     .Property("currentCount", semaphore.CurrentCount)
                     .Property("productId", message.Key)
-                    .Write();
+                    .Log();
             }
         }
 

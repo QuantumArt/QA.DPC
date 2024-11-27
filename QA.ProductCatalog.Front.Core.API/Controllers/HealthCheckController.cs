@@ -64,9 +64,9 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error().Exception(ex).Message("Cannot receive configuration")
+                    _logger.ForErrorEvent().Exception(ex).Message("Cannot receive configuration")
                         .Property("customerCode", customerCode)
-                        .Write();
+                        .Log();
                     
                     return false;
                 }    
@@ -86,9 +86,9 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 }
                 catch (DbException dbex)
                 {
-                    _logger.Error().Exception(dbex).Message("Cannot connect to database")
+                    _logger.ForErrorEvent().Exception(dbex).Message("Cannot connect to database")
                         .Property("customerCode", customerCode)
-                        .Write();
+                        .Log();
                     
                     return false;
                 }

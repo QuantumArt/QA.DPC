@@ -27,7 +27,7 @@ public class KafkaHelper
                 logger.ForInfoEvent().Message(message.Message).Log();
                 break;
             case SyslogLevel.Debug:
-                logger.ForDebugEvent().Message(message.Message).Log();
+                logger.ForTraceEvent().Message(message.Message).Log();
                 break;
             default:
                 throw new ArgumentOutOfRangeException();

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using NLog.Fluent;
+using NLog;
 using QA.ProductCatalog.HighloadFront.Constants;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
@@ -82,15 +82,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message("GET GetByType query")
+                Logger.ForTraceEvent().Message("GET GetByType query")
                     .Property("query", Request.Query)
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }
 
             try
@@ -126,15 +126,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 CacheForSeconds = 0
             }.BuildFromJson<ProductsOptionsRoot>(json, ElasticOptions);
 
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message("POST GetByType query")
+                Logger.ForTraceEvent().Message("POST GetByType query")
                     .Property("json", json)
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }
 
             ValidateModel(options);
@@ -185,15 +185,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message("POST GetById query")
+                Logger.ForTraceEvent().Message("POST GetById query")
                     .Property("json", json)
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }
 
             try
@@ -226,15 +226,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message("GET GetById query")
+                Logger.ForTraceEvent().Message("GET GetById query")
                     .Property("query", Request.Query)
                     .Property("language", language)
                     .Property("state", state)
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }
 
             try
@@ -277,15 +277,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message("POST Search query")
+                Logger.ForTraceEvent().Message("POST Search query")
                     .Property("json", json)
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }            
 
             try
@@ -319,15 +319,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message("GET Search query")
+                Logger.ForTraceEvent().Message("GET Search query")
                     .Property("query", Request.Query)
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }  
 
             try
@@ -362,7 +362,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
             catch (Exception ex)
             {
-                jsonDoc.Dispose();
+                jsonDoc?.Dispose();
                 return ParseBadRequest(ex);
             }
 
@@ -374,15 +374,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message($"GET {alias} query")
+                Logger.ForTraceEvent().Message($"GET {alias} query")
                     .Property("json", json)
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }
 
             try
@@ -400,7 +400,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
             finally
             {
-                jsonDoc?.Dispose();
+                jsonDoc.Dispose();
             }
         }
 
@@ -429,15 +429,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return modelStateResult;
             }
             
-            if (Logger.IsTraceEnabled)
+            if (TraceApiCalls)
             {
-                Logger.Trace().Message($"POST {alias} query")
+                Logger.ForTraceEvent().Message($"POST {alias} query")
                     .Property("json", json)
                     .Property("language", language)
                     .Property("state", state)                    
                     .Property("searchOptions", options)
                     .Property("user", HttpContext.GetAuthTokenUser())
-                    .Write();
+                    .Log();
             }  
 
             try
@@ -627,7 +627,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 .Where(kvp => !isGet || !GetRequestIdParamRegex.IsMatch(kvp.Key))
                 .SelectMany(
                     kvp => kvp.Value.Errors,
-                    (kvp, error) => error.Exception?.Message ?? error.ErrorMessage)
+                    (_, error) => error.Exception?.Message ?? error.ErrorMessage)
                 .Where(x => !string.IsNullOrEmpty(x))
                 .ToArray();
             if (!errors.Any())
@@ -653,12 +653,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
             return BadRequest($"Parsing JSON query error: {ex.Message}");
-        }
-
-        private BadRequestObjectResult UnexpectedBadRequest(Exception ex)
-        {
-            LogException(ex, "Unexpected error occured");
-            return BadRequest($"Unexpected error occurred. Reason: {ex.Message}");
         }
 
         private void ValidateModel(ProductsOptionsRoot model)

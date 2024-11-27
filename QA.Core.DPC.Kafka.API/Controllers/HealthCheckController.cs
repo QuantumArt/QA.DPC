@@ -50,11 +50,8 @@ namespace QA.Core.DPC.Kafka.API.Controllers
 
         private bool IsKafkaConnected()
         {
-            var adminClient = new AdminClientBuilder(
-                new AdminClientConfig
-                {
-                    BootstrapServers = _settings.Producer.BootstrapServers
-                }).SetLogHandler((_, message) =>
+            var adminClient = new AdminClientBuilder(_settings.GetProducerConfig())
+                .SetLogHandler((_, message) =>
                 {
                     KafkaHelper.LogSysLogMessage(Logger, message);
                 }).Build();

@@ -204,13 +204,13 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 var baseUri = _uris[index];
 
-                if (_doTrace && _logger.IsTraceEnabled)
+                if (_doTrace && Environment.GetEnvironmentVariable("TRACE_ELASTIC_CALLS") == "1")
                 {
-                    _logger.Trace().Message("Processing request to Elastic")
+                    _logger.ForTraceEvent().Message("Processing request to Elastic")
                         .Property("baseUri", baseUri)
                         .Property("searchParams", eparams)
                         .Property("json", json)
-                        .Write();
+                        .Log();
                 }
 
                 using var response = await GetHttpResponse(baseUri, eparams, json, cancellationToken);

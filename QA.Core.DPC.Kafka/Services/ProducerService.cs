@@ -20,17 +20,23 @@ namespace QA.Core.DPC.Kafka.Services
 
         public ProducerService(KafkaSettings settings)
         {
-            _producer = new ProducerBuilder<TKey, string>(settings.GetProducerConfig())
+            var producerConfig = settings.GetProducerConfig();
+            if (Environment.GetEnvironmentVariable("ENABLE_TRACE") == "1")
+            {
+                _logger.ForTraceEvent().Message("Creating producer using settings").Property("config", producerConfig).Log();
+            }
+            else
+            {
+                _logger.ForInfoEvent().Message("Creating producer using settings").Property("config.keys", producerConfig.Keys).Log();
+            }
+            _producer = new ProducerBuilder<TKey, string>(producerConfig)
                 .SetLogHandler((_, message) =>
                 {
                     KafkaHelper.LogSysLogMessage(_logger, message);
                 }).Build();
             
-            _adminClient = new AdminClientBuilder(
-                new AdminClientConfig
-                {
-                    BootstrapServers = settings.Producer.BootstrapServers
-                }).SetLogHandler((_, message) =>
+            _adminClient = new AdminClientBuilder(producerConfig)
+                .SetLogHandler((_, message) =>
                 {
                     KafkaHelper.LogSysLogMessage(_logger, message);
                 }).Build();

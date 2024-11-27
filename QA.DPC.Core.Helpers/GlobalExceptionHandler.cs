@@ -32,11 +32,11 @@ namespace QA.DPC.Core.Helpers
                 var ex = context.Features.Get<IExceptionHandlerFeature>();
                 if (ex != null)
                 {
-                    Logger.Error()
+                    Logger.ForErrorEvent()
                         .Message("Unhandled exception occurs")
                         .Exception(ex.Error)
                         .Property("httpContext", context)
-                        .Write();
+                        .Log();
 
                     if (IsConsolidationError(options, context, out CustomerState state))
                     {
@@ -75,11 +75,11 @@ namespace QA.DPC.Core.Helpers
                     }
                     else
                     {
-                        Logger.Error()
+                        Logger.ForErrorEvent()
                             .Message("Unhandled exception occurs")
                             .Exception(ex.Error)
                             .Property("httpRequest", context.Request)
-                            .Write();
+                            .Log();
 
                         err = new
                         {
@@ -98,10 +98,10 @@ namespace QA.DPC.Core.Helpers
             var provider = options.ApplicationServices.GetService<IIdentityProvider>();
             if (provider.IsFixed)
             {
-                Logger.Debug()
+                Logger.ForDebugEvent()
                     .Message("Customer code is fixed")
                     .Property("httpRequest", context.Request)
-                    .Write();
+                    .Log();
                 customerState = CustomerState.NotDefined;
                 return false;
             }
@@ -109,10 +109,10 @@ namespace QA.DPC.Core.Helpers
             var customerCode = provider?.Identity?.CustomerCode;
             if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key)
             {
-                Logger.Debug()
+                Logger.ForDebugEvent()
                     .Message("Customer code is not defined")
                     .Property("httpRequest", context.Request)
-                    .Write();
+                    .Log();
                 customerState = CustomerState.NotDefined;
                 return false;
             }
@@ -127,28 +127,28 @@ namespace QA.DPC.Core.Helpers
             
             if (factory.NotConsolidatedCodes.Contains(customerCode))
             {
-                Logger.Debug()
+                Logger.ForDebugEvent()
                     .Message("Customer code {customerCode} is not consolidated", customerCode)
                     .Property("httpRequest", context.Request)
-                    .Write();
+                    .Log();
                 customerState = CustomerState.NotRegistered;
                 return true;
             }
 
             if (factory.CustomerMap.TryGetValue(customerCode, out CustomerContext customerContext))
             {
-                Logger.Debug()
+                Logger.ForDebugEvent()
                     .Message("Customer code {customerCode} is not active", customerCode)
                     .Property("httpRequest", context.Request)
-                    .Write();
+                    .Log();
                 customerState = customerContext.State;
                 return customerContext.State != CustomerState.Active;
             }
 
-            Logger.Debug()
+            Logger.ForDebugEvent()
                 .Message("Customer code {customerCode} is not found", customerCode)
                 .Property("httpRequest", context.Request)
-                .Write();
+                .Log();
             customerState = CustomerState.NotFound;
             return true;
         }

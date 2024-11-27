@@ -1,8 +1,6 @@
 ﻿using NLog;
-using NLog.Fluent;
 using QA.Core.ProductCatalog.ActionsRunner;
 using Quartz;
-using Unity.Injection;
 using Task = System.Threading.Tasks.Task;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
@@ -24,11 +22,11 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			var dataMap = context.JobDetail.JobDataMap;
 			var id = dataMap.GetIntValue("SourceTaskId");
 			
-			_logger.Info()
+			_logger.ForInfoEvent()
 				.Message("Calling task {taskId} by schedule.", id)
 				.Property("scheduleTime", context.ScheduledFireTimeUtc)
 				.Property("fireTime", context.FireTimeUtc)
-				.Write();
+				.Log();
 
 			_service.SpawnTask(id);
 			return Task.CompletedTask;
