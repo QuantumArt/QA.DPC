@@ -5,9 +5,8 @@ using System.Linq;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Caching.Interfaces;
-using Quantumart.QPublishing.Database;
 
-namespace QA.ProductCatalog.ContentProviders.Deprecated
+namespace QA.ProductCatalog.ContentProviders
 {
     public class SettingsFromQpCoreService : SettingsServiceBase
     {
