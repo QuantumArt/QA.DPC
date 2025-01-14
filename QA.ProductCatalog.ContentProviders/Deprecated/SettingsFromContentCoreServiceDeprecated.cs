@@ -10,8 +10,10 @@ namespace QA.ProductCatalog.ContentProviders.Deprecated
 QA.DotNetCore.Caching.VersionedCacheCoreProvider should be registered as dependency for QA.DotNetCore.Caching.Interfaces.ICacheProvider")]
     public class SettingsFromContentCoreServiceDeprecated : SettingsServiceBaseDeprecated
     {
+        private const string FieldNameTitle = "Title";
+        private const string FieldNameValue = "Value";
+        private readonly TimeSpan _cachePeriod = new TimeSpan(3, 10, 0);
         private readonly VersionedCacheProviderBase _cacheProvider;
-
         private readonly int _settingsContentId;
 
         public SettingsFromContentCoreServiceDeprecated(VersionedCacheProviderBase cacheProvider,
@@ -23,15 +25,9 @@ QA.DotNetCore.Caching.VersionedCacheCoreProvider should be registered as depende
             _settingsContentId = settingsContentId;
         }
 
-        private const string FIELD_NAME_TITLE = "Title";
-
-        private const string FIELD_NAME_VALUE = "Value";
-
-        private readonly TimeSpan _cachePeriod = new TimeSpan(3, 10, 0);
-
         public override string GetSetting(string title)
         {
-            var key = string.Format("GetSetting_{0}", title);
+            var key = $"GetSetting_{title}";
             return _cacheProvider.GetOrAdd(key, new[] { _settingsContentId.ToString() }, _cachePeriod,
                 () => GetSettingValue(title), true, CacheItemPriority.NeverRemove);
         }
@@ -39,13 +35,12 @@ QA.DotNetCore.Caching.VersionedCacheCoreProvider should be registered as depende
         private string GetSettingValue(string title)
         {
             var cnn = _customer.DbConnector;
-            var keycolumn = FIELD_NAME_TITLE;
-            var valuecolumn = FIELD_NAME_VALUE;
-            var keyvalue = title.Replace("'", "''");
-            var query = $"select {valuecolumn} from content_{_settingsContentId}_united" +
-                        $" where archive = 0 and visible = 1 and {keycolumn} = '{keyvalue}'";
-            var data = cnn.GetData(query);
-            return data.Rows.Count > 0 ? data.Rows[0][valuecolumn].ToString() : null;
+            var query = $"select {FieldNameValue} from content_{_settingsContentId}_united" +
+                        $" where archive = 0 and visible = 1 and {FieldNameTitle} = @title";
+            var dbCommand = cnn.CreateDbCommand(query);
+            dbCommand.Parameters.AddWithValue("@title", title);
+            var data = cnn.GetRealData(dbCommand);
+            return data.Rows.Count > 0 ? data.Rows[0][FieldNameValue].ToString() : null;
         }
     }
 }

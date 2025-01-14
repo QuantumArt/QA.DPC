@@ -11,7 +11,7 @@ using QA.DotNetCore.Caching.Interfaces;
 using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
-namespace QA.ProductCatalog.ContentProviders.Deprecated
+namespace QA.ProductCatalog.ContentProviders
 {
     public abstract class SettingsServiceBase : ISettingsService
     {
