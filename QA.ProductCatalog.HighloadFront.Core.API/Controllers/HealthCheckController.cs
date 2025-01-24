@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -39,7 +38,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 foreach (var baseUri in uris)
                 {
                     var uri = $"{baseUri}/{option.Name}";
-                    bool isOk;
+                    bool isOk = false;
                     try
                     {
                         var request = new HttpRequestMessage(HttpMethod.Head, new Uri(uri));
@@ -48,13 +47,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                             request.Headers.Add("Authorization", $"Basic {token}");
                         }
                         var response = await httpClient.SendAsync(request);
-                        isOk = response.StatusCode == HttpStatusCode.OK;
-
+                        isOk = response.IsSuccessStatusCode;
+                        if (!isOk)
+                        {
+                            Logger.Error("Received HTTP status code '{code}' for url {url}", response.StatusCode, uri);
+                        }
                     }
-                    catch (HttpRequestException ex)
+                    catch (Exception ex)
                     {
-                        Logger.Error(ex, "Error while proceeding healthcheck for url {url}", uri);
-                        isOk = false;
+                        Logger.Error(ex, "Error while proceeding healthcheck with url {url}", uri);
                     }
 
                     sb.AppendLine($@"Index '{uri}': " + Status(isOk));
