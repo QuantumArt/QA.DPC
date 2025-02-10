@@ -28,6 +28,8 @@ namespace QA.ProductCatalog.ImpactService.API
 
         public string ElasticBaseAddress { get; set; }
 
+        public string ElasticBasicToken { get; set; }
+
         public string[] ElasticUrls
         {
             get

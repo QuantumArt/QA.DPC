@@ -27,6 +27,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         private readonly ILogger _logger;
         private readonly PolicyRegistry _registry;
         private readonly List<Exception> _exceptions;
+        private readonly string _elasticBasicToken;
         
         public ElasticClient(IHttpClientFactory factory, PolicyRegistry registry, string indexName, string[] uris, ConfigurationOptions options)
         {
@@ -39,6 +40,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             _faluiresAccepted = options.FailuresBeforeCircuitBreaking;
             _circuitBreakingInterval = TimeSpan.FromSeconds(options.CircuitBreakingInterval);
             _exceptions = new List<Exception>();
+            _elasticBasicToken = options.ElasticBasicToken;
         }
 
         public async Task<string> SearchAsync(string type, string json)
@@ -171,6 +173,10 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             client.Timeout = _timeout;
             client.DefaultRequestHeaders.Accept
                 .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            if (!string.IsNullOrWhiteSpace(_elasticBasicToken))
+            {
+                client.DefaultRequestHeaders.Add("Authorization", $"Basic {_elasticBasicToken}");
+            }
             return client;
         }
     }
