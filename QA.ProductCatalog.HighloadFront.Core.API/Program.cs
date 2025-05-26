@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -8,30 +6,31 @@ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using QA.ProductCatalog.HighloadFront.Core.API.Configurations;
 
-namespace QA.ProductCatalog.HighloadFront.Core.API;
-
-public class Program
+namespace QA.ProductCatalog.HighloadFront.Core.API
 {
-    public static void Main(string[] args)
+    public class Program
     {
-        BuildWebHost(args).Run();
-    }
+        public static void Main(string[] args)
+        {
+            BuildWebHost(args).Run();
+        }
 
-    public static IWebHost BuildWebHost(string[] args) =>
-        WebHost.CreateDefaultBuilder(args)
-            .ConfigureAppConfiguration(builer => builer.LoadConfiguration())
-            .ConfigureLogging((hostingContext, logging) =>
-            {
-                logging.ClearProviders();
-                logging.SetMinimumLevel(LogLevel.Trace);
-                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                if (hostingContext.HostingEnvironment.IsDevelopment())
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(builer => builer.LoadConfiguration())
+                .ConfigureLogging((hostingContext, logging) =>
                 {
-                    logging.AddConsole();
-                    logging.AddDebug();
-                }
-            })
-            .UseStartup<Startup>()
-            .UseNLog()
-            .Build();
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    if (hostingContext.HostingEnvironment.IsDevelopment())
+                    {
+                        logging.AddConsole();
+                        logging.AddDebug();
+                    }
+                })
+                .UseStartup<Startup>()
+                .UseNLog()
+                .Build();
+    }
 }

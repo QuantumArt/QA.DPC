@@ -2,13 +2,14 @@
 using Microsoft.Extensions.Configuration.Json;
 using IConfigurationProvider = Microsoft.Extensions.Configuration.IConfigurationProvider;
 
-namespace QA.ProductCatalog.HighloadFront.Core.API.Configurations;
-
-public class JsonEnvironmentConfigurationSource : JsonConfigurationSource
+namespace QA.ProductCatalog.HighloadFront.Core.API.Configurations
 {
-    public override IConfigurationProvider Build(IConfigurationBuilder builder)
+    public class JsonEnvironmentConfigurationSource : JsonConfigurationSource
     {
-        EnsureDefaults(builder);
-        return new JsonEnvironmentConfigurationProvider(this);
+        public override IConfigurationProvider Build(IConfigurationBuilder builder)
+        {
+            EnsureDefaults(builder);
+            return new JsonEnvironmentConfigurationProvider(this);
+        }
     }
 }
