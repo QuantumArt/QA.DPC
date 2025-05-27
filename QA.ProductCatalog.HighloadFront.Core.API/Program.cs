@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Web;
+using QA.ProductCatalog.HighloadFront.Core.API.Configurations;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {
@@ -15,6 +17,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(builer => builer.LoadConfiguration())
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.ClearProviders();
