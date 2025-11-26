@@ -1,5 +1,5 @@
 # Build temp image
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 LABEL stage=intermediate
 
 WORKDIR /app
@@ -9,10 +9,10 @@ RUN dotnet restore
 
 COPY . ./
 
-RUN dotnet publish /app/QA.Core.DPC.NotificationSender/QA.Core.DPC.NotificationSender.csproj -c Release -o out -f net6.0 --no-restore
+RUN dotnet publish /app/QA.Core.DPC.NotificationSender/QA.Core.DPC.NotificationSender.csproj -c Release -o out -f net8.0 --no-restore
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
 ARG SERVICE_NAME
 ENV SERVICE_NAME=${SERVICE_NAME:-NotificationSender}
@@ -22,4 +22,4 @@ ENV SERVICE_VERSION=${SERVICE_VERSION:-0.0.0.0}
 
 WORKDIR /app
 COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "QA.Core.DPC.NotificationSender.dll"]
+ENTRYPOINT ["dotnet", "QA.Core.DPC.NotificationSender.dll", "--urls", "http://*:80"]
