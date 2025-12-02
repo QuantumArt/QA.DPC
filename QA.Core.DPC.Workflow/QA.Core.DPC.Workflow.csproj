@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Quantumart.Workflow.Integration.QP" Version="1.0.0" />
+      <PackageReference Include="Quantumart.Workflow.Integration.QP" Version="1.1.0" />
     </ItemGroup>
 
 </Project>
