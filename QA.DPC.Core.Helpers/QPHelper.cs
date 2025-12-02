@@ -1,6 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
 using QA.DotNetCore.Engine.Persistent.Interfaces;
@@ -10,11 +11,10 @@ namespace QA.DPC.Core.Helpers
 {
     public class QPHelper
     {
-
         private readonly HttpContext _httpContext;
 
-        private readonly QPOptions _options; 
-        
+        private readonly QPOptions _options;
+
         public QPHelper(IHttpContextAccessor httpContextAccessor, IOptions<QPOptions> options)
         {
             _httpContext = httpContextAccessor.HttpContext;
@@ -34,7 +34,7 @@ namespace QA.DPC.Core.Helpers
         /// <summary>
         /// Id бэкенда
         /// </summary>
-        public string BackendSid =>  _httpContext?.Request.Query[_options.BackendSidParamName] ?? "";
+        public string BackendSid => _httpContext?.Request.Query[_options.BackendSidParamName] ?? "";
 
         /// <summary>
         /// Id хоста
@@ -50,14 +50,15 @@ namespace QA.DPC.Core.Helpers
         /// Признак запуска через Custom Action Qp
         /// </summary>
         public bool IsQpMode => !string.IsNullOrEmpty(HostId);
-        
-        
+
         public static IUnitOfWork CreateUnitOfWork(IServiceProvider c)
         {
             var customer = c.GetRequiredService<IConnectionProvider>().GetCustomer();
             var isSingle = c.GetRequiredService<ICustomerProvider>() is SingleCustomerCoreProvider;
+            var loggerFactory = c.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger<QPHelper>();
             var code = isSingle ? SingleCustomerCoreProvider.Key : customer.CustomerCode;
-            return new UnitOfWork(customer.ConnectionString, customer.DatabaseType.ToString(), code);
+            return new UnitOfWork(customer.ConnectionString, customer.DatabaseType.ToString(), logger, code);
         }
     }
 }
