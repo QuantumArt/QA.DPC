@@ -218,12 +218,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddSingleton(c =>
                 {
                     var set = new ServiceSetConfigurator<ICacheTagTracker>();
+                    var loggerFactory = c.GetRequiredService<ILoggerFactory>();
+                    var logger = loggerFactory.CreateLogger<QpContentCacheTracker>();
                     var trackers = c.GetRequiredService<ICustomerProvider>().GetCustomers()
                         .Select(n => new QpContentCacheTracker(
                             c.GetRequiredService<IContentModificationRepository>(),
                             c.GetRequiredService<IQpContentCacheTagNamingProvider>(),
-                            _ => new UnitOfWork(n.ConnectionString, n.DatabaseType.ToString(), n.CustomerCode),
-                            c.GetRequiredService<IServiceScopeFactory>())
+                            logger)
                         );
 
                     foreach (var tracker in trackers)
