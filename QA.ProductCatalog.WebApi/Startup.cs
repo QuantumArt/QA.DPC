@@ -92,6 +92,7 @@ namespace QA.ProductCatalog.WebApi
             
             services.ResolveTmForumRegistration(Configuration);
 
+            services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo

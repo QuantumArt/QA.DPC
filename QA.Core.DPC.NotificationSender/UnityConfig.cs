@@ -29,6 +29,7 @@ using IUserProvider = QA.ProductCatalog.ContentProviders.IUserProvider;
 using NotificationChannel = QA.ProductCatalog.ContentProviders.NotificationChannel;
 using INotificationChannelService = QA.ProductCatalog.ContentProviders.INotificationChannelService;
 using QA.ProductCatalog.ContentProviders.Deprecated;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace QA.Core.DPC
 {
@@ -109,6 +110,13 @@ namespace QA.Core.DPC
             {
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
                 unityContainer.RegisterNullFactory().With<FactoryWatcher>().As<IFactoryWatcher>();
+            }
+
+            if (!unityContainer.IsRegistered<IServiceProviderIsService>())
+            {
+                unityContainer.RegisterFactory<IServiceProviderIsService>(
+                    _ => null,
+                    new ContainerControlledLifetimeManager());
             }
 
             return unityContainer;
