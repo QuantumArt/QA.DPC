@@ -16,7 +16,7 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="QA.Core.Service.Interaction" Version="3.6.1-beta1" />
+    <PackageReference Include="QA.Core.Service.Interaction" Version="3.6.1" />
     <PackageReference Include="Quantumart.AspNetCore" Version="6.3.2" />
     <PackageReference Include="Quantumart.QP8.BLL" Version="3.6.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
