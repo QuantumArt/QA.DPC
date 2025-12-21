@@ -1,16 +1,14 @@
 using System;
-using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
-using Npgsql;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using NLog;
+using Npgsql;
 using QA.Core.DPC.QP.Models;
 using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
-using NLog;
-using NLog.Fluent;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {

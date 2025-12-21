@@ -12,7 +12,7 @@ namespace QA.Core.DPC.QP
                 entity.SetTableName(ToSnakeCase(entity.GetTableName()));
 
                 foreach (var property in entity.GetProperties())
-                    property.SetColumnName(ToSnakeCase(property.GetColumnBaseName()));
+                    property.SetColumnName(ToSnakeCase(property.GetColumnName()));
 
                 foreach (var key in entity.GetKeys())
                     key.SetName(ToSnakeCase(key.GetName()));

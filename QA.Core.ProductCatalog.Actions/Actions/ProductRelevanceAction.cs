@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.ProductCatalog.Actions.Actions.Abstract;
-using QA.ProductCatalog.Infrastructure;
-using System.Globalization;
 using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.Resources;
 using QA.Core.Linq;
+using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

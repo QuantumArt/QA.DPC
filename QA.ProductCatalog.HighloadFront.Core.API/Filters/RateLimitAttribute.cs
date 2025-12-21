@@ -67,9 +67,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 
                 counter.Hit();
 
-                context.HttpContext.Response.Headers.Add("X-RateLimit-Limit", counter.Limit.ToString());
-                context.HttpContext.Response.Headers.Add("X-RateLimit-Remaining", counter.Remaining.ToString());
-                context.HttpContext.Response.Headers.Add("X-RateLimit-Reset", counter.ResetUnix.ToString());
+                context.HttpContext.Response.Headers.Append("X-RateLimit-Limit", counter.Limit.ToString());
+                context.HttpContext.Response.Headers.Append("X-RateLimit-Remaining", counter.Remaining.ToString());
+                context.HttpContext.Response.Headers.Append("X-RateLimit-Reset", counter.ResetUnix.ToString());
             }
         }
 

@@ -1,17 +1,15 @@
-﻿using QA.Core.Models.Configuration;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Transactions;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
+using QA.Core.Models.Configuration;
+using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using QA.Core.DPC.Loader.Services;
-using System.Transactions;
-using NLog;
-using QA.Core.DPC.Resources;
-using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions
 {

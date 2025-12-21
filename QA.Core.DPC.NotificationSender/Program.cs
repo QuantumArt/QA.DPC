@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Unity.Microsoft.DependencyInjection;
 using QA.DPC.Core.Helpers;
 using Microsoft.Extensions.Hosting;
+using NLog;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace QA.Core.DPC
 {
@@ -20,7 +22,7 @@ namespace QA.Core.DPC
         public static void Main(string[] args)
         {
 
-            NLog.LogManager.LoadConfiguration("NLogClient.config");
+            LogManager.Setup().LoadConfigurationFromFile("NLogClient.config");
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
                 
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>

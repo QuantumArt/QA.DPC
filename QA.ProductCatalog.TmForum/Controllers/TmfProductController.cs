@@ -172,7 +172,7 @@ namespace QA.ProductCatalog.TmForum.Controllers
                 case TmfProcessResult.NoContent:
                     return NoContent();
                 case TmfProcessResult.PartialContent:
-                    Response.Headers.Add("X-Total-Count", totalCount.ToString());
+                    Response.Headers.Append("X-Total-Count", totalCount.ToString());
                     Response.StatusCode = StatusCodes.Status206PartialContent;
                     return new ObjectResult(resultObject);
                 default:

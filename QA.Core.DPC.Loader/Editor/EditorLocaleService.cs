@@ -2,7 +2,7 @@
 using Dapper;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Globalization;
 using Npgsql;
 using QA.Core.DPC.QP.Models;

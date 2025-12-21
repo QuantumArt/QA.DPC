@@ -6,7 +6,6 @@ using System.Globalization;
 using System.Linq;
 using System.Data;
 using Quantumart.QP8.Utils;
-using System.Data.SqlClient;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
 using QA.Core.DPC.QP.Models;

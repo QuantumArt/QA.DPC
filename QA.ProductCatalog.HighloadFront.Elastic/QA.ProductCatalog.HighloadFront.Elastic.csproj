@@ -19,11 +19,11 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="6.0.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.WindowsServices" Version="8.0.22" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
-    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="6.0.12" />    
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.22" />    
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />

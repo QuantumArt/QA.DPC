@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
-using NLog;
 using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;

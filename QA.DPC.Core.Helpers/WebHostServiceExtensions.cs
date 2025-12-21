@@ -25,7 +25,7 @@ namespace QA.DPC.Core.Helpers
 
         public static void RunAdaptive(this IWebHost host, string[] args)
         {
-            if (args.IsService())
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && args.IsService())
             {
                 host.RunAsService();
             }

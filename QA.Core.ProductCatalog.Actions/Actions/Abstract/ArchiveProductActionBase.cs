@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Transactions;
+using NLog;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
+using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
-using System.Transactions;
-using QA.Core.DPC.Resources;
-using NLog;
-using QA.Core.ProductCatalog.Actions.Exceptions;
 using Quantumart.QP8.BLL.Services.DTO;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
