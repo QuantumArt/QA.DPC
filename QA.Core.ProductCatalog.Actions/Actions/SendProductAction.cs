@@ -1,16 +1,4 @@
-﻿using QA.Core.DPC.Loader.Services;
-using QA.Core.DPC.QP.Services;
-using QA.Core.Linq;
-using NLog;
-using NLog.Fluent;
-using QA.Core.Models;
-using QA.Core.Models.Entities;
-using QA.Core.ProductCatalog.Actions.Actions.Abstract;
-using QA.Core.ProductCatalog.Actions.Exceptions;
-using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.Integration;
-using System;
-using QA.ProductCatalog.ContentProviders;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Irony;
 using Newtonsoft.Json.Linq;
+using NLog;
+using NLog.Fluent;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.Resources;
+using QA.Core.Linq;
+using QA.Core.Models;
+using QA.Core.Models.Entities;
+using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.Core.ProductCatalog.Actions.Exceptions;
+using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Integration;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

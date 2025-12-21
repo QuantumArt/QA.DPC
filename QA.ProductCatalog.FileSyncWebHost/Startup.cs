@@ -36,6 +36,7 @@ namespace QA.ProductCatalog.FileSyncWebHost
             services.Configure<DataOptions>(Configuration.GetSection("Data"));
             services.AddScoped<ILogger>(logger => new NLogLogger("NLogClient.config"));
             
+            services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo

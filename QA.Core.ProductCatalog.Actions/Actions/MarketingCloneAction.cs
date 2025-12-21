@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Quantumart.QP8.BLL;
+using NLog;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Resources;
-using NLog;
-using NLog.Fluent;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
+using Quantumart.QP8.BLL;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

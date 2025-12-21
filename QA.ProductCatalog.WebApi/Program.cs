@@ -10,9 +10,11 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using NLog;
 using Unity.Microsoft.DependencyInjection;
 using Unity;
 using NLog.Web;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace QA.ProductCatalog.WebApi
 {
@@ -24,7 +26,7 @@ namespace QA.ProductCatalog.WebApi
         {
             _container = new UnityContainer();
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            NLog.LogManager.LoadConfiguration("NLogClient.config");
+            LogManager.Setup().LoadConfigurationFromFile("NLogClient.config");
             BuildWebHost(args).Build().Run();
         }
 

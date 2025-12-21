@@ -56,7 +56,8 @@ namespace QA.Core.DPC
                 services.AddDbContext<SqlServerNotificationsModelDataContext>(options =>
                     options.UseSqlServer(props.DesignConnectionString));
             }
-            
+
+            services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo

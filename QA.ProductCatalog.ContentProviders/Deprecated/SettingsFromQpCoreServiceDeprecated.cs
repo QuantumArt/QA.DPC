@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
-using Quantumart.QPublishing.Database;
-using QA.Core.Cache;
 
 namespace QA.ProductCatalog.ContentProviders.Deprecated
 {

@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Web;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace QA.ProductCatalog.FileSyncWebHost
 {
@@ -12,7 +14,7 @@ namespace QA.ProductCatalog.FileSyncWebHost
     {
         public static void Main(string[] args)
         {
-            NLog.LogManager.LoadConfiguration("NLogClient.config");
+            LogManager.Setup().LoadConfigurationFromFile("NLogClient.config");
             
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())

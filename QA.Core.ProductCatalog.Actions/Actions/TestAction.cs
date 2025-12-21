@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using NLog;
+using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.DTO;
-using System;
-using System.Data;
-using QA.Core.DPC.Loader.Services;
-using NLog;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

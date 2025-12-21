@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
 using QA.Core;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.Front;
@@ -13,7 +10,6 @@ using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.DPC.QP.Models;
 using QP.ConfigurationService.Models;
-using Quantumart.QPublishing.Database;
 using ProductInfo = QA.ProductCatalog.Infrastructure.ProductInfo;
 
 namespace QA.ProductCatalog.Integration.DAL

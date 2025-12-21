@@ -1,9 +1,9 @@
-﻿using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+﻿using System;
+using NLog;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
-using System;
-using QA.Core.DPC.Loader.Services;
-using NLog;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

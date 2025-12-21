@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
-using QA.ProductCatalog.Infrastructure;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

@@ -1,14 +1,14 @@
-﻿using QA.Core.ProductCatalog.Actions.Actions.Abstract;
-using QA.Core.ProductCatalog.Actions.Exceptions;
-using QA.Core.ProductCatalog.Actions.Services;
-using QA.ProductCatalog.Infrastructure;
-using System;
+﻿using System;
 using System.Linq;
-using QA.Core.DPC.Loader.Services;
-using QA.Core.DPC.Resources;
 using NLog;
 using NLog.Fluent;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
+using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.Core.ProductCatalog.Actions.Exceptions;
+using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

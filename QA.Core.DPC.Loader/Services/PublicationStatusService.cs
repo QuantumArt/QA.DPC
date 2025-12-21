@@ -3,7 +3,7 @@ using QA.Core.DPC.QP.Services;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using Npgsql;
 using QA.Core.DPC.QP.Models;

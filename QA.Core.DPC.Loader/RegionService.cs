@@ -3,7 +3,7 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Data.Common;
 using System.Linq;

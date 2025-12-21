@@ -20,7 +20,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -28,11 +27,9 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
-using NLog.Fluent;
 using QA.Core.DPC.QP.Models;
 using Content = QA.Core.Models.Configuration.Content;
 using Qp8Bll = Quantumart.QP8.BLL;
-using ConfigurationService = QP.ConfigurationService;
 
 namespace QA.Core.DPC.Loader
 {

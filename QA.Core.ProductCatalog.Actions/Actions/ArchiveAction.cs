@@ -1,12 +1,12 @@
-﻿using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+﻿using System;
+using NLog;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
+using QA.Core.Models.Entities;
+using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
-using System;
-using QA.Core.DPC.Loader.Services;
-using NLog;
-using QA.Core.DPC.Resources;
-using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

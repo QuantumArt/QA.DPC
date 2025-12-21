@@ -1,13 +1,11 @@
-﻿using QA.Core.DPC.QP.Services;
-using NLog;
+﻿using System;
+using Microsoft.Data.SqlClient;
+using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;
-using System;
-using System.Data.SqlClient;
-using QA.Core.DPC.QP.Models;
-using QA.Core.DPC.Resources;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

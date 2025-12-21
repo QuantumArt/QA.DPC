@@ -71,6 +71,7 @@ namespace QA.ProductCatalog.Front.Core.API
 
             services.ResolveTmForumRegistrationForDpcFront(Configuration);
             
+            services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo

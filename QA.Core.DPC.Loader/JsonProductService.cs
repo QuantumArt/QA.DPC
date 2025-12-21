@@ -140,9 +140,13 @@ namespace QA.Core.DPC.Loader
             sw.Stop();
             _logger.Debug("Product {1} conversion took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
 
+            var settings = _loaderProperties.UseJsonIsoSerializer
+                ? _settings.IsoSerializerSettings
+                : _settings.SerializerSettings;
+            
             sw.Reset();
             sw.Start();
-            string productJson = JsonConvert.SerializeObject(convertedArticle, _settings.SerializerSettings);
+            string productJson = JsonConvert.SerializeObject(convertedArticle, settings);
             sw.Stop();
             _logger.Debug("Product {1} serializing took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
 

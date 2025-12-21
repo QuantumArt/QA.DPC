@@ -25,6 +25,8 @@ using QA.ProductCatalog.Filters;
 using QA.ProductCatalog.TmForum.Extensions;
 using QA.Core.DPC.Workflow.Extensions;
 using QA.ProductCatalog.ContentProviders.Deprecated;
+using Microsoft.Extensions.DependencyInjection;
+using Unity.Lifetime;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
@@ -143,7 +145,14 @@ namespace QA.ProductCatalog.WebApi.App_Start
             {
                 unityContainer.RegisterNonQpMonitoring();
             }
-            
+
+            if (!unityContainer.IsRegistered<IServiceProviderIsService>())
+            {
+                unityContainer.RegisterFactory<IServiceProviderIsService>(
+                    _ => null,
+                    new ContainerControlledLifetimeManager());
+            }
+
             return unityContainer;
 		}
 	}

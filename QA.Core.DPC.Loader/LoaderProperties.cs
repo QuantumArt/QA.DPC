@@ -20,6 +20,8 @@ namespace QA.Core.DPC.Loader
         public int SettingsContentId { get; set; }
         
         public bool UseFileSizeService { get; set; }
+        
+        public bool UseJsonIsoSerializer { get; set; }
     }
     
     

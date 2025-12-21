@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
 using System.Resources;
-using System.Runtime.CompilerServices;
 using System.Text;
 using NLog;
-using NLog.Fluent;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
@@ -15,7 +11,6 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.Integration;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.DTO;
 using Quantumart.QP8.Constants;
@@ -328,10 +323,17 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				var articleField = FieldService.Read(field.FieldId);
 				var value = GetBackwardValue(articleField, article.Id, excludeArchive);
 
-				var fv = new FieldValue();
-				fv.Article = article;
-				fv.Field = articleField;
-				fv.UpdateValue(value);
+				var fv = new FieldValue
+				{
+					Article = article,
+					Field = articleField
+				};
+
+				FieldExactTypes? typesToOverride = fv.Field.ExactType == FieldExactTypes.O2MRelation
+					? FieldExactTypes.M2ORelation
+					: null;
+				
+				fv.UpdateValue(value, typesToOverride);
 
 				fieldValues.Add(fv);
 			}

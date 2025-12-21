@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
 using System.Reflection;
 using System.IO;
 using System.Net.Http;
 using NLog;
-using NLog.Fluent;
 using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Loader

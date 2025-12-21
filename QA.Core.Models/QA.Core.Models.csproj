@@ -9,16 +9,16 @@
     <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
     <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
     <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="QA.Core.Service.Interaction" Version="3.6.0" />
-    <PackageReference Include="Quantumart.AspNetCore" Version="6.1.2" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.5.1" />
+    <PackageReference Include="QA.Core.Service.Interaction" Version="3.6.1" />
+    <PackageReference Include="Quantumart.AspNetCore" Version="6.3.2" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.6.2" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
