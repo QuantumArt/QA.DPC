@@ -323,10 +323,17 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				var articleField = FieldService.Read(field.FieldId);
 				var value = GetBackwardValue(articleField, article.Id, excludeArchive);
 
-				var fv = new FieldValue();
-				fv.Article = article;
-				fv.Field = articleField;
-				fv.UpdateValue(value);
+				var fv = new FieldValue
+				{
+					Article = article,
+					Field = articleField
+				};
+
+				FieldExactTypes? typesToOverride = fv.Field.ExactType == FieldExactTypes.O2MRelation
+					? FieldExactTypes.M2ORelation
+					: null;
+				
+				fv.UpdateValue(value, typesToOverride);
 
 				fieldValues.Add(fv);
 			}
