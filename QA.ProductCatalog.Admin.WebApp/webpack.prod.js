@@ -4,18 +4,7 @@ const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-const path = require("path");
-const threadLoader = require("thread-loader");
 const common = require("./webpack.common");
-
-const poolOptions = {
-  workerParallelJobs: 50,
-  poolTimeout: 2000,
-  name: "Typescript",
-  workerNodeArgs: ["--max-old-space-size=4096"],
-};
-
-threadLoader.warmup(poolOptions, ["ts-loader"]);
 
 module.exports = merge(common, {
   mode: "production",
@@ -32,15 +21,9 @@ module.exports = merge(common, {
         include: /(Views|ReactViews)/,
         use: [
           {
-            loader: "thread-loader",
-            options: poolOptions,
-          },
-          {
             loader: "ts-loader",
             options: {
               transpileOnly: true,
-              happyPackMode: true,
-              configFile: path.resolve(__dirname, "tsconfig.json"),
               logLevel: "error",
             },
           },
