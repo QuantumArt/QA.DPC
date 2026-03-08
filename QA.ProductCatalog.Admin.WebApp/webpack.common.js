@@ -91,5 +91,8 @@ module.exports = {
     new webpack.DefinePlugin({
       "process.env.OUT_DIR": JSON.stringify(relOutDir),
     }),
+    new webpack.ProvidePlugin({
+      process: "process/browser",
+    }),
   ],
 };
