@@ -2,7 +2,7 @@
 const { merge } = require("webpack-merge");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const path = require("path");
 const threadLoader = require("thread-loader");
@@ -12,16 +12,17 @@ const poolOptions = {
   workerParallelJobs: 50,
   poolTimeout: 2000,
   name: "Typescript",
-  workerNodeArgs: ["--max-old-space-size=4096"]
+  workerNodeArgs: ["--max-old-space-size=4096"],
 };
 
-threadLoader.warmup(poolOptions, ["ts-loader", "url-loader"]);
+threadLoader.warmup(poolOptions, ["ts-loader"]);
 
 module.exports = merge(common, {
   mode: "production",
   devtool: "cheap-source-map",
   optimization: {
-    minimize: true
+    minimize: true,
+    minimizer: [new CssMinimizerPlugin()],
   },
   module: {
     rules: [
@@ -32,7 +33,7 @@ module.exports = merge(common, {
         use: [
           {
             loader: "thread-loader",
-            options: poolOptions
+            options: poolOptions,
           },
           {
             loader: "ts-loader",
@@ -40,10 +41,10 @@ module.exports = merge(common, {
               transpileOnly: true,
               happyPackMode: true,
               configFile: path.resolve(__dirname, "tsconfig.json"),
-              logLevel: "error"
-            }
-          }
-        ]
+              logLevel: "error",
+            },
+          },
+        ],
       },
       {
         test: /\.(scss|css)?$/,
@@ -52,29 +53,28 @@ module.exports = merge(common, {
           {
             loader: "css-loader",
             options: {
-              importLoaders: 1
-            }
+              importLoaders: 1,
+            },
           },
           { loader: "postcss-loader" },
           { loader: "resolve-url-loader" },
-          { loader: "sass-loader", options: { sourceMap: true } }
-        ]
-      }
-    ]
+          { loader: "sass-loader", options: { sourceMap: true } },
+        ],
+      },
+    ],
   },
   plugins: [
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("production"),
-      DEBUG: false
+      DEBUG: false,
     }),
     new MiniCssExtractPlugin({
       filename: "../../css/[name].css",
-      chunkFilename: "[id].[hash].css",
+      chunkFilename: "[id].[contenthash].css",
     }),
-    new OptimizeCssAssetsPlugin({}),
     new BundleAnalyzerPlugin({
       analyzerMode: "static",
-      openAnalyzer: false
+      openAnalyzer: false,
     }),
-  ]
+  ],
 });

@@ -10,10 +10,10 @@ const poolOptions = {
   workerParallelJobs: 50,
   poolTimeout: 2000,
   name: "Typescript",
-  workerNodeArgs: ["--max-old-space-size=4096"]
+  workerNodeArgs: ["--max-old-space-size=4096"],
 };
 
-threadLoader.warmup(poolOptions, ["ts-loader", "url-loader"]);
+threadLoader.warmup(poolOptions, ["ts-loader"]);
 
 module.exports = merge(common, {
   mode: "development",
@@ -27,7 +27,7 @@ module.exports = merge(common, {
         use: [
           {
             loader: "thread-loader",
-            options: poolOptions
+            options: poolOptions,
           },
           {
             loader: "ts-loader",
@@ -35,10 +35,10 @@ module.exports = merge(common, {
               transpileOnly: true,
               happyPackMode: true,
               configFile: path.resolve(__dirname, "tsconfig.json"),
-              logLevel: "error"
-            }
-          }
-        ]
+              logLevel: "error",
+            },
+          },
+        ],
       },
       {
         test: /\.(scss|css)?$/,
@@ -47,25 +47,25 @@ module.exports = merge(common, {
           {
             loader: "css-loader",
             options: {
-              importLoaders: 1
-            }
+              importLoaders: 1,
+            },
           },
           { loader: "postcss-loader" },
           { loader: "resolve-url-loader" },
-          { loader: "sass-loader", options: { sourceMap: true } }
-        ]
-      }
-    ]
+          { loader: "sass-loader", options: { sourceMap: true } },
+        ],
+      },
+    ],
   },
   plugins: [
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify("development"),
-      DEBUG: true
+      DEBUG: true,
     }),
     new MiniCssExtractPlugin({
       filename: "../../css/[name].css",
-      chunkFilename: "[id].[hash].css"
+      chunkFilename: "[id].[contenthash].css",
     }),
-    new webpack.WatchIgnorePlugin([/\.js$/, /\.d\.ts$/])
-  ]
+    new webpack.WatchIgnorePlugin({ paths: [/\.js$/, /\.d\.ts$/] }),
+  ],
 });
