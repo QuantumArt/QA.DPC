@@ -44,8 +44,23 @@ async function buildJS(outputFile, inputFiles, alreadyMinified = false) {
   write(outputFile, result.code);
 }
 
+function copyDir(srcDir, destDir) {
+  const src = path.resolve(root, srcDir);
+  const dest = path.resolve(root, destDir);
+  fs.mkdirSync(dest, { recursive: true });
+  for (const file of fs.readdirSync(src)) {
+    fs.copyFileSync(path.join(src, file), path.join(dest, file));
+  }
+  console.log("  →", destDir);
+}
+
 async function main() {
   console.log(`Building bundles (${dev ? "dev" : "prod"})...`);
+
+  copyDir(
+    "node_modules/@fortawesome/fontawesome-free/webfonts",
+    "wwwroot/css/webfonts",
+  );
 
   await buildCSS("wwwroot/css/blueprint.min.css", [
     "node_modules/normalize.css/normalize.css",
