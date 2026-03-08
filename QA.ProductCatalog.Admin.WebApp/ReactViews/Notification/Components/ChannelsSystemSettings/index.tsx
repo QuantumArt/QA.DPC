@@ -11,7 +11,7 @@ interface IProps {
 
 export const ChannelsSystemSettings = React.memo(({ settings }: IProps) => {
   const date = new Date(settings?.Started);
-  const dd = isValid(date) ? format(date, "DD.MM.YYYY") : "";
+  const dd = isValid(date) ? format(date, "dd.MM.yyyy") : "";
   const mm = isValid(date) ? format(date, "HH:mm:ss") : "";
 
   return (
