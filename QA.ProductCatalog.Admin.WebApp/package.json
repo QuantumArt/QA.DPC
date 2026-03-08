@@ -8,8 +8,8 @@
   },
   "scripts": {
     "prepare": "cd .. && husky QA.ProductCatalog.Admin.WebApp/.husky",
-    "components:build-dev": "npm run bundles:build-dev && webpack --config webpack.dev.js",
-    "components:build-prod": "npm run bundles:build-prod && webpack --config webpack.prod.js",
+    "components:build-dev": "webpack --config webpack.dev.js && npm run bundles:build-dev",
+    "components:build-prod": "webpack --config webpack.prod.js && npm run bundles:build-prod",
     "components:start": "npm run bundles:build-dev && webpack --config webpack.dev.js --watch",
     "test": "jest",
     "bundles:build-dev": "node build-bundles.js --dev",
