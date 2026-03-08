@@ -93,6 +93,8 @@ module.exports = {
     }),
     new webpack.ProvidePlugin({
       process: "process/browser",
+      $: "jquery",
+      jQuery: "jquery",
     }),
   ],
 };
