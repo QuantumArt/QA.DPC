@@ -14,7 +14,7 @@ interface IProps {
 
 const parseDate = ({ value }: { value: string }): string => {
   const date = new Date(value);
-  return isValid(date) && format(date, "DD.MM.YYYY HH:mm:ss");
+  return isValid(date) && format(date, "dd.MM.yyyy HH:mm:ss");
 };
 
 export const ChannelsGrid = React.memo(({ gridData }: IProps) => {
@@ -22,52 +22,52 @@ export const ChannelsGrid = React.memo(({ gridData }: IProps) => {
     () => [
       {
         Header: l("channel"),
-        accessor: "Name"
+        accessor: "Name",
       },
       {
         Header: l("queue"),
-        accessor: "Count"
+        accessor: "Count",
       },
       {
         Header: l("enqueueTime"),
         accessor: "LastQueued",
-        Cell: parseDate
+        Cell: parseDate,
       },
       {
         Header: l("publishingTime"),
         accessor: "LastPublished",
-        Cell: parseDate
+        Cell: parseDate,
       },
       {
         Header: l("productId"),
-        accessor: "LastId"
+        accessor: "LastId",
       },
       {
         Header: l("publishingStatus"),
         accessor: "LastStatus",
-        Cell: StatusTag
+        Cell: StatusTag,
       },
       {
         Header: l("channelStatus"),
         accessor: "State",
-        Cell: ChannelStatusTag
-      }
+        Cell: ChannelStatusTag,
+      },
     ],
-    []
+    [],
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<IChannel>({
     columns: gridColumns,
-    data: gridData
+    data: gridData,
   });
 
   return (
     <div className="channels-grid">
       <table {...getTableProps()} className="channels-table">
         <thead className="grid-head">
-          {headerGroups.map(headerGroup => (
+          {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()} className="grid-head__tr">
-              {headerGroup.headers.map(column => (
+              {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps()} className="grid-head__th grid__cell">
                   {column.render("Header")}
                 </th>
@@ -76,11 +76,11 @@ export const ChannelsGrid = React.memo(({ gridData }: IProps) => {
           ))}
         </thead>
         <tbody {...getTableBodyProps()} className="grid-body">
-          {rows.map(row => {
+          {rows.map((row) => {
             prepareRow(row);
             return (
               <tr {...row.getRowProps()} className="grid-body__tr">
-                {row.cells.map(cell => {
+                {row.cells.map((cell) => {
                   return (
                     <td
                       {...cell.getCellProps()}

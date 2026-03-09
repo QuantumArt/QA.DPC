@@ -1,5 +1,6 @@
-﻿import { action, computed, observable } from "mobx";
-import { parse, validate, ValidationError } from "fast-xml-parser";
+import { action, computed, observable } from "mobx";
+import { XMLParser, XMLValidator } from "fast-xml-parser";
+import type { ValidationError } from "fast-xml-parser";
 import apiService from "DefinitionEditor/ApiService";
 
 export default class XmlEditorStore {
@@ -25,15 +26,15 @@ export default class XmlEditorStore {
 
           this.setDefaultXml();
         }
-      }
+      },
     });
     window.pmrpc.call({
       destination: parent,
       publicProcedureName: "DefinitionEditorLoaded",
       params: ["DefinitionEditor.SetXml"],
-      onError: function(statusObj) {
+      onError: function (statusObj) {
         console.log("Error calling DefinitionEditorLoaded", statusObj);
-      }
+      },
     });
   }
 
@@ -91,7 +92,7 @@ export default class XmlEditorStore {
     this.xml = xml;
   };
 
-  validateXml = (): true | ValidationError => validate(this.xml);
+  validateXml = (): true | ValidationError => XMLValidator.validate(this.xml);
 
   @action
   private setRootId = (xml: string) => {
@@ -114,13 +115,13 @@ export default class XmlEditorStore {
     }
   };
 
-  private parseXml = (xml: string, mode: boolean | "strict" = false) => {
+  private parseXml = (xml: string) => {
     try {
-      return parse(
-        xml,
-        { ignoreAttributes: false, arrayMode: mode, attributeNamePrefix: this.attributeNamePrefix },
-        true
-      );
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: this.attributeNamePrefix,
+      });
+      return parser.parse(xml);
     } catch (error) {
       console.log(error.message);
       return null;

@@ -1,0 +1,1 @@
+cd QA.ProductCatalog.Admin.WebApp && ./node_modules/.bin/lint-staged

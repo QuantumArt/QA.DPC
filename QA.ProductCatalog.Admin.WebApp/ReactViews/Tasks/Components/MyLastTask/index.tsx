@@ -26,7 +26,7 @@ export const MyLastTask = memo(({ task, width }: IProps) => {
       value: task.Progress,
       intent: getTaskIntentDependsOnStatus(task.StateId),
       animate: task.StateId === TaskStatuses.Progress,
-      stripes: task.StateId === TaskStatuses.Progress
+      stripes: task.StateId === TaskStatuses.Progress,
     };
 
     return (
@@ -36,13 +36,13 @@ export const MyLastTask = memo(({ task, width }: IProps) => {
         </div>
         <div className="last-task-tooltip__row">
           {l("created")}:{" "}
-          {task.CreatedTime && isValid(createdTime) && format(createdTime, "DD.MM.YYYY HH:mm:ss")}
+          {task.CreatedTime && isValid(createdTime) && format(createdTime, "dd.MM.yyyy HH:mm:ss")}
         </div>
         <div className="last-task-tooltip__row last-task-tooltip__row--margin-bottom">
           {l("changed")}:{" "}
           {task.LastStatusChangeTime &&
             isValid(lastStatusChangeTime) &&
-            format(lastStatusChangeTime, "DD.MM.YYYY HH:mm:ss")}
+            format(lastStatusChangeTime, "dd.MM.yyyy HH:mm:ss")}
         </div>
         <div className="last-task-tooltip__bar-wrapper">
           <ProgressBar defaultBarProps={progressBarProps} withLabel={false} />
@@ -65,7 +65,7 @@ export const MyLastTask = memo(({ task, width }: IProps) => {
           <span
             className={cn(
               "my-last-task__header-item my-last-task__name",
-              getClassnameByIntent("my-last-task__name-", intent)
+              getClassnameByIntent("my-last-task__name-", intent),
             )}
           >
             {task.Name}
