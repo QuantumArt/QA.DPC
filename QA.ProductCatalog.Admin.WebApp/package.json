@@ -30,12 +30,12 @@
     "serialize-javascript": "^7.0.3",
     "node-sass": "npm:sass@latest",
     "minimatch": "^9.0.0",
-    "tar": "^7.5.10",
-    "cacache": "^18.0.0",
+    "tar": "^7.5.11",
+    "cacache": "^20.0.3",
     "gaze": "npm:chokidar@latest",
     "@tootallnate/once": "^3.0.1",
     "http-proxy-agent": "^7.0.0",
-    "make-fetch-happen": "^14.0.0"
+    "make-fetch-happen": "^15.0.4"
   },
   "devDependencies": {
     "@types/classnames": "^2.2.6",
