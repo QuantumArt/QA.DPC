@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.DPC.Loader
@@ -51,7 +53,7 @@ namespace QA.Core.DPC.Loader
                 cfg.CreateMap<IReadOnlyDictionary<string, object>, IReadOnlyDictionary<string, object>>()
                     .ConvertUsing(
                         x => x == null ? null : (IReadOnlyDictionary<string, object>)x.ToDictionary(y => y.Key, y => y.Value));
-            }).CreateMapper();
+            }, new LoggerFactory([new NLogLoggerProvider()])).CreateMapper();
 	    }
 
 		private static Dictionary<string, ArticleField> CopyArticleFields(Dictionary<string, ArticleField> sourceFields, IArticleFilter filter, Dictionary<Article, Article> copiedArticles)
