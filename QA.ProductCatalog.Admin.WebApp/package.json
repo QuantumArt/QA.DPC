@@ -95,7 +95,7 @@
     "classnames": "^2.2.6",
     "core-js": "^3.6.5",
     "date-fns": "^2.30.0",
-    "fast-xml-parser": "^5.4.2",
+    "fast-xml-parser": "^5.5.7",
     "final-form": "^4.20.1",
     "hoist-non-react-statics": "^3.2.1",
     "install": "^0.13.0",
